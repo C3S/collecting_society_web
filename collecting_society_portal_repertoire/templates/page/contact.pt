@@ -1,0 +1,39 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
+<tal:block i18n:domain="collecting_society_portal_repertoire">
+
+    <h1 i18n:translate="">Contact</h1>
+
+    <p i18n:translate="">Cultural Commons Collecting Society SCE mit beschränkter Haftung (C3S SCE)</p>
+
+    <p>
+        <span i18n:translate="">Representatives</span>:<br />
+        Max Gössler<br />
+        Meik Michalke
+    </p>
+
+    <p>
+        <span i18n:translate="">Heyestr. 194</span><br />
+        <span i18n:translate="">40625 Düsseldorf</span><br />
+        <span i18n:translate="">Germany</span>
+    </p>
+
+    <p>
+        <span i18n:translate="">Email</span>: ( info )at( c3s.cc )<br />
+        <span i18n:translate="">OpenPGP Public Key</span>:<br />
+        084A 1D48 A31B C872 DEF5 BB6C D647 F126 4C4E CD7F
+    </p>
+
+    <p>
+        <span i18n:translate="">Phone</span>: +49 211 280 10 700<br />
+        <span i18n:translate="">Fax</span>: +49 211 280 10 709
+    </p>
+
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+</tal:block>
