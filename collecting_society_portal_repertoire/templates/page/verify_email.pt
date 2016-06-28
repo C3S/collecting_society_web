@@ -1,0 +1,30 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
+
+<tal:block metal:use-macro="frontend" i18n:domain="collecting_society_portal_repertoire">
+
+    <!-- top -->
+    <tal:block metal:fill-slot="top"></tal:block>
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <h1 i18n:translate="">E-Mail verification</h1>
+
+        <dl>
+            <dd>
+                <span i18n:translate="">Your verification was</span>
+                ${yesno}<span i18n:translate="">successful</span>
+            </dd>
+            <dd>${error}</dd>
+        </dl>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right"></tal:block>
+
+</tal:block>
