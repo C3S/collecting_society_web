@@ -60,9 +60,8 @@ nav > .cs-anchor { top:-50px; }
 
 /* Content Middle */
 
-.cs-content-middle { background-color:#f6f9f2; margin-bottom:50px; padding-top:0; }
+.cs-content-middle { background-color:#f6f9f2; margin-bottom:50px; padding-top:15px; }
 .cs-content-middle h1:first-child { padding-top:30px; }
-.cs-page { padding-top:116px; }
 
 .cs-menue-top { background-color: #317a19; }
 .cs-menue-top .container > div { background-color: #317a19; }
@@ -111,6 +110,10 @@ nav > .cs-anchor { top:-50px; }
     /* Content Left */
 
     /* Content Middle */
+
+    .cs-content-middle .alert { margin-top:140px; }
+
+    .cs-content-middle .cs-page { padding-top:116px; }
 
     /* Content Right */
     
