@@ -5,8 +5,14 @@ import colander
 import deform
 import logging
 
+from collecting_society_portal.resources import FrontendResource
 from collecting_society_portal.views.forms import LoginWebuser
-from collecting_society_portal.models import WebUser
+from collecting_society_portal.models import (
+    Tdb,
+    WebUser
+)
+from collecting_society_portal.services import send_mail
+
 from ...services import _
 
 log = logging.getLogger(__name__)
@@ -19,12 +25,12 @@ class RegisterWebuser(LoginWebuser):
     form controller for registration of web_user
     """
 
-    __stage__ = 'has_membership'  # initial stage
+    __stage__ = 'claims_membership'  # initial stage
 
     def controller(self):
 
-        if self.stage == 'has_membership':
-            self.has_membership()
+        if self.stage == 'claims_membership':
+            self.claims_membership()
 
         if self.stage == 'wants_membership':
             self.wants_membership()
@@ -36,23 +42,23 @@ class RegisterWebuser(LoginWebuser):
 
     # --- Stages --------------------------------------------------------------
 
-    def has_membership(self):
-        self.form = has_membership_form(self.request)
+    def claims_membership(self):
+        self.stage = 'claims_membership'
+        self.form = claims_membership_form(self.request)
         self.render(self.data)
 
         # has membership
-        if self.submitted('has_membership'):
-            self.data.update({'member': 1})
-            self.stage = 'register_webuser'
+        if self.submitted('claims_membership'):
+            self.data.update({'member_c3s': True})
             self.register_webuser()
 
         # has no membership
-        if self.submitted('has_no_membership'):
-            self.data.update({'member': 0})
-            self.stage = 'wants_membership'
+        if self.submitted('claims_no_membership'):
+            self.data.update({'member_c3s': False})
             self.wants_membership()
 
     def wants_membership(self):
+        self.stage = 'wants_membership'
         self.form = wants_membership_form(self.request)
         self.render(self.data)
 
@@ -62,54 +68,160 @@ class RegisterWebuser(LoginWebuser):
 
         # wants no membership
         if self.submitted('wants_no_membership'):
-            self.stage = 'register_webuser'
             self.register_webuser()
 
         # back
         if self.submitted('back'):
-            self.stage = 'has_membership'
-            self.has_membership()
+            self.claims_membership()
 
     def register_webuser(self):
-        if self.data['member']:
+        self.stage = 'register_webuser'
+        if self.data['member_c3s']:
             self.form = register_member_form(self.request)
         else:
             self.form = register_nonmember_form(self.request)
 
         # register webuser
         if self.submitted('register_webuser') and self.validate():
+            self.data.update(self.appstruct.copy())
             self.register()
-            # self.login()
 
         # back
         if self.submitted('back'):
-            if self.data['member']:
-                self.stage = 'has_membership'
-                self.has_membership()
+            if self.data['member_c3s']:
+                self.claims_membership()
             else:
-                self.stage = 'wants_membership'
                 self.wants_membership()
 
     # --- Conditions ----------------------------------------------------------
 
+    def is_registered(self, web_user):
+        if WebUser.search_by_email(web_user['email']):
+            return True
+        return False
+
+    def passes_authentication(self, web_user):
+        if WebUser.authenticate(web_user['email'], web_user['password']):
+            return True
+        return False
+
+    def is_claiming_membership(self, data):
+        if data['member_c3s']:
+            return True
+        return False
+
+    def is_member(self, web_user):
+        return True
+
     # --- Actions -------------------------------------------------------------
 
+    @Tdb.transaction(readonly=False)
     def register(self):
-        web_user = {
-            'email': self.appstruct['email'],
-            'password': self.appstruct['password']
+        _create = False
+        template_variables = {}
+        _web_user = {
+            'email': self.data['email'],
+            'password': self.data['password']
         }
-        # WebUser.create([web_user])
-        log.info("web_user creation successful: %s" % self.appstruct['email'])
+
+        # user is already registered
+        if self.is_registered(_web_user):
+            # user passes authentication (accidently registered to login)
+            if self.passes_authentication(_web_user):
+                opt_in_state = WebUser.get_opt_in_state_by_email(
+                    _web_user['email']
+                )
+                if opt_in_state == 'opted-in':
+                    self.request.session.flash(
+                        _(u"You are already registered with your credentials."),
+                        'main-alert-info'
+                    )
+                    self.login()
+                    return
+                else:
+                    self.request.session.flash(
+                        _(
+                            u"Your email address is not verified yet. Please "
+                            u"follow the instructions in our email."),
+                        'main-alert-info'
+                    )
+                    return
+            # user fails authentication (email already registered)
+            else:
+                template_name = "registration-fail_registered"
+        # user is not registered yet
+        else:
+            # user claims to be a c3s member
+            if self.is_claiming_membership(self.data):
+                # user is a c3s member
+                if self.is_member(_web_user):
+                    _create = True
+                    template_name = "registration-member_success"
+                # user is not a c3s member
+                else:
+                    template_name = "registration-member_fail_nomatch"
+            # user claims not to be a c3s member
+            else:
+                # user is a c3s member
+                if self.is_member(_web_user):
+                    template_name = "registration-nonmember_fail_reserved"
+                # user is not a c3s member
+                else:
+                    _create = True
+                    template_name = "registration-nonmember_success"
+
+        # create
+        if _create:
+            web_users = WebUser.create([_web_user])
+
+            # creation failed
+            if not web_users or len(web_users) is not 1:
+                log.info("web_user creation not successful: %s" % _web_user)
+                self.request.session.flash(
+                    _(
+                        u"There was an error during the registration process. "
+                        u"Please try again later and contact us, if this "
+                        u"error occurs again. Sorry for the inconveniece."
+                    ),
+                    'main-alert-danger'
+                )
+                return False
+
+            # creation successful
+            web_user = web_users[0]
+            web_user.party.member_c3s = self.data['member_c3s']
+            web_user.party.save()
+            template_variables = {
+                'link': self.request.resource_url(
+                    self.request.root, 'verify_email',
+                    WebUser.get_opt_in_uuid_by_id(web_user.id)
+                )
+            }
+            log.info("web_user creation successful: %s" % web_user.email)
+
+        # flash message
+        self.request.session.flash(
+            _(
+                u"Thank you for your registration. We are now processing your "
+                u"request and will send you an email with further "
+                u"instructions."
+            ),
+            'main-alert-success'
+        )
+
+        # send mail
+        send_mail(
+            self.request,
+            template=template_name,
+            variables=template_variables,
+            recipients=[_web_user['email']]
+        )
+
+        # reset form
+        self.redirect(FrontendResource)
 
 
 # --- Validators --------------------------------------------------------------
-
-def email_is_unique(value):
-    if not WebUser.search_by_email(value):
-        return True
-    return _(u'Email already registered')
-
 
 # --- Options -----------------------------------------------------------------
 
@@ -118,10 +230,7 @@ def email_is_unique(value):
 class EmailField(colander.SchemaNode):
     oid = "email"
     schema_type = colander.String
-    validator = colander.All(
-        colander.Email(),
-        colander.Function(email_is_unique)
-    )
+    validator = colander.Email()
 
 
 class CheckedPasswordField(colander.SchemaNode):
@@ -156,16 +265,16 @@ class RegisterNonmemberSchema(colander.MappingSchema):
 
 # --- Forms -------------------------------------------------------------------
 
-def has_membership_form(request):
+def claims_membership_form(request):
     return deform.Form(
         title=_(u"Are you a C3S member?"),
         schema=colander.MappingSchema(),
         action=request.path,
         buttons=[
             deform.Button(
-                'has_membership', _(u"Yes"), css_class="btn-default btn-lg"
+                'claims_membership', _(u"Yes"), css_class="btn-default btn-lg"
             ),
-            deform.Button('has_no_membership', _(u"No"))
+            deform.Button('claims_no_membership', _(u"No"))
         ]
     )
 

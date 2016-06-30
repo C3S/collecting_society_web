@@ -1,0 +1,6 @@
+[C3S Repertoire] Your Registration
+The registration was successful.
+
+Please visit the following link to finish your registration:
+
+{link}
