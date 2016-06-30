@@ -111,7 +111,9 @@ nav > .cs-anchor { top:-50px; }
 
     /* Content Middle */
 
-    .cs-content-middle .alert { margin-top:140px; }
+    .cs-content-middle { padding-top:0; }
+
+    .cs-content-middle nav + .alert { margin-top:140px; }
 
     .cs-content-middle .cs-page { padding-top:116px; }
 
