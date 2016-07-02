@@ -5,6 +5,8 @@ import colander
 import deform
 import logging
 
+from pyramid.response import Response
+
 from collecting_society_portal.resources import FrontendResource
 from collecting_society_portal.views.forms import LoginWebuser
 from collecting_society_portal.models import (
@@ -110,19 +112,23 @@ class RegisterWebuser(LoginWebuser):
             return True
         return False
 
-    def is_member(self, web_user):
-        return True
+    def is_member(self, api, web_user):
+        return api.is_member(
+            service='repertoire',
+            email=web_user['email']
+        )
 
     # --- Actions -------------------------------------------------------------
 
     @Tdb.transaction(readonly=False)
     def register(self):
         _create = False
-        template_variables = {}
         _web_user = {
             'email': self.data['email'],
             'password': self.data['password']
         }
+        _c3smembership = self.context.registry['services']['c3smembership']
+        template_variables = {}
 
         # user is already registered
         if self.is_registered(_web_user):
@@ -142,7 +148,8 @@ class RegisterWebuser(LoginWebuser):
                     self.request.session.flash(
                         _(
                             u"Your email address is not verified yet. Please "
-                            u"follow the instructions in our email."),
+                            u"follow the instructions in our email."
+                        ),
                         'main-alert-info'
                     )
                     return
@@ -154,7 +161,7 @@ class RegisterWebuser(LoginWebuser):
             # user claims to be a c3s member
             if self.is_claiming_membership(self.data):
                 # user is a c3s member
-                if self.is_member(_web_user):
+                if self.is_member(_c3smembership, _web_user):
                     _create = True
                     template_name = "registration-member_success"
                 # user is not a c3s member
@@ -163,7 +170,7 @@ class RegisterWebuser(LoginWebuser):
             # user claims not to be a c3s member
             else:
                 # user is a c3s member
-                if self.is_member(_web_user):
+                if self.is_member(_c3smembership, _web_user):
                     template_name = "registration-nonmember_fail_reserved"
                 # user is not a c3s member
                 else:
@@ -189,8 +196,21 @@ class RegisterWebuser(LoginWebuser):
 
             # creation successful
             web_user = web_users[0]
-            web_user.party.member_c3s = self.data['member_c3s']
-            web_user.party.save()
+            if self.is_member(_c3smembership, _web_user):
+                # c3s membership
+                web_user.party.member_c3s = True
+                response = _c3smembership.generate_member_token(
+                    service='repertoire',
+                    email=web_user.email
+                )
+                if not response or 'token' not in response:
+                    log.debug(
+                        "web_user c3s membership token error: %s, %s" % (
+                            _web_user, response
+                        )
+                    )
+                web_user.party.member_c3s_token = response['token']
+                web_user.party.save()
             template_variables = {
                 'link': self.request.resource_url(
                     self.request.root, 'verify_email',

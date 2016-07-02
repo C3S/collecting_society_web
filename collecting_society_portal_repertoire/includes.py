@@ -20,7 +20,8 @@ from collecting_society_portal.views.widgets import news_widget
 from collecting_society_portal.resources import (
     FrontendResource,
     BackendResource,
-    NewsResource
+    NewsResource,
+    DebugResource
 )
 
 from collecting_society_portal_creative.resources import (
@@ -29,9 +30,13 @@ from collecting_society_portal_creative.resources import (
     CreationResource
 )
 
-from .services import _
+from .services import (
+    _,
+    C3SMembershipApiClient
+)
 from .resources import (
-    RepertoireResource
+    RepertoireResource,
+    DebugC3sMembershipApiResource
 )
 # from .views.widgets import (
 #     ...
@@ -52,6 +57,7 @@ def web_resources(config):
         None
     '''
     BackendResource.add_child(RepertoireResource)
+    DebugResource.add_child(DebugC3sMembershipApiResource)
 
 
 def web_registry(config):
@@ -67,6 +73,8 @@ def web_registry(config):
     Returns:
         None
     '''
+    settings = config.get_settings()
+
     @FrontendResource.extend_registry
     def frontend(self):
         reg = self.dict()
@@ -106,12 +114,22 @@ def web_registry(config):
         reg['static']['logo'] = self.request.static_path(
             'collecting_society_portal_repertoire:static/img/logo-c3s.png'
         )
+        # services
+        reg['services']['c3smembership'] = C3SMembershipApiClient(
+            base_url=settings['api.c3smembership.url'],
+            version=settings['api.c3smembership.version'],
+            api_key=settings['api.c3smembership.api_key']
+        )
         # top menue
-        reg['menues']['top'] = [
-            {
-                'name': _(u'register'),
-                'page': 'register'
-            },
+        reg['menues']['top'] = []
+        if reg['services']['c3smembership'].is_connected():
+            reg['menues']['top'] += [
+                {
+                    'name': _(u'register'),
+                    'page': 'register'
+                }
+            ]
+        reg['menues']['top'] += [
             {
                 'name': _(u'about'),
                 'page': 'about'
