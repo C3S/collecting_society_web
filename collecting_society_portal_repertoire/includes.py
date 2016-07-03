@@ -57,6 +57,8 @@ def web_resources(config):
         None
     '''
     BackendResource.add_child(RepertoireResource)
+    RepertoireResource.add_child(ArtistResource)
+    RepertoireResource.add_child(CreationResource)
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
 
@@ -160,7 +162,7 @@ def web_registry(config):
         ]
         # logo
         reg['static']['logo'] = self.request.static_path(
-            'collecting_society_portal_repertoire:static/img/logo-adore.png'
+            'collecting_society_portal_repertoire:static/img/logo-c3s.png'
         )
         # main menue
         reg['menues']['roles'] = [
@@ -174,34 +176,99 @@ def web_registry(config):
         ]
         # top menue
         reg['menues']['top'] = [
-            # {
-            #     'name': _(u'News'),
-            #     'url': self.request.resource_path(
-            #         BackendResource(self.request), 'news'
-            #     )
-            # },
-            # {
-            #     'name': _(u'Contact'),
-            #     'url': self.request.resource_path(
-            #         BackendResource(self.request), 'contact'
-            #     )
-            # },
-            # {
-            #     'name': _(u'Imprint'),
-            #     'url': self.request.resource_path(
-            #         BackendResource(self.request), 'imprint'
-            #     )
-            # },
-            # {
-            #     'name': _(u'Logout'),
-            #     'url': self.request.resource_path(
-            #         BackendResource(self.request), 'logout'
-            #     )
-            # }
+            {
+                'name': _(u'Profile'),
+                'url': self.request.resource_path(
+                    BackendResource(self.request), 'profile'
+                )
+            },
+            {
+                'name': _(u'Help'),
+                'url': self.request.resource_path(
+                    BackendResource(self.request), 'help'
+                )
+            },
+            {
+                'name': _(u'Contact'),
+                'url': self.request.resource_path(
+                    BackendResource(self.request), 'contact'
+                )
+            },
+            {
+                'name': _(u'Terms'),
+                'url': self.request.resource_path(
+                    BackendResource(self.request), 'terms'
+                )
+            },
+            {
+                'name': _(u'Logout'),
+                'url': self.request.resource_path(
+                    BackendResource(self.request), 'logout'
+                )
+            }
         ]
         # widgets content-right
         reg['widgets']['content-right'] = [
             # news_widget
+        ]
+        return reg
+
+    @RepertoireResource.extend_registry
+    def repertoire(self):
+        reg = self.dict()
+
+        # main menue
+        reg['menues']['main'] = [
+            {
+                'name': _(u'Dashboard'),
+                'url': self.request.resource_path(
+                    RepertoireResource(self.request), 'dashboard'
+                ),
+                'icon': self.request.static_path(
+                    'collecting_society_portal_repertoire:'
+                    'static/img/element-icon-dashboard.png'
+                )
+            },
+            {
+                'name': _(u'Upload'),
+                'url': self.request.resource_path(
+                    RepertoireResource(self.request), 'upload'
+                ),
+                'icon': self.request.static_path(
+                    'collecting_society_portal_repertoire:'
+                    'static/img/element-icon-upload.png'
+                )
+            },
+            {
+                'name': _(u'Artists'),
+                'url': self.request.resource_path(
+                    ArtistResource(self.request), ''
+                ),
+                'icon': self.request.static_path(
+                    'collecting_society_portal_repertoire:'
+                    'static/img/element-icon-artists.png'
+                )
+            },
+            {
+                'name': _(u'Releases'),
+                'url': self.request.resource_path(
+                    CreationResource(self.request), ''
+                ),
+                'icon': self.request.static_path(
+                    'collecting_society_portal_repertoire:'
+                    'static/img/element-icon-releases.png'
+                )
+            },
+            {
+                'name': _(u'Songs'),
+                'url': self.request.resource_path(
+                    CreationResource(self.request), ''
+                ),
+                'icon': self.request.static_path(
+                    'collecting_society_portal_repertoire:'
+                    'static/img/element-icon-songs.png'
+                )
+            }
         ]
         return reg
 

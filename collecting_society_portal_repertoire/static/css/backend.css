@@ -5,6 +5,17 @@
 
 *******************************************************************************/
 
+/* 
+
+    COLORS:
+
+    green dark   #317a19
+    green middle #4dae33
+    green bright #d9f0c8
+    orange       #dc5900
+    gray light   #f6f9f2
+
+*/
 
 /*******************************************************************************
 
@@ -14,12 +25,53 @@
 
 /* Main */
 
+body {
+    background: rgb(217,240,200); /* Old browsers */
+    background: -moz-linear-gradient(left, rgba(217,240,200,1) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(217,240,200,1) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(217,240,200,1) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d9f0c8', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
+}
+
+a { outline:none!important; }
+
 /* Content Left */
 
+.cs-content-left { background: url('../img/element-menue-bg.png'); padding-top:6px; }
+
+.cs-menue-main { background:transparent; border:none; border-top-left-radius:0; border-top-right-radius:0; }
+
+.cs-menue-main .navbar-nav > li > a,
+.cs-menue-main .navbar-nav > li > a:hover,
+.cs-menue-main .navbar-nav > li > a:active,
+.cs-menue-main .navbar-nav > li > a:visited,
+.cs-menue-main .navbar-nav > li > a:focus { color:#fff; }
+
+.cs-menue-main .navbar-nav > .active > a,
+.cs-menue-main .navbar-nav > .active > a:hover,
+.cs-menue-main .navbar-nav > .active > a:active,
+.cs-menue-main .navbar-nav > .active > a:focus {
+    outline: none;
+    background-color:transparent; color:#fff; font-weight:bold;
+    background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 33%, rgba(255,255,255,0.2) 66%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,0.2) 33%,rgba(255,255,255,0.2) 66%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,0.2) 33%,rgba(255,255,255,0.2) 66%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 */
+}
+
+.cs-content-left .cs-menue-roles > li > a,
+.cs-content-left .cs-menue-roles > li > a:hover,
+.cs-content-left .cs-menue-roles > li > a:visited { color:#fff; background-color:transparent; border:none; font-weight:bold; }
+
 /* Content Middle */
+
+.cs-content-middle { background-color:#fff; }
+
 .cs-artist-img { max-width: 200px }
 
 /* Content Right */
+
+.cs-content-right { background-color:#fff; }
 
 .cs-widget-plugins .cs-widget-plugin-img { width:120px; }
 .cs-widget-todo-steps .cs-widget-todo-step-img { float:left; width:60px; margin:0 5px 5px 0; }

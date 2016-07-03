@@ -16,6 +16,8 @@ from collecting_society_portal.resources import (
     BackendResource
 )
 
+from ..resources import RepertoireResource
+
 log = logging.getLogger(__name__)
 
 
@@ -24,11 +26,10 @@ class WebUserViews(ViewBase):
 
     @view_config(
         name='',
-        renderer='../templates/web_user/dashboard.pt',
         permission='read'
     )
     def dashboard(self):
-        return {}
+        return self.redirect(RepertoireResource)
 
     @view_config(
         name='logout',

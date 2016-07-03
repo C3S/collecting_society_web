@@ -9,7 +9,7 @@ from collecting_society_portal.resources import (
 
 
 class RepertoireResource(ResourceBase):
-    __name__ = "repository"
+    __name__ = "repertoire"
     __parent__ = BackendResource
     __children__ = {}
     __registry__ = {}
