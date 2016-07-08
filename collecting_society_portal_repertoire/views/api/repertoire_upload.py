@@ -72,6 +72,7 @@ def get_info(request, resource):
         filename = os.path.basename(resource.filename)
         filesize = os.fstat(resource.file.fileno()).st_size
         mimetype = mime.from_buffer(resource.file.read())
+        resource.file.seek(0)
 
     # GET
     if isinstance(resource, str):
