@@ -16,6 +16,14 @@ class RepertoireResource(ResourceBase):
     __acl__ = []
 
 
+class UploadResource(ResourceBase):
+    __name__ = "upload"
+    __parent__ = RepertoireResource
+    __children__ = {}
+    __registry__ = {}
+    __acl__ = []
+
+
 class DebugC3sMembershipApiResource(ResourceBase):
     __name__ = "membership"
     __parent__ = DebugResource

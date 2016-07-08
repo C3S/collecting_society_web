@@ -36,6 +36,7 @@ from .services import (
 )
 from .resources import (
     RepertoireResource,
+    UploadResource,
     DebugC3sMembershipApiResource
 )
 # from .views.widgets import (
@@ -59,6 +60,7 @@ def web_resources(config):
     BackendResource.add_child(RepertoireResource)
     RepertoireResource.add_child(ArtistResource)
     RepertoireResource.add_child(CreationResource)
+    RepertoireResource.add_child(UploadResource)
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
 
@@ -269,6 +271,42 @@ def web_registry(config):
                     'static/img/element-icon-songs.png'
                 )
             }
+        ]
+        return reg
+
+    @UploadResource.extend_registry
+    def upload(self):
+        reg = self.dict()
+        jfu = 'collecting_society_portal:static/lib/jQuery-File-Upload/'
+        # css
+        reg['static']['css'] = [
+            self.request.static_path(
+                'collecting_society_portal_repertoire:static/css/backend.css'
+            ),
+            self.request.static_path(jfu + 'css/jquery.fileupload.css'),
+            self.request.static_path(jfu + 'css/jquery.fileupload-ui.css')
+        ]
+        # js
+        reg['static']['js']['body'] = [
+            self.request.static_path(jfu + 'js/vendor/jquery.ui.widget.js'),
+            self.request.static_path(
+                'collecting_society_portal:'
+                'static/lib/JavaScript-Templates/js/tmpl.min.js'
+            ),
+            self.request.static_path(
+                'collecting_society_portal:'
+                'static/lib/JavaScript-Load-Image/js/load-image.all.min.js'
+            ),
+            self.request.static_path(jfu + 'js/jquery.iframe-transport.js'),
+            self.request.static_path(jfu + 'js/jquery.fileupload.js'),
+            self.request.static_path(jfu + 'js/jquery.fileupload-process.js'),
+            self.request.static_path(jfu + 'js/jquery.fileupload-audio.js'),
+            self.request.static_path(jfu + 'js/jquery.fileupload-validate.js'),
+            self.request.static_path(jfu + 'js/jquery.fileupload-ui.js'),
+            self.request.static_path(
+                'collecting_society_portal_repertoire:'
+                'static/js/jquery.fileupload.init.js'
+            )
         ]
         return reg
 

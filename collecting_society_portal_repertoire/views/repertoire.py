@@ -12,7 +12,10 @@ from pyramid.view import (
 
 from collecting_society_portal.views import ViewBase
 
-from ..resources import RepertoireResource
+from ..resources import (
+    RepertoireResource,
+    UploadResource
+)
 
 log = logging.getLogger(__name__)
 
@@ -36,9 +39,18 @@ class RepertoireViews(ViewBase):
         return {}
 
     @view_config(
-        name='upload',
+        context=UploadResource,
+        name='',
         renderer='../templates/repository/upload.pt',
         permission='read'
     )
     def upload(self):
-        return {}
+        action = 'upload'
+        settings = self.request.registry.settings
+        return {
+            'url': ''.join([
+                settings['api.c3supload.url'], '/',
+                settings['api.c3supload.version'], '/',
+                action
+            ])
+        }
