@@ -7,6 +7,7 @@ import logging
 import magic
 from cgi import FieldStorage
 
+from webob.byterange import ContentRange
 from pyramid.response import FileResponse
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.httpexceptions import (
@@ -34,21 +35,27 @@ mime = magic.Magic(mime=True)
 _prefix = 'repertoire'
 
 
+# --- methods -----------------------------------------------------------------
+
 def get_cors_policy():
     return {
         'origins': os.environ['API_C3SUPLOAD_CORS_ORIGINS'].split(","),
-        'credentials': True,
-        'headers': [
-            'Content-Type',
-            'Content-Range',
-            'Content-Disposition',
-            'Content-Description'
-        ]
+        'credentials': True
     }
 
 
+def get_cors_headers():
+    return ', '.join([
+        'Content-Type',
+        'Content-Range',
+        'Content-Disposition',
+        'Content-Description'
+    ])
+
+
 def authenticate(request):
-    pass
+    if not request.user:
+        raise HTTPForbidden
 
 
 def get_url(url, version, action, filename):
@@ -59,48 +66,35 @@ def get_url(url, version, action, filename):
 
 def get_path(request, filename=None):
     base = request.registry.settings['api.c3supload.filepath']
-    webuser = '1'  # 2DO: return webuserid
+    webuser = str(request.user.id)
     if filename:
         return os.path.join(base, webuser, filename)
     return os.path.join(base, webuser)
 
 
 def get_info(request, resource):
-
-    # POST
-    if isinstance(resource, FieldStorage):
-        filename = os.path.basename(resource.filename)
-        filesize = os.fstat(resource.file.fileno()).st_size
-        mimetype = mime.from_buffer(resource.file.read())
-        resource.file.seek(0)
-
-    # GET
-    if isinstance(resource, str):
-        if not os.path.isfile(resource):
-            return False
-        filename = os.path.basename(resource)
-        filesize = os.path.getsize(resource)
-        mimetype = mime.from_file(resource)
-
-    preview_url = get_url(
-        url=request.registry.settings['api.c3supload.url'],
-        version=request.registry.settings['api.c3supload.version'],
-        action='preview',
-        filename=filename
-    )
-    delete_url = get_url(
-        url=request.registry.settings['api.c3supload.url'],
-        version=request.registry.settings['api.c3supload.version'],
-        action='delete',
-        filename=filename
-    )
+    filename = os.path.basename(resource)
+    if not os.path.isfile(resource):
+        return {
+            'name': filename
+        }
     return {
         'name': filename,
-        'size': filesize,
-        'type': mimetype,
-        'previewUrl': preview_url,
-        'deleteUrl': delete_url,
-        'deleteType': 'DELETE'
+        'size': os.path.getsize(resource),
+        'type': mime.from_file(resource),
+        'previewUrl': get_url(
+            url=request.registry.settings['api.c3supload.url'],
+            version=request.registry.settings['api.c3supload.version'],
+            action='preview',
+            filename=filename
+        ),
+        'deleteUrl': get_url(
+            url=request.registry.settings['api.c3supload.url'],
+            version=request.registry.settings['api.c3supload.version'],
+            action='delete',
+            filename=filename
+        ),
+        'deleteType': 'GET'
     }
 
 
@@ -113,12 +107,37 @@ def create_path(path):
 
 
 def save_file(descriptor, file):
+    if os.path.isfile(file):
+        return False
     try:
         with open(file, 'w') as f:
             shutil.copyfileobj(descriptor, f)
     except IOError:
-        pass
+        raise HTTPInternalServerError
     return os.path.isfile(file)
+
+
+def save_chunk(descriptor, file, contentrange):
+    chunkfile = file + ".part"
+    start, stop, length = contentrange
+    size = 0
+    if os.path.isfile(chunkfile):
+        size = os.path.getsize(chunkfile)
+    if start != size:
+        return False
+    try:
+        with open(chunkfile, 'a') as f:
+            shutil.copyfileobj(descriptor, f)
+    except IOError:
+        raise HTTPInternalServerError
+    if os.path.getsize(chunkfile) == length:
+        try:
+            shutil.copyfile(chunkfile, file)
+            os.remove(chunkfile)
+            return (os.path.getsize(file) == length)
+        except IOError:
+            raise HTTPInternalServerError
+    return (os.path.getsize(chunkfile) == stop)
 
 
 def delete_file(file):
@@ -131,10 +150,10 @@ def delete_file(file):
 
 # --- service: upload ---------------------------------------------------------
 
-upload = Service(
+repertoire_upload = Service(
     name=_prefix + 'upload',
     path=_prefix + '/v1/upload',
-    description="upload",
+    description="uploads and lists repertoire files",
     permission=NO_PERMISSION_REQUIRED,
     cors_policy=get_cors_policy()
 )
@@ -148,16 +167,23 @@ class UploadSchema(MappingSchema):
     )
 
 
-@upload.options()
-def options_upload(request):
-    return
+@repertoire_upload.options()
+def options_repertoire_upload(request):
+    response = request.response
+    response.headers['Access-Control-Allow-Headers'] = get_cors_headers()
+    return response
 
 
-@upload.get()
-def get_upload(request):
+@repertoire_upload.get(
+    validators=(authenticate))
+def get_repertoire_upload(request):
     files = []
     uploadpath = get_path(request)
+    if not os.path.isdir(uploadpath):
+        return {'files': []}
     for filename in os.listdir(uploadpath):
+        if filename.endswith('.part'):
+            continue
         file = get_path(request, filename)
         info = get_info(request, file)
         if info:
@@ -165,59 +191,76 @@ def get_upload(request):
     return {'files': files}
 
 
-@upload.post()
-def post_upload(request):
+@repertoire_upload.post(
+    validators=(authenticate))
+def post_repertoire_upload(request):
+
+    # create path
+    path = get_path(request)
+    if not os.path.exists(path):
+        create_path(path)
+
+    # upload files
     files = []
     for name, fieldStorage in request.POST.items():
         if not isinstance(fieldStorage, FieldStorage):
             continue
-        info = get_info(request, fieldStorage)
-        file = get_path(request, info['name'])
+
+        filename = os.path.basename(fieldStorage.filename)
+        file = get_path(request, filename)
+
         if os.path.isfile(file):
-            info['error'] = _('File already exists.')
+            info = get_info(request, file)
+            info.update({'error': _(u'File already exists.')})
+            files.append(info)
+            continue
+
+        # chunked file
+        contentrange = ContentRange.parse(
+            request.headers.get('Content-Range', None)
+        )
+        if contentrange:
+            ok = save_chunk(
+                descriptor=fieldStorage.file,
+                file=file,
+                contentrange=contentrange
+            )
+            if not ok:
+                raise HTTPInternalServerError
+
+        # whole file
         else:
-            path = get_path(request)
-            if not os.path.exists(path):
-                create_path(path)
-            save_file(
+            ok = save_file(
                 descriptor=fieldStorage.file,
                 file=file
             )
+            if not ok:
+                raise HTTPInternalServerError
+
+        info = get_info(request, file)
         files.append(info)
     return {'files': files}
 
 
-# --- service: delete ---------------------------------------------------------
-
-delete = Service(
-    name=_prefix + 'delete',
-    path=_prefix + '/v1/delete/{filename}',
-    description="delete",
-    permission=NO_PERMISSION_REQUIRED,
-    cors_policy=get_cors_policy()
-)
-
-
-@delete.delete()
-def delete_delete(request):
-    filename = request.matchdict['filename']
-    file = get_path(request, filename)
-    return delete_file(file)
-
-
 # --- service: preview --------------------------------------------------------
 
-preview = Service(
+repertoire_preview = Service(
     name=_prefix + 'preview',
     path=_prefix + '/v1/preview/{filename}',
-    description="preview",
+    description="previewd the uploaded repertoire files",
     permission=NO_PERMISSION_REQUIRED,
     cors_policy=get_cors_policy()
 )
 
 
-@preview.get()
-def get_preview(request):
+@repertoire_preview.options()
+def options_repertoire_preview(request):
+    return
+
+
+@repertoire_preview.get(
+    validators=(authenticate))
+def get_repertoire_preview(request):
     filename = request.matchdict['filename']
     file = get_path(request, filename)
     if not os.path.isfile(file):
@@ -227,3 +270,30 @@ def get_preview(request):
         request=request,
         content_type=mime.from_file(file)
     )
+
+
+# --- service: delete ---------------------------------------------------------
+
+repertoire_delete = Service(
+    name=_prefix + 'delete',
+    path=_prefix + '/v1/delete/{filename}',
+    description="deletes uploaded repertoire files",
+    permission=NO_PERMISSION_REQUIRED,
+    cors_policy=get_cors_policy()
+)
+
+
+@repertoire_delete.options()
+def options_repertoire_delete(request):
+    return
+
+
+@repertoire_delete.get(
+    validators=(authenticate))
+def get_repertoire_delete(request):
+    filename = request.matchdict['filename']
+    file = get_path(request, filename)
+    ok = delete_file(file)
+    if not ok:
+        raise HTTPInternalServerError
+    return
