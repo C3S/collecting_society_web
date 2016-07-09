@@ -45,3 +45,14 @@ $(function () {
     });
 
 });
+
+// Play only one file at a time
+$('#fileupload').delegate("audio", "click", function () {
+    var _this = $(this);
+    $(this).unbind("play").one("play", function() {
+        $('audio').each(function (i, el) {
+            if (!$(el).is(_this))
+                $(el).trigger('pause');
+        });
+    });
+});
