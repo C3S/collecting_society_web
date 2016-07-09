@@ -45,12 +45,10 @@ class RepertoireViews(ViewBase):
         permission='read'
     )
     def upload(self):
-        action = 'upload'
         settings = self.request.registry.settings
         return {
             'url': ''.join([
                 settings['api.c3supload.url'], '/',
-                settings['api.c3supload.version'], '/',
-                action
+                settings['api.c3supload.version']
             ])
         }

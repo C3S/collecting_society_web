@@ -72,16 +72,23 @@ def get_path(request, filename=None):
     return os.path.join(base, webuser)
 
 
-def get_info(request, resource):
-    filename = os.path.basename(resource)
-    if not os.path.isfile(resource):
+def get_info(request, file):
+    filename = os.path.basename(file)
+    uploaded = os.path.isfile(file)
+    resumable = os.path.isfile(file + '.part')
+    if resumable:
+        file += '.part'
+    if not (uploaded or resumable):
         return {
-            'name': filename
+            'name': filename,
+            'resumable': False,
+            'error': _(u'File not found')
         }
     return {
         'name': filename,
-        'size': os.path.getsize(resource),
-        'type': mime.from_file(resource),
+        'resumable': resumable,
+        'size': os.path.getsize(file),
+        'type': mime.from_file(file),
         'previewUrl': get_url(
             url=request.registry.settings['api.c3supload.url'],
             version=request.registry.settings['api.c3supload.version'],
@@ -153,7 +160,7 @@ def delete_file(file):
 repertoire_upload = Service(
     name=_prefix + 'upload',
     path=_prefix + '/v1/upload',
-    description="uploads and lists repertoire files",
+    description="uploads repertoire files",
     permission=NO_PERMISSION_REQUIRED,
     cors_policy=get_cors_policy()
 )
@@ -172,23 +179,6 @@ def options_repertoire_upload(request):
     response = request.response
     response.headers['Access-Control-Allow-Headers'] = get_cors_headers()
     return response
-
-
-@repertoire_upload.get(
-    validators=(authenticate))
-def get_repertoire_upload(request):
-    files = []
-    uploadpath = get_path(request)
-    if not os.path.isdir(uploadpath):
-        return {'files': []}
-    for filename in os.listdir(uploadpath):
-        if filename.endswith('.part'):
-            continue
-        file = get_path(request, filename)
-        info = get_info(request, file)
-        if info:
-            files.append(info)
-    return {'files': files}
 
 
 @repertoire_upload.post(
@@ -240,6 +230,63 @@ def post_repertoire_upload(request):
         info = get_info(request, file)
         files.append(info)
     return {'files': files}
+
+
+# --- service: list -----------------------------------------------------------
+
+repertoire_list = Service(
+    name=_prefix + 'list',
+    path=_prefix + '/v1/list',
+    description="lists repertoire files",
+    permission=NO_PERMISSION_REQUIRED,
+    cors_policy=get_cors_policy()
+)
+
+
+@repertoire_list.options()
+def options_repertoire_list(request):
+    return
+
+
+@repertoire_list.get(
+    validators=(authenticate))
+def get_repertoire_list(request):
+    files = []
+    uploadpath = get_path(request)
+    if not os.path.isdir(uploadpath):
+        return {'files': []}
+    for filename in os.listdir(uploadpath):
+        if filename.endswith('.part'):
+            continue
+        file = get_path(request, filename)
+        info = get_info(request, file)
+        if info:
+            files.append(info)
+    return {'files': files}
+
+
+# --- service: show -----------------------------------------------------------
+
+repertoire_show = Service(
+    name=_prefix + 'show',
+    path=_prefix + '/v1/show/{filename}',
+    description="shows uploaded repertoire files",
+    permission=NO_PERMISSION_REQUIRED,
+    cors_policy=get_cors_policy()
+)
+
+
+@repertoire_show.options()
+def options_repertoire_show(request):
+    return
+
+
+@repertoire_show.get(
+    validators=(authenticate))
+def get_repertoire_show(request):
+    filename = request.matchdict['filename']
+    file = get_path(request, filename)
+    return get_info(request, file)
 
 
 # --- service: preview --------------------------------------------------------

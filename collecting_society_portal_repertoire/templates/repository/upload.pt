@@ -5,10 +5,11 @@
     <tal:block metal:fill-slot="content-middle">
 
         <div class="container">
+            <div id="apiurl" data-url="${url}" style="display:none;"></div>
             <!-- The file upload form used as target for the file upload widget -->
-            <form id="fileupload" action="${url}" method="POST" enctype="multipart/form-data">
+            <form id="fileupload" action="${url}/upload" method="POST" enctype="multipart/form-data">
                 <!-- Redirect browsers with JavaScript disabled to the origin page -->
-                <noscript><input type="hidden" name="redirect" value="${url}"></noscript>
+                <noscript><input type="hidden" name="redirect" value="${url}/upload"></noscript>
                 <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
                 <div class="fileupload-buttonbar">
                     <div class="">
@@ -25,10 +26,6 @@
                         <button type="reset" class="btn btn-warning cancel">
                             <i class="glyphicon glyphicon-ban-circle"></i>
                             <span>Cancel upload</span>
-                        </button>
-                        <button type="button" class="btn btn-danger delete">
-                            <i class="glyphicon glyphicon-trash"></i>
-                            <span>Delete</span>
                         </button>
                         <!-- The global file processing state -->
                         <span class="fileupload-process"></span>
