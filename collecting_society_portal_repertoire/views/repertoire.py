@@ -16,6 +16,7 @@ from ..resources import (
     RepertoireResource,
     UploadResource
 )
+from ..services.lossless_audio_formats import lossless_audio_extensions
 
 log = logging.getLogger(__name__)
 
@@ -47,6 +48,7 @@ class RepertoireViews(ViewBase):
     def upload(self):
         settings = self.request.registry.settings
         return {
+            'extensions': '|'.join(lossless_audio_extensions()),
             'url': ''.join([
                 settings['api.c3supload.url'], '/',
                 settings['api.c3supload.version']

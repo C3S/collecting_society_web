@@ -32,12 +32,19 @@ from colander import (
 )
 
 from ...services import _
+from ...services.lossless_audio_formats import (
+    lossless_audio_extensions,
+    lossless_audio_mimetypes
+)
 
 
 log = logging.getLogger(__name__)
 mime = magic.Magic(mime=True)
 
 _prefix = 'repertoire'
+
+
+# --- configuration -----------------------------------------------------------
 
 _stage_part = 'part'
 _stage_complete = 'complete'
@@ -120,15 +127,21 @@ def get_info(request, filename):
             'error': _(u'File not found')
         }
 
+    # extension
+    extension = os.path.splitext(filename)[1]
+    if extension:
+        extension = extension[1:]
+
     return {
         'name': filename,
-        'complete': complete,
-        'resumable': resumable,
+        'extension': extension,
+        'type': mime.from_file(file),
         'size': os.path.getsize(file),
-        'duration': "{:.0f}:{:.0f}".format(
+        'duration': "{:.0f}:{:02.0f}".format(
             *divmod(AudioSegment.from_file(file).duration_seconds, 60)
         ),
-        'type': mime.from_file(file),
+        'complete': complete,
+        'resumable': resumable,
         'previewUrl': get_url(
             url=request.registry.settings['api.c3supload.url'],
             version=request.registry.settings['api.c3supload.version'],
@@ -143,6 +156,17 @@ def get_info(request, filename):
         ),
         'deleteType': 'GET'
     }
+
+
+def validate_file(request, info):
+
+    # check filetype
+    if info['extension'] not in lossless_audio_extensions():
+        return _(u'Filetype not allowed.')
+
+    # check mimetype
+    if info['type'] not in lossless_audio_mimetypes():
+        return _(u'Mimetype not allowed.')
 
 
 def create_path(path):
@@ -219,8 +243,10 @@ def get_segments(audio):
 
 def create_preview(file_complete, file_preview):
 
-    # mono
+    # load audio file
     audio = AudioSegment.from_file(file_complete)
+
+    # convert to mono
     audio = audio.set_channels(1)
 
     # mix segments
@@ -230,7 +256,7 @@ def create_preview(file_complete, file_preview):
             segment, crossfade=_preview_segment_crossfade
         )
 
-    # fadein/out
+    # fade in/out
     preview = preview.fade_in(_preview_fadein).fade_out(_preview_fadeout)
 
     # export
@@ -305,14 +331,14 @@ def post_repertoire_upload(request):
         file_complete = get_path(request, _stage_complete, filename)
         file_preview = get_path(request, _stage_preview, filename)
 
-        # file exists
+        # check file
         if os.path.isfile(file_complete):
             info = get_info(request, filename)
             info.update({'error': _(u'File already exists.')})
             files.append(info)
             continue
 
-        # chunked file
+        # save chunk
         contentrange = ContentRange.parse(
             request.headers.get('Content-Range', None)
         )
@@ -326,7 +352,7 @@ def post_repertoire_upload(request):
             if not ok:
                 raise HTTPInternalServerError
 
-        # whole file
+        # save whole file
         else:
             ok = save_file(
                 descriptor=fieldStorage.file,
@@ -335,15 +361,27 @@ def post_repertoire_upload(request):
             if not ok:
                 raise HTTPInternalServerError
 
-        # create preview
+        # get info from file
         info = get_info(request, filename)
-        log.debug(
-            (
-                "info: %s\n"
-            ) % (
-                info
-            )
-        )
+
+        # check mime type (after saving the file due to chunking)
+        error = validate_file(request, info)
+        if error:
+            # delete file again
+            # 2DO: prevent further chunks being sent by client on error.
+            # Manual errors dont abort uploads. Http errors abort all uploads.
+            if info['complete']:
+                for stage in [_stage_part, _stage_complete, _stage_preview]:
+                    file = get_path(request, stage, filename)
+                    ok = delete_file(file)
+                    if not ok:
+                        raise HTTPInternalServerError
+            # user feedback
+            info.update({'error': error})
+            files.append(info)
+            continue
+
+        # create preview
         if info['complete']:
             ok = create_preview(
                 file_complete=file_complete,
@@ -353,6 +391,13 @@ def post_repertoire_upload(request):
                 raise HTTPInternalServerError
 
         files.append(info)
+    log.debug(
+        (
+            "files: %s\n"
+        ) % (
+            files
+        )
+    )
     return {'files': files}
 
 
@@ -467,5 +512,5 @@ def get_repertoire_delete(request):
         file = get_path(request, stage, filename)
         ok = delete_file(file)
         if not ok:
-            raise HTTPInternalServerError
-    return
+            return {'files': [{filename: False}]}
+    return {'files': [{filename: True}]}

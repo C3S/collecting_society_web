@@ -1,7 +1,11 @@
 $(function () {
     'use strict';
 
-    var apiUrl = $('#apiurl').data('url');
+    var data = $('#data');
+    var apiUrl = data.data('url');
+    var extensions = data.data('extensions');
+    var lastResultFiles = [];
+    var errorFiles = [];
 
     // Initialize the jQuery File Upload widget:
     $('#fileupload').fileupload({
@@ -11,7 +15,7 @@ $(function () {
         downloadTemplateId: "template-download",
         method: 'POST',
         dataType: 'json',
-        acceptFileTypes: /(\.|\/)(mp3)$/i,
+        acceptFileTypes: new RegExp("(\.|\/)(" + extensions + ")$", "i"),
         maxFileSize: 1000000000, // 1 GB
         maxChunkSize:   1000000, // 1 MB
         // resume upload
@@ -28,6 +32,39 @@ $(function () {
             });
         }
     });
+
+
+    /*
+        2DO: prevent further chunks being sent by client on error.
+        Manual errors dont abort uploads. Http errors abort all uploads.
+        Files with invalid extensions checked clientside are displayed,
+        but not in the processed files array. This would be the desired state,
+        after a chunk recieved a response with an error message in it,
+        to be displayed to the user.
+    */
+    // // Prevent upload of chunks on error
+    // $('#fileupload').bind('fileuploadchunksend', function (e, data) {
+    //     $(lastResultFiles).each(function(){
+    //         var result = this;
+    //         if (result.error) {
+    //             $(data.files).each(function(index, request){
+    //                 if (request.name == result.name){
+    //                     // data.abort();
+    //                     // data.context.remove();
+    //                     // data.files.error = true;
+    //                     errorFiles[index] = request;
+    //                     delete data.files[index];
+    //                 }
+    //             });
+    //         }
+    //     });
+    // });
+    // $('#fileupload').bind('fileuploadchunkalways', function (e, data) {
+    //     lastResultFiles = (data.result ? data.result.files : []);
+    //     $(errorFiles).each(function(index, file){
+    //         data.files[index] = file;
+    //     });
+    // });
 
     // Load existing files:
     $('#fileupload').addClass('fileupload-processing');
