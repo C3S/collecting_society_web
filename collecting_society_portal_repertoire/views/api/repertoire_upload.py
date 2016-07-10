@@ -6,6 +6,7 @@ import shutil
 import logging
 import magic
 from cgi import FieldStorage
+from pydub import AudioSegment
 
 from webob.byterange import ContentRange
 from pyramid.response import FileResponse
@@ -33,9 +34,19 @@ log = logging.getLogger(__name__)
 mime = magic.Magic(mime=True)
 
 _prefix = 'repertoire'
+
 _stage_part = 'part'
 _stage_complete = 'complete'
 _stage_preview = 'preview'
+
+_preview_format = 'ogg'
+_preview_quality = '0'
+_preview_bitrate = '16000'
+_preview_fadein = 1000
+_preview_fadeout = 1000
+_preview_segment_duration = 8000
+_preview_segment_crossfade = 2000
+_preview_segment_interval = 60000
 
 
 # --- methods -----------------------------------------------------------------
@@ -90,12 +101,14 @@ def get_info(request, filename):
     if not (complete or resumable):
         return {
             'name': filename,
+            'complete': False,
             'resumable': False,
             'error': _(u'File not found')
         }
 
     return {
         'name': filename,
+        'complete': complete,
         'resumable': resumable,
         'size': os.path.getsize(file),
         'type': mime.from_file(file),
@@ -139,7 +152,7 @@ def save_file(descriptor, file):
     return os.path.isfile(file)
 
 
-def save_chunk(descriptor, file, tmpfile, contentrange):
+def save_chunk(descriptor, file, part, contentrange):
 
     start, stop, length = contentrange
 
@@ -149,28 +162,74 @@ def save_chunk(descriptor, file, tmpfile, contentrange):
 
     # check chunk range
     size = 0
-    if os.path.isfile(tmpfile):
-        size = os.path.getsize(tmpfile)
+    if os.path.isfile(part):
+        size = os.path.getsize(part)
     if start != size:
         return False
 
     # save chunk
     try:
-        with open(tmpfile, 'a') as f:
+        with open(part, 'a') as f:
             shutil.copyfileobj(descriptor, f)
     except IOError:
         raise HTTPInternalServerError
 
-    # move tmpfile to file after last chunk
-    if os.path.getsize(tmpfile) == length:
+    # move part to file after last chunk
+    if os.path.getsize(part) == length:
         try:
-            shutil.copyfile(tmpfile, file)
-            os.remove(tmpfile)
+            shutil.copyfile(part, file)
+            os.remove(part)
             return (os.path.getsize(file) == length)
         except IOError:
             raise HTTPInternalServerError
 
-    return (os.path.getsize(tmpfile) == stop)
+    return (os.path.getsize(part) == stop)
+
+
+def get_segments(audio):
+    _total = len(audio)
+    _segment = _preview_segment_duration
+    _interval = _preview_segment_interval
+    if _segment >= _total:
+        yield audio
+    start = 0
+    end = _segment
+    while end < _total:
+        yield audio[start:end]
+        start = end + _interval + 1
+        end = start + _segment
+
+
+def create_preview(file_complete, file_preview):
+
+    # mono
+    audio = AudioSegment.from_file(file_complete)
+    audio = audio.set_channels(1)
+
+    # mix segments
+    preview = None
+    for segment in get_segments(audio):
+        preview = segment if not preview else preview.append(
+            segment, crossfade=_preview_segment_crossfade
+        )
+
+    # fadein/out
+    preview = preview.fade_in(_preview_fadein).fade_out(_preview_fadeout)
+
+    # export
+    try:
+        preview.export(
+            file_preview,
+            format=_preview_format,
+            parameters=[
+                "-aq", _preview_quality,
+                "-ar", _preview_bitrate
+            ]
+        )
+    except:
+        raise HTTPInternalServerError
+
+    return os.path.isfile(file_preview)
 
 
 def delete_file(file):
@@ -224,6 +283,7 @@ def post_repertoire_upload(request):
         filename = os.path.basename(fieldStorage.filename)
         file_part = get_path(request, _stage_part, filename)
         file_complete = get_path(request, _stage_complete, filename)
+        file_preview = get_path(request, _stage_preview, filename)
 
         # file exists
         if os.path.isfile(file_complete):
@@ -240,7 +300,7 @@ def post_repertoire_upload(request):
             ok = save_chunk(
                 descriptor=fieldStorage.file,
                 file=file_complete,
-                tmpfile=file_part,
+                part=file_part,
                 contentrange=contentrange
             )
             if not ok:
@@ -255,7 +315,23 @@ def post_repertoire_upload(request):
             if not ok:
                 raise HTTPInternalServerError
 
+        # create preview
         info = get_info(request, filename)
+        log.debug(
+            (
+                "info: %s\n"
+            ) % (
+                info
+            )
+        )
+        if info['complete']:
+            ok = create_preview(
+                file_complete=file_complete,
+                file_preview=file_preview
+            )
+            if not ok:
+                raise HTTPInternalServerError
+
         files.append(info)
     return {'files': files}
 
@@ -333,7 +409,7 @@ def options_repertoire_preview(request):
     validators=(authenticate))
 def get_repertoire_preview(request):
     filename = request.matchdict['filename']
-    file = get_path(request, _stage_complete, filename)
+    file = get_path(request, _stage_preview, filename)
     if not os.path.isfile(file):
         raise HTTPNotFound()
     return FileResponse(
