@@ -56,11 +56,12 @@
                 <td>
                     <span class="preview"></span>
 
-                    <p class="name">{%=file.name%}</p>
-                    <strong class="error text-danger"></strong>
+                    <div class="name">{%=file.name%}</div>
 
                     <p class="size" style="float:left;margin-right:10px;">Processing...</p>
                     <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+
+                    <strong class="error text-danger"></strong>
                 </td>
                 <td>
                     {% if (!i && !o.options.autoUpload) { %}
@@ -89,14 +90,17 @@
                         {% } %}
                     </span>
 
-                    <p class="name">
+                    <div class="name">
                         <span>{%=file.name%}</span>
-                    </p>
+                    </div>
+
+                    <span class="size">{%=o.formatFileSize(file.size)%}</span>
+
+                    <span class="duration">{%=file.duration%}</span>
+
                     {% if (file.error) { %}
                         <div><span class="label label-danger">Error</span> {%=file.error%}</div>
                     {% } %}
-
-                    <span class="size">{%=o.formatFileSize(file.size)%}</span>
                 </td>
                 <td>
                     {% if (!file.error) { %}

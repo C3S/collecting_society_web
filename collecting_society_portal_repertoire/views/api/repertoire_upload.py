@@ -125,6 +125,9 @@ def get_info(request, filename):
         'complete': complete,
         'resumable': resumable,
         'size': os.path.getsize(file),
+        'duration': "{:.0f}:{:.0f}".format(
+            *divmod(AudioSegment.from_file(file).duration_seconds, 60)
+        ),
         'type': mime.from_file(file),
         'previewUrl': get_url(
             url=request.registry.settings['api.c3supload.url'],
