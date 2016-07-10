@@ -10,7 +10,11 @@ from pydub import AudioSegment
 
 from webob.byterange import ContentRange
 from pyramid.response import FileResponse
-from pyramid.security import NO_PERMISSION_REQUIRED
+from pyramid.security import (
+    Allow,
+    DENY_ALL,
+    NO_PERMISSION_REQUIRED
+)
 from pyramid.httpexceptions import (
     HTTPUnauthorized,
     HTTPForbidden,
@@ -67,9 +71,19 @@ def get_cors_headers():
     ])
 
 
-def authenticate(request):
+def get_acl(request):
+    # no webuser logged in
     if not request.user:
-        raise HTTPForbidden
+        return [DENY_ALL]
+    # webuser logged in
+    return [
+        (
+            Allow,
+            request.unauthenticated_userid,
+            ('create', 'read', 'update', 'delete')
+        ),
+        DENY_ALL
+    ]
 
 
 def get_url(url, version, action, filename):
@@ -253,20 +267,23 @@ repertoire_upload = Service(
     name=_prefix + 'upload',
     path=_prefix + '/v1/upload',
     description="uploads repertoire files",
-    permission=NO_PERMISSION_REQUIRED,
-    cors_policy=get_cors_policy()
+    cors_policy=get_cors_policy(),
+    acl=get_acl
 )
 
 
-@repertoire_upload.options()
+@repertoire_upload.options(
+    permission=NO_PERMISSION_REQUIRED)
 def options_repertoire_upload(request):
     response = request.response
+    # cors headers explicitly not set for OPTIONS by cornice,
+    # but required for the jQuery File Upload plugin
     response.headers['Access-Control-Allow-Headers'] = get_cors_headers()
     return response
 
 
 @repertoire_upload.post(
-    validators=(authenticate))
+    permission='create')
 def post_repertoire_upload(request):
 
     # create paths
@@ -342,18 +359,19 @@ repertoire_list = Service(
     name=_prefix + 'list',
     path=_prefix + '/v1/list',
     description="lists repertoire files",
-    permission=NO_PERMISSION_REQUIRED,
-    cors_policy=get_cors_policy()
+    cors_policy=get_cors_policy(),
+    acl=get_acl
 )
 
 
-@repertoire_list.options()
+@repertoire_list.options(
+    permission=NO_PERMISSION_REQUIRED)
 def options_repertoire_list(request):
     return
 
 
 @repertoire_list.get(
-    validators=(authenticate))
+    permission='read')
 def get_repertoire_list(request):
     files = []
     path_complete = get_path(request, _stage_complete)
@@ -372,18 +390,19 @@ repertoire_show = Service(
     name=_prefix + 'show',
     path=_prefix + '/v1/show/{filename}',
     description="shows uploaded repertoire files",
-    permission=NO_PERMISSION_REQUIRED,
-    cors_policy=get_cors_policy()
+    cors_policy=get_cors_policy(),
+    acl=get_acl
 )
 
 
-@repertoire_show.options()
+@repertoire_show.options(
+    permission=NO_PERMISSION_REQUIRED)
 def options_repertoire_show(request):
     return
 
 
 @repertoire_show.get(
-    validators=(authenticate))
+    permission='read')
 def get_repertoire_show(request):
     filename = request.matchdict['filename']
     return get_info(request, filename)
@@ -395,18 +414,19 @@ repertoire_preview = Service(
     name=_prefix + 'preview',
     path=_prefix + '/v1/preview/{filename}',
     description="previewd the uploaded repertoire files",
-    permission=NO_PERMISSION_REQUIRED,
-    cors_policy=get_cors_policy()
+    cors_policy=get_cors_policy(),
+    acl=get_acl
 )
 
 
-@repertoire_preview.options()
+@repertoire_preview.options(
+    permission=NO_PERMISSION_REQUIRED)
 def options_repertoire_preview(request):
     return
 
 
 @repertoire_preview.get(
-    validators=(authenticate))
+    permission='read')
 def get_repertoire_preview(request):
     filename = request.matchdict['filename']
     file = get_path(request, _stage_preview, filename)
@@ -425,18 +445,19 @@ repertoire_delete = Service(
     name=_prefix + 'delete',
     path=_prefix + '/v1/delete/{filename}',
     description="deletes uploaded repertoire files",
-    permission=NO_PERMISSION_REQUIRED,
-    cors_policy=get_cors_policy()
+    cors_policy=get_cors_policy(),
+    acl=get_acl
 )
 
 
-@repertoire_delete.options()
+@repertoire_delete.options(
+    permission=NO_PERMISSION_REQUIRED)
 def options_repertoire_delete(request):
     return
 
 
 @repertoire_delete.get(
-    validators=(authenticate))
+    permission='delete')
 def get_repertoire_delete(request):
     filename = request.matchdict['filename']
     for stage in [_stage_part, _stage_complete, _stage_preview]:
