@@ -48,7 +48,7 @@ class RepertoireViews(ViewBase):
     def upload(self):
         settings = self.request.registry.settings
         return {
-            'extensions': '|'.join(lossless_audio_extensions()),
+            'extensions': lossless_audio_extensions(),
             'url': ''.join([
                 settings['api.c3supload.url'], '/',
                 settings['api.c3supload.version']

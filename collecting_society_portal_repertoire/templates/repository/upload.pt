@@ -9,7 +9,7 @@
             <!-- Data container -->
             <div id="data"
                  data-url="${url}"
-                 data-extensions="${extensions}"
+                 data-extensions="${'\|'.join(extensions)}"
                  style="display:none;"></div>
 
             <!-- The file upload form used as target for the file upload widget -->
@@ -18,24 +18,27 @@
                 <noscript><input type="hidden" name="redirect" value="${url}/upload"></noscript>
                 <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
                 <div class="fileupload-buttonbar">
-                    <div class="">
+                    <div>
                         <!-- The fileinput-button span is used to style the file input field as button -->
                         <span class="btn btn-success fileinput-button">
                             <i class="glyphicon glyphicon-plus"></i>
-                            <span>Add files...</span>
+                            <span i18n:translate="">Add files...</span>
                             <input type="file" name="files[]" multiple>
                         </span>
                         <button type="submit" class="btn btn-primary start">
                             <i class="glyphicon glyphicon-upload"></i>
-                            <span>Start upload</span>
+                            <span i18n:translate="">Start upload</span>
                         </button>
                         <button type="reset" class="btn btn-warning cancel">
                             <i class="glyphicon glyphicon-ban-circle"></i>
-                            <span>Cancel upload</span>
+                            <span i18n:translate="">Cancel upload</span>
                         </button>
                         <!-- The global file processing state -->
                         <span class="fileupload-process"></span>
                     </div>
+                    <p>
+                        <span tal:repeat="extension extensions" class="label label-default">${extension}</span>
+                    </p>
                 </div>
                 <!-- The global progress state -->
                 <div class="fileupload-progress fade">
@@ -46,6 +49,7 @@
                     <!-- The extended global progress state -->
                     <div class="progress-extended">&nbsp;</div>
                 </div>
+                <br />
                 <!-- The table listing the files available for upload/download -->
                 <div class="table-responsiv">
                     <table role="presentation" class="table table-condensed">
@@ -64,7 +68,7 @@
 
                     <div class="name">{%=file.name%}</div>
 
-                    <p class="size" style="float:left;margin-right:10px;">Processing...</p>
+                    <p i18n:translate="" class="size" style="float:left;margin-right:10px;">Processing...</p>
                     <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
 
                     <strong class="error text-danger"></strong>
@@ -105,7 +109,7 @@
                     <span class="size">{%=o.formatFileSize(file.size)%}</span>
 
                     {% if (file.error) { %}
-                        <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+                        <div><span i18n:translate="" class="label label-danger">Error</span> {%=file.error%}</div>
                     {% } %}
                 </td>
                 <td>

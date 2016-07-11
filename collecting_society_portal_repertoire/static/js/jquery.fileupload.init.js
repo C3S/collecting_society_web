@@ -3,7 +3,7 @@ $(function () {
 
     var data = $('#data');
     var apiUrl = data.data('url');
-    var extensions = data.data('extensions');
+    var extensions = data.data('extensions').split(',');
     var lastResultFiles = [];
     var errorFiles = [];
 
@@ -15,7 +15,7 @@ $(function () {
         downloadTemplateId: "template-download",
         method: 'POST',
         dataType: 'json',
-        acceptFileTypes: new RegExp("(\.|\/)(" + extensions + ")$", "i"),
+        acceptFileTypes: new RegExp("(\.|\/)("+extensions.join('|')+")$", "i"),
         maxFileSize: 1000000000, // 1 GB
         maxChunkSize:   1000000, // 1 MB
         // resume upload
