@@ -32,19 +32,23 @@ _lossless_audio_formats = {
     # 'WavPack': {
     #     'ext': ['wv'],
     #     'mime': [
-    #         'audio/x-wavpack'
+    #         'audio/x-wavpack',
+    #         'application/octet-stream'
     #     ]
     # },
     # 'True Audio': {
     #     'ext': ['tta'],
     #     'mime': [
-    #         'audio/tta',
-    #         'audio/x-tta'
+    #         'audio/tta', 'audio/x-tta',
+    #         'application/octet-stream'
     #     ]
     # },
     # 'Shorten': {
     #     'ext': ['shn'],
-    #     'mime': ['application/x-shorten']
+    #     'mime': [
+    #         'application/x-shorten',
+    #         'application/octet-stream'
+    #     ]
     # }
 }
 

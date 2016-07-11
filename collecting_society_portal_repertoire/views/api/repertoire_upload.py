@@ -57,7 +57,7 @@ _preview_fadein = 1000
 _preview_fadeout = 1000
 _preview_segment_duration = 8000
 _preview_segment_crossfade = 2000
-_preview_segment_interval = 60000
+_preview_segment_interval = 54000
 
 
 # --- methods -----------------------------------------------------------------
@@ -132,14 +132,20 @@ def get_info(request, filename):
     if extension:
         extension = extension[1:]
 
+    # load audio for properties
+    audio = AudioSegment.from_file(file)
+
     return {
         'name': filename,
         'extension': extension,
         'type': mime.from_file(file),
         'size': os.path.getsize(file),
         'duration': "{:.0f}:{:02.0f}".format(
-            *divmod(AudioSegment.from_file(file).duration_seconds, 60)
+            *divmod(audio.duration_seconds, 60)
         ),
+        'channels': 'mono' if audio.channels == 1 else 'stereo',
+        'sample_width': '{:d} bit'.format(audio.sample_width * 8),
+        'frame_rate': '{:d} Hz'.format(audio.frame_rate),
         'complete': complete,
         'resumable': resumable,
         'previewUrl': get_url(
@@ -363,6 +369,13 @@ def post_repertoire_upload(request):
 
         # get info from file
         info = get_info(request, filename)
+        log.debug(
+            (
+                "uploaded file info: %s\n"
+            ) % (
+                info
+            )
+        )
 
         # check mime type (after saving the file due to chunking)
         error = validate_file(request, info)

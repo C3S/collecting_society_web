@@ -104,9 +104,23 @@
                         <span>{%=file.name%}</span>
                     </div>
 
-                    <span class="duration">{%=file.duration%}</span>
-
-                    <span class="size">{%=o.formatFileSize(file.size)%}</span>
+                    <div class="cs-audio-properties">
+                        {% if (file.duration) { %}
+                            <span class="duration">{%=file.duration%}</span>
+                        {% } %}
+                        {% if (file.channels) { %}
+                            <span class="channels">{%=file.channels%}</span>
+                        {% } %}
+                        {% if (file.sample_width) { %}
+                            <span class="sample_width">{%=file.sample_width%}</span>
+                        {% } %}
+                        {% if (file.frame_rate) { %}
+                            <span class="frame_rate">{%=file.frame_rate%}</span>
+                        {% } %}
+                        {% if (file.size) { %}
+                            <span class="size">{%=o.formatFileSize(file.size)%}</span>
+                        {% } %}
+                    <div>
 
                     {% if (file.error) { %}
                         <div><span i18n:translate="" class="label label-danger">Error</span> {%=file.error%}</div>

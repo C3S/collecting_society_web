@@ -67,7 +67,8 @@ a { outline:none!important; }
 
 .cs-content-middle { background-color:#fff; }
 
-.fileupload-progress .progress { margin-bottom:5px; }
+.cs-content-middle .fileupload-progress .progress { margin-bottom:5px; }
+.cs-content-middle .cs-audio-properties span:after { color:#ddd; content: " | "; }
 
 .cs-artist-img { max-width: 200px }
 
