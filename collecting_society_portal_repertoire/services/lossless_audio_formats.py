@@ -42,10 +42,10 @@ _lossless_audio_formats = {
     #         'audio/x-tta'
     #     ]
     # },
-    'Shorten': {
-        'ext': ['shn'],
-        'mime': ['application/x-shorten']
-    }
+    # 'Shorten': {
+    #     'ext': ['shn'],
+    #     'mime': ['application/x-shorten']
+    # }
 }
 
 
