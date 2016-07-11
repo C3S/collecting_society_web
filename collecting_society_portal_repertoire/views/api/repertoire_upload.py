@@ -369,13 +369,6 @@ def post_repertoire_upload(request):
 
         # get info from file
         info = get_info(request, filename)
-        log.debug(
-            (
-                "uploaded file info: %s\n"
-            ) % (
-                info
-            )
-        )
 
         # check mime type (after saving the file due to chunking)
         error = validate_file(request, info)
@@ -403,14 +396,9 @@ def post_repertoire_upload(request):
             if not ok:
                 raise HTTPInternalServerError
 
+        log.info("{} uploaded file {}\n".format(request.user, info))
         files.append(info)
-    log.debug(
-        (
-            "files: %s\n"
-        ) % (
-            files
-        )
-    )
+
     return {'files': files}
 
 
@@ -521,6 +509,8 @@ def options_repertoire_delete(request):
     permission='delete')
 def get_repertoire_delete(request):
     filename = request.matchdict['filename']
+    info = get_info(request, filename)
+    log.info("{} deleted file {}\n".format(request.user, info))
     for stage in [_stage_part, _stage_complete, _stage_preview]:
         file = get_path(request, stage, filename)
         ok = delete_file(file)
