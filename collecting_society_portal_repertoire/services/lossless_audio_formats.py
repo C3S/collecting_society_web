@@ -29,12 +29,12 @@ _lossless_audio_formats = {
             'audio/x-monkeys-audio', 'audio/x-ape'
         ]
     },
-    'WavPack': {
-        'ext': ['wv'],
-        'mime': [
-            'audio/x-wavpack'
-        ]
-    },
+    # 'WavPack': {
+    #     'ext': ['wv'],
+    #     'mime': [
+    #         'audio/x-wavpack'
+    #     ]
+    # },
     'True Audio': {
         'ext': ['tta'],
         'mime': [
