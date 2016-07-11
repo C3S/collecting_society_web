@@ -18,6 +18,7 @@ $(function () {
         acceptFileTypes: new RegExp("(\.|\/)("+extensions.join('|')+")$", "i"),
         maxFileSize: 1000000000, // 1 GB
         maxChunkSize:   1000000, // 1 MB
+        prependFiles: true,
         // resume upload
         add: function (e, data) {
             var that = this;
