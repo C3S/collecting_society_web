@@ -238,13 +238,14 @@ def get_segments(audio):
     _segment = _preview_segment_duration
     _interval = _preview_segment_interval
     if _segment >= _total:
-        return audio
-    start = 0
-    end = _segment
-    while end < _total:
-        yield audio[start:end]
-        start = end + _interval + 1
-        end = start + _segment
+        yield audio
+    else:
+        start = 0
+        end = _segment
+        while end < _total:
+            yield audio[start:end]
+            start = end + _interval + 1
+            end = start + _segment
 
 
 def create_preview(file_complete, file_preview):
