@@ -238,7 +238,7 @@ def get_segments(audio):
     _segment = _preview_segment_duration
     _interval = _preview_segment_interval
     if _segment >= _total:
-        yield audio
+        return audio
     start = 0
     end = _segment
     while end < _total:
