@@ -26,7 +26,9 @@ from collecting_society_portal.resources import (
 
 from collecting_society_portal_creative.resources import (
     ArtistResource,
-    AddArtistResource,
+    SoloArtistResource,
+    GroupArtistResource,
+    ReleaseResource,
     CreationResource
 )
 
@@ -58,9 +60,12 @@ def web_resources(config):
         None
     '''
     BackendResource.add_child(RepertoireResource)
-    RepertoireResource.add_child(ArtistResource)
-    RepertoireResource.add_child(CreationResource)
     RepertoireResource.add_child(UploadResource)
+    RepertoireResource.add_child(ArtistResource)
+    RepertoireResource.add_child(ReleaseResource)
+    RepertoireResource.add_child(CreationResource)
+    ArtistResource.add_child(SoloArtistResource)
+    ArtistResource.add_child(GroupArtistResource)
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
 
@@ -242,19 +247,29 @@ def web_registry(config):
                 )
             },
             {
-                'name': _(u'Artists'),
+                'name': _(u'Solo Artists'),
                 'url': self.request.resource_path(
-                    ArtistResource(self.request), ''
+                    SoloArtistResource(self.request), ''
                 ),
                 'icon': self.request.static_path(
                     'collecting_society_portal_repertoire:'
-                    'static/img/element-icon-artists.png'
+                    'static/img/element-icon-soloartists.png'
+                )
+            },
+            {
+                'name': _(u'Group Artists'),
+                'url': self.request.resource_path(
+                    GroupArtistResource(self.request), ''
+                ),
+                'icon': self.request.static_path(
+                    'collecting_society_portal_repertoire:'
+                    'static/img/element-icon-groupartists.png'
                 )
             },
             {
                 'name': _(u'Releases'),
                 'url': self.request.resource_path(
-                    CreationResource(self.request), ''
+                    ReleaseResource(self.request), ''
                 ),
                 'icon': self.request.static_path(
                     'collecting_society_portal_repertoire:'
