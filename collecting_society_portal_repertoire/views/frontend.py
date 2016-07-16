@@ -54,7 +54,7 @@ class PagePortalViews(ViewBase):
 
     @view_config(
         name='',
-        renderer='../templates/page/home.pt')
+        renderer='../templates/frontend/home.pt')
     def home(self):
         self.register_form(LoginWebuser)
         self.register_form(RegisterWebuser)

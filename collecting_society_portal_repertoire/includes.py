@@ -20,7 +20,7 @@ from collecting_society_portal.views.widgets import news_widget
 from collecting_society_portal.resources import (
     FrontendResource,
     BackendResource,
-    NewsResource,
+    ProfileResource,
     DebugResource
 )
 
@@ -59,6 +59,8 @@ def web_resources(config):
     Returns:
         None
     '''
+    BackendResource.add_child(ProfileResource)
+
     BackendResource.add_child(RepertoireResource)
     RepertoireResource.add_child(UploadResource)
     RepertoireResource.add_child(ArtistResource)
