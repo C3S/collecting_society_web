@@ -32,6 +32,30 @@ class WebUserViews(ViewBase):
         return self.redirect(RepertoireResource)
 
     @view_config(
+        name='help',
+        renderer='../templates/backend/help.pt',
+        permission='read'
+    )
+    def help(self):
+        return {}
+
+    @view_config(
+        name='contact',
+        renderer='../templates/backend/contact.pt',
+        permission='read'
+    )
+    def contact(self):
+        return {}
+
+    @view_config(
+        name='terms',
+        renderer='../templates/backend/terms.pt',
+        permission='read'
+    )
+    def terms(self):
+        return {}
+
+    @view_config(
         name='logout',
         permission='read'
     )

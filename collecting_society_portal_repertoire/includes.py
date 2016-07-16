@@ -216,16 +216,6 @@ def web_registry(config):
                 )
             }
         ]
-        # widgets content-right
-        reg['widgets']['content-right'] = [
-            # news_widget
-        ]
-        return reg
-
-    @RepertoireResource.extend_registry
-    def repertoire(self):
-        reg = self.dict()
-
         # main menue
         reg['menues']['main'] = [
             {
@@ -289,7 +279,16 @@ def web_registry(config):
                 )
             }
         ]
+        # widgets content-right
+        reg['widgets']['content-right'] = [
+            # news_widget
+        ]
         return reg
+
+    # @RepertoireResource.extend_registry
+    # def repertoire(self):
+    #     reg = self.dict()
+    #     return reg
 
     @UploadResource.extend_registry
     def upload(self):
