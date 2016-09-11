@@ -5,6 +5,9 @@ import os
 import shutil
 import logging
 import magic
+import hashlib
+import uuid
+from decimal import Decimal
 from cgi import FieldStorage
 from pydub import AudioSegment
 
@@ -31,6 +34,9 @@ from colander import (
     Email
 )
 
+from collecting_society_portal.models import Tdb, WebUser
+from collecting_society_portal_creative.models import Content
+
 from ...services import _
 from ...services.lossless_audio_formats import (
     lossless_audio_extensions,
@@ -46,9 +52,9 @@ _prefix = 'repertoire'
 
 # --- configuration -----------------------------------------------------------
 
-_stage_part = 'part'
-_stage_complete = 'complete'
-_stage_preview = 'preview'
+_path_temporary = 'temporary'
+_path_complete = 'complete'
+_path_preview = 'preview'
 
 _preview_format = 'ogg'
 _preview_quality = '0'
@@ -93,86 +99,46 @@ def get_acl(request):
     ]
 
 
-def get_url(url, version, action, filename):
+def get_url(url, version, action, content_id):
     if url.endswith('/'):
         url = url[:-1]
-    return '/'.join([url, version, action, filename])
+    return '/'.join([str(url), str(version), str(action), str(content_id)])
 
 
-def get_path(request, stage=_stage_complete, filename=None):
-    base = request.registry.settings['api.c3supload.filepath']
-    webuser = str(request.user.id)
-    if filename:
-        return os.path.join(base, webuser, stage, filename)
-    return os.path.join(base, webuser, stage)
+def get_path(request, directory, filename=None):
+    base_directory = request.registry.settings['api.c3supload.filepath']
+    webuser_directory = str(request.user.id)
+    if not filename:
+        return os.path.join(base_directory, directory, webuser_directory)
+    return os.path.join(base_directory, directory, webuser_directory, filename)
 
 
-def get_info(request, filename):
-
-    # get file paths
-    file_part = get_path(request, _stage_part, filename)
-    file_complete = get_path(request, _stage_complete, filename)
-
-    # get status
-    complete = os.path.isfile(file_complete)
-    resumable = not complete and os.path.isfile(file_part)
-    file = file_part if resumable else file_complete
-
-    # file not found
-    if not (complete or resumable):
-        return {
-            'name': filename,
-            'complete': False,
-            'resumable': False,
-            'error': _(u'File not found')
-        }
-
-    # extension
-    extension = os.path.splitext(filename)[1]
-    if extension:
-        extension = extension[1:]
-
-    # load audio for properties
-    audio = AudioSegment.from_file(file)
-
+def get_content_info(request, content):
     return {
-        'name': filename,
-        'extension': extension,
-        'type': mime.from_file(file),
-        'size': os.path.getsize(file),
+        'name': content.name,
+        'size': content.size,
+        'extension': content.extension,
+        'type': content.mime_type,
         'duration': "{:.0f}:{:02.0f}".format(
-            *divmod(audio.duration_seconds, 60)
+            *divmod(int(content.length), 60)
         ),
-        'channels': 'mono' if audio.channels == 1 else 'stereo',
-        'sample_width': '{:d} bit'.format(audio.sample_width * 8),
-        'frame_rate': '{:d} Hz'.format(audio.frame_rate),
-        'complete': complete,
-        'resumable': resumable,
+        'channels': 'mono' if content.channels == 1 else 'stereo',
+        'sample_width': '{:d} bit'.format(content.sample_width),
+        'frame_rate': '{:d} Hz'.format(content.sample_rate),
         'previewUrl': get_url(
             url=request.registry.settings['api.c3supload.url'],
             version=request.registry.settings['api.c3supload.version'],
             action='preview',
-            filename=filename
+            content_id=content.id
         ),
         'deleteUrl': get_url(
             url=request.registry.settings['api.c3supload.url'],
             version=request.registry.settings['api.c3supload.version'],
             action='delete',
-            filename=filename
+            content_id=content.id
         ),
         'deleteType': 'GET'
     }
-
-
-def validate_file(request, info):
-
-    # check filetype
-    if info['extension'] not in lossless_audio_extensions():
-        return _(u'Filetype not allowed.')
-
-    # check mimetype
-    if info['type'] not in lossless_audio_mimetypes():
-        return _(u'Mimetype not allowed.')
 
 
 def create_path(path):
@@ -183,54 +149,80 @@ def create_path(path):
     return os.path.exists(path)
 
 
-def save_file(descriptor, file):
-
+def delete_file(absolute_path):
     # check file
-    if os.path.isfile(file):
-        return False
-
-    # save file
+    if not os.path.isfile(absolute_path):
+        return True
+    # delete file
     try:
-        with open(file, 'w') as f:
+        os.remove(absolute_path)
+    except IOError:
+        pass
+    return not os.path.isfile(absolute_path)
+
+
+def validate_upload(filename, absolute_path):
+
+    # check filetype
+    extension = os.path.splitext(filename)[1]
+    if extension:
+        extension = extension[1:]
+    if extension not in lossless_audio_extensions():
+        return _(u'Filetype not allowed.')
+
+    # check mimetype
+    mimetype = mime.from_file(absolute_path)
+    if mimetype not in lossless_audio_mimetypes():
+        return _(u'Mimetype not allowed.')
+
+
+def save_upload_to_fs(descriptor, absolute_path, contentrange=None):
+
+    # chunked file
+    if contentrange:
+        start, stop, length = contentrange
+        complete = False
+        # check file
+        size = 0
+        if os.path.isfile(absolute_path):
+            size = os.path.getsize(absolute_path)
+            if stop == length:
+                complete = True
+        if start != size:
+            log.info(
+                (
+                    'Uploaderror: wrong chunkposition '
+                    '(file %s, start: %s, size: %s).'
+                ) % (
+                    absolute_path, start, size
+                )
+            )
+            return (False, None)
+    # whole file
+    else:
+        complete = True
+        # check file
+        if os.path.isfile(absolute_path):
+            log.info(
+                (
+                    'Uploaderror: file already exists (%s).'
+                ) % (
+                    absolute_path
+                )
+            )
+            return (False, None)
+
+    # save
+    try:
+        with open(absolute_path, 'a') as f:
             shutil.copyfileobj(descriptor, f)
     except IOError:
         raise HTTPInternalServerError
 
-    return os.path.isfile(file)
-
-
-def save_chunk(descriptor, file, part, contentrange):
-
-    start, stop, length = contentrange
-
-    # check file
-    if os.path.isfile(file):
-        return False
-
-    # check chunk range
-    size = 0
-    if os.path.isfile(part):
-        size = os.path.getsize(part)
-    if start != size:
-        return False
-
-    # save chunk
-    try:
-        with open(part, 'a') as f:
-            shutil.copyfileobj(descriptor, f)
-    except IOError:
-        raise HTTPInternalServerError
-
-    # move part to file after last chunk
-    if os.path.getsize(part) == length:
-        try:
-            shutil.copyfile(part, file)
-            os.remove(part)
-            return (os.path.getsize(file) == length)
-        except IOError:
-            raise HTTPInternalServerError
-
-    return (os.path.getsize(part) == stop)
+    return (
+        os.path.getsize(absolute_path) == stop,
+        complete
+    )
 
 
 def get_segments(audio):
@@ -248,17 +240,14 @@ def get_segments(audio):
             end = start + _segment
 
 
-def create_preview(file_complete, file_preview):
-
-    # load audio file
-    audio = AudioSegment.from_file(file_complete)
+def create_preview(audio, preview_path):
 
     # convert to mono
-    audio = audio.set_channels(1)
+    mono = audio.set_channels(1)
 
     # mix segments
     preview = None
-    for segment in get_segments(audio):
+    for segment in get_segments(mono):
         preview = segment if not preview else preview.append(
             segment, crossfade=_preview_segment_crossfade
         )
@@ -269,7 +258,7 @@ def create_preview(file_complete, file_preview):
     # export
     try:
         preview.export(
-            file_preview,
+            preview_path,
             format=_preview_format,
             parameters=[
                 "-aq", _preview_quality,
@@ -279,22 +268,68 @@ def create_preview(file_complete, file_preview):
     except:
         raise HTTPInternalServerError
 
-    return os.path.isfile(file_preview)
+    return os.path.isfile(preview_path)
 
 
-def delete_file(file):
+def save_upload_to_db(request, filename, temporary_path):
 
-    # check file
-    if not os.path.isfile(file):
-        return True
+    # archive uuid
+    archive_info = os.path.join(
+        request.registry.settings['api.c3supload.filepath'],
+        _path_complete, 'archive.info'
+    )
+    if os.path.isfile(archive_info):
+        with open(archive_info, 'r') as f:
+            archive_uuid = f.read()
+    else:
+        while True:
+            archive_uuid = str(uuid.uuid4())
+            # ensure uniqueness
+            if not Content.search_by_uuid(archive_uuid):
+                break
+        with open(archive_info, 'a') as f:
+            f.write(archive_uuid)
 
-    # delete file
+    # content uuid
+    while True:
+        content_uuid = str(uuid.uuid4())
+        # ensure uniqueness
+        if not Content.search_by_uuid(content_uuid):
+            break
+
+    # move audio file to completed folder
+    completed_path = get_path(request, _path_complete, content_uuid)
+    preview_path = get_path(request, _path_preview, content_uuid)
     try:
-        os.remove(file)
+        shutil.copyfile(temporary_path, completed_path)
+        os.remove(temporary_path)
     except IOError:
-        pass
+        raise HTTPInternalServerError
 
-    return not os.path.isfile(file)
+    # create preview
+    audio = AudioSegment.from_file(completed_path)
+    create_preview(audio, preview_path)
+
+    # save to db
+    _content = {
+        'archive': archive_uuid,
+        'uuid': content_uuid,
+        'user': WebUser.current_user(request).id,
+        'name': str(filename),
+        'category': 'audio',
+        'mime_type': str(mime.from_file(completed_path)),
+        'length': "%.6f" % audio.duration_seconds,
+        'channels': int(audio.channels),
+        'sample_rate': int(audio.frame_rate),
+        'sample_width': int(audio.sample_width * 8),
+        'size': os.path.getsize(completed_path),
+        'path': completed_path,
+        'preview_path': preview_path
+    }
+    contents = Content.create([_content])
+    if not len(contents) == 1:
+        return False
+    return contents[0]
 
 
 # --- service: upload ---------------------------------------------------------
@@ -320,85 +355,61 @@ def options_repertoire_upload(request):
 
 @repertoire_upload.post(
     permission='create')
+@Tdb.transaction(readonly=False)
 def post_repertoire_upload(request):
 
     # create paths
-    for stage in [_stage_part, _stage_complete, _stage_preview]:
-        path = get_path(request, stage)
+    for subpath in [_path_temporary, _path_complete, _path_preview]:
+        path = get_path(request, subpath)
         if not os.path.exists(path):
             create_path(path)
 
     # upload files
     files = []
     for name, fieldStorage in request.POST.items():
+
+        # check fieldStorage
         if not isinstance(fieldStorage, FieldStorage):
             continue
+
+        # configure upload
         filename = os.path.basename(fieldStorage.filename)
-        file_part = get_path(request, _stage_part, filename)
-        file_complete = get_path(request, _stage_complete, filename)
-        file_preview = get_path(request, _stage_preview, filename)
-
-        # check file
-        if os.path.isfile(file_complete):
-            info = get_info(request, filename)
-            info.update({'error': _(u'File already exists.')})
-            files.append(info)
-            continue
-
-        # save chunk
+        filename_hash = hashlib.md5(filename).hexdigest()
+        absolute_path = get_path(request, _path_temporary, filename_hash)
         contentrange = ContentRange.parse(
             request.headers.get('Content-Range', None)
         )
-        if contentrange:
-            ok = save_chunk(
-                descriptor=fieldStorage.file,
-                file=file_complete,
-                part=file_part,
-                contentrange=contentrange
-            )
-            if not ok:
-                raise HTTPInternalServerError
 
-        # save whole file
-        else:
-            ok = save_file(
-                descriptor=fieldStorage.file,
-                file=file_complete
-            )
-            if not ok:
-                raise HTTPInternalServerError
-
-        # get info from file
-        info = get_info(request, filename)
-
-        # check mime type (after saving the file due to chunking)
-        error = validate_file(request, info)
-        if error:
-            # delete file again
-            # 2DO: prevent further chunks being sent by client on error.
-            # Manual errors dont abort uploads. Http errors abort all uploads.
-            if info['complete']:
-                for stage in [_stage_part, _stage_complete, _stage_preview]:
-                    file = get_path(request, stage, filename)
-                    ok = delete_file(file)
-                    if not ok:
-                        raise HTTPInternalServerError
-            # user feedback
-            info.update({'error': error})
-            files.append(info)
+        # save to filesystem (temporary folder)
+        ok, complete = save_upload_to_fs(
+            descriptor=fieldStorage.file,
+            absolute_path=absolute_path,
+            contentrange=contentrange
+        )
+        if not ok:
+            raise HTTPInternalServerError
+        if not complete:
+            files.append({
+                'name': fieldStorage.filename,
+                'size': os.path.getsize(absolute_path)
+            })
             continue
 
-        # create preview
-        if info['complete']:
-            ok = create_preview(
-                file_complete=file_complete,
-                file_preview=file_preview
-            )
-            if not ok:
-                raise HTTPInternalServerError
+        # validate file
+        error = validate_upload(filename, absolute_path)
+        if error:
+            delete_file(absolute_path)
+            files.append({
+                'name': fieldStorage.filename,
+                'error': error
+            })
+            continue
 
-        log.info("{} uploaded file {}\n".format(request.user, info))
-        files.append(info)
+        # save to database
+        content = save_upload_to_db(request, filename, absolute_path)
+        if not content:
+            raise HTTPInternalServerError
+        files.append(get_content_info(request, content))
 
     return {'files': files}
 
@@ -422,15 +433,13 @@ def options_repertoire_list(request):
 
 @repertoire_list.get(
     permission='read')
+@Tdb.transaction(readonly=False)
 def get_repertoire_list(request):
     files = []
-    path_complete = get_path(request, _stage_complete)
-    if not os.path.isdir(path_complete):
-        return {'files': []}
-    for filename in os.listdir(path_complete):
-        info = get_info(request, filename)
-        if info:
-            files.append(info)
+    contents = Content.current_orphans(request, 'audio')
+    if contents:
+        for content in contents:
+            files.append(get_content_info(request, content))
     return {'files': files}
 
 
@@ -439,7 +448,7 @@ def get_repertoire_list(request):
 repertoire_show = Service(
     name=_prefix + 'show',
     path=_prefix + '/v1/show/{filename}',
-    description="shows uploaded repertoire files",
+    description="checks partially uploaded files",
     cors_policy=get_cors_policy(),
     acl=get_acl
 )
@@ -453,16 +462,26 @@ def options_repertoire_show(request):
 
 @repertoire_show.get(
     permission='read')
+@Tdb.transaction(readonly=True)
 def get_repertoire_show(request):
     filename = request.matchdict['filename']
-    return get_info(request, filename)
+    if not filename:
+        return {}
+    filename_hash = hashlib.md5(filename).hexdigest()
+    absolute_path = get_path(request, _path_temporary, filename_hash)
+    if not os.path.isfile(absolute_path):
+        return {}
+    return {
+        'name': filename,
+        'size': os.path.getsize(absolute_path)
+    }
 
 
 # --- service: preview --------------------------------------------------------
 
 repertoire_preview = Service(
     name=_prefix + 'preview',
-    path=_prefix + '/v1/preview/{filename}',
+    path=_prefix + '/v1/preview/{id}',
     description="previewd the uploaded repertoire files",
     cors_policy=get_cors_policy(),
     acl=get_acl
@@ -477,15 +496,18 @@ def options_repertoire_preview(request):
 
 @repertoire_preview.get(
     permission='read')
+@Tdb.transaction(readonly=True)
 def get_repertoire_preview(request):
-    filename = request.matchdict['filename']
-    file = get_path(request, _stage_preview, filename)
-    if not os.path.isfile(file):
+    content = Content.search_by_id(request.matchdict['id'])
+    preview_path = content.preview_path
+    if not os.path.isfile(preview_path):
         raise HTTPNotFound()
+    if not content.user != WebUser.current_user:
+        raise HTTPForbidden()
     return FileResponse(
-        file,
+        preview_path,
         request=request,
-        content_type=mime.from_file(file)
+        content_type=str(content.mime_type)
     )
 
 
@@ -493,7 +515,7 @@ def get_repertoire_preview(request):
 
 repertoire_delete = Service(
     name=_prefix + 'delete',
-    path=_prefix + '/v1/delete/{filename}',
+    path=_prefix + '/v1/delete/{id}',
     description="deletes uploaded repertoire files",
     cors_policy=get_cors_policy(),
     acl=get_acl
@@ -508,13 +530,15 @@ def options_repertoire_delete(request):
 
 @repertoire_delete.get(
     permission='delete')
+@Tdb.transaction(readonly=False)
 def get_repertoire_delete(request):
-    filename = request.matchdict['filename']
-    info = get_info(request, filename)
-    log.info("{} deleted file {}\n".format(request.user, info))
-    for stage in [_stage_part, _stage_complete, _stage_preview]:
-        file = get_path(request, stage, filename)
-        ok = delete_file(file)
-        if not ok:
-            return {'files': [{filename: False}]}
-    return {'files': [{filename: True}]}
+    content_id = request.matchdict['id']
+    content = Content.search_by_id(content_id)
+    info = get_content_info(request, content)
+    log.info("{} deleted content {}\n".format(request.user, info))
+    # delete preview
+    name = content.name
+    delete_file(get_path(request, _path_preview, content.uuid))
+    # delete db
+    content.delete([content])
+    return {'files': [{name: True}]}

@@ -68,9 +68,14 @@ a { outline:none!important; }
 .cs-content-middle { background-color:#fff; }
 
 .cs-content-middle .fileupload-progress .progress { margin-bottom:5px; }
-.cs-content-middle .cs-audio-properties span:after { color:#ddd; content: " | "; }
+.cs-content-middle .cs-audio-properties > span:after { color:#ddd; content: " | "; }
 
 .cs-artist-img { max-width: 200px }
+
+.cs-content-middle .template-upload td { padding:10px 5px; }
+.cs-content-middle .template-upload .progress { margin-bottom:0; }
+.cs-content-middle .template-upload .size { margin-bottom:0; }
+.cs-content-middle .template-upload .name { font-weight:bold; }
 
 /* Content Right */
 
