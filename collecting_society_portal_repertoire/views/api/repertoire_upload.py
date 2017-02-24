@@ -312,6 +312,7 @@ def save_upload_to_db(request, filename, temporary_path):
 
     # save to db
     _content = {
+        'processing_state': "uploaded",
         'archive': archive_uuid,
         'uuid': content_uuid,
         'user': WebUser.current_user(request).id,
