@@ -80,6 +80,7 @@ a { outline:none!important; }
 /* Content Right */
 
 .cs-content-right { background-color:#fff; }
+.cs-backend-363 .cs-content-right { background-color:transparent; }
 
 .cs-widget-plugins .cs-widget-plugin-img { width:120px; }
 .cs-widget-todo-steps .cs-widget-todo-step-img { float:left; width:60px; margin:0 5px 5px 0; }
@@ -119,6 +120,8 @@ a { outline:none!important; }
     /* Content Middle */
 
     /* Content Right */
+
+    .cs-backend-363 .cs-content-right { background-color:#fff; }
     
 }
 
