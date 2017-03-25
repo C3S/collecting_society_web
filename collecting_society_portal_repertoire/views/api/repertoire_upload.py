@@ -7,7 +7,6 @@ import logging
 import magic
 import hashlib
 import uuid
-from decimal import Decimal
 from cgi import FieldStorage
 from pydub import AudioSegment
 
@@ -34,6 +33,7 @@ from colander import (
     Email
 )
 
+from collecting_society_portal.services import benchmark
 from collecting_society_portal.models import Tdb, WebUser
 from collecting_society_portal_creative.models import Content
 
@@ -307,8 +307,10 @@ def save_upload_to_db(request, filename, temporary_path):
         raise HTTPInternalServerError
 
     # create preview
-    audio = AudioSegment.from_file(completed_path)
-    create_preview(audio, preview_path)
+    with benchmark(request, name='preview', uid=filename,
+                   normalize=completed_path, scale=100*1024*1024):
+        audio = AudioSegment.from_file(completed_path)
+        create_preview(audio, preview_path)
 
     # save to db
     _content = {
@@ -375,7 +377,7 @@ def post_repertoire_upload(request):
 
         # configure upload
         filename = os.path.basename(fieldStorage.filename)
-        filename_hash = hashlib.md5(filename).hexdigest()
+        filename_hash = hashlib.sha256(filename).hexdigest()
         absolute_path = get_path(request, _path_temporary, filename_hash)
         contentrange = ContentRange.parse(
             request.headers.get('Content-Range', None)
@@ -387,7 +389,16 @@ def post_repertoire_upload(request):
             absolute_path=absolute_path,
             contentrange=contentrange
         )
+
+        # calculate sha256 checksum
+        with benchmark(request, name='checksum', uid=filename,
+                       normalize=fieldStorage.file, scale=100*1024*1024):
+            hashlib.sha256(fieldStorage.file.read())
+            fieldStorage.file.seek(0)
+
+        # proceeed
         if not ok:
+            delete_file(absolute_path)
             raise HTTPInternalServerError
         if not complete:
             files.append({
