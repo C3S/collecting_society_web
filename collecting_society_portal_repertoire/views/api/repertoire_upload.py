@@ -53,7 +53,8 @@ _prefix = 'repertoire'
 # --- configuration -----------------------------------------------------------
 
 _path_temporary = 'temporary'
-_path_complete = 'complete'
+_path_uploaded = 'uploaded'
+_path_rejected = 'rejected'
 _path_preview = 'preview'
 
 _preview_format = 'ogg'
@@ -276,7 +277,7 @@ def save_upload_to_db(request, filename, temporary_path):
     # archive uuid
     archive_info = os.path.join(
         request.registry.settings['api.c3supload.filepath'],
-        _path_complete, 'archive.info'
+        _path_uploaded, 'archive.info'
     )
     if os.path.isfile(archive_info):
         with open(archive_info, 'r') as f:
@@ -298,7 +299,7 @@ def save_upload_to_db(request, filename, temporary_path):
             break
 
     # move audio file to completed folder
-    completed_path = get_path(request, _path_complete, content_uuid)
+    completed_path = get_path(request, _path_uploaded, content_uuid)
     preview_path = get_path(request, _path_preview, content_uuid)
     try:
         shutil.copyfile(temporary_path, completed_path)
@@ -362,7 +363,8 @@ def options_repertoire_upload(request):
 def post_repertoire_upload(request):
 
     # create paths
-    for subpath in [_path_temporary, _path_complete, _path_preview]:
+    for subpath in [_path_temporary, _path_uploaded, _path_preview,
+                    _path_rejected]:
         path = get_path(request, subpath)
         if not os.path.exists(path):
             create_path(path)
