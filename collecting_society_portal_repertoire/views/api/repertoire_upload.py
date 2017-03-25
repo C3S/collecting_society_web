@@ -274,23 +274,6 @@ def create_preview(audio, preview_path):
 
 def save_upload_to_db(request, filename, temporary_path):
 
-    # archive uuid
-    archive_info = os.path.join(
-        request.registry.settings['api.c3supload.filepath'],
-        _path_uploaded, 'archive.info'
-    )
-    if os.path.isfile(archive_info):
-        with open(archive_info, 'r') as f:
-            archive_uuid = f.read()
-    else:
-        while True:
-            archive_uuid = str(uuid.uuid4())
-            # ensure uniqueness
-            if not Content.search_by_uuid(archive_uuid):
-                break
-        with open(archive_info, 'a') as f:
-            f.write(archive_uuid)
-
     # content uuid
     while True:
         content_uuid = str(uuid.uuid4())
@@ -316,7 +299,6 @@ def save_upload_to_db(request, filename, temporary_path):
     # save to db
     _content = {
         'processing_state': "uploaded",
-        'archive': archive_uuid,
         'uuid': content_uuid,
         'user': WebUser.current_user(request).id,
         'name': str(filename),
