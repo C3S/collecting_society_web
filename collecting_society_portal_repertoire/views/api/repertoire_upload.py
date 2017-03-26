@@ -33,7 +33,10 @@ from colander import (
     Email
 )
 
-from collecting_society_portal.services import benchmark
+from collecting_society_portal.services import (
+    benchmark,
+    csv_export
+)
 from collecting_society_portal.models import Tdb, WebUser
 from collecting_society_portal_creative.models import Content
 
@@ -57,14 +60,20 @@ _path_uploaded = 'uploaded'
 _path_rejected = 'rejected'
 _path_preview = 'preview'
 
+# 2DO: _preview_default
 _preview_format = 'ogg'
 _preview_quality = '0'
-_preview_bitrate = '16000'
+_preview_samplerate = '16000'
 _preview_fadein = 1000
 _preview_fadeout = 1000
 _preview_segment_duration = 8000
 _preview_segment_crossfade = 2000
 _preview_segment_interval = 54000
+
+_hash_algorithm = hashlib.sha256
+
+_checksum_algorithm = hashlib.sha256
+_checksum_postfix = '.checksums'
 
 
 # --- methods -----------------------------------------------------------------
@@ -159,43 +168,92 @@ def delete_file(absolute_path):
         os.remove(absolute_path)
     except IOError:
         pass
+    # admin feedback
+    log.info(("file deleted: %s\n") % (absolute_path))
     return not os.path.isfile(absolute_path)
 
 
-def validate_upload(filename, absolute_path):
+def move_file(source, target):
+    # check file
+    if not os.path.isfile(source):
+        return False
+    if os.path.isfile(target):
+        return False
+    # move file
+    try:
+        shutil.copyfile(source, target)
+        os.remove(source)
+    except IOError:
+        pass
+    return (os.path.isfile(target) and not os.path.isfile(source))
 
-    # check filetype
-    extension = os.path.splitext(filename)[1]
-    if extension:
-        extension = extension[1:]
-    if extension not in lossless_audio_extensions():
-        return _(u'Filetype not allowed.')
 
-    # check mimetype
-    mimetype = mime.from_file(absolute_path)
-    if mimetype not in lossless_audio_mimetypes():
-        return _(u'Mimetype not allowed.')
+def create_paths(request):
+    for subpath in [_path_temporary,
+                    _path_uploaded,
+                    _path_preview,
+                    _path_rejected]:
+        path = get_path(request, subpath)
+        if not os.path.exists(path):
+            create_path(path)
+
+
+def move_files_with_prefixes(source, target):
+    ok = True
+    for postfix in ['', _checksum_postfix]:
+        ok = (ok and move_file(source + postfix, target + postfix))
+    return ok
+
+
+def delete_files_with_identifiers(request, identifiers):
+    for subpath in [_path_temporary,
+                    _path_uploaded,
+                    _path_preview,
+                    _path_rejected]:
+        for identifier in identifiers:
+            for postfix in ['', _checksum_postfix]:
+                path = get_path(request, subpath, identifier + postfix)
+                if os.path.isfile(path):
+                    delete_file(path)
+
+
+def panic(request, reason, identifiers):
+    # admin feedback
+    # 2DO: mail
+    log.info(
+        (
+            "Panic: %s\n"
+            "Deleting all files:\n"
+            "- User %s\n"
+            "- Identifiers %s\n"
+        ) % (
+            reason, request.user, identifiers
+        )
+    )
+    delete_files_with_identifiers(request, identifiers)
+    raise HTTPInternalServerError
 
 
 def save_upload_to_fs(descriptor, absolute_path, contentrange=None):
 
     # chunked file
     if contentrange:
-        start, stop, length = contentrange
+        begin, end, length = contentrange
         complete = False
         # check file
         size = 0
         if os.path.isfile(absolute_path):
             size = os.path.getsize(absolute_path)
-            if stop == length:
+            if end == length:
                 complete = True
-        if start != size:
+        if begin != size:
+            # admin feedback
             log.info(
                 (
                     'Uploaderror: wrong chunkposition '
-                    '(file %s, start: %s, size: %s).'
+                    '(file %s, begin: %s, size: %s).'
                 ) % (
-                    absolute_path, start, size
+                    absolute_path, begin, size
                 )
             )
             return (False, None)
@@ -204,6 +262,7 @@ def save_upload_to_fs(descriptor, absolute_path, contentrange=None):
         complete = True
         # check file
         if os.path.isfile(absolute_path):
+            # admin feedback
             log.info(
                 (
                     'Uploaderror: file already exists (%s).'
@@ -221,9 +280,65 @@ def save_upload_to_fs(descriptor, absolute_path, contentrange=None):
         raise HTTPInternalServerError
 
     return (
-        os.path.getsize(absolute_path) == stop,
+        os.path.getsize(absolute_path) == end,
         complete
     )
+
+
+def save_upload_to_db(content):
+    contents = Content.create([content])
+    if not len(contents) == 1:
+        return False
+    return contents[0]
+
+
+def validate_upload(filename, absolute_path):
+
+    # check filetype
+    extension = os.path.splitext(filename)[1]
+    if extension:
+        extension = extension[1:]
+    if extension not in lossless_audio_extensions():
+        return _(u'Filetype not allowed.')
+
+    # check mimetype
+    mimetype = mime.from_file(absolute_path)
+    if mimetype not in lossless_audio_mimetypes():
+        return _(u'Mimetype not allowed.')
+
+
+def create_checksum(descriptor, algorithm=hashlib.sha256):
+    checksum = algorithm(descriptor.read())
+    descriptor.seek(0)
+    return checksum
+
+
+def save_checksum(path, algorithm, contentrange, checksum):
+    begin, end, _ = contentrange
+    csv_export(
+        path=path,
+        fieldnames=[
+            'begin',
+            'end',
+            'algorithm',
+            'checksum'
+        ],
+        row={
+            'begin': begin + 1,
+            'end': end,
+            'algorithm': algorithm,
+            'checksum': checksum
+        }
+    )
+
+
+def get_content_uuid():
+    # 2DO: possible race condition, better ask tryton for uuid
+    while True:
+        content_uuid = str(uuid.uuid4())
+        if not Content.search_by_uuid(content_uuid):
+            break
+    return content_uuid
 
 
 def get_segments(audio):
@@ -257,65 +372,20 @@ def create_preview(audio, preview_path):
     preview = preview.fade_in(_preview_fadein).fade_out(_preview_fadeout)
 
     # export
+    ok = True
     try:
         preview.export(
             preview_path,
             format=_preview_format,
             parameters=[
                 "-aq", _preview_quality,
-                "-ar", _preview_bitrate
+                "-ar", _preview_samplerate
             ]
         )
     except:
-        raise HTTPInternalServerError
+        ok = False
 
-    return os.path.isfile(preview_path)
-
-
-def save_upload_to_db(request, filename, temporary_path):
-
-    # content uuid
-    while True:
-        content_uuid = str(uuid.uuid4())
-        # ensure uniqueness
-        if not Content.search_by_uuid(content_uuid):
-            break
-
-    # move audio file to completed folder
-    completed_path = get_path(request, _path_uploaded, content_uuid)
-    preview_path = get_path(request, _path_preview, content_uuid)
-    try:
-        shutil.copyfile(temporary_path, completed_path)
-        os.remove(temporary_path)
-    except IOError:
-        raise HTTPInternalServerError
-
-    # create preview
-    with benchmark(request, name='preview', uid=filename,
-                   normalize=completed_path, scale=100*1024*1024):
-        audio = AudioSegment.from_file(completed_path)
-        create_preview(audio, preview_path)
-
-    # save to db
-    _content = {
-        'processing_state': "uploaded",
-        'uuid': content_uuid,
-        'user': WebUser.current_user(request).id,
-        'name': str(filename),
-        'category': 'audio',
-        'mime_type': str(mime.from_file(completed_path)),
-        'length': "%.6f" % audio.duration_seconds,
-        'channels': int(audio.channels),
-        'sample_rate': int(audio.frame_rate),
-        'sample_width': int(audio.sample_width * 8),
-        'size': os.path.getsize(completed_path),
-        'path': completed_path,
-        'preview_path': preview_path
-    }
-    contents = Content.create([_content])
-    if not len(contents) == 1:
-        return False
-    return contents[0]
+    return (ok and os.path.isfile(preview_path))
 
 
 # --- service: upload ---------------------------------------------------------
@@ -345,11 +415,7 @@ def options_repertoire_upload(request):
 def post_repertoire_upload(request):
 
     # create paths
-    for subpath in [_path_temporary, _path_uploaded, _path_preview,
-                    _path_rejected]:
-        path = get_path(request, subpath)
-        if not os.path.exists(path):
-            create_path(path)
+    create_paths(request)
 
     # upload files
     files = []
@@ -360,51 +426,148 @@ def post_repertoire_upload(request):
             continue
 
         # configure upload
+        descriptor = fieldStorage.file
         filename = os.path.basename(fieldStorage.filename)
-        filename_hash = hashlib.sha256(filename).hexdigest()
-        absolute_path = get_path(request, _path_temporary, filename_hash)
+        filename_hash = _hash_algorithm(filename).hexdigest()
+        temporary_path = get_path(request, _path_temporary, filename_hash)
         contentrange = ContentRange.parse(
             request.headers.get('Content-Range', None)
         )
 
-        # save to filesystem (temporary folder)
+        # create checksum
+        with benchmark(request, name='checksum', uid=filename,
+                       normalize=descriptor, scale=100*1024*1024):
+            checksum = create_checksum(
+                descriptor=descriptor,
+                algorithm=_checksum_algorithm
+            )
+            save_checksum(
+                path=temporary_path + _checksum_postfix,
+                algorithm=_checksum_algorithm.__name__,
+                contentrange=contentrange,
+                checksum=checksum.hexdigest()
+            )
+
+        # save to filesystem (-> temporary)
         ok, complete = save_upload_to_fs(
-            descriptor=fieldStorage.file,
-            absolute_path=absolute_path,
+            descriptor=descriptor,
+            absolute_path=temporary_path,
             contentrange=contentrange
         )
-
-        # calculate sha256 checksum
-        with benchmark(request, name='checksum', uid=filename,
-                       normalize=fieldStorage.file, scale=100*1024*1024):
-            hashlib.sha256(fieldStorage.file.read())
-            fieldStorage.file.seek(0)
-
-        # proceeed
         if not ok:
-            delete_file(absolute_path)
-            raise HTTPInternalServerError
+            pass
         if not complete:
+            # client feedback
             files.append({
                 'name': fieldStorage.filename,
-                'size': os.path.getsize(absolute_path)
+                'size': os.path.getsize(temporary_path)
             })
             continue
 
+        # get content uuid
+        content_uuid = get_content_uuid()
+
+        # get uuid paths
+        uploaded_path = get_path(request, _path_uploaded, content_uuid)
+        rejected_path = get_path(request, _path_rejected, content_uuid)
+        preview_path = get_path(request, _path_preview, content_uuid)
+
         # validate file
-        error = validate_upload(filename, absolute_path)
+        error = validate_upload(filename, temporary_path)
         if error:
-            delete_file(absolute_path)
+            # move files (temporary -> rejected)
+            ok = move_files_with_prefixes(
+                source=temporary_path, target=rejected_path
+            )
+            if not ok:
+                panic(
+                    request,
+                    reason="Files could not be moved.",
+                    identifiers=[filename_hash, content_uuid]
+                )
+            # save to database
+            _content = {
+                'uuid': content_uuid,
+                'processing_state': "rejected",
+                'rejection_reason': "format_error",
+                'user': WebUser.current_user(request).id,
+                'name': str(name),
+                'category': 'audio',
+                'mime_type': str(mime.from_file(rejected_path)),
+                'size': os.path.getsize(rejected_path),
+                'path': rejected_path
+            }
+            content = save_upload_to_db(_content)
+            if not content:
+                panic(
+                    request,
+                    reason="Content could not be created.",
+                    identifiers=[filename_hash, content_uuid]
+                )
+            # admin feedback
+            # 2DO: Mail
+            log.info(
+                (
+                    "Content rejected (format error): %s\n"
+                ) % (
+                    rejected_path
+                )
+            )
+            # client feedback
             files.append({
                 'name': fieldStorage.filename,
                 'error': error
             })
             continue
 
+        # create preview
+        with benchmark(request, name='preview', uid=filename,
+                       normalize=temporary_path, scale=100*1024*1024):
+            audio = AudioSegment.from_file(temporary_path)
+            ok = create_preview(audio, preview_path)
+            if not ok:
+                panic(
+                    request,
+                    reason="Preview could not be created.",
+                    identifiers=[filename_hash]
+                )
+
+        # move files (temporary -> uploaded)
+        ok = move_files_with_prefixes(
+            source=temporary_path, target=uploaded_path
+        )
+        if not ok:
+            panic(
+                request,
+                reason="Files could not be moved.",
+                identifiers=[filename_hash, content_uuid]
+            )
+
         # save to database
-        content = save_upload_to_db(request, filename, absolute_path)
+        _content = {
+            'uuid': content_uuid,
+            'processing_state': "uploaded",
+            'user': WebUser.current_user(request).id,
+            'name': str(filename),
+            'category': 'audio',
+            'mime_type': str(mime.from_file(uploaded_path)),
+            'length': "%.6f" % audio.duration_seconds,
+            'channels': int(audio.channels),
+            'sample_rate': int(audio.frame_rate),
+            'sample_width': int(audio.sample_width * 8),
+            'size': os.path.getsize(uploaded_path),
+            'path': uploaded_path,
+            'preview_path': preview_path
+        }
+        content = save_upload_to_db(_content)
         if not content:
-            raise HTTPInternalServerError
+            panic(
+                request,
+                reason="Content could not be created.",
+                identifiers=[filename_hash, content_uuid]
+            )
+
+        # client feedback
         files.append(get_content_info(request, content))
 
     return {'files': files}
@@ -463,7 +626,7 @@ def get_repertoire_show(request):
     filename = request.matchdict['filename']
     if not filename:
         return {}
-    filename_hash = hashlib.md5(filename).hexdigest()
+    filename_hash = _hash_algorithm(filename).hexdigest()
     absolute_path = get_path(request, _path_temporary, filename_hash)
     if not os.path.isfile(absolute_path):
         return {}
@@ -531,6 +694,7 @@ def get_repertoire_delete(request):
     content_id = request.matchdict['id']
     content = Content.search_by_id(content_id)
     info = get_content_info(request, content)
+    # admin feedback
     log.info("{} deleted content {}\n".format(request.user, info))
     # delete preview
     name = content.name
