@@ -19,7 +19,10 @@ $(function () {
         maxFileSize: 1024*1024*1024, // 1 GB
         maxChunkSize: 1024*1024, // 1 MB
         prependFiles: true,
-        // resume upload
+    });
+
+    // resume upload
+    $('#fileupload').fileupload({
         add: function (e, data) {
             var that = this;
             $.ajax({
@@ -27,16 +30,20 @@ $(function () {
                 url: apiUrl + '/show/' + data.files[0].name,
                 dataType: 'json'
             }).done(function (result) {
-                data.uploadedBytes = result.resumable && result.size;
+                data.uploadedBytes = result.name && result.size;
+                console.log(result);
+                console.log(data.uploadedBytes);
                 $.blueimp.fileupload.prototype
                     .options.add.call(that, e, data);
             });
         }
     });
 
-
     /*
-        2DO: prevent further chunks being sent by client on error.
+        2DOs: 
+        - pause
+        - autoresume
+        - prevent further chunks being sent by client on error.
         Manual errors dont abort uploads. Http errors abort all uploads.
         Files with invalid extensions checked clientside are displayed,
         but not in the processed files array. This would be the desired state,
