@@ -43,6 +43,7 @@ $(function () {
         2DOs: 
         - pause
         - autoresume
+        - dropzone
         - prevent further chunks being sent by client on error.
         Manual errors dont abort uploads. Http errors abort all uploads.
         Files with invalid extensions checked clientside are displayed,
