@@ -109,6 +109,10 @@ def get_acl(request):
     ]
 
 
+def get_hostname():
+    return 'processing'
+
+
 def get_url(url, version, action, content_id):
     if url.endswith('/'):
         url = url[:-1]
@@ -425,6 +429,7 @@ def post_repertoire_upload(request):
             continue
 
         # configure upload
+        hostname = get_hostname()
         descriptor = fieldStorage.file
         filename = os.path.basename(fieldStorage.filename)
         filename_hash = _hash_algorithm(filename).hexdigest()
@@ -487,6 +492,7 @@ def post_repertoire_upload(request):
             # save to database
             _content = {
                 'uuid': content_uuid,
+                'processing_hostname': hostname,
                 'processing_state': "rejected",
                 'rejection_reason': "format_error",
                 'user': WebUser.current_user(request).id,
@@ -545,6 +551,7 @@ def post_repertoire_upload(request):
         # save to database
         _content = {
             'uuid': content_uuid,
+            'processing_hostname': hostname,
             'processing_state': "uploaded",
             'user': WebUser.current_user(request).id,
             'name': str(filename),
