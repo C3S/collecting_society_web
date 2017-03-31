@@ -7,6 +7,7 @@ import logging
 import magic
 import hashlib
 import uuid
+import datetime
 from cgi import FieldStorage
 from pydub import AudioSegment
 
@@ -35,9 +36,14 @@ from colander import (
 
 from collecting_society_portal.services import (
     benchmark,
-    csv_export
+    csv_export,
+    csv_import
 )
-from collecting_society_portal.models import Tdb, WebUser
+from collecting_society_portal.models import (
+    Tdb,
+    WebUser,
+    Checksum
+)
 from collecting_society_portal_creative.models import Content
 
 from ...services import _
@@ -335,6 +341,22 @@ def save_checksum(path, algorithm, contentrange, checksum):
     )
 
 
+def save_checksums_to_db(content, path):
+    checksums = []
+    timestamp = datetime.datetime.now()
+    rows = csv_import(path)
+    for row in rows:
+        checksums.append({
+            'origin': str(content),
+            'code': str(row['checksum']),
+            'timestamp': timestamp,
+            'algorithm': str(row['algorithm']),
+            'begin': int(row['begin']),
+            'end': int(row['end'])
+        })
+    Checksum.create(checksums)
+
+
 def get_content_uuid():
     # 2DO: possible race condition, better ask tryton for uuid
     while True:
@@ -489,7 +511,7 @@ def post_repertoire_upload(request):
                     reason="Files could not be moved.",
                     identifiers=[filename_hash, content_uuid]
                 )
-            # save to database
+            # save file to database
             _content = {
                 'uuid': content_uuid,
                 'processing_hostname': hostname,
@@ -509,6 +531,7 @@ def post_repertoire_upload(request):
                     reason="Content could not be created.",
                     identifiers=[filename_hash, content_uuid]
                 )
+            # save checksums to database
             # admin feedback
             # 2DO: Mail
             log.info(
@@ -548,7 +571,7 @@ def post_repertoire_upload(request):
                 identifiers=[filename_hash, content_uuid]
             )
 
-        # save to database
+        # save file to database
         _content = {
             'uuid': content_uuid,
             'processing_hostname': hostname,
@@ -572,6 +595,11 @@ def post_repertoire_upload(request):
                 reason="Content could not be created.",
                 identifiers=[filename_hash, content_uuid]
             )
+        # save checksums to database
+        save_checksums_to_db(
+            content=content,
+            path=uploaded_path + _checksum_postfix
+        )
 
         # client feedback
         files.append(get_content_info(request, content))
