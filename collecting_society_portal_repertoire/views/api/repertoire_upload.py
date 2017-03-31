@@ -181,8 +181,7 @@ def move_file(source, target):
         return False
     # move file
     try:
-        shutil.copyfile(source, target)
-        os.remove(source)
+        os.rename(source, target)
     except IOError:
         pass
     return (os.path.isfile(target) and not os.path.isfile(source))
