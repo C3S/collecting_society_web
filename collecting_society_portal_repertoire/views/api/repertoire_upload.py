@@ -8,6 +8,7 @@ import magic
 import hashlib
 import uuid
 import datetime
+import time
 from cgi import FieldStorage
 from pydub import AudioSegment
 
@@ -347,7 +348,7 @@ def save_checksums_to_db(content, path):
     rows = csv_import(path)
     for row in rows:
         checksums.append({
-            'origin': str(content),
+            'origin': 'content,%s' % (content.id),
             'code': str(row['checksum']),
             'timestamp': timestamp,
             'algorithm': str(row['algorithm']),
@@ -357,8 +358,20 @@ def save_checksums_to_db(content, path):
     Checksum.create(checksums)
 
 
+def is_collision(contentrange, checksum):
+    begin, end, length = contentrange
+    collisions = Checksum.search_collision(
+        code=checksum.hexdigest(),
+        algorithm=_checksum_algorithm.__name__,
+        begin=begin + 1,
+        end=end
+    )
+    if not collisions:
+        return False
+    return True
+
+
 def get_content_uuid():
-    # 2DO: possible race condition, better ask tryton for uuid
     while True:
         content_uuid = str(uuid.uuid4())
         if not Content.search_by_uuid(content_uuid):
@@ -413,6 +426,66 @@ def create_preview(audio, preview_path):
     return (ok and os.path.isfile(preview_path))
 
 
+def get_abuse_rank(request):
+    if 'abuse_rank' not in request.session:
+        request.session['abuse_rank'] = {
+            'current': 0, 'banned': False, 'bantime': None
+        }
+    return request.session['abuse_rank']['current']
+
+
+def raise_abuse_rank(request):
+    rank_max = int(request.registry.settings['abuse_rank.max'])
+    current_rank = get_abuse_rank(request)
+    current_rank = (current_rank + 1) % (rank_max + 1)
+    request.session['abuse_rank']['current'] = current_rank
+    log.debug(
+        (
+            "raised session abuse rank of user %s to %s\n"
+        ) % (
+            request.user, request.session['abuse_rank']['current']
+        )
+    )
+
+
+def ban(request):
+    request.session['abuse_rank']['banned'] = True
+    request.session['abuse_rank']['bantime'] = time.time()
+    web_user = WebUser.current_web_user(request)
+    if not web_user.abuse_rank:
+        web_user.abuse_rank = 0
+    web_user.abuse_rank += 1
+    web_user.save()
+    log.info(
+        (
+            "banned upload for user %s (db abuse rank: %s)\n"
+        ) % (
+            web_user, web_user.abuse_rank
+        )
+    )
+
+
+def is_banned(request):
+    banned = request.session['abuse_rank']['banned']
+    web_user = WebUser.current_web_user(request)
+    if not banned:
+        return False
+    currenttime = time.time()
+    bantime = int(request.session['abuse_rank']['bantime'])
+    removeban = int(request.registry.settings['abuse_rank.removeban'])
+    if currenttime > bantime + removeban:
+        request.session['abuse_rank']['banned'] = False
+        request.session['abuse_rank']['current'] = 0
+        log.debug(
+            (
+                "removed upload ban for user %s (db abuse rank: %s)\n"
+            ) % (
+                web_user, web_user.abuse_rank
+            )
+        )
+    return request.session['abuse_rank']['banned']
+
+
 # --- service: upload ---------------------------------------------------------
 
 repertoire_upload = Service(
@@ -451,6 +524,8 @@ def post_repertoire_upload(request):
             continue
 
         # configure upload
+        rank = (request.registry.settings['abuse_rank.active'] == 'true')
+        rank_max = int(request.registry.settings['abuse_rank.max'])
         hostname = get_hostname()
         descriptor = fieldStorage.file
         filename = os.path.basename(fieldStorage.filename)
@@ -473,6 +548,20 @@ def post_repertoire_upload(request):
                 contentrange=contentrange,
                 checksum=checksum.hexdigest()
             )
+
+        # abuse rank
+        if rank:
+            if is_banned(request):
+                files.append({
+                    'name': fieldStorage.filename,
+                    'error': _("Abuse detected. Please stop."),
+                })
+                continue
+            if is_collision(contentrange, checksum):
+                raise_abuse_rank(request)
+            current_rank = get_abuse_rank(request)
+            if current_rank == rank_max:
+                ban(request)
 
         # save to filesystem (-> temporary)
         ok, complete = save_upload_to_fs(
