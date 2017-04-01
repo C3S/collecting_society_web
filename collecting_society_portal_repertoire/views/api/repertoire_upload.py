@@ -7,6 +7,8 @@ import logging
 import magic
 import hashlib
 import uuid
+import datetime
+import time
 from cgi import FieldStorage
 from pydub import AudioSegment
 
@@ -35,9 +37,14 @@ from colander import (
 
 from collecting_society_portal.services import (
     benchmark,
-    csv_export
+    csv_export,
+    csv_import
 )
-from collecting_society_portal.models import Tdb, WebUser
+from collecting_society_portal.models import (
+    Tdb,
+    WebUser,
+    Checksum
+)
 from collecting_society_portal_creative.models import Content
 
 from ...services import _
@@ -107,6 +114,10 @@ def get_acl(request):
         ),
         DENY_ALL
     ]
+
+
+def get_hostname():
+    return 'processing'
 
 
 def get_url(url, version, action, content_id):
@@ -181,8 +192,7 @@ def move_file(source, target):
         return False
     # move file
     try:
-        shutil.copyfile(source, target)
-        os.remove(source)
+        os.rename(source, target)
     except IOError:
         pass
     return (os.path.isfile(target) and not os.path.isfile(source))
@@ -332,8 +342,36 @@ def save_checksum(path, algorithm, contentrange, checksum):
     )
 
 
+def save_checksums_to_db(content, path):
+    checksums = []
+    timestamp = datetime.datetime.now()
+    rows = csv_import(path)
+    for row in rows:
+        checksums.append({
+            'origin': 'content,%s' % (content.id),
+            'code': str(row['checksum']),
+            'timestamp': timestamp,
+            'algorithm': str(row['algorithm']),
+            'begin': int(row['begin']),
+            'end': int(row['end'])
+        })
+    Checksum.create(checksums)
+
+
+def is_collision(contentrange, checksum):
+    begin, end, length = contentrange
+    collisions = Checksum.search_collision(
+        code=checksum.hexdigest(),
+        algorithm=_checksum_algorithm.__name__,
+        begin=begin + 1,
+        end=end
+    )
+    if not collisions:
+        return False
+    return True
+
+
 def get_content_uuid():
-    # 2DO: possible race condition, better ask tryton for uuid
     while True:
         content_uuid = str(uuid.uuid4())
         if not Content.search_by_uuid(content_uuid):
@@ -388,6 +426,66 @@ def create_preview(audio, preview_path):
     return (ok and os.path.isfile(preview_path))
 
 
+def get_abuse_rank(request):
+    if 'abuse_rank' not in request.session:
+        request.session['abuse_rank'] = {
+            'current': 0, 'banned': False, 'bantime': None
+        }
+    return request.session['abuse_rank']['current']
+
+
+def raise_abuse_rank(request):
+    rank_max = int(request.registry.settings['abuse_rank.max'])
+    current_rank = get_abuse_rank(request)
+    current_rank = (current_rank + 1) % (rank_max + 1)
+    request.session['abuse_rank']['current'] = current_rank
+    log.debug(
+        (
+            "raised session abuse rank of user %s to %s\n"
+        ) % (
+            request.user, request.session['abuse_rank']['current']
+        )
+    )
+
+
+def ban(request):
+    request.session['abuse_rank']['banned'] = True
+    request.session['abuse_rank']['bantime'] = time.time()
+    web_user = WebUser.current_web_user(request)
+    if not web_user.abuse_rank:
+        web_user.abuse_rank = 0
+    web_user.abuse_rank += 1
+    web_user.save()
+    log.info(
+        (
+            "banned upload for user %s (db abuse rank: %s)\n"
+        ) % (
+            web_user, web_user.abuse_rank
+        )
+    )
+
+
+def is_banned(request):
+    banned = request.session['abuse_rank']['banned']
+    web_user = WebUser.current_web_user(request)
+    if not banned:
+        return False
+    currenttime = time.time()
+    bantime = int(request.session['abuse_rank']['bantime'])
+    removeban = int(request.registry.settings['abuse_rank.removeban'])
+    if currenttime > bantime + removeban:
+        request.session['abuse_rank']['banned'] = False
+        request.session['abuse_rank']['current'] = 0
+        log.debug(
+            (
+                "removed upload ban for user %s (db abuse rank: %s)\n"
+            ) % (
+                web_user, web_user.abuse_rank
+            )
+        )
+    return request.session['abuse_rank']['banned']
+
+
 # --- service: upload ---------------------------------------------------------
 
 repertoire_upload = Service(
@@ -426,6 +524,9 @@ def post_repertoire_upload(request):
             continue
 
         # configure upload
+        rank = (request.registry.settings['abuse_rank.active'] == 'true')
+        rank_max = int(request.registry.settings['abuse_rank.max'])
+        hostname = get_hostname()
         descriptor = fieldStorage.file
         filename = os.path.basename(fieldStorage.filename)
         filename_hash = _hash_algorithm(filename).hexdigest()
@@ -447,6 +548,20 @@ def post_repertoire_upload(request):
                 contentrange=contentrange,
                 checksum=checksum.hexdigest()
             )
+
+        # abuse rank
+        if rank:
+            if is_banned(request):
+                files.append({
+                    'name': fieldStorage.filename,
+                    'error': _("Abuse detected. Please stop."),
+                })
+                continue
+            if is_collision(contentrange, checksum):
+                raise_abuse_rank(request)
+            current_rank = get_abuse_rank(request)
+            if current_rank == rank_max:
+                ban(request)
 
         # save to filesystem (-> temporary)
         ok, complete = save_upload_to_fs(
@@ -485,9 +600,10 @@ def post_repertoire_upload(request):
                     reason="Files could not be moved.",
                     identifiers=[filename_hash, content_uuid]
                 )
-            # save to database
+            # save file to database
             _content = {
                 'uuid': content_uuid,
+                'processing_hostname': hostname,
                 'processing_state': "rejected",
                 'rejection_reason': "format_error",
                 'user': WebUser.current_user(request).id,
@@ -504,6 +620,7 @@ def post_repertoire_upload(request):
                     reason="Content could not be created.",
                     identifiers=[filename_hash, content_uuid]
                 )
+            # save checksums to database
             # admin feedback
             # 2DO: Mail
             log.info(
@@ -543,9 +660,10 @@ def post_repertoire_upload(request):
                 identifiers=[filename_hash, content_uuid]
             )
 
-        # save to database
+        # save file to database
         _content = {
             'uuid': content_uuid,
+            'processing_hostname': hostname,
             'processing_state': "uploaded",
             'user': WebUser.current_user(request).id,
             'name': str(filename),
@@ -566,6 +684,11 @@ def post_repertoire_upload(request):
                 reason="Content could not be created.",
                 identifiers=[filename_hash, content_uuid]
             )
+        # save checksums to database
+        save_checksums_to_db(
+            content=content,
+            path=uploaded_path + _checksum_postfix
+        )
 
         # client feedback
         files.append(get_content_info(request, content))
