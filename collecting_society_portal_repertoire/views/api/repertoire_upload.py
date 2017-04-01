@@ -426,17 +426,9 @@ def create_preview(audio, preview_path):
     return (ok and os.path.isfile(preview_path))
 
 
-def get_abuse_rank(request):
-    if 'abuse_rank' not in request.session:
-        request.session['abuse_rank'] = {
-            'current': 0, 'banned': False, 'bantime': None
-        }
-    return request.session['abuse_rank']['current']
-
-
 def raise_abuse_rank(request):
     rank_max = int(request.registry.settings['abuse_rank.max'])
-    current_rank = get_abuse_rank(request)
+    current_rank = request.session['abuse_rank']['current']
     current_rank = (current_rank + 1) % (rank_max + 1)
     request.session['abuse_rank']['current'] = current_rank
     log.debug(
@@ -466,8 +458,11 @@ def ban(request):
 
 
 def is_banned(request):
+    if 'abuse_rank' not in request.session:
+        request.session['abuse_rank'] = {
+            'current': 0, 'banned': False, 'bantime': None
+        }
     banned = request.session['abuse_rank']['banned']
-    web_user = WebUser.current_web_user(request)
     if not banned:
         return False
     currenttime = time.time()
@@ -476,6 +471,7 @@ def is_banned(request):
     if currenttime > bantime + removeban:
         request.session['abuse_rank']['banned'] = False
         request.session['abuse_rank']['current'] = 0
+        web_user = WebUser.current_web_user(request)
         log.debug(
             (
                 "removed upload ban for user %s (db abuse rank: %s)\n"
@@ -559,7 +555,7 @@ def post_repertoire_upload(request):
                 continue
             if is_collision(contentrange, checksum):
                 raise_abuse_rank(request)
-            current_rank = get_abuse_rank(request)
+            current_rank = request.session['abuse_rank']['current']
             if current_rank == rank_max:
                 ban(request)
 
