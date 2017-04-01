@@ -39,6 +39,29 @@ $(function () {
         }
     });
 
+    // abort chunkupload on serverside error
+    $('#fileupload').bind("fileuploadchunksend", function (e, data) {
+        console.log(e);
+        console.log(data);
+        var abortChunkSend = data.context[0].abortChunkSend;
+        var error = data.context[0].error;
+        if (abortChunkSend) {
+            data.files[0].error = error;
+            return false;
+        }
+    });
+    $('#fileupload').bind("fileuploadchunkdone", function (e, data) {
+        if (data.result) {
+            for (var index = 0; index < data.result.files.length; index++) {
+                var file = data.result.files[index];
+                if (file.error) {
+                    data.context[index].abortChunkSend = true;
+                    data.context[index].error = file.error;
+                }
+            }
+        }
+    });
+
     /*
         2DOs: 
         - pause
