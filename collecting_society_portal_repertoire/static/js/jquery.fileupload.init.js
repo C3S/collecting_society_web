@@ -1,6 +1,13 @@
 $(function () {
     'use strict';
 
+    /*
+        2DOs: 
+        - pause button with expected user feedback
+        - autoresume on certain errors with max retries
+        - activate dropzone
+    */
+
     var data = $('#data');
     var apiUrl = data.data('url');
     var extensions = data.data('extensions').split(',');
@@ -21,7 +28,7 @@ $(function () {
         prependFiles: true,
     });
 
-    // resume upload
+    // Resume temporary upload at last position
     $('#fileupload').fileupload({
         add: function (e, data) {
             var that = this;
@@ -39,7 +46,7 @@ $(function () {
         }
     });
 
-    // abort chunkupload on serverside error
+    // Abort chunkupload on serverside error
     $('#fileupload').bind("fileuploadchunksend", function (e, data) {
         console.log(e);
         console.log(data);
@@ -61,42 +68,6 @@ $(function () {
             }
         }
     });
-
-    /*
-        2DOs: 
-        - pause
-        - autoresume
-        - dropzone
-        - prevent further chunks being sent by client on error.
-        Manual errors dont abort uploads. Http errors abort all uploads.
-        Files with invalid extensions checked clientside are displayed,
-        but not in the processed files array. This would be the desired state,
-        after a chunk recieved a response with an error message in it,
-        to be displayed to the user.
-    */
-    // // Prevent upload of chunks on error
-    // $('#fileupload').bind('fileuploadchunksend', function (e, data) {
-    //     $(lastResultFiles).each(function(){
-    //         var result = this;
-    //         if (result.error) {
-    //             $(data.files).each(function(index, request){
-    //                 if (request.name == result.name){
-    //                     // data.abort();
-    //                     // data.context.remove();
-    //                     // data.files.error = true;
-    //                     errorFiles[index] = request;
-    //                     delete data.files[index];
-    //                 }
-    //             });
-    //         }
-    //     });
-    // });
-    // $('#fileupload').bind('fileuploadchunkalways', function (e, data) {
-    //     lastResultFiles = (data.result ? data.result.files : []);
-    //     $(errorFiles).each(function(index, file){
-    //         data.files[index] = file;
-    //     });
-    // });
 
     // Load existing files:
     $('#fileupload').addClass('fileupload-processing');
