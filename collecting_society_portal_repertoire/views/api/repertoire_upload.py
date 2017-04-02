@@ -815,9 +815,7 @@ def get_repertoire_delete(request):
     info = get_content_info(request, content)
     # admin feedback
     log.info("{} deleted content {}\n".format(request.user, info))
-    # delete preview
     name = content.name
-    delete_file(get_path(request, _path_preview, content.uuid))
-    # delete db
-    content.delete([content])
+    content.active = False
+    content.save()
     return {'files': [{name: True}]}
