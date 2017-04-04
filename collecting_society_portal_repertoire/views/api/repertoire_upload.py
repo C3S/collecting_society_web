@@ -11,6 +11,8 @@ import datetime
 import time
 from cgi import FieldStorage
 
+from pydub import AudioSegment
+
 from webob.byterange import ContentRange
 from pyramid.response import FileResponse
 from pyramid.security import (
@@ -632,6 +634,18 @@ def post_repertoire_upload(request):
             })
             continue
 
+        # create preview
+        with benchmark(request, name='preview', uid=filename,
+                       normalize=temporary_path, scale=100*1024*1024):
+            audio = AudioSegment.from_file(temporary_path)
+            ok = create_preview(audio, preview_path)
+            if not ok:
+                panic(
+                    request,
+                    reason="Preview could not be created.",
+                    identifiers=[filename_hash]
+                )
+
         # move files (temporary -> uploaded)
         ok = move_files_with_prefixes(
             source=temporary_path, target=uploaded_path
@@ -653,7 +667,12 @@ def post_repertoire_upload(request):
             'category': 'audio',
             'mime_type': str(mime.from_file(uploaded_path)),
             'size': os.path.getsize(uploaded_path),
-            'path': uploaded_path
+            'path': uploaded_path,
+            'preview_path': preview_path,
+            'length': "%.6f" % audio.duration_seconds,
+            'channels': int(audio.channels),
+            'sample_rate': int(audio.frame_rate),
+            'sample_width': int(audio.sample_width * 8)
         }
         content = save_upload_to_db(_content)
         if not content:
