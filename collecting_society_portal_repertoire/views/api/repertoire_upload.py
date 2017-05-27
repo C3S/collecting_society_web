@@ -271,6 +271,9 @@ def save_upload_to_fs(descriptor, absolute_path, contentrange=None):
     # whole file
     else:
         complete = True
+        descriptor.seek(0)
+        end = descriptor.tell()
+        descriptor.seek(0)
         # check file
         if os.path.isfile(absolute_path):
             # admin feedback
@@ -324,7 +327,7 @@ def create_checksum(descriptor, algorithm=hashlib.sha256):
     return checksum
 
 
-def save_checksum(path, algorithm, contentrange, checksum):
+def save_checksum(path, algorithm, checksum, contentrange=None):
     begin, end, _ = contentrange
     csv_export(
         path=path,
@@ -531,6 +534,7 @@ def post_repertoire_upload(request):
         contentrange = ContentRange.parse(
             request.headers.get('Content-Range', None)
         )
+        contentlength = request.headers.get('Content-Length', None)
 
         # create checksum
         with benchmark(request, name='checksum', uid=filename,
@@ -542,8 +546,8 @@ def post_repertoire_upload(request):
             save_checksum(
                 path=temporary_path + _checksum_postfix,
                 algorithm=_checksum_algorithm.__name__,
-                contentrange=contentrange,
-                checksum=checksum.hexdigest()
+                checksum=checksum.hexdigest(),
+                contentrange=contentrange or (0, contentlength, contentlength)
             )
 
         # abuse rank
