@@ -338,7 +338,7 @@ def save_checksum(path, algorithm, checksum, contentrange=None):
             'checksum'
         ],
         row={
-            'begin': begin + 1,
+            'begin': begin,
             'end': end,
             'algorithm': algorithm,
             'checksum': checksum
@@ -367,7 +367,7 @@ def is_collision(contentrange, checksum):
     collisions = Checksum.search_collision(
         code=checksum.hexdigest(),
         algorithm=_checksum_algorithm.__name__,
-        begin=begin + 1,
+        begin=begin,
         end=end
     )
     if not collisions:
