@@ -45,7 +45,7 @@ def authenticate(request):
 
 def email_registered(email):
     # 2DO: check if email exists in db
-    return True
+    return False
 
 
 def token_for_email_exists(service, email):

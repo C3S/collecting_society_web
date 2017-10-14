@@ -113,6 +113,7 @@ class RegisterWebuser(LoginWebuser):
         return False
 
     def is_member(self, api, web_user):
+        return False
         return api.is_member(
             service='repertoire',
             email=web_user['email']
@@ -219,6 +220,9 @@ class RegisterWebuser(LoginWebuser):
             }
             log.info("web_user creation successful: %s" % web_user.email)
 
+            # save terms of service accepted
+            web_user.party.repertoire_terms_accepted = self.data['terms_accepted']
+
         # flash message
         self.request.session.flash(
             _(
@@ -243,6 +247,13 @@ class RegisterWebuser(LoginWebuser):
 
 # --- Validators --------------------------------------------------------------
 
+
+def terms_accepted(value):
+    if not value:
+        return _(u"You need to accept the terms of service.")
+    return True
+
+
 # --- Options -----------------------------------------------------------------
 
 # --- Fields ------------------------------------------------------------------
@@ -260,6 +271,12 @@ class CheckedPasswordField(colander.SchemaNode):
     widget = deform.widget.CheckedPasswordWidget()
 
 
+class CheckboxWithLabel(colander.SchemaNode):
+    oid = "terms_accepted"
+    schema_type = colander.Boolean
+    validator = colander.Function(terms_accepted)
+
+
 # --- Schemas -----------------------------------------------------------------
 
 class RegisterMemberSchema(colander.MappingSchema):
@@ -272,6 +289,10 @@ class RegisterMemberSchema(colander.MappingSchema):
     password = CheckedPasswordField(
         title=_(u"Password")
     )
+    terms_accepted = CheckboxWithLabel(
+        title=_(u"Terms of Service"),
+        label=_(u"I accept the terms of service.")
+    )
 
 
 class RegisterNonmemberSchema(colander.MappingSchema):
@@ -280,6 +301,10 @@ class RegisterNonmemberSchema(colander.MappingSchema):
     )
     password = CheckedPasswordField(
         title=_(u"Password")
+    )
+    terms_accepted = CheckboxWithLabel(
+        title=_(u"Terms of Service"),
+        label=_(u"I accept the terms of service.")
     )
 
 
