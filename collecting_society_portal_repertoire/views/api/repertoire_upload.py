@@ -486,6 +486,21 @@ def is_banned(request):
     return request.session['abuse_rank']['banned']
 
 
+def still_banned_for(request):
+    if 'abuse_rank' not in request.session:
+        return 0
+    banned = request.session['abuse_rank']['banned']
+    if not banned:
+        return 0
+    currenttime = time.time()
+    bantime = int(request.session['abuse_rank']['bantime'])
+    removeban = int(request.registry.settings['abuse_rank.removeban'])
+    seconds_still_banned_for = bantime + removeban - currenttime
+    if seconds_still_banned_for <= 0:
+        return 0
+    return seconds_still_banned_for
+
+        
 # --- service: upload ---------------------------------------------------------
 
 repertoire_upload = Service(
@@ -555,7 +570,7 @@ def post_repertoire_upload(request):
             if is_banned(request):
                 files.append({
                     'name': fieldStorage.filename,
-                    'error': _("Abuse detected. Please stop."),
+                    'error': _("Abuse detected. Wait for " + str(int(still_banned_for(request))) + " seconds before trying another upload."),
                 })
                 continue
             if is_collision(contentrange, checksum):
