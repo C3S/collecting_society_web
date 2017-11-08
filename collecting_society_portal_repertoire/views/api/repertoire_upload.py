@@ -543,7 +543,7 @@ def post_repertoire_upload(request):
         rank_max = int(request.registry.settings['abuse_rank.max'])
         hostname = get_hostname()
         descriptor = fieldStorage.file
-        filename = os.path.basename(fieldStorage.filename)
+        filename = os.path.basename(fieldStorage.filename).encode('utf-8')
         filename_hash = _hash_algorithm(filename).hexdigest()
         temporary_path = get_path(request, _path_temporary, filename_hash)
         contentrange = ContentRange.parse(
@@ -762,7 +762,7 @@ def options_repertoire_show(request):
     permission='read')
 @Tdb.transaction(readonly=True)
 def get_repertoire_show(request):
-    filename = request.matchdict['filename']
+    filename = request.matchdict['filename'].encode('utf-8')
     if not filename:
         return {}
     filename_hash = _hash_algorithm(filename).hexdigest()
