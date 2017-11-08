@@ -4,6 +4,7 @@
 import colander
 import deform
 import logging
+import datetime
 
 from pyramid.response import Response
 
@@ -212,6 +213,15 @@ class RegisterWebuser(LoginWebuser):
                     )
                 web_user.party.member_c3s_token = response['token']
                 web_user.party.save()
+            else:
+                # save values of non-c3s-member form fields
+                web_user.party.repertoire_terms_accepted = self.data['terms_accepted']
+                web_user.party.name = self.data['firstname'] + ' ' + self.data['lastname']
+                web_user.party.firstname = self.data['firstname']   # also save separately for clarity
+                web_user.party.lastname =  self.data['lastname']
+                web_user.party.birthdate = self.data['birthdate']
+                web_user.party.save()
+
             template_variables = {
                 'link': self.request.resource_url(
                     self.request.root, 'verify_email',
@@ -219,9 +229,6 @@ class RegisterWebuser(LoginWebuser):
                 )
             }
             log.info("web_user creation successful: %s" % web_user.email)
-
-            # save terms of service accepted
-            web_user.party.repertoire_terms_accepted = self.data['terms_accepted']
 
         # flash message
         self.request.session.flash(
@@ -248,6 +255,11 @@ class RegisterWebuser(LoginWebuser):
 # --- Validators --------------------------------------------------------------
 
 
+def not_empty(value):
+    if not value or len(str(value)) < 2:
+        return _(u"Please enter your name.")
+    return True
+
 def terms_accepted(value):
     if not value:
         return _(u"You need to accept the terms of service.")
@@ -257,6 +269,27 @@ def terms_accepted(value):
 # --- Options -----------------------------------------------------------------
 
 # --- Fields ------------------------------------------------------------------
+
+class FirstnameField(colander.SchemaNode):
+    oid = "firstname"
+    schema_type = colander.String
+    validator = colander.Function(not_empty)
+
+
+class LastnameField(colander.SchemaNode):
+    oid = "lastname"
+    schema_type = colander.String
+    validator = colander.Function(not_empty)
+
+AGE_ADULT = 16 # don't allow kids
+class BirthdateField(colander.SchemaNode):
+    oid = "birthdate"
+    schema_type = colander.Date
+    validator = colander.Range(
+                    max=datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364),
+                    max_err=_('Sorry, you have to be ' + str(AGE_ADULT) +' years or older to register here.')
+                )
+
 
 class EmailField(colander.SchemaNode):
     oid = "email"
@@ -296,6 +329,15 @@ class RegisterMemberSchema(colander.MappingSchema):
 
 
 class RegisterNonmemberSchema(colander.MappingSchema):
+    firstname = FirstnameField(
+        title=_(u"Firstname")
+    )
+    lastname = LastnameField(
+        title=_(u"Lastname")
+    )
+    birthdate = BirthdateField(
+        title=_(u"Birthdate")
+    )
     email = EmailField(
         title=_(u"Email")
     )
