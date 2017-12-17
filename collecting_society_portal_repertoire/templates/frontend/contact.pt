@@ -8,13 +8,13 @@
 
     <p>
         <span i18n:translate="">Representatives</span>:<br />
-        Max Gössler<br />
+        Julian Tillmann<br />
         Meik Michalke
     </p>
 
     <p>
-        <span i18n:translate="">Heyestr. 194</span><br />
-        <span i18n:translate="">40625 Düsseldorf</span><br />
+        <span i18n:translate="">Rochusstr. 44</span><br />
+        <span i18n:translate="">40479 Düsseldorf</span><br />
         <span i18n:translate="">Germany</span>
     </p>
 
