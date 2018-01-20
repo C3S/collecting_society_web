@@ -21,9 +21,7 @@ from collecting_society_portal.models import (
     WebUser
 )
 from collecting_society_portal.views import ViewBase
-from collecting_society_portal.views.forms import (
-    LoginWebuser
-)
+from collecting_society_portal.views.forms import LoginWebuser
 
 from ..services import _
 from .forms import RegisterWebuser

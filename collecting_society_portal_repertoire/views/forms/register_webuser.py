@@ -6,8 +6,6 @@ import deform
 import logging
 import datetime
 
-from pyramid.response import Response
-
 from collecting_society_portal.resources import FrontendResource
 from collecting_society_portal.views.forms import LoginWebuser
 from collecting_society_portal.models import (
@@ -47,7 +45,7 @@ class RegisterWebuser(LoginWebuser):
 
     def claims_membership(self):
         self.stage = 'claims_membership'
-        self.form = claims_membership_form(self.request)
+        self.form = claims_membership_form()
         self.render(self.data)
 
         # has membership
@@ -62,7 +60,7 @@ class RegisterWebuser(LoginWebuser):
 
     def wants_membership(self):
         self.stage = 'wants_membership'
-        self.form = wants_membership_form(self.request)
+        self.form = wants_membership_form()
         self.render(self.data)
 
         # wants membership
@@ -80,9 +78,11 @@ class RegisterWebuser(LoginWebuser):
     def register_webuser(self):
         self.stage = 'register_webuser'
         if self.data['member_c3s']:
-            self.form = register_member_form(self.request)
+            # TODO: Change back, when membership is integrated
+            # self.form = register_member_form()
+            self.form = register_nonmember_form()
         else:
-            self.form = register_nonmember_form(self.request)
+            self.form = register_nonmember_form()
 
         # register webuser
         if self.submitted('register_webuser') and self.validate():
@@ -114,11 +114,12 @@ class RegisterWebuser(LoginWebuser):
         return False
 
     def is_member(self, api, web_user):
+        # TODO: Change back, when membership is integrated
+        # return api.is_member(
+        #     service='repertoire',
+        #     email=web_user['email']
+        # )
         return False
-        return api.is_member(
-            service='repertoire',
-            email=web_user['email']
-        )
 
     # --- Actions -------------------------------------------------------------
 
@@ -162,22 +163,28 @@ class RegisterWebuser(LoginWebuser):
         else:
             # user claims to be a c3s member
             if self.is_claiming_membership(self.data):
-                # user is a c3s member
-                if self.is_member(_c3smembership, _web_user):
-                    _create = True
-                    template_name = "registration-member_success"
-                # user is not a c3s member
-                else:
-                    template_name = "registration-member_fail_nomatch"
+                # TODO: Change back, when membership is integrated
+                # # user is a c3s member
+                # if self.is_member(_c3smembership, _web_user):
+                #     _create = True
+                #     template_name = "registration-member_success"
+                # # user is not a c3s member
+                # else:
+                #     template_name = "registration-member_fail_nomatch"
+                _create = True
+                template_name = "registration-member_success"
             # user claims not to be a c3s member
             else:
-                # user is a c3s member
-                if self.is_member(_c3smembership, _web_user):
-                    template_name = "registration-nonmember_fail_reserved"
-                # user is not a c3s member
-                else:
-                    _create = True
-                    template_name = "registration-nonmember_success"
+                # TODO: Change back, when membership is integrated
+                # # user is a c3s member
+                # if self.is_member(_c3smembership, _web_user):
+                #     template_name = "registration-nonmember_fail_reserved"
+                # # user is not a c3s member
+                # else:
+                #     _create = True
+                #     template_name = "registration-nonmember_success"
+                _create = True
+                template_name = "registration-nonmember_success"
 
         # create
         if _create:
@@ -247,6 +254,8 @@ class RegisterWebuser(LoginWebuser):
             variables=template_variables,
             recipients=[_web_user['email']]
         )
+        web_user.opt_in_state = "mail-sent"
+        web_user.save()
 
         # reset form
         self.redirect(FrontendResource)
@@ -292,13 +301,13 @@ class BirthdateField(colander.SchemaNode):
 
 
 class EmailField(colander.SchemaNode):
-    oid = "email"
+    oid = "register_email"
     schema_type = colander.String
     validator = colander.Email()
 
 
 class CheckedPasswordField(colander.SchemaNode):
-    oid = "password"
+    oid = "register_password"
     schema_type = colander.String
     validator = colander.Length(min=8)
     widget = deform.widget.CheckedPasswordWidget()
@@ -352,11 +361,10 @@ class RegisterNonmemberSchema(colander.MappingSchema):
 
 # --- Forms -------------------------------------------------------------------
 
-def claims_membership_form(request):
+def claims_membership_form():
     return deform.Form(
         title=_(u"Are you a C3S member?"),
         schema=colander.MappingSchema(),
-        action=request.path,
         buttons=[
             deform.Button(
                 'claims_membership', _(u"Yes"), css_class="btn-default btn-lg"
@@ -366,11 +374,10 @@ def claims_membership_form(request):
     )
 
 
-def wants_membership_form(request):
+def wants_membership_form():
     return deform.Form(
         title=_(u"Do you want to apply for C3S membership?"),
         schema=colander.MappingSchema(),
-        action=request.path,
         buttons=[
             deform.Button('wants_membership', _(u"Yes"), css_class="btn-lg"),
             deform.Button('wants_no_membership', _(u"No")),
@@ -379,10 +386,9 @@ def wants_membership_form(request):
     )
 
 
-def register_member_form(request):
+def register_member_form():
     return deform.Form(
         schema=RegisterMemberSchema(),
-        action=request.path,
         buttons=[
             deform.Button(
                 'register_webuser', _(u"Register"), css_class="btn-lg"
@@ -392,10 +398,9 @@ def register_member_form(request):
     )
 
 
-def register_nonmember_form(request):
+def register_nonmember_form():
     return deform.Form(
         schema=RegisterNonmemberSchema(),
-        action=request.path,
         buttons=[
             deform.Button(
                 'register_webuser', _(u"Register"), css_class="btn-lg"
