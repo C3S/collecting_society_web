@@ -33,7 +33,7 @@ class RepertoireViews(ViewBase):
 
     @view_config(
         name='dashboard',
-        renderer='../templates/repository/dashboard.pt',
+        renderer='../templates/repertoire/dashboard.pt',
         permission='read'
     )
     def dashboard(self):
@@ -42,7 +42,7 @@ class RepertoireViews(ViewBase):
     @view_config(
         context=UploadResource,
         name='',
-        renderer='../templates/repository/upload.pt',
+        renderer='../templates/repertoire/upload.pt',
         permission='read'
     )
     def upload(self):

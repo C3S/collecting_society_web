@@ -16,6 +16,7 @@ The following functions are called by convention on app creation:
 
 from collections import OrderedDict
 
+from collecting_society_portal_repertoire.views.widgets import DuplicateContentWidget
 from collecting_society_portal.views.widgets import news_widget
 from collecting_society_portal.resources import (
     FrontendResource,
@@ -271,10 +272,11 @@ def web_registry(config):
         ]
         return reg
 
-    # @RepertoireResource.extend_registry
-    # def repertoire(self):
-    #     reg = self.dict()
-    #     return reg
+    @RepertoireResource.extend_registry
+    def repertoire(self):
+        reg = self.dict()
+        reg['repertoire']['duplicate_content'] = DuplicateContentWidget()
+        return reg
 
     @UploadResource.extend_registry
     def upload(self):

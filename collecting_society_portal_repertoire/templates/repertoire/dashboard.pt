@@ -1,0 +1,13 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
+<tal:block metal:use-macro="backend363" i18n:domain="collecting_society_portal_repertoire">
+
+    <tal:block metal:fill-slot="content-middle">
+        <div class="container">
+            <img src="../../static/repertoire/img/dashboard_dummy_img.png" />
+            <div class="introtext">Lorem ipsum dolor sit amet Introtext</div>
+        </div>
+        <div>${context.registry['repertoire']['duplicate_content']|''}</div>
+    </tal:block>
+
+</tal:block>
