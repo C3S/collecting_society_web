@@ -7,8 +7,11 @@ import logging
 import magic
 import hashlib
 import uuid
+import re
 import datetime
 import time
+import sys
+
 from cgi import FieldStorage
 
 from pydub import AudioSegment
@@ -134,6 +137,38 @@ def get_path(request, directory, filename=None):
         return os.path.join(base_directory, directory, webuser_directory)
     return os.path.join(base_directory, directory, webuser_directory, filename)
 
+def cleanup_temp_directory(request):
+    base_directory = request.registry.settings['api.c3supload.filepath']
+    temp_directory = os.path.join(base_directory, _path_temporary)
+    import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True) ##################################
+
+    # filter for certain file patterns
+    uuidrule = '^[0-9A-Fa-f]{64}(|.checksums)$'
+    uuidhex = re.compile(uuidrule, re.I)
+
+    # walk through the temporary directory structure
+    now = time.time()
+    for root, _, files in os.walk(temp_directory):
+        level = root.replace(temp_directory, '').count(os.sep)
+        if level == 1:
+            for tmpfile in files:
+                if uuidhex.match(tmpfile) is not None: # only delete files we created
+                    tmpfilepath = os.path.join(root, tmpfile)
+                    if os.path.isfile(tmpfilepath):                
+                        if (os.stat(tmpfilepath).st_mtime < now 
+                            - request.registry.settings['api.c3supload.tempfile_expire_days'] * 86400):
+                            try:
+                                os.remove(tmpfilepath)
+                                log.info(("removed abandoned temporary file '%s'\n") % (tmpfile))
+
+                            except IOError:
+                                log.info(("couldn't remove abandoned temporary file '%s'\n") % (tmpfile))
+                                #pass
+                            
+                            finally:
+                                pass
+                                
+    # TODO: delete user directories, if empty   
 
 def get_content_info(request, content):
     return {
@@ -526,6 +561,12 @@ def options_repertoire_upload(request):
     permission='create')
 @Tdb.transaction(readonly=False)
 def post_repertoire_upload(request):
+
+    # see if there are old temporary files in the temp folder structure
+    cleanup_temp_directory(request) 
+    # TODO: only check on first chunk
+    # TODO: add timestamp file in temp folder to track if cleanup run
+    #       was already started this day
 
     # create paths
     create_paths(request)
