@@ -9,7 +9,7 @@ from ...services import _
 class DuplicateContentWidget():
 
     def __init__(self):
-        heading = _(u'Duplicates: ' + self.duplicate_content_count(self.data['user']))
+        heading = _(u'Duplicates: ' + self.duplicate_content_count(request.user))
         body = render(
             '../../templates/widgets/duplicate_content.pt',
             {'news': request.context.registry['content']['duplicate_content']},
