@@ -1,29 +1,20 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
-from pyramid.view import (
-    view_config,
-    view_defaults
-)
-from collecting_society_portal.models import (
-    Tdb,
-    WebUser
-)
-from collecting_society_portal.views import ViewBase
+from pyramid.renderers import render
 
-from collecting_society_portal.models import WebUser
-from collecting_society_portal_creative.models import Content
+from ...services import _
 
-@view_defaults(
-    context='..resources.RepertoireResource',
-    permission='read')
-class DuplicateContentWidget(ViewBase):
 
-    @view_config(
-        name='')
+class DuplicateContentWidget(request):
+
     def root(self):
-        return self.redirect(RepertoireResource, 'duplicate_content_count')
+        heading = _(u'Duplicates: ' + duplicate_content_count(request.user))
+        body = render(
+            '../../templates/widgets/duplicate_content.pt',
+            {'news': request.context.registry['content']['duplicate_content']},
+            request=request
+        )
 
-    def duplicate_content_count():
-        web_user = WebUser.current_web_user(get_current_request)
-        return Content.search_duplicates_by_user(web_user.id)
+    def duplicate_content_count(user):
+        return Content.search_duplicates_by_user(user.id)

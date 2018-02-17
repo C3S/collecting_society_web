@@ -275,7 +275,7 @@ def web_registry(config):
     @RepertoireResource.extend_registry
     def repertoire(self):
         reg = self.dict()
-        reg['repertoire']['duplicate_content'] = DuplicateContentWidget()
+        reg['repertoire']['duplicate_content'] = DuplicateContentWidget(self.request)
         return reg
 
     @UploadResource.extend_registry
