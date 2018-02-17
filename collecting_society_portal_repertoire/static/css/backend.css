@@ -88,7 +88,11 @@ a { outline:none!important; }
 /* Widgets */
 
 .dashboard-widget { border: 1px solid #317a19;
-                    border-radius: 25px }
+                    border-radius: 25px;
+                    min-height: 120px;
+                    min-width: 120px;
+                    text-align: center;
+                    margin: 15px }
 
 /*******************************************************************************
 
