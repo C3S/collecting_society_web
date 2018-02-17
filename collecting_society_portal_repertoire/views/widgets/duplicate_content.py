@@ -8,13 +8,14 @@ from ...services import _
 
 class DuplicateContentWidget():
 
-    def root(self):
+    def __init__(self):
         heading = _(u'Duplicates: ' + duplicate_content_count(self.data['user']))
         body = render(
             '../../templates/widgets/duplicate_content.pt',
             {'news': request.context.registry['content']['duplicate_content']},
             request=request
         )
+        return {'heading': heading, 'body': body}
 
     def duplicate_content_count(user):
         return Content.search_duplicates_by_user(user.id)
