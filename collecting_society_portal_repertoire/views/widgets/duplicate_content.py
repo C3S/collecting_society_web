@@ -22,5 +22,10 @@ class DuplicateContentWidget():
         )
         return {'heading': heading, 'body': body}
 
+    def get_duplicate_content(self):
+        return Content.search_duplicates_by_user(self.request)
+
     def duplicate_content_count(self):
-        return Content.search_duplicates_by_user(self.request.user.id)
+        list_duplicates = self.get_duplicate_content()
+        if list_duplicates:
+            return len(list_duplicates)

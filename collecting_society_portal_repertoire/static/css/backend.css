@@ -85,6 +85,10 @@ a { outline:none!important; }
 .cs-widget-plugins .cs-widget-plugin-img { width:120px; }
 .cs-widget-todo-steps .cs-widget-todo-step-img { float:left; width:60px; margin:0 5px 5px 0; }
 
+/* Widgets */
+
+.dashboard-widget { border: 1px solid #317a19;
+                    border-radius: 25px }
 
 /*******************************************************************************
 

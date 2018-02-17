@@ -7,7 +7,15 @@
             <img src="../../static/repertoire/img/dashboard_dummy_img.png" />
             <div class="introtext">Lorem ipsum dolor sit amet Introtext</div>
         </div>
-        <div>${structure: context.registry['repertoire']['duplicate_content'].generate_html|'Error'}</div>
+        <div class="dashboard-widget" style="float:left">
+            ${structure: context.registry['repertoire']['duplicate_content'].generate_html()['body']}
+        </div>
+        <div class="dashboard-widget" style="float:left">
+           
+        </div>
+        <div class="dashboard-widget" style="float:left">
+            
+        </div>
     </tal:block>
 
 </tal:block>
