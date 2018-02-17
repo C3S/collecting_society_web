@@ -7,7 +7,7 @@
             <img src="../../static/repertoire/img/dashboard_dummy_img.png" />
             <div class="introtext">Lorem ipsum dolor sit amet Introtext</div>
         </div>
-        <div>${context.registry['repertoire']['duplicate_content']|''}</div>
+        <div>${structure: context.registry['repertoire']['duplicate_content'].generate_html|'Error'}</div>
     </tal:block>
 
 </tal:block>

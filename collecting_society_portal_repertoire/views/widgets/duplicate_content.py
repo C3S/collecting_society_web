@@ -5,18 +5,22 @@ from pyramid.renderers import render
 
 from ...services import _
 
+from collecting_society_portal_creative.models import Content
 
 class DuplicateContentWidget():
 
-    def __init__(self):
-        #return self.duplicate_content_count(request.user)
+    def __init__(self, request):
+        self.request = request
+        self.template = '../../templates/widgets/duplicate_content.pt'
+
+    def generate_html(self):
         heading = _(u'Duplicates')
         body = render(
-            '../../templates/widgets/duplicate_content.pt',
-            {'duplicate_content': request.context.registry['content']['duplicate_content']},
-            request=request
+            self.template,
+            {'duplicate_content': self.duplicate_content_count()},
+            request=self.request
         )
         return {'heading': heading, 'body': body}
 
-    def duplicate_content_count(user):
-        return Content.search_duplicates_by_user(user.id)
+    def duplicate_content_count(self):
+        return Content.search_duplicates_by_user(self.request.user.id)
