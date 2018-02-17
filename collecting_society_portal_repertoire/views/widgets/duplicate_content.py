@@ -8,8 +8,8 @@ from ...services import _
 
 class DuplicateContentWidget():
 
-    def root(self, request):
-        heading = _(u'Duplicates: ' + duplicate_content_count(request.user))
+    def root(self):
+        heading = _(u'Duplicates: ' + duplicate_content_count(self.data['user']))
         body = render(
             '../../templates/widgets/duplicate_content.pt',
             {'news': request.context.registry['content']['duplicate_content']},
