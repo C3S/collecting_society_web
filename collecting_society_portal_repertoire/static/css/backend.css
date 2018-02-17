@@ -80,6 +80,7 @@ a { outline:none!important; }
 /* Content Right */
 
 .cs-content-right { background-color:#fff; }
+.cs-content-right .preview audio { width:100%; max-width:none; }
 .cs-backend-363 .cs-content-right { background-color:transparent; }
 
 .cs-widget-plugins .cs-widget-plugin-img { width:120px; }

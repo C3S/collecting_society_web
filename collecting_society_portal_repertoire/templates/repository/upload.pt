@@ -95,36 +95,74 @@
             <tr class="template-download fade">
                 <td>
                     <span class="preview">
-                        {% if (file.previewUrl && !file.error) { %}
-                            <audio src="{%=file.previewUrl%}" controls=""></audio>
+                        {% if (file.preview_processed) { %}                    
+                            {% if (file.previewUrl && !file.error) { %}
+                                <div class="panel panel-success">
+                                <div class="panel-heading"><span i18n:translate="">'{%=file.name%}' has been processed succesfully.</span></div>
+                                <audio src="{%=file.previewUrl%}" controls=""></audio>
+                            {% } %}
+                        {% } else { %}
+                            <div class="panel panel-info">
+                            <div class="panel-heading"><span i18n:translate="">'{%=file.name%}' is currently being processed. Please come back again later.</span></div>
+                            <span i18n:translate=""><b></b></span>                            
                         {% } %}
                     </span>
 
-                    <div class="name">
-                        <span>{%=file.name%}</span>
+                    <div class="panel-body">
+                    
+                        <div class="cs-audio-properties">
+                            {% if (file.duration) { %}
+                                <span i18n:translate="" class="duration">Duration</span> <span class="badge">{%=file.duration%}</span>
+                            {% } %}
+                            {% if (file.channels) { %}
+                                <span i18n:translate="" class="channels">Channels </span> <span class="badge">{%=file.channels%}</span>
+                            {% } %}
+                            {% if (file.sample_width) { %}
+                                <span i18n:translate="" class="sample_width">Bitwidth </span> <span class="badge">{%=file.sample_width%}</span>
+                            {% } %}
+                            {% if (file.frame_rate) { %}
+                                <span i18n:translate="" class="frame_rate">Samplingrate</span> <span class="badge">{%=file.frame_rate%}</span>
+                            {% } %}
+                            {% if (file.size) { %}
+                                <span i18n:translate="" class="size">File Size</span> <span class="badge">{%=o.formatFileSize(file.size)%}</span>
+                            {% } %}
+                        <div>
+                    
+                        <div class="cs-audio-tag-metadata">
+                            {% if (file.metadata_artist) { %}
+                                <span i18n:translate="" class="metadata_artist">Artist</span> <span class="badge">{%=file.metadata_artist%}</span>
+                            {% } %}
+                            {% if (file.metadata_title) { %}
+                                <span i18n:translate="" class="metadata_title">Title </span> <span class="badge">{%=file.metadata_title%}</span>
+                            {% } %}
+                            {% if (file.metadata_release) { %}
+                                <span i18n:translate="" class="metadata_release">Release </span> <span class="badge">{%=file.metadata_release%}</span>
+                            {% } %}
+                            {% if (file.metadata_release_date) { %}
+                                <span i18n:translate="" class="metadata_release_date">Release Date </span> <span class="badge">{%=file.metadata_release_date%}</span>
+                            {% } %}
+                            {% if (file.metadata_track_number) { %}
+                                <span i18n:translate="" class="metadata_track_number">Track Number </span> <span class="badge">{%=file.metadata_track_number%}</span>
+                            {% } %}
+                        <div>
+                    
+                        <div class="cs-audio-processing-details">
+                            {% if (file.processing_state) { %}
+                                <span i18n:translate="" class="processing_state">Processing State </span> <span class="badge">{%=file.processing_state%}</span>
+                            {% } %}
+                            {% if (file.rejection_reason) { %}
+                                <span i18n:translate="" class="rejection_reason">Rejection Reason </span> <span class="badge">{%=file.rejection_reason%}</span>
+                            {% } %}
+                            {% if (file.rejection_reason_details) { %}
+                                <span i18n:translate="" class="rejection_reason_details">Rejection Reason Details </span> <span class="badge">{%=file.rejection_reason_details%}</span>
+                            {% } %}
+                        <div>
+
+                        {% if (file.error) { %}
+                            <div><span i18n:translate="" class="label label-danger">Error</span> {%=file.error%}</div>
+                        {% } %}
+
                     </div>
-
-                    <div class="cs-audio-properties">
-                        {% if (file.duration) { %}
-                            <span class="duration">{%=file.duration%}</span>
-                        {% } %}
-                        {% if (file.channels) { %}
-                            <span class="channels">{%=file.channels%}</span>
-                        {% } %}
-                        {% if (file.sample_width) { %}
-                            <span class="sample_width">{%=file.sample_width%}</span>
-                        {% } %}
-                        {% if (file.frame_rate) { %}
-                            <span class="frame_rate">{%=file.frame_rate%}</span>
-                        {% } %}
-                        {% if (file.size) { %}
-                            <span class="size">{%=o.formatFileSize(file.size)%}</span>
-                        {% } %}
-                    <div>
-
-                    {% if (file.error) { %}
-                        <div><span i18n:translate="" class="label label-danger">Error</span> {%=file.error%}</div>
-                    {% } %}
                 </td>
                 <td>
                     {% if (!file.error) { %}

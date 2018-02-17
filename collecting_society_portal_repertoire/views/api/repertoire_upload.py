@@ -69,7 +69,7 @@ _prefix = 'repertoire'
 _path_temporary = 'temporary'
 _path_uploaded = 'uploaded'
 _path_rejected = 'rejected'
-_path_preview = 'preview'
+_path_preview = 'previews'
 
 # 2DO: _preview_default
 _preview_format = 'ogg'
@@ -140,7 +140,6 @@ def get_path(request, directory, filename=None):
 def cleanup_temp_directory(request):
     base_directory = request.registry.settings['api.c3supload.filepath']
     temp_directory = os.path.join(base_directory, _path_temporary)
-    import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True) ##################################
 
     # filter for certain file patterns
     uuidrule = '^[0-9A-Fa-f]{64}(|.checksums)$'
@@ -156,7 +155,7 @@ def cleanup_temp_directory(request):
                     tmpfilepath = os.path.join(root, tmpfile)
                     if os.path.isfile(tmpfilepath):                
                         if (os.stat(tmpfilepath).st_mtime < now 
-                            - request.registry.settings['api.c3supload.tempfile_expire_days'] * 86400):
+                            - int(request.registry.settings['api.c3supload.tempfile_expire_days']) * 86400):
                             try:
                                 os.remove(tmpfilepath)
                                 log.info(("removed abandoned temporary file '%s'\n") % (tmpfile))
@@ -182,6 +181,18 @@ def get_content_info(request, content):
         'channels': 'mono' if content.channels == 1 else 'stereo',
         'sample_width': '{:d} bit'.format(content.sample_width),
         'frame_rate': '{:d} Hz'.format(content.sample_rate),
+        'preview_processed': content.preview_path != '',
+
+        'metadata_artist': content.metadata_artist,
+        'metadata_title': content.metadata_title,
+        'metadata_release': content.metadata_release,
+        'metadata_release_date': content.metadata_release_date,
+        'metadata_track_number': content.metadata_track_number,
+
+        'processing_state' : content.processing_state,
+        'rejection_reason': content.rejection_reason,
+        'rejection_reason_details': content.rejection_reason_details,
+
         'previewUrl': get_url(
             url=request.registry.settings['api.c3supload.url'],
             version=request.registry.settings['api.c3supload.version'],
@@ -562,12 +573,6 @@ def options_repertoire_upload(request):
 @Tdb.transaction(readonly=False)
 def post_repertoire_upload(request):
 
-    # see if there are old temporary files in the temp folder structure
-    cleanup_temp_directory(request) 
-    # TODO: only check on first chunk
-    # TODO: add timestamp file in temp folder to track if cleanup run
-    #       was already started this day
-
     # create paths
     create_paths(request)
 
@@ -611,7 +616,9 @@ def post_repertoire_upload(request):
             if is_banned(request):
                 files.append({
                     'name': fieldStorage.filename,
-                    'error': _("Abuse detected. Wait for " + str(int(still_banned_for(request))) + " seconds before trying another upload."),
+                    'error': _("Abuse detected. Wait for " + 
+                    str(int(still_banned_for(request))) + 
+                    " seconds before trying another upload."),
                 })
                 continue
             if is_collision(contentrange, checksum):
@@ -642,7 +649,8 @@ def post_repertoire_upload(request):
         # get uuid paths
         uploaded_path = get_path(request, _path_uploaded, content_uuid)
         rejected_path = get_path(request, _path_rejected, content_uuid)
-        preview_path = get_path(request, _path_preview, content_uuid)
+        #preview_path = get_path(request, os.path.join(
+        #    _path_preview, content_uuid[0], content_uuid[1]), content_uuid)
 
         # validate file
         error = validate_upload(filename, temporary_path)
@@ -694,17 +702,17 @@ def post_repertoire_upload(request):
             })
             continue
 
-        # create preview
-        with benchmark(request, name='preview', uid=filename,
-                       normalize=temporary_path, scale=100*1024*1024):
-            audio = AudioSegment.from_file(temporary_path)
-            ok = create_preview(audio, preview_path)
-            if not ok:
-                panic(
-                    request,
-                    reason="Preview could not be created.",
-                    identifiers=[filename_hash]
-                )
+        # create preview -> now done in repertoire processing!
+        #with benchmark(request, name='preview', uid=filename,
+        #               normalize=temporary_path, scale=100*1024*1024):
+        audio = AudioSegment.from_file(temporary_path)
+        #    ok = create_preview(audio, preview_path)
+        #    if not ok:
+        #        panic(
+        #            request,
+        #            reason="Preview could not be created.",
+        #            identifiers=[filename_hash]
+        #        )
 
         # move files (temporary -> uploaded)
         ok = move_files_with_prefixes(
@@ -728,7 +736,7 @@ def post_repertoire_upload(request):
             'mime_type': str(mime.from_file(uploaded_path)),
             'size': os.path.getsize(uploaded_path),
             'path': uploaded_path,
-            'preview_path': preview_path,
+            'preview_path': '', # preview_path,
             'length': "%.6f" % audio.duration_seconds,
             'channels': int(audio.channels),
             'sample_rate': int(audio.frame_rate),
@@ -749,6 +757,11 @@ def post_repertoire_upload(request):
 
         # client feedback
         files.append(get_content_info(request, content))
+
+        # finally, see if there are old temporary files in the temp folder structure
+        cleanup_temp_directory(request) 
+        # TODO: add timestamp file in temp folder to track if cleanup run
+        #       was already started this day
 
     return {'files': files}
 
@@ -821,7 +834,7 @@ def get_repertoire_show(request):
 repertoire_preview = Service(
     name=_prefix + 'preview',
     path=_prefix + '/v1/preview/{id}',
-    description="previewd the uploaded repertoire files",
+    description="previewed the uploaded repertoire files",
     cors_policy=get_cors_policy(),
     acl=get_acl
 )
@@ -839,7 +852,7 @@ def options_repertoire_preview(request):
 def get_repertoire_preview(request):
     content = Content.search_by_id(request.matchdict['id'])
     preview_path = content.preview_path
-    if not os.path.isfile(preview_path):
+    if not preview_path or preview_path == '' or not os.path.isfile(preview_path):
         raise HTTPNotFound()
     if not content.user != WebUser.current_user:
         raise HTTPForbidden()
