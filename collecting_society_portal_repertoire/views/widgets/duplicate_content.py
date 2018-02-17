@@ -6,9 +6,9 @@ from pyramid.renderers import render
 from ...services import _
 
 
-class DuplicateContentWidget(request):
+class DuplicateContentWidget():
 
-    def root(self):
+    def root(self, request):
         heading = _(u'Duplicates: ' + duplicate_content_count(request.user))
         body = render(
             '../../templates/widgets/duplicate_content.pt',
