@@ -620,7 +620,8 @@ def post_repertoire_upload(request):
                 'processing_hostname': hostname,
                 'processing_state': "rejected",
                 'rejection_reason': "format_error",
-                'user': WebUser.current_user(request).id,
+                'entity_origin': "direct",
+                'entity_creator': WebUser.current_web_user(request).party,
                 'name': str(name),
                 'category': 'audio',
                 'mime_type': str(mime.from_file(rejected_path)),
@@ -671,7 +672,8 @@ def post_repertoire_upload(request):
             'uuid': content_uuid,
             'processing_hostname': hostname,
             'processing_state': "uploaded",
-            'user': WebUser.current_user(request).id,
+            'entity_origin': "direct",
+            'entity_creator': WebUser.current_web_user(request).party,
             'name': str(filename),
             'category': 'audio',
             'mime_type': str(mime.from_file(uploaded_path)),
@@ -795,7 +797,7 @@ def get_repertoire_preview(request):
     preview_path = content.preview_path
     if not preview_path or preview_path == '' or not os.path.isfile(preview_path):
         raise HTTPNotFound()
-    if not content.user != WebUser.current_user:
+    if content.entity_creator != request.user.party:
         raise HTTPForbidden()
     return FileResponse(
         preview_path,
