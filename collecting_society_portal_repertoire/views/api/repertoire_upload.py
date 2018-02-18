@@ -179,7 +179,7 @@ def get_content_info(request, content):
         'channels': 'mono' if content.channels == 1 else 'stereo',
         'sample_width': '{:d} bit'.format(content.sample_width),
         'frame_rate': '{:d} Hz'.format(content.sample_rate),
-        'preview_processed': content.preview_path != '',
+        'preview_processed': bool(content.preview_path),
 
         'metadata_artist': content.metadata_artist,
         'metadata_title': content.metadata_title,
@@ -796,8 +796,8 @@ def get_repertoire_preview(request):
     preview_path = content.preview_path
     if not preview_path or preview_path == '' or not os.path.isfile(preview_path):
         raise HTTPNotFound()
-    if content.entity_creator != request.user.party:
-        raise HTTPForbidden()
+    #if content.entity_creator != request.user.party:   <- make serious acl here!
+    #    raise HTTPForbidden()
     return FileResponse(
         preview_path,
         request=request,
