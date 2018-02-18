@@ -66,20 +66,11 @@ _prefix = 'repertoire'
 
 # --- configuration -----------------------------------------------------------
 
+
 _path_temporary = 'temporary'
 _path_uploaded = 'uploaded'
 _path_rejected = 'rejected'
-_path_preview = 'previews'
-
-# 2DO: _preview_default
-_preview_format = 'ogg'
-_preview_quality = '0'
-_preview_samplerate = '16000'
-_preview_fadein = 1000
-_preview_fadeout = 1000
-_preview_segment_duration = 8000
-_preview_segment_crossfade = 2000
-_preview_segment_interval = 54000
+_path_previews = 'previews'
 
 _hash_algorithm = hashlib.sha256
 
@@ -131,15 +122,22 @@ def get_url(url, version, action, content_id):
 
 
 def get_path(request, directory, filename=None):
-    base_directory = request.registry.settings['api.c3supload.filepath']
     webuser_directory = str(request.user.id)
-    if not filename:
-        return os.path.join(base_directory, directory, webuser_directory)
-    return os.path.join(base_directory, directory, webuser_directory, filename)
+    if directory == _path_previews: # special case: for previews use content base path
+        content_base_directory = request.registry.settings['api.c3supload.content_base_path']
+        if not filename:
+            return os.path.join(content_base_directory, directory, webuser_directory)
+        return os.path.join(content_base_directory, directory, webuser_directory, filename)
+    else:
+        storage_base_directory = request.registry.settings['api.c3supload.storage_base_path']
+        if not filename:
+            return os.path.join(storage_base_directory, directory, webuser_directory)
+        return os.path.join(storage_base_directory, directory, webuser_directory, filename)
+
 
 def cleanup_temp_directory(request):
-    base_directory = request.registry.settings['api.c3supload.filepath']
-    temp_directory = os.path.join(base_directory, _path_temporary)
+    storage_base_directory = request.registry.settings['api.c3supload.storage_base_path']
+    temp_directory = os.path.join(storage_base_directory, _path_temporary)
 
     # filter for certain file patterns
     uuidrule = '^[0-9A-Fa-f]{64}(|.checksums)$'
@@ -248,7 +246,7 @@ def move_file(source, target):
 def create_paths(request):
     for subpath in [_path_temporary,
                     _path_uploaded,
-                    _path_preview,
+                    _path_previews,
                     _path_rejected]:
         path = get_path(request, subpath)
         if not os.path.exists(path):
@@ -265,7 +263,7 @@ def move_files_with_prefixes(source, target):
 def delete_files_with_identifiers(request, identifiers):
     for subpath in [_path_temporary,
                     _path_uploaded,
-                    _path_preview,
+                    _path_previews,
                     _path_rejected]:
         for identifier in identifiers:
             for postfix in ['', _checksum_postfix]:
@@ -427,53 +425,6 @@ def get_content_uuid():
         if not Content.search_by_uuid(content_uuid):
             break
     return content_uuid
-
-
-def get_segments(audio):
-    _total = len(audio)
-    _segment = _preview_segment_duration
-    _interval = _preview_segment_interval
-    if _segment >= _total:
-        yield audio
-    else:
-        start = 0
-        end = _segment
-        while end < _total:
-            yield audio[start:end]
-            start = end + _interval + 1
-            end = start + _segment
-
-
-def create_preview(audio, preview_path):
-
-    # convert to mono
-    mono = audio.set_channels(1)
-
-    # mix segments
-    preview = None
-    for segment in get_segments(mono):
-        preview = segment if not preview else preview.append(
-            segment, crossfade=_preview_segment_crossfade
-        )
-
-    # fade in/out
-    preview = preview.fade_in(_preview_fadein).fade_out(_preview_fadeout)
-
-    # export
-    ok = True
-    try:
-        preview.export(
-            preview_path,
-            format=_preview_format,
-            parameters=[
-                "-aq", _preview_quality,
-                "-ar", _preview_samplerate
-            ]
-        )
-    except:
-        ok = False
-
-    return (ok and os.path.isfile(preview_path))
 
 
 def raise_abuse_rank(request):
@@ -649,8 +600,6 @@ def post_repertoire_upload(request):
         # get uuid paths
         uploaded_path = get_path(request, _path_uploaded, content_uuid)
         rejected_path = get_path(request, _path_rejected, content_uuid)
-        #preview_path = get_path(request, os.path.join(
-        #    _path_preview, content_uuid[0], content_uuid[1]), content_uuid)
 
         # validate file
         error = validate_upload(filename, temporary_path)
@@ -702,17 +651,9 @@ def post_repertoire_upload(request):
             })
             continue
 
-        # create preview -> now done in repertoire processing!
-        #with benchmark(request, name='preview', uid=filename,
-        #               normalize=temporary_path, scale=100*1024*1024):
+        # we used to create a preview, now done in repertoire processing
+        # this is only for displaying some file properties
         audio = AudioSegment.from_file(temporary_path)
-        #    ok = create_preview(audio, preview_path)
-        #    if not ok:
-        #        panic(
-        #            request,
-        #            reason="Preview could not be created.",
-        #            identifiers=[filename_hash]
-        #        )
 
         # move files (temporary -> uploaded)
         ok = move_files_with_prefixes(
