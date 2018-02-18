@@ -10,20 +10,19 @@ from collecting_society_portal_creative.models import Content
 class DuplicateContentWidget():
 
     def __init__(self, request):
-        self.request = request
+        self.user_id = request.user.id
         self.template = '../../templates/widgets/duplicate_content.pt'
 
     def generate_html(self):
         heading = _(u'Duplicates')
         body = render(
             self.template,
-            {'duplicate_content': self.duplicate_content_count()},
-            request=self.request
+            {'duplicate_content': self.duplicate_content_count()}
         )
         return {'heading': heading, 'body': body}
 
     def get_duplicate_content(self):
-        return Content.search_duplicates_by_user(self.request)
+        return Content.search_duplicates_by_user(self.user_id)
 
     def duplicate_content_count(self):
         list_duplicates = self.get_duplicate_content()
