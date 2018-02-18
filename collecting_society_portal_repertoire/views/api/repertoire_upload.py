@@ -679,7 +679,6 @@ def post_repertoire_upload(request):
             'mime_type': str(mime.from_file(uploaded_path)),
             'size': os.path.getsize(uploaded_path),
             'path': uploaded_path,
-            'preview_path': '', # preview_path,
             'length': "%.6f" % audio.duration_seconds,
             'channels': int(audio.channels),
             'sample_rate': int(audio.frame_rate),
