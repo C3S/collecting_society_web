@@ -10,7 +10,6 @@ import uuid
 import re
 import datetime
 import time
-import sys
 
 from cgi import FieldStorage
 
@@ -123,20 +122,28 @@ def get_url(url, version, action, content_id):
 
 def get_path(request, directory, filename=None):
     webuser_directory = str(request.user.id)
-    if directory == _path_previews: # special case: for previews use content base path
-        content_base_directory = request.registry.settings['api.c3supload.content_base_path']
+    # special case: for previews use content base path
+    if directory == _path_previews:
+        content_base_directory = (
+            request.registry.settings['api.c3supload.content_base_path'])
         if not filename:
-            return os.path.join(content_base_directory, directory, webuser_directory)
-        return os.path.join(content_base_directory, directory, webuser_directory, filename)
+            return os.path.join(content_base_directory, directory,
+                                webuser_directory)
+        return os.path.join(content_base_directory, directory,
+                            webuser_directory, filename)
     else:
-        storage_base_directory = request.registry.settings['api.c3supload.storage_base_path']
+        storage_base_directory = (request.registry.settings[
+                                  'api.c3supload.storage_base_path'])
         if not filename:
-            return os.path.join(storage_base_directory, directory, webuser_directory)
-        return os.path.join(storage_base_directory, directory, webuser_directory, filename)
+            return os.path.join(storage_base_directory, directory,
+                                webuser_directory)
+        return os.path.join(storage_base_directory, directory,
+                            webuser_directory, filename)
 
 
 def cleanup_temp_directory(request):
-    storage_base_directory = request.registry.settings['api.c3supload.storage_base_path']
+    storage_base_directory = (request.registry.settings[
+                              'api.c3supload.storage_base_path'])
     temp_directory = os.path.join(storage_base_directory, _path_temporary)
 
     # filter for certain file patterns
@@ -145,27 +152,32 @@ def cleanup_temp_directory(request):
 
     # walk through the temporary directory structure
     now = time.time()
+    expire_days_as_seconds = int(request.registry.settings[
+                                 'api.c3supload.tempfile_expire_days'] * 86400)
     for root, _, files in os.walk(temp_directory):
         level = root.replace(temp_directory, '').count(os.sep)
         if level == 1:
             for tmpfile in files:
-                if uuidhex.match(tmpfile) is not None: # only delete files we created
+                # only delete files we have created
+                if uuidhex.match(tmpfile) is not None:
                     tmpfilepath = os.path.join(root, tmpfile)
-                    if os.path.isfile(tmpfilepath):                
-                        if (os.stat(tmpfilepath).st_mtime < now 
-                            - int(request.registry.settings['api.c3supload.tempfile_expire_days']) * 86400):
+                    if os.path.isfile(tmpfilepath):
+                        if os.stat(tmpfilepath
+                                   ).st_mtime < (now - expire_days_as_seconds):
                             try:
                                 os.remove(tmpfilepath)
-                                log.info(("removed abandoned temporary file '%s'\n") % (tmpfile))
+                                log.info(("removed abandoned temporary file"
+                                         " '%s'\n") % (tmpfile))
 
                             except IOError:
-                                log.info(("couldn't remove abandoned temporary file '%s'\n") % (tmpfile))
-                                #pass
-                            
+                                log.info(("couldn't remove abandoned temporary"
+                                         " file '%s'\n") % (tmpfile))
+
                             finally:
                                 pass
-                                
-    # TODO: delete user directories, if empty   
+
+    # TODO: delete user directories, if empty
+
 
 def get_content_info(request, content):
     return {
@@ -187,7 +199,7 @@ def get_content_info(request, content):
         'metadata_release_date': content.metadata_release_date,
         'metadata_track_number': content.metadata_track_number,
 
-        'processing_state' : content.processing_state,
+        'processing_state': content.processing_state,
         'rejection_reason': content.rejection_reason,
         'rejection_reason_details': content.rejection_reason_details,
 
@@ -497,7 +509,7 @@ def still_banned_for(request):
         return 0
     return seconds_still_banned_for
 
-        
+
 # --- service: upload ---------------------------------------------------------
 
 repertoire_upload = Service(
@@ -566,11 +578,12 @@ def post_repertoire_upload(request):
         if rank:
             if is_banned(request):
                 files.append({
-                    'name': fieldStorage.filename,
-                    'error': _("Abuse detected. Wait for " + 
-                    str(int(still_banned_for(request))) + 
-                    " seconds before trying another upload."),
-                })
+                              'name': fieldStorage.filename,
+                              'error': _("Abuse detected. Wait for " +
+                                         str(int(still_banned_for(request))) +
+                                         " seconds before trying another"
+                                         " upload."),
+                             })
                 continue
             if is_collision(contentrange, checksum):
                 raise_abuse_rank(request)
@@ -700,8 +713,9 @@ def post_repertoire_upload(request):
         # client feedback
         files.append(get_content_info(request, content))
 
-        # finally, see if there are old temporary files in the temp folder structure
-        cleanup_temp_directory(request) 
+        # finally, see if there are old temporary files in the temp folder
+        # structure
+        cleanup_temp_directory(request)
         # TODO: add timestamp file in temp folder to track if cleanup run
         #       was already started this day
 
@@ -794,9 +808,9 @@ def options_repertoire_preview(request):
 def get_repertoire_preview(request):
     content = Content.search_by_id(request.matchdict['id'])
     preview_path = content.preview_path
-    if not preview_path or preview_path == '' or not os.path.isfile(preview_path):
+    if not preview_path or not os.path.isfile(preview_path):
         raise HTTPNotFound()
-    #if content.entity_creator != request.user.party:   <- make serious acl here!
+    # if content.entity_creator != request.user.party: <-make serious acl here!
     #    raise HTTPForbidden()
     return FileResponse(
         preview_path,
