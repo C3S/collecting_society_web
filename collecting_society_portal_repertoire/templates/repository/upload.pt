@@ -95,7 +95,11 @@
             <tr class="template-download fade">
                 <td>
                     <span class="preview">
-                        {% if (file.preview_processed) { %}                    
+                        {% if (file.error) { %}
+                            <div class="panel panel-danger">
+                            <div class="panel-heading"><span i18n:translate="">There has been a problem with '{%=file.name%}'.</span></div>
+                            <span i18n:translate=""><b></b></span>  
+                        {% } else if (file.preview_processed) { %}                    
                             {% if (file.previewUrl && !file.error) { %}
                                 <div class="panel panel-success">
                                 <div class="panel-heading"><span i18n:translate="">'{%=file.name%}' has been processed succesfully.</span></div>
