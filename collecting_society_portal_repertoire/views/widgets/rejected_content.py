@@ -22,7 +22,8 @@ class RejectedContentWidget():
         return {'heading': heading, 'body': body}
 
     def get_rejected_content(self):
-        return Content.search_duplicates_by_user(self.user_id)
+        print('')
+        #return Content.search_duplicates_by_user(self.user_id)
 
     def rejected_content_count(self):
         list_rejected = self.get_rejected_content()
