@@ -48,7 +48,7 @@ from collecting_society_portal.models import (
     WebUser,
     Checksum
 )
-from collecting_society_portal_creative.models import Content
+from collecting_society_portal_repertoire.models import Content
 
 from ...services import _
 from ...services.lossless_audio_formats import (
@@ -152,8 +152,8 @@ def cleanup_temp_directory(request):
 
     # walk through the temporary directory structure
     now = time.time()
-    expire_days_as_seconds = int(request.registry.settings[
-                                 'api.c3supload.tempfile_expire_days'] * 86400)
+    expire_seconds = now - int(request.registry.settings[
+        'api.c3supload.tempfile_expire_days']) * 86400
     for root, _, files in os.walk(temp_directory):
         level = root.replace(temp_directory, '').count(os.sep)
         if level == 1:
@@ -162,16 +162,15 @@ def cleanup_temp_directory(request):
                 if uuidhex.match(tmpfile) is not None:
                     tmpfilepath = os.path.join(root, tmpfile)
                     if os.path.isfile(tmpfilepath):
-                        if os.stat(tmpfilepath
-                                   ).st_mtime < (now - expire_days_as_seconds):
+                        if os.stat(tmpfilepath).st_mtime < (expire_seconds):
                             try:
                                 os.remove(tmpfilepath)
                                 log.info(("removed abandoned temporary file"
-                                         " '%s'\n") % (tmpfile))
+                                          " '%s'\n") % (tmpfile))
 
                             except IOError:
                                 log.info(("couldn't remove abandoned temporary"
-                                         " file '%s'\n") % (tmpfile))
+                                          " file '%s'\n") % (tmpfile))
 
                             finally:
                                 pass

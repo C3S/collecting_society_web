@@ -5,7 +5,7 @@ from pyramid.renderers import render
 
 from ...services import _
 
-from collecting_society_portal_creative.models import Content
+from collecting_society_portal_repertoire.models import Content
 
 class RejectedContentWidget():
 

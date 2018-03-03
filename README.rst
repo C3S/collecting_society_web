@@ -1,9 +1,38 @@
 collecting_society.portal.repertoire
 ====================================
 
-Plugin for `Web Portal <https://github.com/C3S/collecting_society.portal>`_.
+Plugin for `Web Portal <https://github.com/C3S/collecting_society.portal>`_ 
+including:
+
+- Artists
+- Creations
+- Contents
+- Releases
 
 For a working development setup, see https://github.com/C3S/c3s.ado.repertoire
+
+Artists
+-------
+
+Enables web users to manage group and solo artists.
+
+
+Creations
+---------
+
+Enables web users to upload and manage creations, define licenses and relations
+to other artists and creations.
+
+Contents
+--------
+
+Audio files associated with creations.
+
+
+Releases
+--------
+
+A group of creations bound together on a medium.
 
 Translations
 ------------

@@ -1,0 +1,64 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society.portal.creative -->
+<tal:block metal:use-macro="backend39" i18n:domain="collecting_society_portal_repertoire">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right">
+
+        <div class="cs-musician-artists">
+            <table class="table table-hover">
+
+                <tr>
+                    <td colspan="5">
+                        <span class="cs-symbolnavbar">
+                            <a href="${request.resource_path(context, 'add_solo')}">
+                                <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Solo</span>
+                            </a>
+                        </span>
+                        <span class="cs-symbolnavbar">
+                            <a href="${request.resource_path(context, 'add_group')}">
+                                <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Group</span>
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Name</th>
+                    <th colspan="3"></th>
+                    <th class="text-right" i18n:translate="">ID</th>
+                </tr>
+
+                <tr tal:repeat="artist artists">
+                    <td>
+                        <a href="${request.resource_path(context, 'show', artist.code)}">${artist.name}</a>
+                    </td>
+                    <td class="text-right cs-table-iconcolumn">
+                        <a href="${request.resource_path(context, 'show', artist.code)}">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </a>
+                    </td>
+                    <td class="text-right cs-table-iconcolumn">
+                        <a href="${request.resource_path(context, 'edit', artist.code)}">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+                    </td>
+                    <td class="text-right cs-table-iconcolumn">
+                        <a href="${request.resource_path(context, 'delete', artist.code)}">
+                            <span class="glyphicon glyphicon-remove text-danger"></span>
+                        </a>
+                    </td>
+                    <td class="text-right cs-table-codecolumn">
+                        ${artist.code}
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+
+    </tal:block>
+
+</tal:block>

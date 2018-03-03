@@ -25,17 +25,14 @@ from collecting_society_portal.resources import (
     DebugResource
 )
 
-from collecting_society_portal_creative.resources import (
-    ArtistResource,
-    ReleaseResource,
-    CreationResource
-)
-
 from .services import (
     _,
     C3SMembershipApiClient
 )
 from .resources import (
+    ArtistResource,
+    ReleaseResource,
+    CreationResource,
     RepertoireResource,
     UploadResource,
     DebugC3sMembershipApiResource

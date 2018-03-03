@@ -1,0 +1,69 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society.portal.creative -->
+<tal:block metal:use-macro="backend39" i18n:domain="collecting_society_portal_repertoire">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right">
+
+        <div class="cs-musician-creations">
+
+            <table class="table table-hover">
+
+                <tr>
+                    <td colspan="6">
+                        <div class="cs-symbolnavbar">
+                            <a href="${request.resource_path(context, 'add')}">
+                                <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Add</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Title</th>
+                    <th i18n:translate="">Artist</th>
+                    <th colspan="4"></th>
+                    <th class="text-right" i18n:translate="">ID</th>
+                </tr>
+
+                <tr tal:repeat="creation creations">
+                    <td>
+                        <a href="${request.resource_path(context, 'show', creation.id)}">${creation.title}</a>
+                    </td>
+                    <td>
+                        <a href="${request.resource_path(context, '..', 'artists', 'show', creation.artist.id)}">${creation.artist.name}</a>
+                    </td>
+                    <td class="text-right cs-table-iconcolumn">
+                        <a href="${request.resource_path(context, 'show', creation.id)}">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </a>
+                    </td>
+                    <td class="text-right cs-table-iconcolumn">
+                        <a href="${request.resource_path(context, 'edit', creation.id)}">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+                    </td>
+                    <td class="text-right cs-table-iconcolumn">
+                        <a href="${request.resource_path(context, 'download', creation.id)}">
+                            <span class="glyphicon glyphicon-download"></span>
+                        </a>
+                    </td>
+                    <td class="text-right cs-table-iconcolumn">
+                        <a href="${request.resource_path(context, 'delete', creation.id)}">
+                            <span class="glyphicon glyphicon-remove text-danger"></span>
+                        </a>
+                    </td>
+                    <td class="text-right cs-table-codecolumn">
+                        ${creation.code}
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+
+    </tal:block>
+
+</tal:block>

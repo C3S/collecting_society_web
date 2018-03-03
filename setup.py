@@ -16,7 +16,6 @@ with open(os.path.join(here, 'CHANGELOG.rst')) as f:
 
 requires = [
     '%s_collecting_society_portal' % (PREFIX),
-    '%s_collecting_society_portal_creative' % (PREFIX),
     'requests',
 ]
 
@@ -41,6 +40,8 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+        'Topic :: Office/Business',
+        'Topic :: Office/Business :: Financial :: Accounting',
         'Topic :: Artistic Software',
     ],
     license='AGPL-3',
