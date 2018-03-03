@@ -11,13 +11,11 @@
                 hier auf deinem Dashboard findest du die neuesten Meldungen und Hinweise für deine nächsten Schritte.
             </div>
             <div class="dashboard-widget" style="float:left">
-                ${structure: context.registry['repertoire']['duplicate_content'].generate_html()['body']}
+                ${structure: context.registry['widgets']['dashboard-central-widgets'][0].generate_html()['body']}
             </div>
             <div class="dashboard-widget" style="float:left">
-                &nbsp;
             </div>
             <div class="dashboard-widget" style="float:left">
-                &nbsp;
             </div>
         </div>
     </tal:block>
