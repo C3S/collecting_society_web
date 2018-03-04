@@ -254,8 +254,9 @@ class RegisterWebuser(LoginWebuser):
             variables=template_variables,
             recipients=[_web_user['email']]
         )
-        web_user.opt_in_state = "mail-sent"
-        web_user.save()
+        if _create:
+            web_user.opt_in_state = "mail-sent"
+            web_user.save()
 
         # reset form
         self.redirect(FrontendResource)
