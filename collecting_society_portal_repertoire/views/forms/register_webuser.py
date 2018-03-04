@@ -30,14 +30,6 @@ class RegisterWebuser(LoginWebuser):
 
     def controller(self):
 
-        # TODO: This ist test code, DELETEME after it works!
-        send_mail(
-            self.request,
-            template="registration-nonmember_success",
-            variables={'link': "LINK"},
-            recipients=["alexander.blum@c3s.cc", "thomas.mielke@c3s.cc"]
-        )
-
         if self.stage == 'claims_membership':
             self.claims_membership()
 
