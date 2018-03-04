@@ -1,5 +1,5 @@
 <!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
-      Repository: https://github.com/C3S/collecting_society.portal.creative -->
+      Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
 <tal:block metal:use-macro="backend363" i18n:domain="collecting_society_portal_repertoire">
 
     <!-- content left -->

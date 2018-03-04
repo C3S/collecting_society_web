@@ -20,6 +20,23 @@ class Content(Tdb):
 
     @classmethod
     @Tdb.transaction(readonly=True)
+    def current_orphans(cls, request, category):
+        """
+        Searches orphan content in category of current web user.
+
+        Args:
+            request (pyramid.request.Request): Current request.
+            category (str): Category of content.
+
+        Returns:
+            list (content): List of content.
+            None: If no match is found.
+        """
+        party = WebUser.current_web_user(request).party
+        return cls.search_orphans(party.id, category)
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
     def search_all(cls):
         """
         Gets all content.
@@ -265,22 +282,6 @@ class Content(Tdb):
         )
         return result or None
 
-    @classmethod
-    @Tdb.transaction(readonly=True)
-    def current_orphans(cls, request, category):
-        """
-        Searches orphan content in category of current web user.
-
-        Args:
-            request (pyramid.request.Request): Current request.
-            category (str): Category of content.
-
-        Returns:
-            list (content): List of content.
-            None: If no match is found.
-        """
-        party = WebUser.current_web_user(request).party
-        return cls.search_orphans(party.id, category)
 
     @classmethod
     @Tdb.transaction(readonly=True)
