@@ -254,8 +254,9 @@ class RegisterWebuser(LoginWebuser):
             variables=template_variables,
             recipients=[_web_user['email']]
         )
-        web_user.opt_in_state = "mail-sent"
-        web_user.save()
+        if _create:
+            web_user.opt_in_state = "mail-sent"
+            web_user.save()
 
         # reset form
         self.redirect(FrontendResource)
@@ -265,9 +266,10 @@ class RegisterWebuser(LoginWebuser):
 
 
 def not_empty(value):
-    if not value or len(str(value)) < 2:
+    if not value or len(value) < 2:
         return _(u"Please enter your name.")
     return True
+
 
 def terms_accepted(value):
     if not value:
@@ -278,6 +280,10 @@ def terms_accepted(value):
 # --- Options -----------------------------------------------------------------
 
 # --- Fields ------------------------------------------------------------------
+
+
+AGE_ADULT = 16  # don't allow kids
+
 
 class FirstnameField(colander.SchemaNode):
     oid = "firstname"
@@ -290,13 +296,15 @@ class LastnameField(colander.SchemaNode):
     schema_type = colander.String
     validator = colander.Function(not_empty)
 
-AGE_ADULT = 16 # don't allow kids
+
 class BirthdateField(colander.SchemaNode):
     oid = "birthdate"
     schema_type = colander.Date
     validator = colander.Range(
-                    max=datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364),
-                    max_err=_('Sorry, you have to be ' + str(AGE_ADULT) +' years or older to register here.')
+                    max=datetime.date.today() - datetime.timedelta(
+                        days=AGE_ADULT*364),
+                    max_err=_('Sorry, you have to be ' + str(AGE_ADULT)
+                              + ' years or older to register here.')
                 )
 
 
