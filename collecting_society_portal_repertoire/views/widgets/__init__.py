@@ -2,3 +2,5 @@
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
 from .rejected_content import RejectedContentWidget
+from .orphaned_content import OrphanedContentWidget
+from .uncommited_content import UncommitedContentWidget

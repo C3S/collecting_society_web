@@ -1,2 +1,18 @@
-<b>Rejected:</b><br />
-Duplicates:
+<table cellpadding="0" cellspacing="5" style="margin: 10px; text-align: right">
+    <tr>
+        <td>Duplicates:</td>
+        <td>${dupl}</td>
+    </tr>
+    <tr>
+        <td>Format errors:</td>
+        <td>${ferrors}</td>
+    </tr>
+    <tr>
+        <td>Lossy compression:</td>
+        <td>${lossyc}</td>
+    </tr>
+    <tr>
+        <td><b>Rejected (sum):</b></td>
+        <td>${rejects}</td>
+    </tr>
+</table>

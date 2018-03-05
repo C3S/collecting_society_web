@@ -17,6 +17,8 @@ The following functions are called by convention on app creation:
 from collections import OrderedDict
 
 from collecting_society_portal_repertoire.views.widgets import RejectedContentWidget
+from collecting_society_portal_repertoire.views.widgets import OrphanedContentWidget
+from collecting_society_portal_repertoire.views.widgets import UncommitedContentWidget
 from collecting_society_portal.views.widgets import news_widget
 from collecting_society_portal.resources import (
     FrontendResource,
@@ -273,7 +275,9 @@ def web_registry(config):
     def repertoire(self):
         reg = self.dict()
         reg['widgets']['dashboard-central-widgets'] = [
-            RejectedContentWidget(self.request)
+            RejectedContentWidget(self.request),
+            OrphanedContentWidget(self.request),
+            UncommitedContentWidget(self.request)
         ]
         return reg
 

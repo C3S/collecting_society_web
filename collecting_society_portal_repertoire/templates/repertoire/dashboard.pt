@@ -11,11 +11,13 @@
                 hier auf deinem Dashboard findest du die neuesten Meldungen und Hinweise für deine nächsten Schritte.
             </div>
             <div class="dashboard-widget" style="float:left">
-                ${structure: context.registry['widgets']['dashboard-central-widgets'][0].generate_html()['body']}
+                ${structure: context.registry['widgets']['dashboard-central-widgets'][0].output()}
             </div>
             <div class="dashboard-widget" style="float:left">
+                ${structure: context.registry['widgets']['dashboard-central-widgets'][1].output()}
             </div>
             <div class="dashboard-widget" style="float:left">
+                ${structure: context.registry['widgets']['dashboard-central-widgets'][2].output()}
             </div>
         </div>
     </tal:block>

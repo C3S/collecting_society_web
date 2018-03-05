@@ -20,13 +20,13 @@ class Content(Tdb):
 
     @classmethod
     @Tdb.transaction(readonly=True)
-    def current_orphans(cls, request, category):
+    def current_orphans(cls, request, category='all'):
         """
         Searches orphan content in category of current web user.
 
         Args:
             request (pyramid.request.Request): Current request.
-            category (str): Category of content.
+            category (str): optional - Category of content.
 
         Returns:
             list (content): List of content.
@@ -34,6 +34,43 @@ class Content(Tdb):
         """
         party = WebUser.current_web_user(request).party
         return cls.search_orphans(party.id, category)
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def current_rejects(cls, request, reason, category='all'):
+        """
+        Searches rejected content
+        (optionally in category) of current web user.
+
+        Args:
+            request (pyramid.request.Request): Current request.
+            reason (str): Reason for rejected content.
+            category (str): optional - Category of content.
+
+        Returns:
+            list (content): List of content.
+            None: If no match is found.
+        """
+        party = WebUser.current_web_user(request).party
+        return cls.search_rejects(party.id, reason, category)
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def current_uncommits(cls, request, category='all'):
+        """
+        Searches uncommited content
+        (optionally in category) of current web user.
+
+        Args:
+            request (pyramid.request.Request): Current request.
+            category (str): optional - Category of content.
+
+        Returns:
+            list (content): List of content.
+            None: If no match is found.
+        """
+        party = WebUser.current_web_user(request).party
+        return cls.search_uncommits(party.id, category)
 
     @classmethod
     @Tdb.transaction(readonly=True)
@@ -240,7 +277,7 @@ class Content(Tdb):
         Searches orphan content in category of web user.
 
         Args:
-            request (pyramid.request.Request): Current request.
+            cls (pyramid.request.Request): Current request.
             party_id (int): Res user id.
             category (str): Category of content.
 
@@ -250,36 +287,83 @@ class Content(Tdb):
         """
         if party_id is None:
             return None
-        result = cls.get().search(
-            [
-                ('active', '=', True),
-                ('entity_creator', '=', party_id),
-                ('category', '=', category),
-                ('creation', '=', None),
-                ('processing_state', '!=', 'rejected')
-            ]
-        )
+        search_clause = [
+            ('active', '=', True),
+            ('entity_creator', '=', party_id),
+            ('creation', '=', None),
+            ('processing_state', '!=', 'rejected')
+        ]
+        if category is not 'all':
+            search_clause.append(
+                ('category', '=', category)
+            ) 
+        result = cls.get().search(search_clause)
         return result or None
 
     @classmethod
     @Tdb.transaction(readonly=True)
-    def search_duplicates_by_user(cls, user_id):
+    def search_rejects(cls, party_id, reason, category):
         """
         Searches duplicate content of current user.
 
         Args:
-            request (pyramid.request.Request): Current request.
+            cls (pyramid.request.Request): Current request.
+            party_id (int): Res user id.
+            reason (str): Reason for rejected content.
+            category (str): Category of content.
+
         Returns:
-           list (content): List of content.
-           None: If no match is found.
+            list (content): List of content.
+            None: If no match is found.
         """
-        result = cls.get().search(
-            [
+        search_clause = [
                 ('active', '=', True),
-                ('user', '=', user_id),
-                #('duplicate_of', '=', None)
+                ('entity_creator', '=', party_id),
             ]
-        )
+        if reason is 'dupl':
+            search_clause.append(
+                ('duplicate_of', '!=', None)
+            ) 
+        if reason is 'ferror':
+            search_clause.append(
+                ('rejection_reason', '=', 'format_error')
+            ) 
+        if reason is 'lossyc':
+            search_clause.append(
+                ('rejection_reason', '=', 'lossy_compression')
+            ) 
+        if category is not 'all':
+            search_clause.append(
+                ('category', '=', category)
+            ) 
+        result = cls.get().search(search_clause)
+        return result or None
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_uncommits(cls, party_id, category):
+        """
+        Searches uncommited content of current user.
+
+        Args:
+            cls (pyramid.request.Request): Current request.
+            party_id (int): Res user id.
+            category (str): Category of content.
+
+        Returns:
+            list (content): List of content.
+            None: If no match is found.
+        """
+        search_clause = [
+                ('active', '=', True),
+                ('entity_creator', '=', party_id),
+                ('user_committed_state', '=', False)
+            ]
+        if category is not 'all':
+            search_clause.append(
+                ('category', '=', category)
+            ) 
+        result = cls.get().search(search_clause)
         return result or None
 
     @classmethod

@@ -10,22 +10,36 @@ from collecting_society_portal_repertoire.models import Content
 class RejectedContentWidget():
 
     def __init__(self, request):
-        self.user_id = request.user.id
+        self.request = request
         self.template = '../../templates/widgets/rejected_content.pt'
 
-    def generate_html(self):
-        heading = _(u'Duplicates')
-        body = render(
+    def dupl(self):
+        return Content.current_rejects(self.request, 'dupl')
+
+    def ferrors(self):
+        return Content.current_rejects(self.request, 'ferrors')
+
+    def lossyc(self):
+        return Content.current_rejects(self.request, 'lossyc')
+
+    def get_len(self, content_list):
+        if content_list:
+            return len(content_list)
+        else:
+            return 0
+
+    def output(self):
+        dupl = self.get_len(self.dupl())
+        ferrors = self.get_len(self.ferrors())
+        lossyc = self.get_len(self.lossyc())
+        rejects = dupl + ferrors + lossyc 
+        output = render(
             self.template,
-            {'rejected_content': self.rejected_content_count()}
+            {
+                'dupl' : dupl,
+                'ferrors' : ferrors,
+                'lossyc' : lossyc,
+                'rejects' : rejects
+            }
         )
-        return {'heading': heading, 'body': body}
-
-    def get_rejected_content(self):
-        print('')
-        #return Content.search_duplicates_by_user(self.user_id)
-
-    def rejected_content_count(self):
-        list_rejected = self.get_rejected_content()
-        if list_rejected:
-            return len(list_rejected)
+        return output
