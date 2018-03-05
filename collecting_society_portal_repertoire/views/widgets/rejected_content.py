@@ -3,24 +3,24 @@
 
 from pyramid.renderers import render
 
-from ...services import _
+from ...models import Content
 
-from collecting_society_portal_repertoire.models import Content
 
 class RejectedContentWidget():
 
-    def __init__(self, request):
-        self.request = request
+    def __init__(self, request, category='all'):
+        self.party = request.party.id
         self.template = '../../templates/widgets/rejected_content.pt'
+        self.category = category
 
     def dupl(self):
-        return Content.current_rejects(self.request, 'dupl')
+        return Content.search_rejects(self.party, 'dupl', self.category)
 
     def ferrors(self):
-        return Content.current_rejects(self.request, 'ferrors')
+        return Content.search_rejects(self.party, 'ferrors', self.category)
 
     def lossyc(self):
-        return Content.current_rejects(self.request, 'lossyc')
+        return Content.search_rejects(self.party, 'lossyc', self.category)
 
     def get_len(self, content_list):
         if content_list:
@@ -32,14 +32,14 @@ class RejectedContentWidget():
         dupl = self.get_len(self.dupl())
         ferrors = self.get_len(self.ferrors())
         lossyc = self.get_len(self.lossyc())
-        rejects = dupl + ferrors + lossyc 
+        rejects = dupl + ferrors + lossyc
         output = render(
             self.template,
             {
-                'dupl' : dupl,
-                'ferrors' : ferrors,
-                'lossyc' : lossyc,
-                'rejects' : rejects
+                'dupl': dupl,
+                'ferrors': ferrors,
+                'lossyc': lossyc,
+                'rejects': rejects
             }
         )
         return output

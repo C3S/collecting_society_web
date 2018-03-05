@@ -14,12 +14,6 @@ The following functions are called by convention on app creation:
 - api_views
 """
 
-from collections import OrderedDict
-
-from collecting_society_portal_repertoire.views.widgets import RejectedContentWidget
-from collecting_society_portal_repertoire.views.widgets import OrphanedContentWidget
-from collecting_society_portal_repertoire.views.widgets import UncommitedContentWidget
-from collecting_society_portal.views.widgets import news_widget
 from collecting_society_portal.resources import (
     FrontendResource,
     BackendResource,
@@ -39,9 +33,11 @@ from .resources import (
     UploadResource,
     DebugC3sMembershipApiResource
 )
-# from .views.widgets import (
-#     ...
-# )
+from .views.widgets import (
+    RejectedContentWidget,
+    OrphanedContentWidget,
+    UncommitedContentWidget
+)
 
 
 def web_resources(config):
@@ -58,7 +54,6 @@ def web_resources(config):
         None
     '''
     BackendResource.add_child(ProfileResource)
-
     BackendResource.add_child(RepertoireResource)
     RepertoireResource.add_child(UploadResource)
     RepertoireResource.add_child(ArtistResource)

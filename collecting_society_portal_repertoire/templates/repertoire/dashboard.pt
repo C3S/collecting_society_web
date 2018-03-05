@@ -10,15 +10,14 @@
             <div class="introtext" style="float:left; margin:15px">Lieber Nutzer,<br />
                 hier auf deinem Dashboard findest du die neuesten Meldungen und Hinweise für deine nächsten Schritte.
             </div>
-            <div class="dashboard-widget" style="float:left">
-                ${structure: context.registry['widgets']['dashboard-central-widgets'][0].output()}
-            </div>
-            <div class="dashboard-widget" style="float:left">
-                ${structure: context.registry['widgets']['dashboard-central-widgets'][1].output()}
-            </div>
-            <div class="dashboard-widget" style="float:left">
-                ${structure: context.registry['widgets']['dashboard-central-widgets'][2].output()}
-            </div>
+            
+            <tal:block tal:condition="context.registry['widgets']['dashboard-central-widgets']|None"
+                       tal:repeat="widget context.registry['widgets']['dashboard-central-widgets']">
+                <div class="dashboard-widget" style="float:left">
+                    ${structure: widget.output()}
+                </div>
+            </tal:block>
+
         </div>
     </tal:block>
 

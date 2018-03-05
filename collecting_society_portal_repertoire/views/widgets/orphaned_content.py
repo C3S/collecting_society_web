@@ -3,15 +3,15 @@
 
 from pyramid.renderers import render
 
-from ...services import _
+from ...models import Content
 
-from collecting_society_portal_repertoire.models import Content
 
 class OrphanedContentWidget():
 
-    def __init__(self, request):
-        self.request = request
+    def __init__(self, request, category='all'):
+        self.party = request.party.id
         self.template = '../../templates/widgets/orphaned_content.pt'
+        self.category = category
 
     def get_len(self, content_list):
         if content_list:
@@ -20,9 +20,9 @@ class OrphanedContentWidget():
             return 0
 
     def output(self):
-        orph = self.get_len(Content.current_orphans(self.request))
+        orph = self.get_len(Content.search_orphans(self.party, self.category))
         output = render(
             self.template,
-            { 'orph' : orph }
+            {'orph': orph}
         )
         return output
