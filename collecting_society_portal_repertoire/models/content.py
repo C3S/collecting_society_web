@@ -319,6 +319,7 @@ class Content(Tdb):
         search_clause = [
                 ('active', '=', True),
                 ('entity_creator', '=', party_id),
+                ('processing_state', '=', 'rejected')
             ]
         if reason is 'dupl':
             search_clause.append(
@@ -357,7 +358,8 @@ class Content(Tdb):
         search_clause = [
                 ('active', '=', True),
                 ('entity_creator', '=', party_id),
-                ('user_committed_state', '=', False)
+                ('user_committed_state', '=', False),
+                ('processing_state', '!=', 'rejected')
             ]
         if category is not 'all':
             search_clause.append(
