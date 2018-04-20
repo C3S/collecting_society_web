@@ -60,6 +60,7 @@ class AddArtistSolo(FormController):
         )
         _artist = {
             'party': party,
+            'entity_creator': party,
             'name': self.appstruct['metadata']['name'],
             'description': self.appstruct['metadata']['description'] or ''
         }
@@ -70,8 +71,6 @@ class AddArtistSolo(FormController):
             mimetype = self.appstruct['metadata']['picture']['mimetype']
             _artist['picture_data'] = picture_data
             _artist['picture_data_mime_type'] = mimetype
-
-        _artist['entity_creator'] = party
 
         artists = Artist.create([_artist])
 
