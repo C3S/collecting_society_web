@@ -20,10 +20,10 @@
         <h1>${artist.name}</h1>
 
         <div class="cs-symbolnavbar">
-            <a href="${request.resource_path(context, 'edit', artist.id)}">
+            <a href="${request.resource_path(context, 'edit', artist.code)}">
                 <span class="glyphicon glyphicon-pencil"></span>
             </a>
-            <a href="${request.resource_path(context, 'delete', artist.id)}">
+            <a href="${request.resource_path(context, 'delete', artist.code)}">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>
         </div>
@@ -56,7 +56,7 @@
                     <td>
                         <div class="list-group">
                             <a tal:repeat="solo_artist artist.solo_artists"
-                               tal:attributes="href request.resource_path(context, 'show', solo_artist.id)"
+                               tal:attributes="href request.resource_path(context, 'show', solo_artist.code)"
                                class="list-group-item">
                                 ${solo_artist.name}
                             </a>
@@ -69,7 +69,7 @@
                     <td>
                         <div class="list-group">
                             <a tal:repeat="group_artist artist.group_artists"
-                               tal:attributes="href request.resource_path(context, 'show', group_artist.id)"
+                               tal:attributes="href request.resource_path(context, 'show', group_artist.code)"
                                class="list-group-item">
                                 ${group_artist.name}
                             </a>
