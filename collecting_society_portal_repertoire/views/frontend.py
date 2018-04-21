@@ -72,7 +72,12 @@ class PagePortalViews(ViewBase):
         if opt_in_uuid:
             web_user = WebUser.search_by_opt_in_uuid(str(opt_in_uuid))
             if web_user:
-                web_user.opt_in_state = 'opted-in'
+                if web_user.opt_in_state != 'opted-in':
+                    web_user.opt_in_state = 'opted-in'
+                else: # already opted in? then this is a new email activation
+                    if web_user.new_email:
+                        web_user.email = web_user.new_email
+                        web_user.new_email = ''
                 web_user.save()
                 self.request.session.flash(
                     _(u"Your email verification was successful."),

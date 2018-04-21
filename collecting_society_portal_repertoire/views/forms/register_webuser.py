@@ -305,7 +305,7 @@ class BirthdateField(colander.SchemaNode):
                         days=AGE_ADULT*364),
                     max_err=_('Sorry, you have to be ' + str(AGE_ADULT)
                               + ' years or older to register here.')
-                )
+                )   # TODO: this won't work. translation will be resolved in the template ?!?
 
 
 class EmailField(colander.SchemaNode):
