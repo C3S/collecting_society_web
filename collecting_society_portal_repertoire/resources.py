@@ -54,3 +54,13 @@ class DebugC3sMembershipApiResource(ResourceBase):
     __children__ = {}
     __registry__ = {}
     __acl__ = []
+
+
+class ProfileResource(ResourceBase):
+    __name__ = "profile"
+    __parent__ = BackendResource
+    __children__ = {}
+    __registry__ = {}
+    __acl__ = []
+
+

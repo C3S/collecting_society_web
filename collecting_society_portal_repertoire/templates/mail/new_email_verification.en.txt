@@ -1,0 +1,7 @@
+[C3S Repertoire] Your New Email Address
+You requested to change your email address. The reason you get this 
+email ist to make sure you didn't have a typo in your email address. 
+
+Please visit the following link to activate your new email address:
+
+{link}
