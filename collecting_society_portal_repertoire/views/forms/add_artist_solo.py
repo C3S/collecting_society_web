@@ -33,7 +33,8 @@ class AddArtistSolo(FormController):
 
     def controller(self):
 
-        self.form = add_artist_form(self.request)
+        self.form = add_artist_solo_form(
+            self.request, title=_(u"Add Solo Artist"))
 
         if self.submitted() and self.validate():
             self.create_artist()
@@ -50,7 +51,6 @@ class AddArtistSolo(FormController):
     def create_artist(self):
         email = self.request.unauthenticated_userid
         party = WebUser.current_party(self.request)
-
         log.debug(
             (
                 "self.appstruct: %s\n"
@@ -58,7 +58,9 @@ class AddArtistSolo(FormController):
                 self.appstruct
             )
         )
+
         _artist = {
+            'group': False,
             'party': party,
             'entity_creator': party,
             'name': self.appstruct['metadata']['name'],
@@ -162,8 +164,7 @@ class AccessSchema(colander.Schema):
     )
 
 
-class AddArtistSchema(colander.Schema):
-    title = _(u"Add Solo Artist")
+class AddArtistSoloSchema(colander.Schema):
     metadata = MetadataSchema(
         title=_(u"Metadata")
     )
@@ -183,10 +184,11 @@ zpt_renderer_tabs = deform.ZPTRendererFactory([
 ], translator=translator)
 
 
-def add_artist_form(request):
+def add_artist_solo_form(request, title=None):
     return deform.Form(
         renderer=zpt_renderer_tabs,
-        schema=AddArtistSchema().bind(request=request),
+        schema=AddArtistSoloSchema(
+            title=title).bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]

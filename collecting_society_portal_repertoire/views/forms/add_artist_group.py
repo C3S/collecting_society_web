@@ -33,7 +33,8 @@ class AddArtistGroup(FormController):
 
     def controller(self):
 
-        self.form = add_artist_form(self.request)
+        self.form = add_artist_group_form(
+            self.request, title=_(u"Add Group Artist"))
 
         if self.submitted() and self.validate():
             self.create_artist()
@@ -60,6 +61,7 @@ class AddArtistGroup(FormController):
         )
 
         _artist = {
+            'group': True,
             'party': party,
             'entity_creator': party,
             'name': self.appstruct['metadata']['name'],
@@ -192,8 +194,7 @@ class AccessSchema(colander.Schema):
     )
 
 
-class AddArtistSchema(colander.Schema):
-    title = _(u"Add Group Artist")
+class AddArtistGroupSchema(colander.Schema):
     metadata = MetadataSchema(
         title=_(u"Metadata")
     )
@@ -216,10 +217,11 @@ zpt_renderer_tabs = deform.ZPTRendererFactory([
 ], translator=translator)
 
 
-def add_artist_form(request):
+def add_artist_group_form(request, title):
     return deform.Form(
         renderer=zpt_renderer_tabs,
-        schema=AddArtistSchema().bind(request=request),
+        schema=AddArtistGroupSchema(
+            title=title).bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]

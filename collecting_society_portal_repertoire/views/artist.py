@@ -21,7 +21,8 @@ from ..services import _
 from ..resources import ArtistResource
 from .forms import (
     AddArtistSolo,
-    AddArtistGroup
+    AddArtistGroup,
+    EditArtist
 )
 
 log = logging.getLogger(__name__)
@@ -79,6 +80,14 @@ class ArtistViews(ViewBase):
         decorator=Tdb.transaction(readonly=False))
     def add_group(self):
         self.register_form(AddArtistGroup)
+        return self.process_forms()
+
+    @view_config(
+        name='edit',
+        renderer='../templates/artist/edit.pt',
+        decorator=Tdb.transaction(readonly=False))
+    def edit(self):
+        self.register_form(EditArtist)
         return self.process_forms()
 
     @view_config(
