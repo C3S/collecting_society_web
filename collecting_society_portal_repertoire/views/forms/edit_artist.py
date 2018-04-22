@@ -26,17 +26,43 @@ log = logging.getLogger(__name__)
 
 # --- Controller --------------------------------------------------------------
 
-class AddArtistGroup(FormController):
+class EditArtist(FormController):
     """
-    form controller for creation of artists
+    form controller for edit of artists
     """
 
     def controller(self):
 
-        self.form = add_artist_group_form(self.request)
+        # get artist
+        code = self.request.subpath[0]
+        artist = Artist.search_by_code(code)
+        if not artist:
+            self.request.session.flash(
+                _(u"Could not edit artist - artist not found"),
+                'main-alert-warning'
+            )
+            self.redirect(ArtistResource, 'list')
+            return self.response
 
+        # choose form
+        if artist.group:
+            self.form = edit_artist_group_form(self.request)
+        else:
+            self.form = edit_artist_solo_form(self.request)
+
+        # process form
         if self.submitted() and self.validate():
-            self.create_artist()
+            self.edit_artist(artist)
+        else: 
+            self.appstruct['metadata'] = {
+                'name': artist.name,
+                'description': artist.description
+            }
+            if artist.group:
+                self.appstruct['members'] = {'members': []}
+                for solo_artist in artist.solo_artists:
+                    self.appstruct['members']['members'].append(solo_artist.id)
+            self.render(self.appstruct)
 
         return self.response
 
@@ -47,10 +73,8 @@ class AddArtistGroup(FormController):
     # --- Actions -------------------------------------------------------------
 
     @Tdb.transaction(readonly=False)
-    def create_artist(self):
+    def edit_artist(self, artist):
         email = self.request.unauthenticated_userid
-        party = WebUser.current_party(self.request)
-
         log.debug(
             (
                 "self.appstruct: %s\n"
@@ -59,61 +83,37 @@ class AddArtistGroup(FormController):
             )
         )
 
-        _artist = {
-            'group': True,
-            'party': party,
-            'entity_creator': party,
-            'name': self.appstruct['metadata']['name'],
-            'description': self.appstruct['metadata']['description'] or '',
-        }
-        if self.appstruct['metadata']['picture']:
-            with open(self.appstruct['metadata']['picture']['fp'].name,
+        if artist.name != self.appstruct['metadata']['name']:
+            artist.name = self.appstruct['metadata']['name']
+        if artist.description != self.appstruct['metadata']['description']:
+            artist.description = self.appstruct['metadata']['description']
+        if artist.group:
+            artist.solo_artists = self.appstruct['members']['members']   
+        if self.appstruct['metadata']['picture_delete']:
+            artist.picture_data = None
+            artist.picture_data_mime_type = None
+        elif self.appstruct['metadata']['picture_change']:
+            with open(self.appstruct['metadata']['picture_change']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
-            mimetype = self.appstruct['metadata']['picture']['mimetype']
-            _artist['picture_data'] = picture_data
-            _artist['picture_data_mime_type'] = mimetype
+            mimetype = self.appstruct['metadata']['picture_change']['mimetype']
+            artist.picture_data = picture_data
+            artist.picture_data_mime_type = mimetype
+        artist.save()
 
-        _artist['solo_artists'] = [(
-            'add', self.appstruct['members']['members']
-        )]
-
-        artists = Artist.create([_artist])
-
-        if not artists:
-            log.info("artist add failed for %s: %s" % (email, _artist))
-            self.request.session.flash(
-                _(u"Artist could not be added: ") + _artist['name'],
-                'main-alert-danger'
-            )
-            self.redirect(ArtistResource, 'list')
-            return
-        artist = artists[0]
-
-        log.info("artist add successful for %s: %s" % (email, artist))
+        log.info("edit add successful for %s: %s" % (email, artist))
         self.request.session.flash(
-            _(u"Artist added: ") + artist.name + " (" + artist.code + ")",
+            _(u"Artist edited: ") + artist.name + " (" + artist.code + ")",
             'main-alert-success'
         )
 
-        self.redirect(ArtistResource, 'list')
-
+        self.redirect(ArtistResource, 'show/' + artist.code)
 
 # --- Validators --------------------------------------------------------------
 
 # --- Options -----------------------------------------------------------------
 
 # --- Fields ------------------------------------------------------------------
-
-@colander.deferred
-def web_user_select_widget(node, kw):
-    web_users = WebUser.search_all()
-    web_user_options = [
-        (web_user.id, web_user.party.name) for web_user in web_users
-    ]
-    widget = deform.widget.Select2Widget(values=web_user_options)
-    return widget
-
 
 @colander.deferred
 def solo_artists_select_widget(node, kw):
@@ -135,17 +135,17 @@ class DescriptionField(colander.SchemaNode):
     missing = ""
 
 
-class PictureField(colander.SchemaNode):
-    oid = "picture"
+class PictureChangeField(colander.SchemaNode):
+    oid = "picture-change"
     schema_type = deform.FileData
     widget = deferred_file_upload_widget
     missing = ""
 
 
-class WebUserField(colander.SchemaNode):
-    oid = "webuser"
-    schema_type = colander.String
-    widget = web_user_select_widget
+class PictureDeleteField(colander.SchemaNode):
+    oid = "picture-delete"
+    schema_type = colander.Boolean
+    widget = deform.widget.CheckboxWidget()
     missing = ""
 
 
@@ -164,8 +164,11 @@ class MetadataSchema(colander.Schema):
     description = DescriptionField(
         title=_(u"Description")
     )
-    picture = PictureField(
-        title=_(u"Picture")
+    picture_delete = PictureDeleteField(
+        title=_(u"Delete Picture")
+    )
+    picture_change = PictureChangeField(
+        title=_(u"Change Picture")
     )
 
 
@@ -181,25 +184,19 @@ class MembersSchema(colander.Schema):
     )
 
 
-class AccessSequence(colander.SequenceSchema):
-    webuser = WebUserField(
-        title=""
-    )
-
-
-class AccessSchema(colander.Schema):
-    access = AccessSequence(
-        title=_(u"Access")
-    )
-
-
-class AddArtistGroupSchema(colander.Schema):
-    title = _(u"Add Group Artist")
+class EditArtistGroupSchema(colander.Schema):
+    title = _(u"Edit Group Artist")
     metadata = MetadataSchema(
         title=_(u"Metadata")
     )
     members = MembersSchema(
         title=_(u"Members")
+    )
+
+class EditArtistSoloSchema(colander.Schema):
+    title = _(u"Edit Solo Artist")
+    metadata = MetadataSchema(
+        title=_(u"Metadata")
     )
 
 
@@ -217,11 +214,21 @@ zpt_renderer_tabs = deform.ZPTRendererFactory([
 ], translator=translator)
 
 
-def add_artist_group_form(request):
+def edit_artist_group_form(request):
     return deform.Form(
         renderer=zpt_renderer_tabs,
-        schema=AddArtistGroupSchema().bind(request=request),
+        schema=EditArtistGroupSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]
     )
+
+def edit_artist_solo_form(request):
+    return deform.Form(
+        renderer=zpt_renderer_tabs,
+        schema=EditArtistSoloSchema().bind(request=request),
+        buttons=[
+            deform.Button('submit', _(u"Submit"))
+        ]
+    )
+
