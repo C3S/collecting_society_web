@@ -33,8 +33,7 @@ class AddArtistSolo(FormController):
 
     def controller(self):
 
-        self.form = add_artist_solo_form(
-            self.request, title=_(u"Add Solo Artist"))
+        self.form = add_artist_solo_form(self.request)
 
         if self.submitted() and self.validate():
             self.create_artist()
@@ -101,16 +100,6 @@ class AddArtistSolo(FormController):
 
 # --- Fields ------------------------------------------------------------------
 
-@colander.deferred
-def web_user_select_widget(node, kw):
-    web_users = WebUser.search_all()
-    web_user_options = [
-        (web_user.id, web_user.party.name) for web_user in web_users
-    ]
-    widget = deform.widget.Select2Widget(values=web_user_options)
-    return widget
-
-
 class NameField(colander.SchemaNode):
     oid = "name"
     schema_type = colander.String
@@ -130,13 +119,6 @@ class PictureField(colander.SchemaNode):
     missing = ""
 
 
-class WebUserField(colander.SchemaNode):
-    oid = "webuser"
-    schema_type = colander.String
-    widget = web_user_select_widget
-    missing = ""
-
-
 # --- Schemas -----------------------------------------------------------------
 
 class MetadataSchema(colander.Schema):
@@ -151,20 +133,8 @@ class MetadataSchema(colander.Schema):
     )
 
 
-class AccessSequence(colander.SequenceSchema):
-    webuser = WebUserField(
-        title=""
-    )
-    missing = ""
-
-
-class AccessSchema(colander.Schema):
-    access = AccessSequence(
-        title=_(u"Access")
-    )
-
-
 class AddArtistSoloSchema(colander.Schema):
+    title=_(u"Add Solo Artist")
     metadata = MetadataSchema(
         title=_(u"Metadata")
     )
@@ -184,11 +154,10 @@ zpt_renderer_tabs = deform.ZPTRendererFactory([
 ], translator=translator)
 
 
-def add_artist_solo_form(request, title=None):
+def add_artist_solo_form(request):
     return deform.Form(
         renderer=zpt_renderer_tabs,
-        schema=AddArtistSoloSchema(
-            title=title).bind(request=request),
+        schema=AddArtistSoloSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]
