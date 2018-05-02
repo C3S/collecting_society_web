@@ -578,11 +578,13 @@ def post_repertoire_upload(request):
             if is_banned(request):
                 files.append({
                               'name': fieldStorage.filename,
-                              'error': _("Abuse detected. Wait for " +
-                                         str(int(still_banned_for(request))) +
-                                         " seconds before trying another"
-                                         " upload."),
+                              'error': _(u"Abuse detected. Wait for {number}"
+                                         u" seconds before trying another"
+                                         u" upload.", mapping={'number': 
+                                         int(still_banned_for(request))}),
                              })
+                             # TODO: number wont be replaced, also see
+                             # BirthdateField line 300+ in register_webuser.py
                 continue
             if is_collision(contentrange, checksum):
                 raise_abuse_rank(request)

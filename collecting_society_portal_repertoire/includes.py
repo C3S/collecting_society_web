@@ -86,20 +86,27 @@ def web_registry(config):
             'keywords': _(u'c3s,repertoire'),
             'description': _(u'registration of repertoire for C3S'),
             'languages': [
-                # {
-                #     'id': 'en',
-                #     'name': _(u'english'),
-                #     'icon': self.request.static_path(
-                #         'collecting_society_portal:static/img/en.png'
-                #     )
-                # },
-                # {
-                #     'id': 'de',
-                #     'name': _(u'deutsch'),
-                #     'icon': self.request.static_path(
-                #         'collecting_society_portal:static/img/de.png'
-                #     )
-                # }
+                {
+                    'id': 'en',
+                    'name': _(u'english'),
+                    'icon': self.request.static_path(
+                        'collecting_society_portal:static/img/en.png'
+                    )
+                },
+                {
+                    'id': 'de',
+                    'name': _(u'deutsch'),
+                    'icon': self.request.static_path(
+                        'collecting_society_portal:static/img/de.png'
+                    )
+                },
+                {
+                    'id': 'es',
+                    'name': _(u'español'),
+                    'icon': self.request.static_path(
+                        'collecting_society_portal:static/img/es.gif'
+                    )
+                }
             ]
         }
         # css

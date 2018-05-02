@@ -1,0 +1,836 @@
+#
+# German translations for PACKAGE package
+# This file is distributed under the same license as the PACKAGE package.
+# thomas <thomas.mielke@c3s.cc>, 2018.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE 1.0\n"
+"POT-Creation-Date: 2018-04-28 14:52+0200\n"
+"PO-Revision-Date: 2018-04-28 16:03+0200\n"
+"Last-Translator: thomas <thomas.mielke@c3s.cc>\n"
+"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Lingua 4.13\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.4\n"
+
+#: collecting_society_portal_repertoire/includes.py:85
+msgid "C3S - Repertoire"
+msgstr "C3S - Repertoire"
+
+#: collecting_society_portal_repertoire/includes.py:86
+msgid "c3s,repertoire"
+msgstr "c3s,repertoire"
+
+#: collecting_society_portal_repertoire/includes.py:87
+msgid "registration of repertoire for C3S"
+msgstr "Registrierung des Repertoires für C3S"
+
+#: collecting_society_portal_repertoire/includes.py:91
+msgid "english"
+msgstr "englisch"
+
+#: collecting_society_portal_repertoire/includes.py:98
+msgid "deutsch"
+msgstr "deutsch"
+
+#: collecting_society_portal_repertoire/includes.py:105
+msgid "español"
+msgstr "spanisch"
+
+#: collecting_society_portal_repertoire/includes.py:137
+msgid "register"
+msgstr "Registrieren"
+
+#: collecting_society_portal_repertoire/includes.py:143
+msgid "about"
+msgstr "Über"
+
+#: collecting_society_portal_repertoire/includes.py:147
+msgid "howto"
+msgstr "Howto"
+
+#: collecting_society_portal_repertoire/includes.py:151
+msgid "contact"
+msgstr "Kontakt"
+
+#: collecting_society_portal_repertoire/includes.py:155
+msgid "terms"
+msgstr "Nutzungsbedingungen"
+
+#: collecting_society_portal_repertoire/includes.py:177
+msgid "Repertoire"
+msgstr "Repertoire"
+
+#: collecting_society_portal_repertoire/includes.py:187
+msgid "Profile"
+msgstr "Profil"
+
+#: collecting_society_portal_repertoire/includes.py:193
+msgid "Help"
+msgstr "Hilfe"
+
+#: collecting_society_portal_repertoire/includes.py:199
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:5
+msgid "Contact"
+msgstr "Kontakt"
+
+#: collecting_society_portal_repertoire/includes.py:205
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:5
+msgid "Terms"
+msgstr "Nutzungsbedingunen"
+
+#: collecting_society_portal_repertoire/includes.py:211
+msgid "Logout"
+msgstr "Ausloggen"
+
+#: collecting_society_portal_repertoire/includes.py:220
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: collecting_society_portal_repertoire/includes.py:230
+msgid "Upload"
+msgstr "Hochladen"
+
+#: collecting_society_portal_repertoire/includes.py:240
+msgid "Artists"
+msgstr "Künstler"
+
+#: collecting_society_portal_repertoire/includes.py:250
+msgid "Releases"
+msgstr "Veröffentlichungen"
+
+#: collecting_society_portal_repertoire/includes.py:260
+msgid "Songs"
+msgstr "Lieder"
+
+#: collecting_society_portal_repertoire/templates/artist/show.pt:40
+#: collecting_society_portal_repertoire/templates/artist/list.pt:32
+#: collecting_society_portal_repertoire/templates/creation/show.pt:35
+#: collecting_society_portal_repertoire/templates/creation/list.pt:29
+#: collecting_society_portal_repertoire/templates/release/list.pt:27
+msgid "ID"
+msgstr "ID"
+
+#: collecting_society_portal_repertoire/templates/artist/show.pt:45
+#: collecting_society_portal_repertoire/templates/artist/list.pt:30
+#: collecting_society_portal_repertoire/templates/release/list.pt:25
+#: collecting_society_portal_repertoire/views/forms/add_artist_solo.py:126
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:162
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:162
+msgid "Name"
+msgstr "Name"
+
+#: collecting_society_portal_repertoire/templates/artist/show.pt:50
+#: collecting_society_portal_repertoire/views/forms/add_artist_solo.py:129
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:165
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:165
+msgid "Description"
+msgstr "Beschreibung"
+
+#: collecting_society_portal_repertoire/templates/artist/show.pt:55
+msgid "Solo Artists"
+msgstr "Solokünstler"
+
+#: collecting_society_portal_repertoire/templates/artist/show.pt:68
+msgid "Group Artists"
+msgstr "Gruppenkünstler"
+
+#: collecting_society_portal_repertoire/templates/artist/show.pt:81
+msgid "Creations"
+msgstr "Werke"
+
+#: collecting_society_portal_repertoire/templates/artist/show.pt:86
+#: collecting_society_portal_repertoire/templates/creation/show.pt:52
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:412
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:460
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:494
+msgid "Contributions"
+msgstr "Beiträge"
+
+#: collecting_society_portal_repertoire/templates/artist/list.pt:18
+msgid "Solo"
+msgstr "Solo"
+
+#: collecting_society_portal_repertoire/templates/artist/list.pt:23
+msgid "Group"
+msgstr "Gruppe"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:40
+#: collecting_society_portal_repertoire/templates/creation/list.pt:26
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:140
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:376
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:450
+#: collecting_society_portal_repertoire/views/forms/add_release.py:116
+msgid "Title"
+msgstr "Titel"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:45
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:379
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:453
+msgid "Featured Artist"
+msgstr "Featured Artist"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:61
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:162
+#, fuzzy
+msgid "Performance"
+msgstr "Darbietung"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:64
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:163
+msgid "Composition"
+msgstr "Komposition"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:67
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:164
+msgid "Text"
+msgstr "Text"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:79
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:419
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:466
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:497
+msgid "Licenses"
+msgstr "Lizenzen"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:97
+msgid "Origins"
+msgstr "Herkünfte"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:107
+#: collecting_society_portal_repertoire/templates/creation/show.pt:130
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:169
+msgid "Adaption"
+msgstr "Bearbeitung"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:110
+#: collecting_society_portal_repertoire/templates/creation/show.pt:133
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:170
+#, fuzzy
+msgid "Cover"
+msgstr "Cover"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:113
+#: collecting_society_portal_repertoire/templates/creation/show.pt:136
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:171
+msgid "Remix"
+msgstr "Remix"
+
+#: collecting_society_portal_repertoire/templates/creation/show.pt:120
+#, fuzzy
+msgid "Derivatives"
+msgstr "Abwandlungen"
+
+#: collecting_society_portal_repertoire/templates/creation/list.pt:19
+#: collecting_society_portal_repertoire/templates/release/list.pt:18
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: collecting_society_portal_repertoire/templates/creation/list.pt:27
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:137
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:425
+msgid "Artist"
+msgstr "Künstler"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:25
+msgid "Add files..."
+msgstr "Dateien hinzufügen..."
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:30
+msgid "Start upload"
+msgstr "Starte Upload"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:34
+msgid "Cancel upload"
+msgstr "Upload abbrechen"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:71
+msgid "Processing..."
+msgstr "Verarbeite..."
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:100
+msgid "There has been a problem with '{%=file.name%}'."
+msgstr "Es gab ein Problem mit  '{%=file.name%}'."
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:101
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:111
+msgid "<dynamic element>"
+msgstr "<dynamisches Element>"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:105
+msgid "'{%=file.name%}' has been processed succesfully."
+msgstr "'{%=file.name%}'  wurde erfolgreich verarbeitet."
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:110
+msgid ""
+"'{%=file.name%}' is currently being processed. Please come back again later."
+msgstr "'{%=file.name%}' wird gerade verarbeitet. Bitte komme später wieder."
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:119
+#, fuzzy
+msgid "Duration"
+msgstr "Länge"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:122
+msgid "Channels"
+msgstr "Kanäle"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:125
+msgid "Bitwidth"
+msgstr "Bitbreite"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:128
+msgid "Samplingrate"
+msgstr "Samplingrate"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:131
+msgid "File Size"
+msgstr "Dateigröße"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:143
+msgid "Release"
+msgstr "Veröffentlichung"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:146
+msgid "Release Date"
+msgstr "Veröffentlichungsdatum"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:149
+msgid "Track Number"
+msgstr "Tracknummer"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:155
+msgid "Processing State"
+msgstr "Verarbeitungsstatus"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:158
+msgid "Rejection Reason"
+msgstr "Ablehnungsgrund"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:161
+msgid "Rejection Reason Details"
+msgstr "Details zum Abweisungsgrund"
+
+#: collecting_society_portal_repertoire/templates/repertoire/upload.pt:166
+msgid "Error"
+msgstr "Fehler"
+
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:7
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:9
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:35
+msgid ""
+"Cultural Commons Collecting Society SCE mit beschränkter Haftung (C3S SCE)"
+msgstr ""
+"Cultural Commons Collecting Society SCE mit beschränkter Haftung (C3S SCE)"
+
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:10
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:12
+msgid "Representatives"
+msgstr "Repräsentanten"
+
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:16
+msgid "Rochusstr. 44"
+msgstr "Rochusstr. 44"
+
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:17
+msgid "40479 Düsseldorf"
+msgstr "40479 Düsseldorf"
+
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:18
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:20
+msgid "Germany"
+msgstr "Deutschland"
+
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:22
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:24
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:334
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:359
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:186
+msgid "Email"
+msgstr "Email"
+
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:23
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:25
+msgid "OpenPGP Public Key"
+msgstr "Öffentlicher OpenPGP Schlüssel"
+
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:28
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:30
+msgid "Phone"
+msgstr "Telefon"
+
+#: collecting_society_portal_repertoire/templates/frontend/contact.pt:29
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:31
+msgid "Fax"
+msgstr "Fax"
+
+#: collecting_society_portal_repertoire/templates/frontend/about.pt:5
+msgid "About"
+msgstr "Über"
+
+#: collecting_society_portal_repertoire/templates/frontend/howto.pt:5
+msgid "Howto"
+msgstr "Howto"
+
+#: collecting_society_portal_repertoire/templates/frontend/register.pt:5
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:402
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:414
+msgid "Register"
+msgstr "Registrieren"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:18
+msgid "Heyestr. 194"
+msgstr "Heyestr. 194"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:19
+msgid "40625 Düsseldorf"
+msgstr "40625 Düsseldorf"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:36
+msgid ""
+"registered in Dusseldorf, Germany, reg.no.: GnR 506 (Genossenschaftsregister "
+"Düsseldorf)"
+msgstr ""
+"registriert in Dusseldorf, Germany, Reg.-Nr.: GnR 506 "
+"(Genossenschaftsregister Düsseldorf)"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:37
+#, fuzzy
+msgid "registered office"
+msgstr "registrierter Firmensitz"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:37
+msgid "Heyestr. 194, 40625 Düsseldorf"
+msgstr "Heyestr. 194, 40625 Düsseldorf"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:38
+#, fuzzy
+msgid "Minimum share capital"
+msgstr "Mindestanteile"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:39
+msgid ""
+"European Cooperative Society founded in Hamburg on Sept. 25, 2013 under the "
+"law of the Federal Republic of Germany."
+msgstr ""
+"Europäische Genossenschaft gegründet in Hamburg am 25. September 2013 gemäß "
+"den Gesetzen der Bundesrepublik Deutschand."
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:42
+msgid "Statute"
+msgstr "Satzung"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:47
+msgid ""
+"Zuständige Aufsichtsbehörde bei Aufnahme der Tätigkeit als "
+"Verwertungsgesellschaft wird sein"
+msgstr ""
+"Zuständige Aufsichtsbehörde bei Aufnahme der Tätigkeit als "
+"Verwertungsgesellschaft wird sein"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:48
+msgid "DPMA Deutsches Patent- und Markenamt"
+msgstr "DPMA Deutsches Patent- und Markenamt"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:49
+msgid "Zweibrückenstraße 12"
+msgstr "Zweibrückenstraße 12"
+
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:50
+msgid "80331 München"
+msgstr "80331 München"
+
+#: collecting_society_portal_repertoire/templates/frontend/home.pt:42
+#: collecting_society_portal_repertoire/templates/frontend/home.pt:73
+msgid "Login"
+msgstr "Login"
+
+#: collecting_society_portal_repertoire/templates/profile/show.pt:28
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:350
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:180
+msgid "Firstname"
+msgstr "Vorname"
+
+#: collecting_society_portal_repertoire/templates/profile/show.pt:33
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:353
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:183
+msgid "Lastname"
+msgstr "Nachname"
+
+#: collecting_society_portal_repertoire/templates/profile/show.pt:38
+msgid "EMail"
+msgstr "EMail"
+
+#: collecting_society_portal_repertoire/templates/profile/show.pt:43
+msgid "Create date"
+msgstr "Erzeugungsdatum"
+
+#: collecting_society_portal_repertoire/views/artist.py:102
+msgid "Could not delete artist - code is missing"
+msgstr "Kann Künstler nicht löschen -Code fehlt"
+
+#: collecting_society_portal_repertoire/views/artist.py:110
+msgid "Could not delete artist - artist not found"
+msgstr "Kann künstler nicht löschen - Künstler nicht gefunden"
+
+#: collecting_society_portal_repertoire/views/artist.py:121
+#: collecting_society_portal_repertoire/views/release.py:93
+msgid "Artist deleted: "
+msgstr "Künstler gelöscht: "
+
+#: collecting_society_portal_repertoire/views/release.py:74
+msgid "Could not delete release - id is missing"
+msgstr ""
+"Zuständige Aufsichtsbehörde bei Aufnahme der Tätigkeit als "
+"Verwertungsgesellschaft wird seinD fehlt"
+
+#: collecting_society_portal_repertoire/views/release.py:82
+msgid "Could not delete release - artist not found"
+msgstr "Kann Release nicht löschen - Künstler nicht gefunden"
+
+#: collecting_society_portal_repertoire/views/creation.py:79
+msgid "Could not delete creation - id is missing"
+msgstr ""
+
+#: collecting_society_portal_repertoire/views/creation.py:87
+msgid "Could not delete creation - creation not found"
+msgstr "Kann Werk nicht löschen - Werk nicht gefunden"
+
+#: collecting_society_portal_repertoire/views/creation.py:102
+msgid "Creation deleted: "
+msgstr "Werk geöscht: "
+
+#: collecting_society_portal_repertoire/views/frontend.py:45
+msgid "Service temporary not available. Please come back later."
+msgstr ""
+"Dienst ist temporär nicht verfügbar. Bitte vrsuche es später noch einmal."
+
+#: collecting_society_portal_repertoire/views/frontend.py:83
+msgid "Your email verification was successful."
+msgstr "Deine Email-Überprüfung war erfolgreich."
+
+#: collecting_society_portal_repertoire/views/frontend.py:93
+msgid "Your email verification was not successful (wrong validation code)."
+msgstr ""
+"Deine Email-Überprüfung war nicht erfolgreich (falscher Validierungscode)"
+
+#: collecting_society_portal_repertoire/views/frontend.py:101
+#: collecting_society_portal_repertoire/views/backend.py:109
+msgid "Your email verification was not successful (no validation code)."
+msgstr ""
+"Deine Email-Überprüfung war nicht erfolgreich (kein Validierungscode "
+"angegeben)."
+
+#: collecting_society_portal_repertoire/views/backend.py:98
+msgid ""
+"Your email verification was successful. Now login with your new email "
+"address!"
+msgstr ""
+"Deine Email-Überprüfung war erfolgreich. Bitte jetzt mit der Email-Adresse "
+"einloggen."
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:129
+msgid "Creation could not be added: "
+msgstr "Werk konnte nicht hinzugefügt werden."
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:148
+msgid "Creation added: "
+msgstr "Werk hinzugefügt: "
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:161
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:168
+msgid "- Select -"
+msgstr "- Auswahl -"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:366
+msgid "Upload audiofile"
+msgstr "Audiodatei hochladen"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:368
+msgid "Upload Audiofile"
+msgstr "Audiodatei hochladen"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:373
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:447
+msgid "Add metadata"
+msgstr "Metadaten hinzufügen"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:398
+msgid "Solo artist"
+msgstr "Solokünstler"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:401
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:428
+msgid "Type"
+msgstr "Typ"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:410
+msgid "Add contributions"
+msgstr "Werke hinzufügen"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:417
+msgid "Add licences"
+msgstr "Lizenz hinzufügen"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:437
+msgid "Add relations to other creations"
+msgstr "Verknüpfungen zu anderen Werken hinzufügen"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:439
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:472
+msgid "Original creations"
+msgstr "Originalwerke"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:442
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:475
+msgid "Derivative creations"
+msgstr "Abgeleitete Werke"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:481
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:503
+#, fuzzy
+msgid "Content"
+msgstr "Content"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:486
+#: collecting_society_portal_repertoire/views/forms/add_artist_solo.py:137
+msgid "Add Solo Artist"
+msgstr "Solokünstler hinzufügen"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:488
+#: collecting_society_portal_repertoire/views/forms/add_artist_solo.py:139
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:190
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:199
+#: collecting_society_portal_repertoire/views/forms/add_release.py:140
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:199
+msgid "Metadata"
+msgstr "Metadaten"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:500
+msgid "Relations"
+msgstr "Verknüpfungen"
+
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:526
+#: collecting_society_portal_repertoire/views/forms/add_artist_solo.py:162
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:222
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:231
+#: collecting_society_portal_repertoire/views/forms/add_release.py:169
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:206
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:225
+msgid "Submit"
+msgstr "Übernehmen"
+
+#: collecting_society_portal_repertoire/views/forms/add_artist_solo.py:81
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:86
+msgid "Artist could not be added: "
+msgstr "Künstler konnte nicht hinzugefügt werden: "
+
+#: collecting_society_portal_repertoire/views/forms/add_artist_solo.py:90
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:95
+msgid "Artist added: "
+msgstr "Künstler hinzugefügt: "
+
+#: collecting_society_portal_repertoire/views/forms/add_artist_solo.py:132
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:168
+msgid "Picture"
+msgstr "Bild"
+
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:41
+msgid "Could not edit artist - artist not found"
+msgstr "Kann Künstler nicht bearbeiten - Künstler nicht gefunden"
+
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:106
+msgid "Artist edited: "
+msgstr "Künstler wurde bearbeitet: "
+
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:168
+msgid "Delete Picture"
+msgstr "Bild löschen"
+
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:171
+msgid "Change Picture"
+msgstr "Bild ändern"
+
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:183
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:193
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:180
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:202
+msgid "Members"
+msgstr "Mitglieder"
+
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:188
+msgid "Edit Group Artist"
+msgstr "Gruppenkünstler bearbeiten"
+
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:197
+msgid "Edit Solo Artist"
+msgstr "Solokünstler bearbeiten"
+
+#: collecting_society_portal_repertoire/views/forms/add_release.py:119
+msgid "ISRC Code"
+msgstr "ISRC Code"
+
+# Kontext klären!
+#: collecting_society_portal_repertoire/views/forms/add_release.py:122
+#, fuzzy
+msgid "Label"
+msgstr "Label"
+
+#: collecting_society_portal_repertoire/views/forms/add_release.py:125
+msgid "EAN UPC Code"
+msgstr "EAN UPC Code"
+
+#: collecting_society_portal_repertoire/views/forms/add_release.py:138
+msgid "Add Release"
+msgstr "Veröffentlichung hinzufügen"
+
+#: collecting_society_portal_repertoire/views/forms/add_release.py:143
+msgid "Metadata2"
+msgstr "Metadaten2"
+
+#: collecting_society_portal_repertoire/views/forms/add_release.py:146
+msgid "Metadata3"
+msgstr "Metadaten3"
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:145
+#, fuzzy
+msgid "You are already registered with your credentials."
+msgstr "Du bist bereits mit Deinen Zugangsdaten registriert."
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:152
+msgid ""
+"Your email address is not verified yet. Please follow the instructions in "
+"our email."
+msgstr ""
+"Deine Email-Adresse ist noch nicht verifiziert worden. Bitte folge den "
+"Instruktionen in unserer Email."
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:197
+msgid ""
+"There was an error during the registration process. Please try again later "
+"and contact us, if this error occurs again. Sorry for the inconveniece."
+msgstr ""
+"Es gab einen Fehler im Registrierungsprozess. Bitte versuche es später noch "
+"einmal und kontaktiere uns, wenn dieser Fehler noch einmal auftritt. Sorry "
+"für die Unannehmlichkeiten."
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:242
+msgid ""
+"Thank you for your registration. We are now processing your request and will "
+"send you an email with further instructions."
+msgstr ""
+"Danke für Deine Registrierung. Wir verarbeiten nun Deine Anfrage und werden "
+"Dir eine Email mit weiteren Instruktionen senden."
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:270
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:114
+msgid "Please enter your name."
+msgstr "Bitte gib Deinen Namen ein."
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:276
+msgid "You need to accept the terms of service."
+msgstr "Du musst die Nutzungsbedingungen akzeptieren."
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:306
+#, python-format
+msgid "Sorry, you have to be ${age} years or older to register here."
+msgstr ""
+"Tut uns Leid, Du musst mindestens ${age} Jahre alt sein, um Dich hier zu "
+"registrieren "
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:335
+msgid "Please use the email address as in your membership application."
+msgstr "Bitte benutze die Email-Adresse aus Deinem Mitgliedsantrag."
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:340
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:362
+msgid "Password"
+msgstr "Passwort"
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:343
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:365
+msgid "Terms of Service"
+msgstr "Nutzungsbedingungen"
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:344
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:366
+msgid "I accept the terms of service."
+msgstr "Ich akzeptiere die Nutzungsbedingungen."
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:356
+msgid "Birthdate"
+msgstr "Geburtsdatum"
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:374
+msgid "Are you a C3S member?"
+msgstr "Bist Du C3S-Mitglied?"
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:378
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:390
+msgid "Yes"
+msgstr "Ja"
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:380
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:391
+msgid "No"
+msgstr "Nein"
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:387
+msgid "Do you want to apply for C3S membership?"
+msgstr "Möchtest Du einen Mitgliedschaftsantrag für die C3S stellen?"
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:392
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:404
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:416
+msgid "Back"
+msgstr "Zurück"
+
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:91
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:98
+msgid "Profile changed for: "
+msgstr "Profil geändert für: "
+
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:99
+msgid " -- activation email for new email address sent."
+msgstr " -- Aktivierungs-Email für neue Email-Adresse gesendet."
+
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:100
+msgid " Please check your (new) email inbox."
+msgstr "Bitte schaue in Dein (neues) Email-Postfach."
+
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:127
+msgid "Email address already taken"
+msgstr "Email-Adresse bereits vergeben."
+
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:189
+msgid "Password (leave empty if you don't want to change it)"
+msgstr "Passwort (frei lassen, wenn nicht geändert werden soll)"
+
+# oder 'Zugang'?
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:192
+#, fuzzy
+msgid "Access"
+msgstr "Zugriff"
+
+#: collecting_society_portal_repertoire/views/forms/add_artist_group.py:197
+msgid "Add Group Artist"
+msgstr "Gruppenkünstler hinzufügen"
+
+#: collecting_society_portal_repertoire/views/api/repertoire_upload.py:371
+msgid "Filetype not allowed."
+msgstr "Dateityp nicht erlaubt."
+
+#: collecting_society_portal_repertoire/views/api/repertoire_upload.py:376
+msgid "Mimetype not allowed."
+msgstr "Mimetype nicht erlaubt."
+
+#: collecting_society_portal_repertoire/views/api/repertoire_upload.py:581
+#, python-format
+msgid "Abuse detected. Wait for {number} seconds before trying another upload."
+msgstr ""
+"Missbrauch wrde erkannt. Warte für {number} Sekunden bevor Du einen neuen "
+"Upload versuchst."

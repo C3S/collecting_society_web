@@ -124,7 +124,7 @@ def validate_unique_user_email(node, values, **kwargs): # multi-field validator
         # email has been changed: check if it conflicts with other webuser
         found_conflicting_web_user = WebUser.search_by_email(email_value)
         if found_conflicting_web_user:
-            raise colander.Invalid(node, "Email address already taken")
+            raise colander.Invalid(node, _(u"Email address already taken"))
 
     # finally, check email format
     if len(email_value) > 7:

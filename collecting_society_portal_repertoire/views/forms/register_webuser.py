@@ -301,11 +301,12 @@ class BirthdateField(colander.SchemaNode):
     oid = "birthdate"
     schema_type = colander.Date
     validator = colander.Range(
-                    max=datetime.date.today() - datetime.timedelta(
-                        days=AGE_ADULT*364),
-                    max_err=_('Sorry, you have to be ' + str(AGE_ADULT)
-                              + ' years or older to register here.')
-                )   # TODO: this won't work. translation will be resolved in the template ?!?
+        max=datetime.date.today() - datetime.timedelta(
+            days=AGE_ADULT*364),
+        max_err=_('Sorry, you have to be ${age} years or older to register here.',
+                  mapping={'age': AGE_ADULT})   # TODO: mapping doesn't work here
+                                                # also see line 580 in repertoire_upload.py
+    )
 
 
 class EmailField(colander.SchemaNode):
