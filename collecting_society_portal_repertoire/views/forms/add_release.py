@@ -67,13 +67,15 @@ class AddRelease(FormController):
             'party': party,
             'title': self.appstruct['metadata']['title']
         }
-        if self.appstruct['metadata']['isrc_code']:
-            _release['isrc_code'] = self.appstruct['metadata']['isrc_code']
         if self.appstruct['metadata']['label']:
             _release['label'] = self.appstruct['metadata']['label']
+        if self.appstruct['metadata']['label']:
+            _release['label_catalog_number'] = self.appstruct['metadata']['label_catalog_number']
         if self.appstruct['metadata']['ean_upc_code']:
             _release['ean_upc_code'] = self.appstruct['metadata'][
                 'ean_upc_code']
+        if self.appstruct['metadata']['isrc_code']:
+            _release['isrc_code'] = self.appstruct['metadata']['isrc_code']
 
         Release.create([_release])
 
@@ -103,6 +105,12 @@ class LabelField(colander.SchemaNode):
     missing = ""
 
 
+class LabelCatalogNumberField(colander.SchemaNode):
+    oid = "label_catalog_number"
+    schema_type = colander.String
+    missing = ""
+
+
 class EanUpcCodeField(colander.SchemaNode):
     oid = "ean_upc_code"
     schema_type = colander.String
@@ -115,14 +123,17 @@ class MetadataSchema(colander.Schema):
     title = TitleField(
         title=_(u"Title")
     )
-    isrc_code = IsrcCodeField(
-        title=_(u"ISRC Code")
-    )
     label = LabelField(
         title=_(u"Label")
     )
+    label_catalog_number = LabelCatalogNumberField(
+        title=_(u"Label Catalog Number")
+    )
     ean_upc_code = EanUpcCodeField(
         title=_(u"EAN UPC Code")
+    )
+    isrc_code = IsrcCodeField(
+        title=_(u"ISRC Code")
     )
 
 
@@ -134,16 +145,37 @@ class Metadata3Schema(colander.Schema):
     pass
 
 
+class Metadata4Schema(colander.Schema):
+    pass
+
+
+class Metadata5Schema(colander.Schema):
+    pass
+
+
+class Metadata6Schema(colander.Schema):
+    pass
+
+
 class AddReleaseSchema(colander.Schema):
     title = _(u"Add Release")
     metadata = MetadataSchema(
-        title=_(u"Metadata")
+        title=_(u"General")
     )
     metadata2 = Metadata2Schema(
-        title=_(u"Metadata2")
+        title=_(u"Production")
     )
     metadata3 = Metadata3Schema(
-        title=_(u"Metadata3")
+        title=_(u"Distribution")
+    )
+    metadata4 = Metadata4Schema(
+        title =_(u"Tracks")
+    )
+    metadata5 = Metadata5Schema(
+        title=_(u"Genres")
+    )
+    metadata6 = Metadata6Schema(
+        title=_(u"Rights Societies")
     )
 
 

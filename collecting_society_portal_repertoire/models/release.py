@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 class Release(Tdb):
     """
-    Model wrapper for Tryton model object 'creation'
+    Model wrapper for Tryton model object 'release'
     """
 
     __name__ = 'release'
@@ -44,11 +44,7 @@ class Release(Tdb):
           None: if no match is found
         """
         return cls.get().search([
-            [
-                'OR',
-                ('party', '=', party_id),
-                ('creations.creation.artist.party', '=', party_id)
-            ],
+            ('creations.creation.artist.party', '=', party_id),
             ('active', 'in', (True, active))
         ])
 
