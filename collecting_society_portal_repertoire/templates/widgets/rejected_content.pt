@@ -1,4 +1,4 @@
-<table cellpadding="0" cellspacing="5" style="margin: 10px; text-align: right">
+<table cellspacing=0 cellpadding=0 class="rejected-table">
     <tr>
         <td>Duplicates:</td>
         <td>${dupl}</td>
