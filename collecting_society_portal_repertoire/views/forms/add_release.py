@@ -21,6 +21,7 @@ from ...services import _
 from ...models import (
     Artist,
     Creation,
+    Label,
     License,
     Release
 )
@@ -79,8 +80,8 @@ class AddRelease(FormController):
             _release['isrc_code'] = self.appstruct['general']['isrc_code']
         # distribution tab
          # TODO: save label relation here:
-        #if self.appstruct['distribution']['label']:    --> Many2One relation!
-        #    _release['label'] = self.appstruct['distribution']['label']
+        if self.appstruct['distribution']['label']:
+            _release['label'] = self.appstruct['distribution']['label']
         if self.appstruct['distribution']['label']:
             _release['label_catalog_number'] = self.appstruct['distribution']['label_catalog_number']
         if self.appstruct['distribution']['label_catalog_number']:
@@ -131,12 +132,31 @@ class NumberOfMediumsField(colander.SchemaNode):
 class EanUpcCodeField(colander.SchemaNode):
     oid = "ean_upc_code"
     schema_type = colander.String
-    missing = ""
+    validator = colander.All(
+                    colander.Length(min=12, max=13
+                    # TODO: find out why this is not working (old colander version?):
+                    # ,
+                    # min_err=_('at least 12 digits for a valid UPC barcode, 13 for an EAN code.'),
+                    # max_err=_('maximum of 13 digits for an EAN code (12 for a UPC).'
+                    ),
+                    #colander.ContainsOnly(
+                    #    '0123456789', 
+                    #    err_msg=_('may only contain digits') <- why no custom err_msg?!?
+                    #)
+                    colander.Regex('^[0-9]*$', msg=_('may only contain digits'))
+                )
 
 
 class IsrcCodeField(colander.SchemaNode):
     oid = "isrc_code"
     schema_type = colander.String
+    validator = colander.Regex('^[a-zA-Z][a-zA-Z][a-zA-Z0-9][a-zA-Z0-9][a-z'
+                               'A-Z0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*$',
+                               msg=_('Please enter a valid international '
+                                     'standard recording code, for example: '
+                                     'DEA123456789'
+                                    )
+                              )
     missing = ""
 
 
@@ -144,9 +164,21 @@ class IsrcCodeField(colander.SchemaNode):
 
 # -- Distribution tab --
 
+
+@colander.deferred
+def labels_select_widget(node, kw):
+    labels = Label.search_all()
+    label_options = [
+        (label.gvl_code, 'LC' + label.gvl_code + ' - ' + label.name) for label in labels
+    ]
+    widget = deform.widget.Select2Widget(values=label_options)
+    return widget
+
+
 class LabelField(colander.SchemaNode):
     oid = "label"
     schema_type = colander.String
+    widget = labels_select_widget
     missing = ""
 
 
@@ -204,7 +236,7 @@ class GeneralSchema(colander.Schema):
         title=_(u"Number of Mediums")
     )
     ean_upc_code = EanUpcCodeField(
-        title=_(u"EAN UPC Code")
+        title=_(u"EAN or UPC Code")
     )
     isrc_code = IsrcCodeField(
         title=_(u"ISRC Code")
@@ -220,7 +252,7 @@ class ProductionSchema(colander.Schema):
 
 class DistributionSchema(colander.Schema):
     label = LabelField(
-        title=_(u"Label [this field is not yet being saved]")
+        title=_(u"Label")
     )
     label_catalog_number = LabelCatalogNumberField(
         title=_(u"Label Catalog Number")
