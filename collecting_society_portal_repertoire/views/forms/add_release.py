@@ -23,6 +23,7 @@ from ...models import (
     Creation,
     Label,
     License,
+    Party,
     Release
 )
 from ...resources import ReleaseResource
@@ -78,6 +79,19 @@ class AddRelease(FormController):
                 'ean_upc_code']
         if self.appstruct['general']['isrc_code']:
             _release['isrc_code'] = self.appstruct['general']['isrc_code']
+        # production tab
+        if self.appstruct['production']['copyright_date']:
+            _release['copyright_date'] = self.appstruct['production'][
+                'copyright_date']
+        if self.appstruct['production']['copyright_owner']:
+            _release['copyright_owner'] = self.appstruct['production'][
+                'copyright_owner']
+        if self.appstruct['production']['production_date']:
+            _release['production_date'] = self.appstruct['production'][
+                'production_date']
+        if self.appstruct['production']['producer']:
+            _release['producer'] = self.appstruct['production'][
+                'producer']
         # distribution tab
          # TODO: save label relation here:
         if self.appstruct['distribution']['label']:
@@ -115,6 +129,7 @@ class AddRelease(FormController):
 # --- Fields ------------------------------------------------------------------
 
 # -- General tab --
+
 
 class TitleField(colander.SchemaNode):
     oid = "title"
@@ -160,7 +175,46 @@ class IsrcCodeField(colander.SchemaNode):
     missing = ""
 
 
+# TODO: picture
+
 # -- Production Tab --
+
+
+@colander.deferred
+def party_select_widget(node, kw):
+    parties = Party.search_all()
+    label_options = [
+        (party.code, party.name) for party in parties
+    ]
+    widget = deform.widget.Select2Widget(values=label_options)
+    return widget
+    
+    
+class CopyrightDateField(colander.SchemaNode):
+    oid = "copyright_date"
+    schema_type = colander.Date
+    missing = ""
+
+
+class CopyrightOwnerField(colander.SchemaNode):
+    oid = "copyright_owner"
+    schema_type = colander.String
+    widget = party_select_widget
+    missing = "" 
+
+
+class ProductionDateField(colander.SchemaNode):
+    oid = "production_date"
+    schema_type = colander.Date
+    missing = ""
+
+
+class ProducerField(colander.SchemaNode):
+    oid = "producer"
+    schema_type = colander.String
+    widget = party_select_widget
+    missing = "" 
+
 
 # -- Distribution tab --
 
@@ -247,8 +301,10 @@ class GeneralSchema(colander.Schema):
 
 
 class ProductionSchema(colander.Schema):
-    pass
-
+    copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
+    copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner"))
+    production_date = ProductionDateField(title=_(u"Production Date"))
+    producer = ProducerField(title=_(u"Producer"))
 
 class DistributionSchema(colander.Schema):
     label = LabelField(
