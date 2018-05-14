@@ -1,1 +1,3 @@
-<b i18n:translate="">Orphaned: ${orph}</b>
+<span i18n:domain="collecting_society_portal_repertoire">
+<b><span i18n:translate="">Orphaned</span>: ${orph}</b>
+</span>
