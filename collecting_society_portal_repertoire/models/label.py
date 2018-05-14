@@ -31,7 +31,7 @@ class Label(Tdb):
     @Tdb.transaction(readonly=True)
     def search_by_gvl_code(cls, gvl_code):
         """
-        Searches an label by gvl code
+        Searches a label by gvl code
 
         Args:
           gvl_code (string): label.gvl_code
@@ -47,7 +47,7 @@ class Label(Tdb):
     @Tdb.transaction(readonly=True)
     def search_by_name_starting_with(cls, name_starting_with):
         """
-        Searches an label for a name starting with certaion characters
+        Searches a label for a name starting with certaion characters
 
         Args:
           name_starting_with (string): label.name

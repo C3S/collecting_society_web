@@ -21,6 +21,7 @@ from ...services import _
 from ...models import (
     Artist,
     Creation,
+    Genre,
     Label,
     License,
     Party,
@@ -278,6 +279,25 @@ class DistributionTerritoryField(colander.SchemaNode):
 # -- Genres tab --
 
 
+@colander.deferred
+def deferred_checkbox_widget(node, kw):
+    genres = Genre.search_all()
+    #genre_options = [(unicode(genre.name), unicode(genre.name)) for genre in genres]
+    genre_options = (('habanero', 'Habanero'), #<-- geht auch nicht
+                     ('japanelo', 'Japanelo'), #    was mache ich bloss falsch?
+                     ('chipotle', 'Chipotle')
+                    )
+    widget = deform.widget.CheckboxChoiceWidget(values=genre_options)
+
+
+class GenreCheckboxField(colander.SchemaNode):
+    oid = "genre"
+    schema_type = colander.Set
+    widget=deferred_checkbox_widget
+    validator=colander.Length(min=1)
+    missing = ""
+
+
 # -- Neibouring Rights Societies tab --
 
 # --- Schemas -----------------------------------------------------------------
@@ -328,8 +348,8 @@ class TracksSchema(colander.Schema):
     pass
 
 
-class GenresSchema(colander.Schema):
-    pass
+class GenresSchema(colander.Schema):    
+    genre = GenreCheckboxField(title=_(u"Genres"))
 
 
 class RightsSocietiesSchema(colander.Schema):
