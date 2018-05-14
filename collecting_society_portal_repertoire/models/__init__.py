@@ -5,4 +5,6 @@ from .artist import Artist
 from .release import Release
 from .creation import Creation
 from .content import Content
+from .label import Label
 from .license import License
+from .party import Party

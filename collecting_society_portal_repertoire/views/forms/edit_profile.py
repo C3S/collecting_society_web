@@ -159,6 +159,7 @@ class EmailField(colander.SchemaNode):
     oid = "email"
     schema_type = colander.String
     #validator = colander.Function(validate_unique_user_email)
+    # ^ validate_unique_user_email is a multi-field validator now
 
 
 class PasswordField(colander.MappingSchema):
