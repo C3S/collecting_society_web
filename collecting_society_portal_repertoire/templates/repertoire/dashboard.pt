@@ -7,9 +7,11 @@
             <div style="float: left; margin:15px">
                 <img style="height:150px" src="../../static/repertoire/img/avatar_example.png" />
             </div>
-	    <div class="introtext" style="float:left; margin:15px" i18n:translate="">Welcome,
-            <br /><span i18n:translate="">you can find the latest news and todos for your next steps here on this dashboard.</span>
-            </div> 
+	    <div class="introtext" style="float:left; margin:15px">
+            <span i18n:translate="">Welcome</span>
+		    &nbsp;${webuser.nickname or ""},<br/>
+		    <span i18n:translate="">you can find the latest news and todos for your next steps here on this dashboard.</span>
+	    </div>
             <tal:block tal:condition="context.registry['widgets']['dashboard-central-widgets']|None"
                        tal:repeat="widget context.registry['widgets']['dashboard-central-widgets']">
                 <div class="dashboard-widget" style="float:left">

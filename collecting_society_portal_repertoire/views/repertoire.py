@@ -11,6 +11,10 @@ from pyramid.view import (
 )
 
 from collecting_society_portal.views import ViewBase
+from collecting_society_portal.models import (
+    Tdb,
+    WebUser
+)
 
 from ..resources import (
     RepertoireResource,
@@ -34,10 +38,17 @@ class RepertoireViews(ViewBase):
     @view_config(
         name='dashboard',
         renderer='../templates/repertoire/dashboard.pt',
+        decorator=Tdb.transaction(readonly=True),
         permission='read'
     )
     def dashboard(self):
-        return {}
+        _webuser = WebUser.current_web_user(self.request)
+        if _webuser:
+            return {
+            'webuser' : _webuser
+            }
+        else:
+            return None
 
     @view_config(
         context=UploadResource,

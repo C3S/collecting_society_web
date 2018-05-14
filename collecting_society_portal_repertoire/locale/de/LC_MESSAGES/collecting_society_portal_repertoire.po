@@ -236,18 +236,14 @@ msgstr "Hinzufügen"
 msgid "Artist"
 msgstr "Künstler"
 
-#: collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:10
+#: collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:11
 msgid "Welcome"
 msgstr "Lieber"
 
-#: collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:11
+#: collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:13
 #, fuzzy
-msgid ""
-"you can find the latest news and todos for your next steps here on this "
-"dashboard."
-msgstr ""
-"hier auf deinem Dashboard findest du die neuesten Meldungen und Hinweise für "
-"deine nächsten Schritte."
+msgid "you can find the latest news and todos for your next steps here on this dashboard."
+msgstr "hier auf deinem Dashboard findest du die neuesten Meldungen und Hinweise für deine nächsten Schritte."
 
 #: collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:1
 msgid "Orphaned:"

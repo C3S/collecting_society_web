@@ -232,11 +232,11 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:10
+#: ./collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:11
 msgid "Welcome"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:11
+#: ./collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:13
 msgid "you can find the latest news and todos for your next steps here on this dashboard."
 msgstr ""
 
