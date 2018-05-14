@@ -81,7 +81,7 @@ msgstr "Kontakt"
 #: collecting_society_portal_repertoire/includes.py:205
 #: collecting_society_portal_repertoire/templates/frontend/terms.pt:5
 msgid "Terms"
-msgstr "Nutzungsbedingunen"
+msgstr "Nutzungsbedingungen"
 
 #: collecting_society_portal_repertoire/includes.py:211
 msgid "Logout"
@@ -235,6 +235,23 @@ msgstr "Hinzufügen"
 #: collecting_society_portal_repertoire/views/forms/add_creation.py:425
 msgid "Artist"
 msgstr "Künstler"
+
+#: collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:10
+msgid "Welcome"
+msgstr "Lieber"
+
+#: collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:11
+#, fuzzy
+msgid ""
+"you can find the latest news and todos for your next steps here on this "
+"dashboard."
+msgstr ""
+"hier auf deinem Dashboard findest du die neuesten Meldungen und Hinweise für "
+"deine nächsten Schritte."
+
+#: collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:1
+msgid "Orphaned:"
+msgstr "Verwaist:"
 
 #: collecting_society_portal_repertoire/templates/repertoire/upload.pt:25
 msgid "Add files..."

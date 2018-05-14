@@ -232,6 +232,18 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
+#: ./collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:10
+msgid "Welcome"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/repertoire/dashboard.pt:11
+msgid "you can find the latest news and todos for your next steps here on this dashboard."
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:1
+msgid "Orphaned:"
+msgstr ""
+
 #: ./collecting_society_portal_repertoire/templates/repertoire/upload.pt:25
 msgid "Add files..."
 msgstr ""
