@@ -240,8 +240,28 @@ msgstr ""
 msgid "you can find the latest news and todos for your next steps here on this dashboard."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:1
-msgid "Orphaned:"
+#: ./collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:2
+msgid "Orphaned"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/widgets/uncommited_content.pt:2
+msgid "Uncommited"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/widgets/rejected_content.pt:4
+msgid "Duplicates"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/widgets/rejected_content.pt:8
+msgid "Format errors"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/widgets/rejected_content.pt:12
+msgid "Lossy compression"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/widgets/rejected_content.pt:16
+msgid "Rejected (sum)"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/repertoire/upload.pt:25

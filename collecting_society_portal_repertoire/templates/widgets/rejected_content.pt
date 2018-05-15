@@ -1,18 +1,20 @@
+<span i18n:domain="collecting_society_portal_repertoire">
 <table cellspacing=0 cellpadding=0 class="rejected-table">
     <tr>
-        <td>Duplicates:</td>
+        <td><span i18n:translate="">Duplicates</span>:</td>
         <td>${dupl}</td>
     </tr>
     <tr>
-        <td>Format errors:</td>
+        <td><span i18n:translate="">Format errors</span>:</td>
         <td>${ferrors}</td>
     </tr>
     <tr>
-        <td>Lossy compression:</td>
+        <td><span i18n:translate="">Lossy compression</span>:</td>
         <td>${lossyc}</td>
     </tr>
     <tr>
-        <td><b>Rejected (sum):</b></td>
+        <td><b><span i18n:translate="">Rejected (sum)</span>:</b></td>
         <td>${rejects}</td>
     </tr>
 </table>
+</span>

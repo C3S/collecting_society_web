@@ -244,9 +244,29 @@ msgstr "Lieber"
 msgid "you can find the latest news and todos for your next steps here on this dashboard."
 msgstr "hier auf deinem Dashboard findest du die neuesten Meldungen und Hinweise für deine nächsten Schritte."
 
-#: collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:1
-msgid "Orphaned:"
-msgstr "Verwaist:"
+#: collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:2
+msgid "Orphaned"
+msgstr "Verwaist"
+
+#: ./collecting_society_portal_repertoire/templates/widgets/uncommited_content.pt:2
+msgid "Uncommited"
+msgstr "Nicht freigeschaltet"
+
+#: ./collecting_society_portal_repertoire/templates/widgets/rejected_content.pt:4
+msgid "Duplicates"
+msgstr "Duplikate"
+
+#: ./collecting_society_portal_repertoire/templates/widgets/rejected_content.pt:8
+msgid "Format errors"
+msgstr "Formatfehler"
+
+#: ./collecting_society_portal_repertoire/templates/widgets/rejected_content.pt:12
+msgid "Lossy compression"
+msgstr "Verlustbehaftete Kompression"
+
+#: ./collecting_society_portal_repertoire/templates/widgets/rejected_content.pt:16
+msgid "Rejected (sum)"
+msgstr "Zurückgewiesen (Gesamt)"
 
 #: collecting_society_portal_repertoire/templates/repertoire/upload.pt:25
 msgid "Add files..."
