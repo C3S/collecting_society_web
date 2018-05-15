@@ -296,7 +296,22 @@ class GenreCheckboxField(colander.SchemaNode):
     widget=deferred_checkbox_widget
     validator=colander.Length(min=1)
     missing = ""
+    
 
+class GenreCheckboxField2(colander.Schema):
+    #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
+    #genres = Genre.search_all()
+    #genre_options = [(gen.name, gen.name) for gen in genres]
+    #genre_options = (('habanero', 'Habanero'), #<-- so geht es
+    #                 ('japanelo', 'Japanelo'), #    aber Datenbank genres geht nicht
+    #                 ('chipotle', 'Chipotle')
+    #                )
+    #genre = colander.SchemaNode(
+    #    colander.Set(),
+    #    widget=deform.widget.CheckboxChoiceWidget(values=genre_options),
+    #    validator=colander.Length(min=1),
+    #    )
+    pass
 
 # -- Neibouring Rights Societies tab --
 
@@ -349,7 +364,7 @@ class TracksSchema(colander.Schema):
 
 
 class GenresSchema(colander.Schema):    
-    genre = GenreCheckboxField(title=_(u"Genres"))
+    genre = GenreCheckboxField2(title=_(u"Genres"))
 
 
 class RightsSocietiesSchema(colander.Schema):
