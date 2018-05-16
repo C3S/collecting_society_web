@@ -88,12 +88,20 @@ a { outline:none!important; }
 
 /* Widgets */
 
-.dashboard-widget { border: 1px solid #317a19;
-                    border-radius: 25px;
-                    min-height: 120px;
-                    min-width: 120px;
-                    text-align: center;
-                    margin: 15px }
+.dashboard-widget {
+    background-color: rgba(217,240,200,1);
+    border-radius: 25px;
+    min-height: 120px;
+    min-width: 120px;
+    text-align: center;
+    margin: 12px;
+    padding: 15px;
+}
+
+.rejected-table tr td:first-child {
+    padding-right: 5px;
+    text-align: right;
+}
 
 /*******************************************************************************
 

@@ -312,8 +312,8 @@ class LabelCodeField(colander.SchemaNode):
     missing = ""
 
 
-class LabelOrderNumberField(colander.SchemaNode):
-    oid = "label-order-number"
+class LabelCatalogNumberField(colander.SchemaNode):
+    oid = "label-catalog-number"
     schema_type = colander.Integer
     missing = ""
 
@@ -383,7 +383,7 @@ class AddMetadataSchema(colander.MappingSchema):
     neighbouring_rights_society = NeighbouringRightsSocietyField()
     label_name = LabelNameField()
     label_code = LabelCodeField()
-    label_order_number = LabelOrderNumberField()
+    label_catalog_number = LabelCatalogNumberField()
     label_url = LabelUrlField()
     ean_upc = EanUpcField()
     isrc = IsrcField()

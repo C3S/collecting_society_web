@@ -5,6 +5,7 @@ import colander
 import deform
 from pkg_resources import resource_filename
 import logging
+import re
 
 from pyramid.threadlocal import get_current_request
 from pyramid.i18n import get_localizer
@@ -61,7 +62,6 @@ class EditProfile(FormController):
 
     @Tdb.transaction(readonly=False)
     def change_profile(self):
-        #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
         web_user = WebUser.current_web_user(self.request)
         web_user.party.firstname = self.appstruct['firstname'] #save separately
         web_user.party.lastname =  self.appstruct['lastname']  #for clarity
@@ -109,10 +109,28 @@ class EditProfile(FormController):
 
 
 def not_empty(value):
+    """Ensure field has at least two characters in it."""
     if not value or len(value) < 2:
         return _(u"Please enter your name.")
     return True
 
+def validate_unique_user_email(node, values, **kwargs): # multi-field validator
+    """Check for valid email and prevent duplicate usernames."""
+
+    request = node.bindings["request"]
+    email_value = values["email"]
+    current_web_user = WebUser.current_web_user(request)
+    if email_value != current_web_user.email:
+        # email has been changed: check if it conflicts with other webuser
+        found_conflicting_web_user = WebUser.search_by_email(email_value)
+        if found_conflicting_web_user:
+            raise colander.Invalid(node, _(u"Email address already taken"))
+
+    # finally, check email format
+    if len(email_value) > 7:
+        if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email_value) != None:
+            return
+    raise colander.Invalid(node, "Invalid email address")
 
 # --- Options -----------------------------------------------------------------
 
@@ -140,7 +158,8 @@ class LastnameField(colander.SchemaNode):
 class EmailField(colander.SchemaNode):
     oid = "email"
     schema_type = colander.String
-    validator = colander.Email()
+    #validator = colander.Function(validate_unique_user_email)
+    # ^ validate_unique_user_email is a multi-field validator now
 
 
 class PasswordField(colander.MappingSchema):
@@ -168,7 +187,7 @@ class ProfileSchema(colander.Schema):
         title=_(u"Email")
     )
     password = PasswordField(
-        title=_(u"Password")
+        title=_(u"Password (leave empty if you don't want to change it)")
     )
 
 
@@ -182,7 +201,8 @@ def translator(term):
 def edit_profile_form(request):
 
     form = deform.Form(
-        schema=ProfileSchema().bind(request=request),
+        schema=ProfileSchema(
+            validator=validate_unique_user_email).bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]
