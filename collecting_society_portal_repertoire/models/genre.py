@@ -42,3 +42,19 @@ class Genre(Tdb):
         """
         result = cls.get().search([('name', '=', name)])
         return result[0] or None
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_by_id(cls, id):
+        """
+        Searches a genre by id
+
+        Args:
+          id (int): genre.id
+
+        Returns:
+          obj: genre
+          None: if no match is found
+        """
+        result = cls.get().search([('id', '=', int(id))])
+        return result[0] or None

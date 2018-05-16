@@ -94,9 +94,12 @@ class AddRelease(FormController):
             _release['producer'] = self.appstruct['production'][
                 'producer']
         # distribution tab
-         # TODO: save label relation here:
+        # TODO: save label relation here:
         if self.appstruct['distribution']['label']:
-            _release['label'] = self.appstruct['distribution']['label']
+            label = Label.search_by_gvl_code(
+                self.appstruct['distribution']['label'])
+            if label:
+                _release['label'] = label
         if self.appstruct['distribution']['label']:
             _release['label_catalog_number'] = self.appstruct['distribution']['label_catalog_number']
         if self.appstruct['distribution']['label_catalog_number']:
@@ -117,6 +120,13 @@ class AddRelease(FormController):
         if self.appstruct['distribution']['distribution_territory']:
             _release['distribution_territory'] = self.appstruct['distribution'][
                 'distribution_territory']
+        # genres tab
+        if self.appstruct['genres']['genres']:
+            _release['genres'] = [(
+                'add', list(self.appstruct['genres']['genres']))]
+        # when editing/deleting releases, do something like that:
+        #  release.genres = []
+        #  release.save()
 
         Release.create([_release])
 
@@ -161,6 +171,7 @@ class EanUpcCodeField(colander.SchemaNode):
                     #)
                     colander.Regex('^[0-9]*$', msg=_('may only contain digits'))
                 )
+    missing = ""
 
 
 class IsrcCodeField(colander.SchemaNode):
@@ -282,36 +293,18 @@ class DistributionTerritoryField(colander.SchemaNode):
 @colander.deferred
 def deferred_checkbox_widget(node, kw):
     genres = Genre.search_all()
-    #genre_options = [(unicode(genre.name), unicode(genre.name)) for genre in genres]
-    genre_options = (('habanero', 'Habanero'), #<-- geht auch nicht
-                     ('japanelo', 'Japanelo'), #    was mache ich bloss falsch?
-                     ('chipotle', 'Chipotle')
-                    )
+    genre_options = [(genre.id, unicode(genre.name)) for genre in genres]
     widget = deform.widget.CheckboxChoiceWidget(values=genre_options)
+    return widget
 
 
 class GenreCheckboxField(colander.SchemaNode):
-    oid = "genre"
+    oid = "genres"
     schema_type = colander.Set
-    widget=deferred_checkbox_widget
-    validator=colander.Length(min=1)
+    widget = deferred_checkbox_widget
+    validator = colander.Length(min=1)
     missing = ""
     
-
-class GenreCheckboxField2(colander.Schema):
-    #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
-    #genres = Genre.search_all()
-    #genre_options = [(gen.name, gen.name) for gen in genres]
-    #genre_options = (('habanero', 'Habanero'), #<-- so geht es
-    #                 ('japanelo', 'Japanelo'), #    aber Datenbank genres geht nicht
-    #                 ('chipotle', 'Chipotle')
-    #                )
-    #genre = colander.SchemaNode(
-    #    colander.Set(),
-    #    widget=deform.widget.CheckboxChoiceWidget(values=genre_options),
-    #    validator=colander.Length(min=1),
-    #    )
-    pass
 
 # -- Neibouring Rights Societies tab --
 
@@ -364,7 +357,7 @@ class TracksSchema(colander.Schema):
 
 
 class GenresSchema(colander.Schema):    
-    genre = GenreCheckboxField2(title=_(u"Genres"))
+    genres = GenreCheckboxField(title=_(u"Genres"))
 
 
 class RightsSocietiesSchema(colander.Schema):
