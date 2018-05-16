@@ -41,10 +41,15 @@ class Release(Tdb):
 
         Returns:
           list: releases of web_user
+                and of releases the web user has creations on
           None: if no match is found
         """
         return cls.get().search([
-            ('creations.creation.artist.party', '=', party_id),
+            [
+               'OR',
+                ('entity_creator', '=', party_id),
+                ('creations.creation.artist.party', '=', party_id)
+            ],
             ('active', 'in', (True, active))
         ])
 

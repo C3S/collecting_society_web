@@ -303,10 +303,11 @@ class GenreCheckboxField(colander.SchemaNode):
     schema_type = colander.Set
     widget = deferred_checkbox_widget
     validator = colander.Length(min=1)
+    #    , min_err=_(u'Please choose at least one genre for this release'))
     missing = ""
     
 
-# -- Neibouring Rights Societies tab --
+# -- Neighbouring Rights Societies tab --
 
 # --- Schemas -----------------------------------------------------------------
 

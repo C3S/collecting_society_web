@@ -47,7 +47,7 @@ class ReleaseViews(ViewBase):
             (
                 "releases: %s\n"
             ) % (
-                releases
+                _party_id
             )
         )
         return {
