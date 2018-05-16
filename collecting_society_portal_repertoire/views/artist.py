@@ -20,9 +20,9 @@ from ..models import (
 from ..services import _
 from ..resources import ArtistResource
 from .forms import (
-    AddArtistSolo,
-    AddArtistGroup,
-    EditArtist
+    AddArtist,
+    AddArtistMember,
+    EditArtist,
 )
 
 log = logging.getLogger(__name__)
@@ -67,19 +67,11 @@ class ArtistViews(ViewBase):
         }
 
     @view_config(
-        name='add_solo',
-        renderer='../templates/artist/add_solo.pt',
+        name='add',
+        renderer='../templates/artist/add.pt',
         decorator=Tdb.transaction(readonly=False))
-    def add_solo(self):
-        self.register_form(AddArtistSolo)
-        return self.process_forms()
-
-    @view_config(
-        name='add_group',
-        renderer='../templates/artist/add_group.pt',
-        decorator=Tdb.transaction(readonly=False))
-    def add_group(self):
-        self.register_form(AddArtistGroup)
+    def add(self):
+        self.register_form(AddArtist)
         return self.process_forms()
 
     @view_config(
@@ -122,3 +114,62 @@ class ArtistViews(ViewBase):
             'main-alert-success'
         )
         return self.redirect(ArtistResource, 'list')
+
+    @view_config(
+        name='addmember',
+        renderer='../templates/artist/addmember.pt',
+        decorator=Tdb.transaction(readonly=False))
+    def addmember(self):
+        self.register_form(AddArtistMember)
+        return self.process_forms()
+
+    @view_config(
+        name='removemember',
+        decorator=Tdb.transaction(readonly=False))
+    def removemember(self):
+        _group_code = self.request.subpath[0]
+        if _group_code is None:
+            self.request.session.flash(
+                _(u"Could not remove member artist - group code is missing"),
+                'main-alert-warning'
+            )
+            return self.redirect(ArtistResource, 'list')
+        _member_code = self.request.subpath[1]
+        if _member_code is None:
+            self.request.session.flash(
+                _(u"Could not remove member artist - member code is missing"),
+                'main-alert-warning'
+            )
+            return self.redirect(ArtistResource, 'list')
+        group = Artist.search_by_code(_group_code)
+        if not group:
+            self.request.session.flash(
+                _(u"Could not remove member artist - group artist not found"),
+                'main-alert-warning'
+            )
+            return self.redirect(ArtistResource, 'list')
+        member = Artist.search_by_code(_member_code)
+        if not member:
+            self.request.session.flash(
+                _(u"Could not remove member artist - member artist not found"),
+                'main-alert-warning'
+            )
+            return self.redirect(ArtistResource, 'list')
+        if not member.id in group.solo_artists:
+            self.request.session.flash(
+                _(u"Could not remove member artist - artist is not a member"),
+                'main-alert-warning'
+            )
+            return self.redirect(ArtistResource, 'list')
+
+        group.solo_artists = [('remove', member.id)]
+        group.save()
+
+        log.info("member artist successful added to %s: %s" % (group, member))
+        self.request.session.flash(
+            _(u"Artist member added: ") + member.name + " (" + member.code + ")",
+            'main-alert-success'
+        )
+        
+        return self.redirect(ArtistResource, 'show', _group)
+

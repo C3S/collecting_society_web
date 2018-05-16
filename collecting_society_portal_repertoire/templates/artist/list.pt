@@ -14,13 +14,8 @@
                 <tr>
                     <td colspan="5">
                         <span class="cs-symbolnavbar">
-                            <a href="${request.resource_path(context, 'add_solo')}">
-                                <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Solo</span>
-                            </a>
-                        </span>
-                        <span class="cs-symbolnavbar">
-                            <a href="${request.resource_path(context, 'add_group')}">
-                                <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Group</span>
+                            <a href="${request.resource_path(context, 'add')}">
+                                <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Add</span>
                             </a>
                         </span>
                     </td>

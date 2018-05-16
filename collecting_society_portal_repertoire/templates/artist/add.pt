@@ -17,7 +17,7 @@
             </a>
         </div>
 
-        <div tal:content="structure AddArtistGroup"/>
+        <div tal:content="structure AddArtist"/>
 
     </tal:block>
 

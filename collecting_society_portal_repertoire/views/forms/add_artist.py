@@ -26,14 +26,14 @@ log = logging.getLogger(__name__)
 
 # --- Controller --------------------------------------------------------------
 
-class AddArtistSolo(FormController):
+class AddArtist(FormController):
     """
     form controller for creation of artists
     """
 
     def controller(self):
 
-        self.form = add_artist_solo_form(self.request)
+        self.form = add_artist_form(self.request)
 
         if self.submitted() and self.validate():
             self.create_artist()
@@ -50,6 +50,7 @@ class AddArtistSolo(FormController):
     def create_artist(self):
         email = self.request.unauthenticated_userid
         party = WebUser.current_party(self.request)
+
         log.debug(
             (
                 "self.appstruct: %s\n"
@@ -59,11 +60,11 @@ class AddArtistSolo(FormController):
         )
 
         _artist = {
-            'group': False,
+            'group': self.appstruct['metadata']['group'],
             'party': party,
             'entity_creator': party,
             'name': self.appstruct['metadata']['name'],
-            'description': self.appstruct['metadata']['description'] or ''
+            'description': self.appstruct['metadata']['description'] or '',
         }
         if self.appstruct['metadata']['picture']:
             with open(self.appstruct['metadata']['picture']['fp'].name,
@@ -91,7 +92,7 @@ class AddArtistSolo(FormController):
             'main-alert-success'
         )
 
-        self.redirect(ArtistResource, 'list')
+        self.redirect(ArtistResource, 'show', artist.code)
 
 
 # --- Validators --------------------------------------------------------------
@@ -99,6 +100,20 @@ class AddArtistSolo(FormController):
 # --- Options -----------------------------------------------------------------
 
 # --- Fields ------------------------------------------------------------------
+
+@colander.deferred
+def solo_artists_select_widget(node, kw):
+    solo_artists = Artist.search_all_solo_artists()
+    solo_artist_options = [(artist.id, artist.name) for artist in solo_artists]
+    widget = deform.widget.Select2Widget(values=solo_artist_options)
+    return widget
+
+
+class GroupField(colander.SchemaNode):
+    oid = "group"
+    schema_type = colander.Boolean
+    widget = deform.widget.CheckboxWidget()
+
 
 class NameField(colander.SchemaNode):
     oid = "name"
@@ -119,9 +134,18 @@ class PictureField(colander.SchemaNode):
     missing = ""
 
 
+class MembersField(colander.SchemaNode):
+    oid = "members"
+    schema_type = colander.String
+    widget = solo_artists_select_widget
+
+
 # --- Schemas -----------------------------------------------------------------
 
 class MetadataSchema(colander.Schema):
+    group = GroupField(
+        title=_(u"Group")
+    )
     name = NameField(
         title=_(u"Name")
     )
@@ -133,8 +157,8 @@ class MetadataSchema(colander.Schema):
     )
 
 
-class AddArtistSoloSchema(colander.Schema):
-    title=_(u"Add Solo Artist")
+class AddArtistSchema(colander.Schema):
+    title = _(u"Add Artist")
     metadata = MetadataSchema(
         title=_(u"Metadata")
     )
@@ -154,10 +178,10 @@ zpt_renderer_tabs = deform.ZPTRendererFactory([
 ], translator=translator)
 
 
-def add_artist_solo_form(request):
+def add_artist_form(request):
     return deform.Form(
         renderer=zpt_renderer_tabs,
-        schema=AddArtistSoloSchema().bind(request=request),
+        schema=AddArtistSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]

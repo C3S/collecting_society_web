@@ -9,10 +9,7 @@ import logging
 from pyramid.threadlocal import get_current_request
 from pyramid.i18n import get_localizer
 
-from collecting_society_portal.models import (
-    Tdb,
-    WebUser
-)
+from collecting_society_portal.models import Tdb
 from collecting_society_portal.views.forms import (
     FormController,
     deferred_file_upload_widget
@@ -45,23 +42,17 @@ class EditArtist(FormController):
             return self.response
 
         # choose form
-        if artist.group:
-            self.form = edit_artist_group_form(self.request)
-        else:
-            self.form = edit_artist_solo_form(self.request)
+        self.form = edit_artist_form(self.request)
 
         # process form
         if self.submitted() and self.validate():
             self.edit_artist(artist)
-        else: 
+        else:
             self.appstruct['metadata'] = {
+                'group': artist.group,
                 'name': artist.name,
                 'description': artist.description
             }
-            if artist.group:
-                self.appstruct['members'] = {'members': []}
-                for solo_artist in artist.solo_artists:
-                    self.appstruct['members']['members'].append(solo_artist.id)
             self.render(self.appstruct)
 
         return self.response
@@ -83,12 +74,18 @@ class EditArtist(FormController):
             )
         )
 
+        if artist.group != self.appstruct['metadata']['group']:
+            if artist.group:
+                # remove solo artists from current group artist
+                artist.solo_artists = []
+            else:
+                # remove current solo artist from group artists
+                artist.group_artists = []
+            artist.group = self.appstruct['metadata']['group']
         if artist.name != self.appstruct['metadata']['name']:
             artist.name = self.appstruct['metadata']['name']
         if artist.description != self.appstruct['metadata']['description']:
             artist.description = self.appstruct['metadata']['description']
-        if artist.group:
-            artist.solo_artists = self.appstruct['members']['members']   
         if self.appstruct['metadata']['picture_delete']:
             artist.picture_data = None
             artist.picture_data_mime_type = None
@@ -107,7 +104,7 @@ class EditArtist(FormController):
             'main-alert-success'
         )
 
-        self.redirect(ArtistResource, 'show/' + artist.code)
+        self.redirect(ArtistResource, 'show', artist.code)
 
 # --- Validators --------------------------------------------------------------
 
@@ -115,12 +112,19 @@ class EditArtist(FormController):
 
 # --- Fields ------------------------------------------------------------------
 
+
 @colander.deferred
 def solo_artists_select_widget(node, kw):
     solo_artists = Artist.search_all_solo_artists()
     solo_artist_options = [(artist.id, artist.name) for artist in solo_artists]
     widget = deform.widget.Select2Widget(values=solo_artist_options)
     return widget
+
+
+class GroupField(colander.SchemaNode):
+    oid = "group"
+    schema_type = colander.Boolean
+    widget = deform.widget.CheckboxWidget()
 
 
 class NameField(colander.SchemaNode):
@@ -149,15 +153,12 @@ class PictureDeleteField(colander.SchemaNode):
     missing = ""
 
 
-class MembersField(colander.SchemaNode):
-    oid = "members"
-    schema_type = colander.String
-    widget = solo_artists_select_widget
-
-
 # --- Schemas -----------------------------------------------------------------
 
 class MetadataSchema(colander.Schema):
+    group = GroupField(
+        title=_(u"Group")
+    )
     name = NameField(
         title=_(u"Name")
     )
@@ -168,33 +169,12 @@ class MetadataSchema(colander.Schema):
         title=_(u"Delete Picture")
     )
     picture_change = PictureChangeField(
-        title=_(u"Change Picture")
+        title=_(u"Choose Picture")
     )
 
 
-class MembersSequence(colander.SequenceSchema):
-    member = MembersField(
-        title=""
-    )
-
-
-class MembersSchema(colander.Schema):
-    members = MembersSequence(
-        title=_(u"Members")
-    )
-
-
-class EditArtistGroupSchema(colander.Schema):
-    title = _(u"Edit Group Artist")
-    metadata = MetadataSchema(
-        title=_(u"Metadata")
-    )
-    members = MembersSchema(
-        title=_(u"Members")
-    )
-
-class EditArtistSoloSchema(colander.Schema):
-    title = _(u"Edit Solo Artist")
+class EditArtistSchema(colander.Schema):
+    title = _(u"Edit Artist")
     metadata = MetadataSchema(
         title=_(u"Metadata")
     )
@@ -214,21 +194,11 @@ zpt_renderer_tabs = deform.ZPTRendererFactory([
 ], translator=translator)
 
 
-def edit_artist_group_form(request):
+def edit_artist_form(request):
     return deform.Form(
         renderer=zpt_renderer_tabs,
-        schema=EditArtistGroupSchema().bind(request=request),
+        schema=EditArtistSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]
     )
-
-def edit_artist_solo_form(request):
-    return deform.Form(
-        renderer=zpt_renderer_tabs,
-        schema=EditArtistSoloSchema().bind(request=request),
-        buttons=[
-            deform.Button('submit', _(u"Submit"))
-        ]
-    )
-
