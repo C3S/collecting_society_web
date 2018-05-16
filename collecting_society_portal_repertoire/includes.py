@@ -41,7 +41,7 @@ from .views.widgets import (
 
 
 def web_resources(config):
-    '''
+    """
     Extends the resource tree for the web service.
 
     Note:
@@ -52,7 +52,7 @@ def web_resources(config):
 
     Returns:
         None
-    '''
+    """
     BackendResource.add_child(ProfileResource)
     BackendResource.add_child(RepertoireResource)
     RepertoireResource.add_child(UploadResource)
@@ -63,7 +63,7 @@ def web_resources(config):
 
 
 def web_registry(config):
-    '''
+    """
     Extends the registry for content elements for the web service.
 
     Note:
@@ -74,14 +74,12 @@ def web_registry(config):
 
     Returns:
         None
-    '''
+    """
     settings = config.get_settings()
 
-    @FrontendResource.extend_registry
-    def frontend(self):
-        reg = self.dict()
-        # meta
-        reg['meta'] = {
+    # Metadata shared by Frontend and Backend
+    def meta(request):
+        return {
             'title': _(u'C3S - Repertoire'),
             'keywords': _(u'c3s,repertoire'),
             'description': _(u'registration of repertoire for C3S'),
@@ -89,26 +87,32 @@ def web_registry(config):
                 {
                     'id': 'en',
                     'name': _(u'english'),
-                    'icon': self.request.static_path(
+                    'icon': request.static_path(
                         'collecting_society_portal:static/img/en.png'
                     )
                 },
                 {
                     'id': 'de',
                     'name': _(u'deutsch'),
-                    'icon': self.request.static_path(
+                    'icon': request.static_path(
                         'collecting_society_portal:static/img/de.png'
                     )
                 },
                 {
                     'id': 'es',
                     'name': _(u'español'),
-                    'icon': self.request.static_path(
+                    'icon': request.static_path(
                         'collecting_society_portal:static/img/es.gif'
                     )
                 }
             ]
         }
+
+    @FrontendResource.extend_registry
+    def frontend(self):
+        reg = self.dict()
+        # meta
+        reg['meta'] = meta(self.request)
         # css
         reg['static']['css'] = [
             self.request.static_path(
@@ -161,6 +165,8 @@ def web_registry(config):
     @BackendResource.extend_registry
     def backend(self):
         reg = self.dict()
+        # meta
+        reg['meta'] = meta(self.request)
         # css
         reg['static']['css'] = [
             self.request.static_path(
@@ -321,7 +327,7 @@ def web_registry(config):
 
 
 def web_views(config):
-    '''
+    """
     Adds the views for the web service.
 
     Note:
@@ -332,13 +338,13 @@ def web_views(config):
 
     Returns:
         None
-    '''
+    """
     config.add_static_view('static/repertoire', 'static', cache_max_age=3600)
     config.scan(ignore='.views.api')
 
 
 def api_views(config):
-    '''
+    """
     Adds the views for the api service.
 
     Note:
@@ -349,7 +355,7 @@ def api_views(config):
 
     Returns:
         None
-    '''
+    """
 
     # routes
     # ...
