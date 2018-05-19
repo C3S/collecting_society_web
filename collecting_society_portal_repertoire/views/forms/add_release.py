@@ -80,6 +80,15 @@ class AddRelease(FormController):
                 'ean_upc_code']
         if self.appstruct['general']['isrc_code']:
             _release['isrc_code'] = self.appstruct['general']['isrc_code']
+        if self.appstruct['general']['warning']:
+            _release['warning'] = self.appstruct['general']['warning']
+        if self.appstruct['general']['picture']:
+            with open(self.appstruct['general']['picture']['fp'].name,
+                      mode='rb') as picfile:
+                picture_data = picfile.read()
+            mimetype = self.appstruct['general']['picture']['mimetype']
+            _release['picture_data'] = picture_data
+            _release['picture_data_mime_type'] = mimetype
         # production tab
         if self.appstruct['production']['copyright_date']:
             _release['copyright_date'] = self.appstruct['production'][
@@ -94,7 +103,6 @@ class AddRelease(FormController):
             _release['producer'] = self.appstruct['production'][
                 'producer']
         # distribution tab
-        # TODO: save label relation here:
         if self.appstruct['distribution']['label']:
             label = Label.search_by_gvl_code(
                 self.appstruct['distribution']['label'])
@@ -187,7 +195,17 @@ class IsrcCodeField(colander.SchemaNode):
     missing = ""
 
 
-# TODO: picture
+class WarningField(colander.SchemaNode):
+    oid = "title"
+    schema_type = colander.String
+    missing = ""
+
+
+class PictureField(colander.SchemaNode):
+    oid = "picture"
+    schema_type = deform.FileData
+    widget = deferred_file_upload_widget
+    missing = ""
 
 # -- Production Tab --
 
@@ -312,21 +330,12 @@ class GenreCheckboxField(colander.SchemaNode):
 # --- Schemas -----------------------------------------------------------------
 
 class GeneralSchema(colander.Schema):
-    title = TitleField(
-        title=_(u"Title")
-    )
-    number_mediums = NumberOfMediumsField(
-        title=_(u"Number of Mediums")
-    )
-    ean_upc_code = EanUpcCodeField(
-        title=_(u"EAN or UPC Code")
-    )
-    isrc_code = IsrcCodeField(
-        title=_(u"ISRC Code")
-    )
-    #picture_data = 
-    #picture_data_mime_type = 
-    #warning = 
+    title = TitleField(title=_(u"Title"))
+    number_mediums = NumberOfMediumsField(title=_(u"Number of Mediums"))
+    ean_upc_code = EanUpcCodeField(title=_(u"EAN or UPC Code"))
+    isrc_code = IsrcCodeField(title=_(u"ISRC Code"))
+    warning = WarningField(title=_(u"Warning"))
+    picture = PictureField(title=_(u"Picture"))
 
 
 class ProductionSchema(colander.Schema):
