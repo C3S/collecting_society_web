@@ -173,6 +173,10 @@ def web_registry(config):
                 'collecting_society_portal_repertoire:static/css/backend.css'
             )
         ]
+        # favicon
+        reg['static']['favicon'] = self.request.static_path(
+            'collecting_society_portal_repertoire:static/img/favicon.png'
+        )
         # logo
         reg['static']['logo'] = self.request.static_path(
             'collecting_society_portal_repertoire:static/img/logo-c3s.png'
