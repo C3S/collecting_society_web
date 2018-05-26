@@ -3,8 +3,9 @@
 
 from .register_webuser import RegisterWebuser
 from .add_artist import AddArtist
-from .add_artist_member import AddArtistMember
 from .add_release import AddRelease
 from .add_creation import AddCreation
 from .edit_profile import EditProfile
 from .edit_artist import EditArtist
+from .search_artist_member import SearchArtistMember
+from .create_artist_member import CreateArtistMember

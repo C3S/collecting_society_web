@@ -11,7 +11,7 @@
             <a href="javascript: history.back(1);">
                 <span class="glyphicon glyphicon-arrow-left"></span>
             </a>
-            <a href="${request.resource_path(context, 'show', group.code)}">
+            <a href="${request.resource_path(context, 'show', context.group.code)}">
                 <span class="glyphicon glyphicon-eye-open"></span>
             </a>
             <a href="${request.resource_path(context, 'list')}">
@@ -19,9 +19,15 @@
             </a>
         </div>
 
-        <h3>Add Member to Group Artist "${group.name}"</h3>
+        <h3>Add Member to Group Artist "${context.group.name}"</h3>
 
-        <div tal:content="structure AddArtistMember"/>
+        <tal:block tal:condition="SearchArtistMember|False">
+            <div tal:content="structure SearchArtistMember"/>
+        </tal:block>
+
+        <tal:block tal:condition="CreateArtistMember|False">
+            <div tal:content="structure CreateArtistMember"/>
+        </tal:block>
 
     </tal:block>
 

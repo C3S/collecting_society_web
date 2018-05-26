@@ -21,8 +21,9 @@ from ..services import _
 from ..resources import ArtistResource
 from .forms import (
     AddArtist,
-    AddArtistMember,
     EditArtist,
+    SearchArtistMember,
+    CreateArtistMember,
 )
 
 log = logging.getLogger(__name__)
@@ -117,10 +118,18 @@ class ArtistViews(ViewBase):
 
     @view_config(
         name='addmember',
-        renderer='../templates/artist/addmember.pt',
+        renderer='../templates/artist/add_member.pt',
         decorator=Tdb.transaction(readonly=False))
     def addmember(self):
-        self.register_form(AddArtistMember)
+        # get group
+        _group_code = self.request.subpath[0]
+        if not _group_code:
+            return self.redirect(ArtistResource, 'list')
+        self.context.group = Artist.search_by_code(self.request.subpath[0])
+        # register forms
+        self.register_form(SearchArtistMember)
+        self.register_form(CreateArtistMember)
+        # return response
         return self.process_forms()
 
     @view_config(
