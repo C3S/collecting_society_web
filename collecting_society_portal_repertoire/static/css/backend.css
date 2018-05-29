@@ -35,6 +35,8 @@ body {
 
 a { outline:none!important; }
 
+.cs-datatables {  width: 100%; }
+
 /* Content Left */
 
 .cs-content-left { background: url('../img/element-menue-bg.png'); padding-top:6px; }
@@ -61,7 +63,7 @@ a { outline:none!important; }
 
 .cs-content-left .cs-menue-roles > li > a,
 .cs-content-left .cs-menue-roles > li > a:hover,
-.cs-content-left .cs-menue-roles > li > a:visited { color:#fff; background-color:transparent; border:none; font-weight:bold; }
+.cs-content-left .cs-menue-roles > li > a:visited { color:#fff; background-color:transparent; border:none!important; font-weight:bold; }
 
 /* Content Middle */
 
@@ -70,7 +72,8 @@ a { outline:none!important; }
 .cs-content-middle .fileupload-progress .progress { margin-bottom:5px; }
 .cs-content-middle .cs-audio-properties > span:after { color:#ddd; content: " | "; }
 
-.cs-artist-img { max-width: 200px }
+.cs-artist-img { max-width: 200px; }
+.cs-table-artist-img { max-height: 50px; max-width: 50px; }
 
 .cs-content-middle .template-upload td { padding:10px 5px; }
 .cs-content-middle .template-upload .progress { margin-bottom:0; }

@@ -29,7 +29,7 @@ _services = [
 ]
 
 
-def authenticate(request):
+def authenticate(request, **kwargs):
     _api_key = request.headers['X-Api-Key']
     # api key not set serverside
     if 'api.c3smembership.api_key' not in request.registry.settings:
