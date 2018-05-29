@@ -72,7 +72,7 @@ class AddRelease(FormController):
             'title': self.appstruct['general']['title']
         }  
         # general tab
-        if self.appstruct['general']['isrc_code']:
+        if self.appstruct['general']['number_mediums']:
             _release['number_mediums'] = self.appstruct['general'][
                 'number_mediums']
         if self.appstruct['general']['ean_upc_code']:
@@ -93,9 +93,6 @@ class AddRelease(FormController):
         if self.appstruct['production']['copyright_date']:
             _release['copyright_date'] = self.appstruct['production'][
                 'copyright_date']
-        if self.appstruct['production']['copyright_owner']:
-            _release['copyright_owner'] = self.appstruct['production'][
-                'copyright_owner']
         if self.appstruct['production']['production_date']:
             _release['production_date'] = self.appstruct['production'][
                 'production_date']
@@ -128,6 +125,9 @@ class AddRelease(FormController):
         if self.appstruct['distribution']['distribution_territory']:
             _release['distribution_territory'] = self.appstruct['distribution'][
                 'distribution_territory']
+        if self.appstruct['distribution']['neighbouring_rights_society']:
+            _release['neighbouring_rights_society'] = self.appstruct['distribution'][
+                'neighbouring_rights_society']                
         # genres tab
         if self.appstruct['genres']['genres']:
             _release['genres'] = [(
@@ -196,7 +196,7 @@ class IsrcCodeField(colander.SchemaNode):
 
 
 class WarningField(colander.SchemaNode):
-    oid = "title"
+    oid = "warning"
     schema_type = colander.String
     missing = ""
 
@@ -227,10 +227,13 @@ class CopyrightDateField(colander.SchemaNode):
 
 
 class CopyrightOwnerField(colander.SchemaNode):
-    oid = "copyright_owner"
+    oid = "get_copyright_owners"
     schema_type = colander.String
-    widget = party_select_widget
-    missing = "" 
+    #widget = party_select_widget <- no paries any more?
+    widget=deform.widget.TextInputWidget(readonly=True)
+    missing=colander.null
+    # displaying a read-only function field, assembled from the repective
+    # copyright owners of the release creations
 
 
 class ProductionDateField(colander.SchemaNode):
@@ -242,7 +245,7 @@ class ProductionDateField(colander.SchemaNode):
 class ProducerField(colander.SchemaNode):
     oid = "producer"
     schema_type = colander.String
-    widget = party_select_widget
+    #widget = party_select_widget <-- too complicated, too many implications
     missing = "" 
 
 
@@ -302,6 +305,12 @@ class DistributionTerritoryField(colander.SchemaNode):
     missing = ""
 
 
+class NeighbouringRightsSocietyField(colander.SchemaNode):
+    oid = "neighbouring_rights_society"
+    schema_type = colander.String
+    missing = ""
+
+
 # -- Tracks tab --
 
 
@@ -325,8 +334,6 @@ class GenreCheckboxField(colander.SchemaNode):
     missing = ""
     
 
-# -- Neighbouring Rights Societies tab --
-
 # --- Schemas -----------------------------------------------------------------
 
 class GeneralSchema(colander.Schema):
@@ -340,9 +347,10 @@ class GeneralSchema(colander.Schema):
 
 class ProductionSchema(colander.Schema):
     copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
-    copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner"))
+    copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
     production_date = ProductionDateField(title=_(u"Production Date"))
     producer = ProducerField(title=_(u"Producer"))
+
 
 class DistributionSchema(colander.Schema):
     label = LabelField(
@@ -360,6 +368,8 @@ class DistributionSchema(colander.Schema):
         title=_(u"Online Release Cancellation Date"))
     distribution_territory = DistributionTerritoryField(
         title=_(u"Distribution Territory"))
+    neighbouring_rights_society = NeighbouringRightsSocietyField(
+        title=_(u"Neighbouring Rights Society"))
 
 
 class TracksSchema(colander.Schema):
@@ -368,10 +378,6 @@ class TracksSchema(colander.Schema):
 
 class GenresSchema(colander.Schema):    
     genres = GenreCheckboxField(title=_(u"Genres"))
-
-
-class RightsSocietiesSchema(colander.Schema):
-    pass
 
 
 class AddReleaseSchema(colander.Schema):
@@ -390,9 +396,6 @@ class AddReleaseSchema(colander.Schema):
     )
     genres = GenresSchema(
         title=_(u"Genres")
-    )
-    rights_societies = RightsSocietiesSchema(
-        title=_(u"Rights Societies")
     )
 
 

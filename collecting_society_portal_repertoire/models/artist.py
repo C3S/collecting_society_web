@@ -129,7 +129,7 @@ class Artist(Tdb):
         Searches an artist by artist code
 
         Args:
-          artist_id (int): artist.code
+          artist_code (int): artist.code
 
         Returns:
           obj: artist

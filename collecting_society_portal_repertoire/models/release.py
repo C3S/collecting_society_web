@@ -55,6 +55,27 @@ class Release(Tdb):
 
     @classmethod
     @Tdb.transaction(readonly=True)
+    def search_by_code(cls, release_code, active=True):
+        """
+        Searches an release by release code
+
+        Args:
+          release_code (string): release.code
+
+        Returns:
+          obj: release
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('code', '=', release_code),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
     def search_by_id(cls, uid, active=True):
         """
         Searches releases by id

@@ -47,11 +47,24 @@ class ReleaseViews(ViewBase):
             (
                 "releases: %s\n"
             ) % (
-                _party_id
+                releases
             )
         )
         return {
             'releases': releases
+        }
+
+    @view_config(
+        name='show',
+        renderer='../templates/release/show.pt',
+        decorator=Tdb.transaction(readonly=True))
+    def show(self):
+        release_code = self.request.subpath[-1]
+        _release = Release.search_by_code(release_code)
+        if _release is None:
+            return None
+        return {
+            'release': _release
         }
 
     @view_config(
