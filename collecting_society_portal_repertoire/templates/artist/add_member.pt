@@ -1,12 +1,12 @@
 <!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
       Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
-<tal:block metal:use-macro="backend363" i18n:domain="collecting_society_portal_repertoire">
+<tal:block metal:use-macro="backend39" i18n:domain="collecting_society_portal_repertoire">
 
     <!-- content left -->
     <tal:block metal:fill-slot="content-left"></tal:block>
 
-    <!-- content middle -->
-    <tal:block metal:fill-slot="content-middle">
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right">
         <div class="cs-symbolnavbar">
             <a href="javascript: history.back(1);">
                 <span class="glyphicon glyphicon-arrow-left"></span>
@@ -19,19 +19,87 @@
             </a>
         </div>
 
-        <h3>Add Member to Group Artist "${context.group.name}"</h3>
+        <h1><span i18n:translate="">Add a member to</span> "${context.group.name}"</h1>
 
         <tal:block tal:condition="SearchArtistMember|False">
+            <h2 i18n:translate="">Search Artist</h2>
             <div tal:content="structure SearchArtistMember"/>
         </tal:block>
 
+        <tal:block tal:condition="AddArtistMember|False">
+            <h2 i18n:translate="">Add Artist</h2>
+            <div class="alert alert-warning" role="alert"
+                 tal:condition="not artists|False"
+                 i18n:translate="">No Search results</div>
+            <table id="cs-table-addartistmember" class="cs-datatables"
+                   tal:condition="artists|False">
+                <thead>
+                    <th></th>
+                    <th i18n:translate="">Name</th>
+                    <th i18n:translate="">Code</th>
+                    <th i18n:translate="">Description</th>
+                    <th i18n:translate="">Add</th>
+                </thead>
+                <tbody>
+                    <tr tal:repeat="artist artists">
+                        <td>
+                            <img tal:condition="artist.picture_data"
+                                 tal:define="pic h.b64encode(artist.picture_data) | None"
+                                 class="cs-artist-img cs-table-artist-img clearfix center-block"
+                                 src="data:${artist.picture_data_mime_type};base64,${pic}" />
+                        </td>
+                        <td>${artist.name}</td>
+                        <td>${artist.code}</td>
+                        <td>{artist.description}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <script>
+                $(document).ready(function() {
+                    $('#cs-table-addartistmember').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: "${api_url}/artists",
+                            xhrFields: {withCredentials: true},
+                            method: "post",
+                            dataType: 'json'
+                        },
+                        "order": [
+                            [ 1, "desc" ]
+                        ],
+                        // "columns": [
+                        //     {
+                        //         "class":          "details-control",
+                        //         "orderable":      false,
+                        //         "data":           null,
+                        //         "defaultContent": ""
+                        //     },
+                        //     { "data": "first_name" },
+                        //     { "data": "last_name" },
+                        //     { "data": "position" },
+                        //     { "data": "office" }
+                        // ],
+                        "columnDefs": [
+                            { "targets": [1, 2], "orderable": true },
+                            { "targets": "_all", "orderable": false }
+                        ]
+                        // columns: [
+                        //     { "data": "ID" },
+                        //     { "data": "Name" },
+                        //     { "data": "Items" }
+                        // ]
+                    });
+                });
+            </script>
+        </tal:block>
+
         <tal:block tal:condition="CreateArtistMember|False">
+            <h2 i18n:translate="">Create Artist</h2>
             <div tal:content="structure CreateArtistMember"/>
         </tal:block>
 
     </tal:block>
-
-    <!-- content right -->
-    <tal:block metal:fill-slot="content-right"></tal:block>
 
 </tal:block>

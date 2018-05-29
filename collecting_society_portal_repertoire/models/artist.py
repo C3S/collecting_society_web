@@ -47,6 +47,38 @@ class Artist(Tdb):
 
     @classmethod
     @Tdb.transaction(readonly=True)
+    def search_fulltext(cls, search_string, active=True):
+        """
+        Searches artists by fulltext search of
+        - code
+        - name
+        - description
+
+        Args:
+          search_string (str): string to search for
+
+        Returns:
+          obj: list of artists
+        """
+        # escape operands
+        search_string.replace('_', '\\_')
+        search_string.replace('%', '\\_')
+        # wrap search string
+        search_string = "%" + search_string + "%"
+        # search
+        result = cls.get().search([
+            [
+                'OR',
+                ('code', 'ilike', search_string),
+                ('name', 'ilike', search_string),
+                ('description', 'ilike', search_string)
+            ],
+            ('active', 'in', (True, active))
+        ])
+        return result
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
     def search_by_party(cls, party_id, active=True):
         """
         Searches artists by party id
@@ -142,6 +174,24 @@ class Artist(Tdb):
         if not result:
             return None
         return result[0]
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_by_name(cls, artist_name, active=True):
+        """
+        Searches artists by artist name
+
+        Args:
+          artist_name (str): artist.name
+
+        Returns:
+          obj: list of artists
+        """
+        result = cls.get().search([
+            ('name', '=', artist_name),
+            ('active', 'in', (True, active))
+        ])
+        return result
 
     @classmethod
     @Tdb.transaction(readonly=False)

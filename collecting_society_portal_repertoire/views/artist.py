@@ -22,6 +22,7 @@ from ..resources import ArtistResource
 from .forms import (
     AddArtist,
     EditArtist,
+    AddArtistMember,
     SearchArtistMember,
     CreateArtistMember,
 )
@@ -128,7 +129,16 @@ class ArtistViews(ViewBase):
         self.context.group = Artist.search_by_code(self.request.subpath[0])
         # register forms
         self.register_form(SearchArtistMember)
+        self.register_form(AddArtistMember)
         self.register_form(CreateArtistMember)
+        # api url
+        settings = self.request.registry.settings
+        self.response.update({
+            'api_url': ''.join([
+                settings['api.datatables.url'], '/',
+                settings['api.datatables.version']
+            ])
+        })
         # return response
         return self.process_forms()
 

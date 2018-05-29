@@ -5,28 +5,29 @@ import colander
 import deform
 import logging
 
+from collecting_society_portal.models import Tdb
 from collecting_society_portal.views.forms import FormController
 from ...services import _
+from ...models import Artist
 
 log = logging.getLogger(__name__)
 
 
 # --- Controller --------------------------------------------------------------
 
-class SearchArtistMember(FormController):
+class AddArtistMember(FormController):
     """
-    form controller for searching members to add to group artists
+    form controller for adding existing members to group artists
     """
 
     def controller(self):
-        # hide search form, if creation form is active
-        if self.submitted(form='CreateArtistMember'):
+        # hide add form, if no search string is given
+        if not getattr(self.context, 'search_string', False):
             return {}
         # add form
-        self.form = search_artists_form(self.request)
-        # if save search term is given, save into context
-        if self.submitted() and self.validate(data=True):
-            self.context.search_string = self.appstruct['name']
+        self.form = add_artists_form(self.request)
+        # search artists
+        self.search_artists(self.context.search_string)
         # return response
         return self.response
 
@@ -35,6 +36,11 @@ class SearchArtistMember(FormController):
     # --- Conditions ----------------------------------------------------------
 
     # --- Actions -------------------------------------------------------------
+
+    @Tdb.transaction(readonly=True)
+    def search_artists(self, search_string):
+        artists = Artist.search_fulltext(search_string)
+        self.response.update({'artists': artists})
 
 
 # --- Validators --------------------------------------------------------------
@@ -58,7 +64,7 @@ class SearchArtistsSchema(colander.Schema):
 
 # --- Forms -------------------------------------------------------------------
 
-def search_artists_form(request):
+def add_artists_form(request):
     return deform.Form(
         schema=SearchArtistsSchema().bind(request=request),
         buttons=[

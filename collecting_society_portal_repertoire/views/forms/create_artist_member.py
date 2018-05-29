@@ -23,17 +23,18 @@ class CreateArtistMember(FormController):
 
     def controller(self):
         self.form = create_artist_form(self.request)
-        # if search name given, save and render it
-        if getattr(self.context, 'search', False):
-            self.data['name'] = self.context.search
+        # if search name given, save into session and render it
+        if getattr(self.context, 'search_string', False):
+            self.data['name'] = self.context.search_string
             self.render({'name': self.data['name']})
         # if no search term given
         else:
             # hide form
             self.response = {}
             # or process it, if submitted
-            if self.submitted() and self.validate(session=True):
+            if self.submitted() and self.validate(data=True):
                 self.create_artist()
+        # return response
         return self.response
 
     # --- Stages --------------------------------------------------------------
