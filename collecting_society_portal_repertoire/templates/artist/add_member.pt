@@ -31,68 +31,100 @@
             <div class="alert alert-warning" role="alert"
                  tal:condition="not artists|False"
                  i18n:translate="">No Search results</div>
-            <table id="cs-table-addartistmember" class="cs-datatables"
+            <table id="cs-table-addartistmember"
+                   class="table table-striped cs-datatables"
                    tal:condition="artists|False">
                 <thead>
-                    <th></th>
+                    <th i18n:translate=""></th>
                     <th i18n:translate="">Name</th>
                     <th i18n:translate="">Code</th>
-                    <th i18n:translate="">Description</th>
-                    <th i18n:translate="">Add</th>
+                    <th i18n:translate=""></th>
                 </thead>
-                <tbody>
-                    <tr tal:repeat="artist artists">
-                        <td>
-                            <img tal:condition="artist.picture_data"
-                                 tal:define="pic h.b64encode(artist.picture_data) | None"
-                                 class="cs-artist-img cs-table-artist-img clearfix center-block"
-                                 src="data:${artist.picture_data_mime_type};base64,${pic}" />
-                        </td>
-                        <td>${artist.name}</td>
-                        <td>${artist.code}</td>
-                        <td>{artist.description}</td>
-                        <td></td>
-                    </tr>
-                </tbody>
             </table>
+
             <script>
+
+                /* format */
+                function format_addartistmember_more_col( data, type, row ) {
+                    if(data.description)
+                        return '<span class="more">' +
+                                    '<span class="glyphicon glyphicon-zoom-in"></span>' +
+                               '</span>';
+                    return "";
+                }
+                function format_addartistmember_more_div( data ) {
+                    return  '<table class="table">' +
+                                '<tr>' +
+                                    '<th i18n:translate="">Description</th>' +
+                                    '<td>' + data.description + '</td>' +
+                                '</tr>' +
+                            '</table>';
+                }
+                /* datatables */
                 $(document).ready(function() {
-                    $('#cs-table-addartistmember').DataTable({
+
+                    /* initialize datatables */
+                    var table_addartistmember = $('#cs-table-addartistmember').DataTable({
                         processing: true,
                         serverSide: true,
                         ajax: {
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
                             url: "${api_url}/artists",
                             xhrFields: {withCredentials: true},
-                            method: "post",
-                            dataType: 'json'
+                            dataType: "json",
+                            data: function(args) { return JSON.stringify(args); }
                         },
+                        "columns": [
+                            {
+                                "name": "more",
+                                "orderable": false,
+                                "data": null,
+                                "render": format_addartistmember_more_col
+                            },
+                            {
+                                "name": "name",
+                                "data": "name",
+                                "orderable": true
+                            },
+                            {
+                                "name": "code",
+                                "data": "code",
+                                "orderable": true
+                            },
+                            {
+                                "name": "add",
+                                "className": "add",
+                                "orderable": false,
+                                "data": null,
+                                "defaultContent": "add"
+                            },
+                        ],
                         "order": [
                             [ 1, "desc" ]
-                        ],
-                        // "columns": [
-                        //     {
-                        //         "class":          "details-control",
-                        //         "orderable":      false,
-                        //         "data":           null,
-                        //         "defaultContent": ""
-                        //     },
-                        //     { "data": "first_name" },
-                        //     { "data": "last_name" },
-                        //     { "data": "position" },
-                        //     { "data": "office" }
-                        // ],
-                        "columnDefs": [
-                            { "targets": [1, 2], "orderable": true },
-                            { "targets": "_all", "orderable": false }
                         ]
-                        // columns: [
-                        //     { "data": "ID" },
-                        //     { "data": "Name" },
-                        //     { "data": "Items" }
-                        // ]
                     });
+
+                    /* add eventhandler */
+                    $('#cs-table-addartistmember tbody').on('click', 'span.more', function () {
+                        var tr = $(this).closest('tr');
+                        var row = table_addartistmember.row( tr );
+                        if ( row.child.isShown() ) {
+                            row.child.hide();
+                            tr.removeClass('shown');
+                            $(this).html(
+                                '<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>');
+                        } else {
+                            row.child( format_addartistmember_more_div(row.data()) ).show();
+                            tr.addClass('shown');
+                            $(this).html(
+                                '<span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>');
+                        }
+                    } );
+
                 });
             </script>
+
         </tal:block>
 
         <tal:block tal:condition="CreateArtistMember|False">

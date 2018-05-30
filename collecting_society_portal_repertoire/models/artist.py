@@ -17,6 +17,49 @@ class Artist(Tdb):
 
     @classmethod
     @Tdb.transaction(readonly=True)
+    def search(cls, domain, offset=None, limit=None, order=None,
+               escape=False, active=True):
+        """
+        Searches artists by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          obj: list of artists
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape_domain(domain)
+        if active:
+            domain.append(('active', 'in', (True, active)))
+        # search
+        result = cls.get().search(domain, offset, limit, order)
+        return result
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_count(cls, domain, escape=False, active=True):
+        """
+        Counts artists by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          int: number of artists
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape(domain)
+        if active:
+            domain.append(('active', 'in', (True, active)))
+        # search
+        result = cls.get().search_count(domain)
+        return result
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
     def search_all(cls, active=True):
         """
         Fetches all Artists
