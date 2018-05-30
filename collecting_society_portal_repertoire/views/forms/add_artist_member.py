@@ -21,13 +21,10 @@ class AddArtistMember(FormController):
     """
 
     def controller(self):
-        # hide add form, if no search string is given
-        if not getattr(self.context, 'search_string', False):
-            return {}
         # add form
         self.form = add_artists_form(self.request)
         # search artists
-        self.search_artists(self.context.search_string)
+        # self.search_artists(self.context.search_string)
         # return response
         return self.response
 
@@ -37,10 +34,10 @@ class AddArtistMember(FormController):
 
     # --- Actions -------------------------------------------------------------
 
-    @Tdb.transaction(readonly=True)
-    def search_artists(self, search_string):
-        artists = Artist.search_fulltext(search_string)
-        self.response.update({'artists': artists})
+    # @Tdb.transaction(readonly=True)
+    # def search_artists(self, search_string):
+    #     artists = Artist.search_fulltext(search_string)
+    #     self.response.update({'artists': artists})
 
 
 # --- Validators --------------------------------------------------------------
@@ -68,6 +65,6 @@ def add_artists_form(request):
     return deform.Form(
         schema=SearchArtistsSchema().bind(request=request),
         buttons=[
-            deform.Button('search', _(u"Search artist"))
+            deform.Button('add', _(u"add artist"))
         ]
     )

@@ -21,38 +21,33 @@
 
         <h1><span i18n:translate="">Add a member to</span> "${context.group.name}"</h1>
 
-        <tal:block tal:condition="SearchArtistMember|False">
-            <h2 i18n:translate="">Search Artist</h2>
-            <div tal:content="structure SearchArtistMember"/>
-        </tal:block>
-
+        <!-- add artist -->
         <tal:block tal:condition="AddArtistMember|False">
-            <h2 i18n:translate="">Add Artist</h2>
-            <div class="alert alert-warning" role="alert"
-                 tal:condition="not artists|False"
-                 i18n:translate="">No Search results</div>
             <table id="cs-table-addartistmember"
-                   class="table table-striped cs-datatables"
-                   tal:condition="artists|False">
+                   class="table table-hover cs-datatables">
                 <thead>
                     <th i18n:translate=""></th>
                     <th i18n:translate="">Name</th>
                     <th i18n:translate="">Code</th>
                     <th i18n:translate=""></th>
                 </thead>
+                <tfoot>
+                    <th i18n:translate=""></th>
+                    <th i18n:translate="" class="multifilter">Name</th>
+                    <th i18n:translate="" class="multifilter">Code</th>
+                    <th i18n:translate=""></th>
+                </tfoot>
             </table>
-
             <script>
-
                 /* format */
-                function format_addartistmember_more_col( data, type, row ) {
+                function addartistmember_more_col( data, type, row ) {
                     if(data.description)
                         return '<span class="more">' +
                                     '<span class="glyphicon glyphicon-zoom-in"></span>' +
                                '</span>';
                     return "";
                 }
-                function format_addartistmember_more_div( data ) {
+                function addartistmember_more_div( data ) {
                     return  '<table class="table">' +
                                 '<tr>' +
                                     '<th i18n:translate="">Description</th>' +
@@ -60,27 +55,36 @@
                                 '</tr>' +
                             '</table>';
                 }
+                function addartistmember_add_col( data, type, row ) {
+                    return  '<a href="#">' +
+                                '<span class="glyphicon glyphicon-plus"></span> ' +
+                                '<span i18n:translate="">Add</span>' +
+                            '</a>';
+                }
                 /* datatables */
                 $(document).ready(function() {
-
-                    /* initialize datatables */
-                    var table_addartistmember = $('#cs-table-addartistmember').DataTable({
+                    /* initialize */
+                    var addartistmember = $('#cs-table-addartistmember').DataTable({
                         processing: true,
                         serverSide: true,
+                        searchDelay: 600,
                         ajax: {
                             type: "POST",
                             contentType: "application/json; charset=utf-8",
                             url: "${api_url}/artists",
                             xhrFields: {withCredentials: true},
                             dataType: "json",
-                            data: function(args) { return JSON.stringify(args); }
+                            data: function(args) {
+                                return JSON.stringify(args);
+                            }
                         },
                         "columns": [
                             {
                                 "name": "more",
                                 "orderable": false,
+                                "searchable": false,
                                 "data": null,
-                                "render": format_addartistmember_more_col
+                                "render": addartistmember_more_col
                             },
                             {
                                 "name": "name",
@@ -94,37 +98,62 @@
                             },
                             {
                                 "name": "add",
-                                "className": "add",
+                                "className": "text-right",
                                 "orderable": false,
+                                "searchable": false,
                                 "data": null,
-                                "defaultContent": "add"
+                                "render": addartistmember_add_col
                             },
+                            {
+                                "name": "group",
+                                "data": "group",
+                                "orderable": false,
+                                "searchable": true,
+                                "visible": false
+                            },
+                        ],
+                        "searchCols": [
+                            null,
+                            null,
+                            null,
+                            null,
+                            { "search": "False" }
                         ],
                         "order": [
                             [ 1, "desc" ]
                         ]
                     });
-
-                    /* add eventhandler */
+                    /* more */
                     $('#cs-table-addartistmember tbody').on('click', 'span.more', function () {
                         var tr = $(this).closest('tr');
-                        var row = table_addartistmember.row( tr );
+                        var row = addartistmember.row( tr );
                         if ( row.child.isShown() ) {
                             row.child.hide();
                             tr.removeClass('shown');
                             $(this).html(
                                 '<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>');
                         } else {
-                            row.child( format_addartistmember_more_div(row.data()) ).show();
+                            row.child( addartistmember_more_div(row.data()) ).show();
                             tr.addClass('shown');
                             $(this).html(
                                 '<span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>');
                         }
-                    } );
-
+                    });
+                    /* column search */
+                    $('#cs-table-addartistmember tfoot th.multifilter').each(function () {
+                        var title = $(this).text();
+                        $(this).html('<input type="text" placeholder="Search '+title+'" />');
+                    });
+                    addartistmember.columns().every(function () {
+                        var that = this;
+                        $('input', this.footer()).on('keyup change', function() {
+                            if (that.search() !== this.value) {
+                                that.search( this.value ).draw();
+                            }
+                        });
+                    });
                 });
             </script>
-
         </tal:block>
 
         <tal:block tal:condition="CreateArtistMember|False">

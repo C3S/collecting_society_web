@@ -43,19 +43,6 @@ def get_cors_headers():
     ])
 
 
-def generate_test_data():
-    data = []
-    for i in range(1, 100):
-        data.append([
-            "(I)",
-            'Artist %s' % i,
-            'A%s' % str(i).zfill(10),
-            'Some Description',
-            i
-        ])
-    return data
-
-
 # --- schemas -----------------------------------------------------------------
 
 class OrderSchema(colander.MappingSchema):
@@ -120,7 +107,7 @@ class UserResource(object):
             (
                 Allow,
                 self.request.unauthenticated_userid,
-                ('create', 'read', 'update', 'delete')
+                ('read')
             ),
             DENY_ALL
         ]
@@ -152,17 +139,25 @@ def options_artists(request):
 @Tdb.transaction(readonly=False)
 def post_artists(request):
     data = request.validated
-    # search
-    search = Tdb.escape(data['search']['value'], wrap=True)
     # domain
-    domain = ([
+    search = Tdb.escape(data['search']['value'], wrap=True)
+    domain = [
         [
             'OR',
             ('code', 'ilike', search),
             ('name', 'ilike', search),
             ('description', 'ilike', search)
         ]
-    ])
+    ]
+    for column in data['columns']:
+        if not column['searchable'] or not column['search']['value']:
+            continue
+        if column['name'] in ['name', 'code']:
+            search = Tdb.escape(column['search']['value'], wrap=True)
+            domain.append((column['name'], 'ilike', search))
+        if column['name'] == "group":
+            search = (column['search']['value'] == "True")
+            domain.append(('group', '=', search))
     # order
     order = []
     order_allowed = ['name', 'code']
@@ -171,7 +166,12 @@ def post_artists(request):
         if name in order_allowed:
             order.append((name, _order['dir']))
     # statistics
-    total = Artist.search_count([])
+    total_domain = []
+    for column in data['columns']:
+        if column['name'] == "group":
+            search = (column['search']['value'] == "True")
+            total_domain.append(('group', '=', search))
+    total = Artist.search_count(total_domain)
     filtered = Artist.search_count(domain)
     # records
     records = []
@@ -181,6 +181,7 @@ def post_artists(request):
             limit=data['length'],
             order=order):
         records.append({
+            'group': artist.group,
             'name': artist.name,
             'code': artist.code,
             'description': artist.description
