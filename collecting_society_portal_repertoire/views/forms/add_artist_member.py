@@ -23,8 +23,8 @@ class AddArtistMember(FormController):
     def controller(self):
         # add form
         self.form = add_artists_form(self.request)
-        # search artists
-        # self.search_artists(self.context.search_string)
+        if self.submitted() and self.validate():
+            self.add_artist()
         # return response
         return self.response
 
@@ -33,6 +33,9 @@ class AddArtistMember(FormController):
     # --- Conditions ----------------------------------------------------------
 
     # --- Actions -------------------------------------------------------------
+
+    def add_artist(self):
+        pass
 
     # @Tdb.transaction(readonly=True)
     # def search_artists(self, search_string):
@@ -44,27 +47,105 @@ class AddArtistMember(FormController):
 
 # --- Options -----------------------------------------------------------------
 
+# --- Widgets -----------------------------------------------------------------
+
+class TestWidget(deform.widget.SequenceWidget):
+
+    def serialize(self, field, cstruct=None, **kw):
+        log.debug(
+            (
+                "field: %s\n"
+                "cstruct: %s\n"
+            ) % (
+                field,
+                cstruct
+            )
+        )
+        result = super(TestWidget, self).serialize(field, cstruct, **kw)
+        return result
+
+    def deserialize(self, field, pstruct=None):
+        log.debug(
+            (
+                "field: %s\n"
+                "pstruct: %s\n"
+            ) % (
+                field,
+                pstruct,
+            )
+        )
+        result = super(TestWidget, self).deserialize(field, pstruct)
+        log.debug(
+            (
+                "result: %s\n"
+            ) % (
+                result
+            )
+        )
+        return result
+
+    def handle_error(self, field, error):
+        return super(TestWidget, self).handle_error(field, error)
+
+
 # --- Fields ------------------------------------------------------------------
+
+class CreateField(colander.SchemaNode):
+    oid = "create"
+    schema_type = colander.Boolean
+    widget = deform.widget.HiddenWidget()
+
 
 class NameField(colander.SchemaNode):
     oid = "name"
     schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+
+
+class CodeField(colander.SchemaNode):
+    oid = "code"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    missing = ""
+
+
+class EmailField(colander.SchemaNode):
+    oid = "name"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    validator = colander.Email()
+    missing = ""
 
 
 # --- Schemas -----------------------------------------------------------------
 
-class SearchArtistsSchema(colander.Schema):
-    name = NameField(
-        title=_(u"Name")
+class ArtistSchema(colander.Schema):
+    create = CreateField()
+    name = NameField()
+    code = CodeField()
+    email = EmailField()
+    title = ""
+
+
+class ArtistSequence(colander.SequenceSchema):
+    artist = ArtistSchema()
+    widget = TestWidget(
+        template='datatables/sequence',
+        item_template='datatables/sequence_item',
+        category='structural'
     )
+
+
+class AddArtistsSchema(colander.Schema):
+    artists = ArtistSequence(title="")
 
 
 # --- Forms -------------------------------------------------------------------
 
 def add_artists_form(request):
     return deform.Form(
-        schema=SearchArtistsSchema().bind(request=request),
+        schema=AddArtistsSchema().bind(request=request),
         buttons=[
-            deform.Button('add', _(u"add artist"))
+            deform.Button('save', _(u"save"))
         ]
     )

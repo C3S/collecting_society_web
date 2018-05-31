@@ -91,6 +91,11 @@ class DatatablesSchema(colander.MappingSchema):
         colander.Integer(), validator=colander.Range(0))
 
 
+class ArtistDatatablesSchema(DatatablesSchema):
+    group = colander.SchemaNode(
+        colander.Boolean(), missing="")
+
+
 # --- resources ---------------------------------------------------------------
 
 class UserResource(object):
@@ -134,7 +139,7 @@ def options_artists(request):
 
 @artists.post(
     permission='read',
-    schema=DatatablesSchema(),
+    schema=ArtistDatatablesSchema(),
     validators=(colander_body_validator,))
 @Tdb.transaction(readonly=False)
 def post_artists(request):
@@ -155,9 +160,8 @@ def post_artists(request):
         if column['name'] in ['name', 'code']:
             search = Tdb.escape(column['search']['value'], wrap=True)
             domain.append((column['name'], 'ilike', search))
-        if column['name'] == "group":
-            search = (column['search']['value'] == "True")
-            domain.append(('group', '=', search))
+    if 'group' in data:
+        domain.append(('group', '=', data['group']))
     # order
     order = []
     order_allowed = ['name', 'code']
@@ -167,10 +171,8 @@ def post_artists(request):
             order.append((name, _order['dir']))
     # statistics
     total_domain = []
-    for column in data['columns']:
-        if column['name'] == "group":
-            search = (column['search']['value'] == "True")
-            total_domain.append(('group', '=', search))
+    if 'group' in data:
+        total_domain.append(('group', '=', data['group']))
     total = Artist.search_count(total_domain)
     filtered = Artist.search_count(domain)
     # records
@@ -181,7 +183,6 @@ def post_artists(request):
             limit=data['length'],
             order=order):
         records.append({
-            'group': artist.group,
             'name': artist.name,
             'code': artist.code,
             'description': artist.description
