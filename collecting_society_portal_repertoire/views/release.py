@@ -20,7 +20,10 @@ from ..models import (
 )
 from ..services import _
 from ..resources import ReleaseResource
-from .forms import AddRelease
+from .forms import (
+    AddRelease,
+    EditRelease
+)
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +64,7 @@ class ReleaseViews(ViewBase):
     def show(self):
         release_code = self.request.subpath[-1]
         _release = Release.search_by_code(release_code)
+        _genres = _release.genres
         if _release is None:
             return None
         return {
@@ -76,23 +80,33 @@ class ReleaseViews(ViewBase):
         return self.process_forms()
 
     @view_config(
+        name='edit',
+        renderer='../templates/release/edit.pt',
+        decorator=Tdb.transaction(readonly=False))
+    def edit(self):
+        self.context.release_code = self.request.subpath[-1]
+        release = Release.search_by_code(self.context.release_code)
+        self.register_form(EditRelease)
+        return self.process_forms()
+
+    @view_config(
         name='delete',
         decorator=Tdb.transaction(readonly=False))
     def delete(self):
         email = self.request.unauthenticated_userid
 
-        _id = self.request.subpath[0]
-        if _id is None:
+        _code = self.request.subpath[0]
+        if _code is None:
             self.request.session.flash(
-                _(u"Could not delete release - id is missing"),
+                _(u"Could not delete release - code is missing"),
                 'main-alert-warning'
             )
             return self.redirect(ReleaseResource, 'list')
 
-        release = Release.search_by_id(_id)
+        release = Release.search_by_code(_code)
         if release is None:
             self.request.session.flash(
-                _(u"Could not delete release - artist not found"),
+                _(u"Could not delete release - release not found"),
                 'main-alert-warning'
             )
             return self.redirect(ReleaseResource, 'list')
@@ -103,7 +117,7 @@ class ReleaseViews(ViewBase):
             email, _title, _code
         ))
         self.request.session.flash(
-            _(u"Artist deleted: ") + _title + ' (' + _code + ')',
+            _(u"Release deleted: ") + _title + ' (' + _code + ')',
             'main-alert-success'
         )
         return self.redirect(ReleaseResource, 'list')

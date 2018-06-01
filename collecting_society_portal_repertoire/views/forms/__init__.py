@@ -5,6 +5,7 @@ from .register_webuser import RegisterWebuser
 from .add_artist_solo import AddArtistSolo
 from .add_artist_group import AddArtistGroup
 from .add_release import AddRelease
+from .edit_release import EditRelease
 from .add_creation import AddCreation
 from .edit_profile import EditProfile
 from .edit_artist import EditArtist

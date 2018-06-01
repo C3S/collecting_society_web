@@ -38,7 +38,6 @@ class EditProfile(FormController):
         self.form = edit_profile_form(self.request)
         if not (self.submitted() and self.validate()):
             # initialize form
-            #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
             web_user = WebUser.current_web_user(self.request)
             self.appstruct = {
                 'name': web_user.party.name or "",
@@ -47,7 +46,6 @@ class EditProfile(FormController):
                 'email': web_user['email'] or ""
             }
             self.render(self.appstruct)
-            pass
         else:  
             # submit validated data from form            
             self.change_profile()

@@ -1,0 +1,148 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
+<tal:block metal:use-macro="backend363" i18n:domain="collecting_society_portal_repertoire">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <div class="cs-symbolnavbar">
+            <a href="javascript: history.back(1);">
+                <span class="glyphicon glyphicon-arrow-left"></span>
+            </a>
+            <a href="${request.resource_path(context, 'list')}">
+                <span class="glyphicon glyphicon-list"></span>
+            </a>
+        </div>
+
+        <h1>${release.title}</h1>
+
+        <div class="cs-symbolnavbar">
+            <a href="${request.resource_path(context, 'edit', release.code)}">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+            <a href="${request.resource_path(context, 'delete', release.code)}">
+                <span class="glyphicon glyphicon-remove text-danger"></span>
+            </a>
+        </div>
+
+        <img tal:condition="release.picture_data"
+             tal:define="pic h.b64encode(release.picture_data) | None"
+             class="cs-release-img clearfix center-block"
+             src="data:${release.picture_data_mime_type};base64,${pic}" />
+
+        <div class="cs-release">
+            <table class="table release">
+
+                <tr>
+                    <th i18n:translate="">ID</th>
+                    <td>${release.code}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Title</th>
+                    <td>${release.title}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Number of Mediums</th>
+                    <td>${release.number_mediums}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">EAN or UPC Code</th>
+                    <td>${release.ean_upc_code}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">ISRC Code</th>
+                    <td>${release.isrc_code}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Warning</th>
+                    <td>${release.warning}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Copyright Date</th>
+                    <td>${release.copyright_date}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Production Date</th>
+                    <td>${release.production_date}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Producer</th>
+                    <td>${release.producer}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Label</th>
+                    <td>${release.label_as_string}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Label Catalog Number</th>
+                    <td>${release.label_catalog_number}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Release Date</th>
+                    <td>${release.release_date}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Release Cancellation Date</th>
+                    <td>${release.release_cancellation_date}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Online Release Date</th>
+                    <td>${release.online_release_date}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Online Release Cancellation Date</th>
+                    <td>${release.online_cancellation_date}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Distribution Territory</th>
+                    <td>${release.distribution_territory}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Neighbouring Rights Society</th>
+                    <td>${release.neighbouring_rights_society}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Tracklist</th>
+                    <td>[tracklist will appear here soon]</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Genres</th>
+                    <!-- <td>${release.genres_as_string}</td> -->
+                    <td>
+                        <div class="genre-list">
+                            <span tal:repeat="genre release.genres" class="label label-primary label-as-badge">${genre.name}</span>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+
+        </div>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right"></tal:block>
+
+</tal:block>

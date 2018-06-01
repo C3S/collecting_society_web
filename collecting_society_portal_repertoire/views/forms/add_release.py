@@ -36,7 +36,7 @@ log = logging.getLogger(__name__)
 
 class AddRelease(FormController):
     """
-    form controller for creation of creations
+    form controller for add release
     """
 
     def controller(self):
@@ -66,77 +66,52 @@ class AddRelease(FormController):
             )
         )
 
-        _release = {
+        release = {
             'entity_origin': "direct",
             'entity_creator': WebUser.current_web_user(self.request).party,
             'title': self.appstruct['general']['title']
         }  
         # general tab
-        if self.appstruct['general']['number_mediums']:
-            _release['number_mediums'] = self.appstruct['general'][
-                'number_mediums']
-        if self.appstruct['general']['ean_upc_code']:
-            _release['ean_upc_code'] = self.appstruct['general'][
-                'ean_upc_code']
-        if self.appstruct['general']['isrc_code']:
-            _release['isrc_code'] = self.appstruct['general']['isrc_code']
-        if self.appstruct['general']['warning']:
-            _release['warning'] = self.appstruct['general']['warning']
+        tab = 'general'
+        def get_formdata(value):    # a little embedded helper function
+            if self.appstruct[tab][value]:
+                release[value] = self.appstruct[tab][value]
+        get_formdata('number_mediums')
+        get_formdata('ean_upc_code')
+        get_formdata('isrc_code')
+        get_formdata('warning')
         if self.appstruct['general']['picture']:
             with open(self.appstruct['general']['picture']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
             mimetype = self.appstruct['general']['picture']['mimetype']
-            _release['picture_data'] = picture_data
-            _release['picture_data_mime_type'] = mimetype
+            release['picture_data'] = picture_data
+            release['picture_data_mime_type'] = mimetype
         # production tab
-        if self.appstruct['production']['copyright_date']:
-            _release['copyright_date'] = self.appstruct['production'][
-                'copyright_date']
-        if self.appstruct['production']['production_date']:
-            _release['production_date'] = self.appstruct['production'][
-                'production_date']
-        if self.appstruct['production']['producer']:
-            _release['producer'] = self.appstruct['production'][
-                'producer']
+        tab = 'production'
+        get_formdata('copyright_date')
+        get_formdata('production_date')
+        get_formdata('producer')
         # distribution tab
+        tab = 'distribution'
         if self.appstruct['distribution']['label']:
             label = Label.search_by_gvl_code(
                 self.appstruct['distribution']['label'])
             if label:
-                _release['label'] = label
-        if self.appstruct['distribution']['label']:
-            _release['label_catalog_number'] = self.appstruct['distribution']['label_catalog_number']
-        if self.appstruct['distribution']['label_catalog_number']:
-            _release['label_catalog_number'] = self.appstruct['distribution'][
-                'label_catalog_number']
-        if self.appstruct['distribution']['release_date']:
-            _release['release_date'] = self.appstruct['distribution'][
-                'release_date']
-        if self.appstruct['distribution']['release_cancellation_date']:
-            _release['release_cancellation_date'] = self.appstruct['distribution'][
-                'release_cancellation_date']
-        if self.appstruct['distribution']['online_release_date']:
-            _release['online_release_date'] = self.appstruct['distribution'][
-                'online_release_date']
-        if self.appstruct['distribution']['online_cancellation_date']:
-            _release['online_cancellation_date'] = self.appstruct['distribution'][
-                'online_cancellation_date']
-        if self.appstruct['distribution']['distribution_territory']:
-            _release['distribution_territory'] = self.appstruct['distribution'][
-                'distribution_territory']
-        if self.appstruct['distribution']['neighbouring_rights_society']:
-            _release['neighbouring_rights_society'] = self.appstruct['distribution'][
-                'neighbouring_rights_society']                
+                release['label'] = label
+        get_formdata('label_catalog_number')
+        get_formdata('release_date')
+        get_formdata('release_cancellation_date')
+        get_formdata('online_release_date')
+        get_formdata('online_cancellation_date')
+        get_formdata('distribution_territory')
+        get_formdata('neighbouring_rights_society')        
         # genres tab
         if self.appstruct['genres']['genres']:
-            _release['genres'] = [(
+            release['genres'] = [(
                 'add', list(self.appstruct['genres']['genres']))]
-        # when editing/deleting releases, do something like that:
-        #  release.genres = []
-        #  release.save()
 
-        Release.create([_release])
+        Release.create([release])
 
         self.redirect(ReleaseResource, 'list')
 
@@ -282,7 +257,7 @@ class ReleaseDateField(colander.SchemaNode):
 
 
 class ReleaseCancellationDateField(colander.SchemaNode):
-    oid = "releas_cancellation_date"
+    oid = "release_cancellation_date"
     schema_type = colander.Date
     missing = ""
 
@@ -309,9 +284,6 @@ class NeighbouringRightsSocietyField(colander.SchemaNode):
     oid = "neighbouring_rights_society"
     schema_type = colander.String
     missing = ""
-
-
-# -- Tracks tab --
 
 
 # -- Genres tab --
@@ -372,10 +344,6 @@ class DistributionSchema(colander.Schema):
         title=_(u"Neighbouring Rights Society"))
 
 
-class TracksSchema(colander.Schema):
-    pass
-
-
 class GenresSchema(colander.Schema):    
     genres = GenreCheckboxField(title=_(u"Genres"))
 
@@ -390,9 +358,6 @@ class AddReleaseSchema(colander.Schema):
     )
     distribution = DistributionSchema(
         title=_(u"Distribution")
-    )
-    tracks = TracksSchema(
-        title =_(u"Tracks")
     )
     genres = GenresSchema(
         title=_(u"Genres")
