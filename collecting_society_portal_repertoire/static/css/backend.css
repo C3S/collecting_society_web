@@ -35,7 +35,8 @@ body {
 
 a { outline:none!important; }
 
-.cs-datatables {  width: 100%; }
+.cs-datatables .table-responsive { }
+.cs-datatables .nowrap { white-space:nowrap; }
 
 /* Content Left */
 

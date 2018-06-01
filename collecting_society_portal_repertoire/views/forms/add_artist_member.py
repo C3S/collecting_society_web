@@ -47,47 +47,6 @@ class AddArtistMember(FormController):
 
 # --- Options -----------------------------------------------------------------
 
-# --- Widgets -----------------------------------------------------------------
-
-class TestWidget(deform.widget.SequenceWidget):
-
-    def serialize(self, field, cstruct=None, **kw):
-        log.debug(
-            (
-                "field: %s\n"
-                "cstruct: %s\n"
-            ) % (
-                field,
-                cstruct
-            )
-        )
-        result = super(TestWidget, self).serialize(field, cstruct, **kw)
-        return result
-
-    def deserialize(self, field, pstruct=None):
-        log.debug(
-            (
-                "field: %s\n"
-                "pstruct: %s\n"
-            ) % (
-                field,
-                pstruct,
-            )
-        )
-        result = super(TestWidget, self).deserialize(field, pstruct)
-        log.debug(
-            (
-                "result: %s\n"
-            ) % (
-                result
-            )
-        )
-        return result
-
-    def handle_error(self, field, error):
-        return super(TestWidget, self).handle_error(field, error)
-
-
 # --- Fields ------------------------------------------------------------------
 
 class CreateField(colander.SchemaNode):
@@ -129,7 +88,7 @@ class ArtistSchema(colander.Schema):
 
 class ArtistSequence(colander.SequenceSchema):
     artist = ArtistSchema()
-    widget = TestWidget(
+    widget = deform.widget.SequenceWidget(
         template='datatables/sequence',
         item_template='datatables/sequence_item',
         category='structural'
@@ -144,8 +103,5 @@ class AddArtistsSchema(colander.Schema):
 
 def add_artists_form(request):
     return deform.Form(
-        schema=AddArtistsSchema().bind(request=request),
-        buttons=[
-            deform.Button('save', _(u"save"))
-        ]
+        schema=AddArtistsSchema().bind(request=request)
     )
