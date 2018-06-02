@@ -35,8 +35,11 @@ body {
 
 a { outline:none!important; }
 
-.cs-datatables .table-responsive { }
 .cs-datatables .nowrap { white-space:nowrap; }
+.form-inline .cs-datatables .form-group { display:block; margin-bottom:15px; }
+.form-inline .cs-datatables .form-control{ display: inline-block; width: 100%; }
+.cs-datatables .child table { background-color:transparent; }
+
 
 /* Content Left */
 

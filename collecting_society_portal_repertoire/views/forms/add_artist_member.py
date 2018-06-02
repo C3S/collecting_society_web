@@ -25,6 +25,13 @@ class AddArtistMember(FormController):
         self.form = add_artists_form(self.request)
         if self.submitted() and self.validate():
             self.add_artist()
+        log.debug(
+            (
+                "self.appstruct: %s\n"
+            ) % (
+                self.appstruct
+            )
+        )
         # return response
         return self.response
 
@@ -49,9 +56,9 @@ class AddArtistMember(FormController):
 
 # --- Fields ------------------------------------------------------------------
 
-class CreateField(colander.SchemaNode):
-    oid = "create"
-    schema_type = colander.Boolean
+class ModeField(colander.SchemaNode):
+    oid = "mode"
+    schema_type = colander.String
     widget = deform.widget.HiddenWidget()
 
 
@@ -79,7 +86,7 @@ class EmailField(colander.SchemaNode):
 # --- Schemas -----------------------------------------------------------------
 
 class ArtistSchema(colander.Schema):
-    create = CreateField()
+    mode = ModeField()
     name = NameField()
     code = CodeField()
     email = EmailField()
