@@ -35,11 +35,22 @@ body {
 
 a { outline:none!important; }
 
+.cs-thin { font-weight:normal; }
 .cs-datatables .nowrap { white-space:nowrap; }
 .form-inline .cs-datatables .form-group { display:block; margin-bottom:15px; }
-.form-inline .cs-datatables .form-control{ display: inline-block; width: 100%; }
-.cs-datatables .child table { background-color:transparent; }
+.form-inline .cs-datatables .form-control { display: inline-block; width: 100%; }
+.cs-datatables .child td { border-top:none; }
+.cs-datatables .child .cs-datatables-edit { margin-left: 15px; border-left: 1px dotted #31b0d5; padding-left: 25px; }
 
+.cs-tabbedform .panel-heading { background-color:transparent; }
+.cs-tabbedform .panel-default { border:none; }
+.cs-tabbedform .cs-tabbedform-nav li a { background-color:#eee; }
+.cs-tabbedform .cs-tabbedform-nav li a:hover { background-color:#fff; border-bottom-color:#fff; }
+.cs-tabbedform .cs-tabbedform-nav li:hover {  }
+.cs-tabbedform .cs-tabbedform-nav li.active a,
+.cs-tabbedform .cs-tabbedform-nav li.active a:hover { background-color:#fff; }
+.cs-tabbedform .cs-tabbedform-nav li.active:hover {  }
+.cs-tabbedform .cs-tabbedform-controls { margin-top:40px; padding-top:40px; border-top:1px solid #ddd; }
 
 /* Content Left */
 
