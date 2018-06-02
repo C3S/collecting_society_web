@@ -101,14 +101,6 @@ class AddArtist(FormController):
 
 # --- Fields ------------------------------------------------------------------
 
-@colander.deferred
-def solo_artists_select_widget(node, kw):
-    solo_artists = Artist.search_all_solo_artists()
-    solo_artist_options = [(artist.id, artist.name) for artist in solo_artists]
-    widget = deform.widget.Select2Widget(values=solo_artist_options)
-    return widget
-
-
 class GroupField(colander.SchemaNode):
     oid = "group"
     schema_type = colander.Boolean
@@ -134,13 +126,64 @@ class PictureField(colander.SchemaNode):
     missing = ""
 
 
-class MembersField(colander.SchemaNode):
+class ArtistModeField(colander.SchemaNode):
+    oid = "mode"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+
+
+class ArtistNameField(colander.SchemaNode):
+    oid = "name"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+
+
+class ArtistCodeField(colander.SchemaNode):
+    oid = "code"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    missing = ""
+
+
+class ArtistEmailField(colander.SchemaNode):
+    oid = "name"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    validator = colander.Email()
+    missing = ""
+
+
+class ArtistKeyField(colander.SchemaNode):
+    oid = "key"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+
+
+class ArtistsField(colander.SchemaNode):
     oid = "members"
     schema_type = colander.String
-    widget = solo_artists_select_widget
+    widget = deform.widget.HiddenWidget()
 
 
 # --- Schemas -----------------------------------------------------------------
+
+class ArtistSchema(colander.Schema):
+    mode = ArtistModeField()
+    name = ArtistNameField()
+    code = ArtistCodeField()
+    email = ArtistEmailField()
+    key = ArtistKeyField()
+    title = ""
+
+
+class ArtistSequence(colander.SequenceSchema):
+    artist = ArtistSchema()
+    widget = deform.widget.SequenceWidget(
+        template='datatables/sequence',
+        item_template='datatables/sequence_item',
+        category='structural'
+    )
+
 
 class MetadataSchema(colander.Schema):
     group = GroupField(
@@ -161,6 +204,10 @@ class AddArtistSchema(colander.Schema):
     title = _(u"Add Artist")
     metadata = MetadataSchema(
         title=_(u"Metadata")
+    )
+    members = ArtistSequence(
+        title=_(u"Members"),
+        missing=""
     )
 
 

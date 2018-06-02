@@ -11,24 +11,16 @@
             <a href="javascript: history.back(1);">
                 <span class="glyphicon glyphicon-arrow-left"></span>
             </a>
-            <a href="${request.resource_path(context, 'show', context.group.code)}">
-                <span class="glyphicon glyphicon-eye-open"></span>
-            </a>
             <a href="${request.resource_path(context, 'list')}">
                 <span class="glyphicon glyphicon-list"></span>
             </a>
         </div>
 
-        <h1><span i18n:translate="">Add a member to</span> "${context.group.name}"</h1>
+        <h1 i18n:translate="">Add Artist</h1>
 
         <!-- add artist -->
         <tal:block tal:condition="AddArtistMember|False">
             <div tal:content="structure AddArtistMember"/>
-        </tal:block>
-
-        <tal:block tal:condition="CreateArtistMember|False">
-            <h2 i18n:translate="">Create Artist</h2>
-            <div tal:content="structure CreateArtistMember"/>
         </tal:block>
 
     </tal:block>

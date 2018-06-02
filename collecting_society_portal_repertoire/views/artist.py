@@ -22,9 +22,7 @@ from ..resources import ArtistResource
 from .forms import (
     AddArtist,
     EditArtist,
-    AddArtistMember,
-    SearchArtistMember,
-    CreateArtistMember,
+    AddArtistMember
 )
 
 log = logging.getLogger(__name__)
@@ -122,73 +120,5 @@ class ArtistViews(ViewBase):
         renderer='../templates/artist/add_member.pt',
         decorator=Tdb.transaction(readonly=False))
     def addmember(self):
-        # get group
-        _group_code = self.request.subpath[0]
-        if not _group_code:
-            return self.redirect(ArtistResource, 'list')
-        self.context.group = Artist.search_by_code(self.request.subpath[0])
-        # register forms
-        self.register_form(SearchArtistMember)
         self.register_form(AddArtistMember)
-        self.register_form(CreateArtistMember)
-        # api url
-        settings = self.request.registry.settings
-        self.response.update({
-            'api_url': ''.join([
-                settings['api.datatables.url'], '/',
-                settings['api.datatables.version']
-            ])
-        })
-        # return response
         return self.process_forms()
-
-    @view_config(
-        name='removemember',
-        decorator=Tdb.transaction(readonly=False))
-    def removemember(self):
-        _group_code = self.request.subpath[0]
-        if _group_code is None:
-            self.request.session.flash(
-                _(u"Could not remove member artist - group code is missing"),
-                'main-alert-warning'
-            )
-            return self.redirect(ArtistResource, 'list')
-        _member_code = self.request.subpath[1]
-        if _member_code is None:
-            self.request.session.flash(
-                _(u"Could not remove member artist - member code is missing"),
-                'main-alert-warning'
-            )
-            return self.redirect(ArtistResource, 'list')
-        group = Artist.search_by_code(_group_code)
-        if not group:
-            self.request.session.flash(
-                _(u"Could not remove member artist - group artist not found"),
-                'main-alert-warning'
-            )
-            return self.redirect(ArtistResource, 'list')
-        member = Artist.search_by_code(_member_code)
-        if not member:
-            self.request.session.flash(
-                _(u"Could not remove member artist - member artist not found"),
-                'main-alert-warning'
-            )
-            return self.redirect(ArtistResource, 'list')
-        if not member.id in group.solo_artists:
-            self.request.session.flash(
-                _(u"Could not remove member artist - artist is not a member"),
-                'main-alert-warning'
-            )
-            return self.redirect(ArtistResource, 'list')
-
-        group.solo_artists = [('remove', member.id)]
-        group.save()
-
-        log.info("member artist successful added to %s: %s" % (group, member))
-        self.request.session.flash(
-            _(u"Artist member added: ") + member.name + " (" + member.code + ")",
-            'main-alert-success'
-        )
-        
-        return self.redirect(ArtistResource, 'show', _group)
-
