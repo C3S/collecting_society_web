@@ -114,11 +114,3 @@ class ArtistViews(ViewBase):
             'main-alert-success'
         )
         return self.redirect(ArtistResource, 'list')
-
-    @view_config(
-        name='addmember',
-        renderer='../templates/artist/add_member.pt',
-        decorator=Tdb.transaction(readonly=False))
-    def addmember(self):
-        self.register_form(AddArtistMember)
-        return self.process_forms()

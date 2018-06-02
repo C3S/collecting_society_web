@@ -50,7 +50,8 @@ a { outline:none!important; }
 .cs-tabbedform .cs-tabbedform-nav li.active a,
 .cs-tabbedform .cs-tabbedform-nav li.active a:hover { background-color:#fff; }
 .cs-tabbedform .cs-tabbedform-nav li.active:hover {  }
-.cs-tabbedform .cs-tabbedform-controls { margin-top:40px; padding-top:40px; border-top:1px solid #ddd; }
+.cs-tabbedform .cs-tabbedform-controls { margin-top:30px; padding-top:40px; border-top:1px solid #ddd; }
+.cs-tabbedform .cs-tabbedform-tabcontent { margin-top:20px; }
 
 /* Content Left */
 

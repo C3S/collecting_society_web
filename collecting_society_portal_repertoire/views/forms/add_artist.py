@@ -3,11 +3,7 @@
 
 import colander
 import deform
-from pkg_resources import resource_filename
 import logging
-
-from pyramid.threadlocal import get_current_request
-from pyramid.i18n import get_localizer
 
 from collecting_society_portal.models import (
     Tdb,
@@ -17,9 +13,11 @@ from collecting_society_portal.views.forms import (
     FormController,
     deferred_file_upload_widget
 )
+
 from ...services import _
 from ...models import Artist
 from ...resources import ArtistResource
+from .datatables import ArtistSequence
 
 log = logging.getLogger(__name__)
 
@@ -126,108 +124,27 @@ class PictureField(colander.SchemaNode):
     missing = ""
 
 
-class ArtistModeField(colander.SchemaNode):
-    oid = "mode"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-
-
-class ArtistNameField(colander.SchemaNode):
-    oid = "name"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-
-
-class ArtistCodeField(colander.SchemaNode):
-    oid = "code"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-    missing = ""
-
-
-class ArtistEmailField(colander.SchemaNode):
-    oid = "name"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-    validator = colander.Email()
-    missing = ""
-
-
-class ArtistKeyField(colander.SchemaNode):
-    oid = "key"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-
-
-class ArtistsField(colander.SchemaNode):
-    oid = "members"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-
-
 # --- Schemas -----------------------------------------------------------------
 
-class ArtistSchema(colander.Schema):
-    mode = ArtistModeField()
-    name = ArtistNameField()
-    code = ArtistCodeField()
-    email = ArtistEmailField()
-    key = ArtistKeyField()
-    title = ""
-
-
-class ArtistSequence(colander.SequenceSchema):
-    artist = ArtistSchema()
-    widget = deform.widget.SequenceWidget(
-        template='datatables/sequence',
-        item_template='datatables/sequence_item',
-        category='structural'
-    )
-
-
 class MetadataSchema(colander.Schema):
-    group = GroupField(
-        title=_(u"Group")
-    )
-    name = NameField(
-        title=_(u"Name")
-    )
-    description = DescriptionField(
-        title=_(u"Description")
-    )
-    picture = PictureField(
-        title=_(u"Picture")
-    )
+    widget = deform.widget.MappingWidget(template='tabs/mapping')
+    group = GroupField(title=_(u"Group"))
+    name = NameField(title=_(u"Name"))
+    description = DescriptionField(title=_(u"Description"))
+    picture = PictureField(title=_(u"Picture"))
 
 
 class AddArtistSchema(colander.Schema):
     title = _(u"Add Artist")
-    metadata = MetadataSchema(
-        title=_(u"Metadata")
-    )
-    members = ArtistSequence(
-        title=_(u"Members"),
-        missing=""
-    )
+    widget = deform.widget.FormWidget(template='tabs/form')
+    metadata = MetadataSchema(title=_(u"Metadata"))
+    members = ArtistSequence(title=_(u"Members"), missing="")
 
 
 # --- Forms -------------------------------------------------------------------
 
-# custom template
-def translator(term):
-    return get_localizer(get_current_request()).translate(term)
-
-
-zpt_renderer_tabs = deform.ZPTRendererFactory([
-    resource_filename('collecting_society_portal', 'templates/deform/tabs'),
-    resource_filename('collecting_society_portal', 'templates/deform'),
-    resource_filename('deform', 'templates')
-], translator=translator)
-
-
 def add_artist_form(request):
     return deform.Form(
-        renderer=zpt_renderer_tabs,
         schema=AddArtistSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
