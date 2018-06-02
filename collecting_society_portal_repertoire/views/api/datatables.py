@@ -185,8 +185,7 @@ def post_artists(request):
         records.append({
             'name': artist.name,
             'code': artist.code,
-            'description': artist.description,
-            'mode': "add"
+            'description': artist.description
         })
     # response
     return {

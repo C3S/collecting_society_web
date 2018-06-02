@@ -83,6 +83,12 @@ class EmailField(colander.SchemaNode):
     missing = ""
 
 
+class KeyField(colander.SchemaNode):
+    oid = "key"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+
+
 # --- Schemas -----------------------------------------------------------------
 
 class ArtistSchema(colander.Schema):
@@ -90,6 +96,7 @@ class ArtistSchema(colander.Schema):
     name = NameField()
     code = CodeField()
     email = EmailField()
+    key = KeyField()
     title = ""
 
 
