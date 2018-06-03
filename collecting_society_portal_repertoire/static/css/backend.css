@@ -44,20 +44,19 @@ h1, .h1 { color:#317a19 }
 .cs-datatables .child td { border-top:none; }
 .cs-datatables .child .cs-datatables-edit { margin-left: 15px; border-left: 1px dotted #31b0d5; padding-left: 25px; }
 
-.cs-tabbedform .panel-heading { background-color:transparent; }
-.cs-tabbedform .panel-default { border:none; }
-.cs-tabbedform .cs-tabbedform-nav li a { background-color:#eee; }
-.cs-tabbedform .cs-tabbedform-nav li a:hover { background-color:#fff; border-bottom-color:#fff; }
-.cs-tabbedform .cs-tabbedform-nav li:hover {  }
-.cs-tabbedform .cs-tabbedform-nav li.active a,
-.cs-tabbedform .cs-tabbedform-nav li.active a:hover { background-color:#fff; }
-.cs-tabbedform .cs-tabbedform-nav li.active:hover {  }
-.cs-tabbedform .cs-tabbedform-controls { margin-top:30px; padding-top:40px; border-top:1px solid #ddd; }
-.cs-tabbedform .cs-tabbedform-tabcontent { margin-top:20px; }
-.cs-tabbedform .cs-nav-pills a { color:#317a19; }
-.cs-tabbedform .cs-nav-pills a:hover { background-color:#d9f0c8;  color:#222; }
-.cs-tabbedform .cs-nav-pills .active a,
-.cs-tabbedform .cs-nav-pills .active a:hover { background: url('../img/element-menue-bg.png'); opacity:0.9; }
+.cs-navform .panel-heading { background-color:transparent; }
+.cs-navform .panel-default { border:none; }
+.cs-navform .cs-navform-controls { margin-top:30px; padding-top:40px; border-top:1px solid #ddd; }
+.cs-navform .cs-navform-item-content { margin-top:20px; }
+.cs-navform .cs-nav-tabs a { color:#666; }
+.cs-navform .cs-nav-tabs a:hover { color:#333; }
+.cs-navform .cs-nav-tabs .active a,
+.cs-navform .cs-nav-tabs .active a:hover,
+.cs-navform .cs-nav-tabs .active a:focus { color:#317a19; }
+.cs-navform .cs-nav-pills a { color:#317a19; }
+.cs-navform .cs-nav-pills a:hover { background-color:#d9f0c8;  color:#222; }
+.cs-navform .cs-nav-pills .active a,
+.cs-navform .cs-nav-pills .active a:hover { background: url('../img/element-menue-bg.png'); opacity:0.9; }
 
 /* Content Left */
 

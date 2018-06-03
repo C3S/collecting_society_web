@@ -20,13 +20,13 @@
         <div tal:content="structure EditArtist"/>
 
         <script>
-            $("#cs-tabbedform-tab-members").hide();
+            $("#cs-navform-item-menu-members").hide();
             function item_group_control(checkbox) {
-                var tab = $("#cs-tabbedform-tab-members");
+                var nav = $("#cs-navform-item-menu-members");
                 if ($("#item-group input:checked").length > 0) {
-                    tab.show();
+                    nav.show();
                 } else {
-                    tab.hide();
+                    nav.hide();
                 }
                 redraw_formcontrols();
             }
