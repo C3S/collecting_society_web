@@ -199,53 +199,51 @@
     <!-- Artists -->
 
     <!-- Artists: Datatable  -->
-    <div class="table-responsive">
-        <table id="cs-table-artists"
-               class="table table-hover cs-datatables">
-            <thead>
-                <th></th>
-                <th i18n:translate="">Name</th>
-                <th i18n:translate="">Code</th>
-                <th></th>
-                <th>
-                    <a href="#" class="pull-right cs-thin" onclick="return create_artist();">
-                        <span class="glyphicon glyphicon-plus"></span>
-                        <span i18n:translate="">Create</span>
-                    </a>
-                </th>
-                <th i18n:translate="">Description</th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </thead>
-            <tbody>
-                <tr tal:define="subfields [ x[1] for x in subfields ]"
-                    tal:repeat="subfield subfields">
-                    <tal:block tal:define="create subfield.children[0].cstruct == 'create';
-                                           error_name create and subfield.children[1].error;
-                                           error_email create and subfield.children[3].error;
-                                           errormsg_name subfield.children[1].errormsg;
-                                           errormsg_email subfield.children[3].errormsg">
-                        <td></td>
-                        <td>
-                            ${subfield.cstruct.name}
-                            <small class="text-danger" tal:condition="error_name"><br>${errormsg_name}</small>
-                        </td>
-                        <td>
-                            ${subfield.cstruct.code}
-                            <small class="text-danger" tal:condition="error_email"><br>${errormsg_email}</small>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>${subfield.cstruct.email}</td>
-                        <td>${subfield.cstruct.mode}</td>
-                        <td>${subfield.cstruct.key}</td>
-                    </tal:block>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <table id="cs-table-artists"
+           class="table table-hover cs-datatables">
+        <thead>
+            <th></th>
+            <th i18n:translate="">Name</th>
+            <th i18n:translate="">Code</th>
+            <th></th>
+            <th>
+                <a href="#" class="pull-right cs-thin" onclick="return create_artist();">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span i18n:translate="">Create</span>
+                </a>
+            </th>
+            <th i18n:translate="">Description</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr tal:define="subfields [ x[1] for x in subfields ]"
+                tal:repeat="subfield subfields">
+                <tal:block tal:define="create subfield.children[0].cstruct == 'create';
+                                       error_name create and subfield.children[1].error;
+                                       error_email create and subfield.children[3].error;
+                                       errormsg_name subfield.children[1].errormsg;
+                                       errormsg_email subfield.children[3].errormsg">
+                    <td></td>
+                    <td>
+                        ${subfield.cstruct.name}
+                        <small class="text-danger" tal:condition="error_name"><br>${errormsg_name}</small>
+                    </td>
+                    <td>
+                        ${subfield.cstruct.code}
+                        <small class="text-danger" tal:condition="error_email"><br>${errormsg_email}</small>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>${subfield.cstruct.email}</td>
+                    <td>${subfield.cstruct.mode}</td>
+                    <td>${subfield.cstruct.key}</td>
+                </tal:block>
+            </tr>
+        </tbody>
+    </table>
     <!-- Artists: Scripts -->
     <script>
         /* format */

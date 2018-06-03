@@ -173,14 +173,6 @@ class EditArtist(FormController):
                 members_created = Artist.create(members_create)
                 members_new += members_created
 
-            log.debug(
-                (
-                    "members_new: %s\n"
-                ) % (
-                    members_new
-                )
-            )
-
             # add new member list
             artist.solo_artists = members_new
 
