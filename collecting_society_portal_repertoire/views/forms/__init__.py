@@ -8,4 +8,3 @@ from .edit_release import EditRelease
 from .add_creation import AddCreation
 from .edit_profile import EditProfile
 from .edit_artist import EditArtist
-from .add_artist_member import AddArtistMember
