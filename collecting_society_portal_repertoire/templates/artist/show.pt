@@ -68,9 +68,6 @@
                                class="list-group-item">
                                 ${solo_artist.name}
                             </a>
-                            <a href="${request.resource_path(context, 'addmember', artist.code)}">
-                                <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Add</span>
-                            </a>
                         </div>
                     </td>
                 </tr>
