@@ -107,6 +107,17 @@
             var row = artists.row.add(data).draw();
             // open edit area
             $(row.node()).find('a.edit').click();
+            // catch enter key
+            var child = $(row.node()).next('tr');
+            var submit = $(child).find('.cs-datatables-apply');
+            var input = $(child).find('input');
+            $(input).keypress(function (e) {
+                if (e.which == 13) {
+                    console.log(submit);
+                    $(submit).click();
+                    return false;
+                }
+            });
             return false;
         }
         function edit_artist(link) {
@@ -284,7 +295,7 @@
                         '<label class="control-label" for="edit_email" i18n:translate="">Email</label>' +
                         '<input name="edit_email" class="form-control" type="text" value="' + data.email + '">' +
                     '</div>' +
-                    '<a href="#" onclick="return save_artist(this);">' +
+                    '<a href="#" class="cs-datatables-apply" onclick="return save_artist(this);">' +
                         '<button class="btn btn-info" i18n:translate="">Apply</button>' +
                     '</a>';
             return $('<div class="cs-datatables-edit"/>').append(data);
