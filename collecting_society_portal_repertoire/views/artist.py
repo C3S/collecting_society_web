@@ -79,8 +79,20 @@ class ArtistViews(ViewBase):
         renderer='../templates/artist/edit.pt',
         decorator=Tdb.transaction(readonly=False))
     def edit(self):
+        code = self.request.subpath[0]
+
+        artist = Artist.search_by_code(code)
+        if not artist:
+            self.request.session.flash(
+                _(u"Could not edit artist - artist not found"),
+                'main-alert-warning'
+            )
+            return self.redirect(ArtistResource, 'list')
+
         self.register_form(EditArtist)
-        return self.process_forms()
+        return self.process_forms({
+            'artist': artist
+        })
 
     @view_config(
         name='delete',
@@ -88,15 +100,15 @@ class ArtistViews(ViewBase):
     def delete(self):
         email = self.request.unauthenticated_userid
 
-        _code = self.request.subpath[0]
-        if _code is None:
+        code = self.request.subpath[0]
+        if code is None:
             self.request.session.flash(
                 _(u"Could not delete artist - code is missing"),
                 'main-alert-warning'
             )
             return self.redirect(ArtistResource, 'list')
 
-        artist = Artist.search_by_code(_code)
+        artist = Artist.search_by_code(code)
         if artist is None:
             self.request.session.flash(
                 _(u"Could not delete artist - artist not found"),
@@ -104,13 +116,13 @@ class ArtistViews(ViewBase):
             )
             return self.redirect(ArtistResource, 'list')
 
-        _name = artist.name
+        name = artist.name
         Artist.delete([artist])
         log.info("artist delete successful for %s: %s (%s)" % (
-            email, _name, _code
+            email, name, code
         ))
         self.request.session.flash(
-            _(u"Artist deleted: ") + _name + ' (' + _code + ')',
+            _(u"Artist deleted: ") + name + ' (' + code + ')',
             'main-alert-success'
         )
         return self.redirect(ArtistResource, 'list')

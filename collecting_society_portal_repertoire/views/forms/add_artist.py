@@ -84,6 +84,7 @@ class AddArtist(FormController):
                     members_add.append(member_artist.id)
                 # group member data
                 if member['mode'] == "create":
+                    # create new webuser
                     member_webuser = WebUser.create([{
                         'email': member['email'],
                         'password': ''.join(
@@ -91,22 +92,22 @@ class AddArtist(FormController):
                                 string.ascii_uppercase + string.digits
                             ) for _ in range(64))
                     }])
-                    # create new webuser
                     member_webuser = member_webuser[0]
                     member_webuser.party.name = member['email']
                     member_webuser.save()
                     members_create.append({
                         'group': False,
+                        'description': "",
                         'party': member_webuser.party.id,
                         'entity_creator': party.id,
                         'name': member['name']
                     })
             # append directives
             _artist['solo_artists'] = []
-            if members_add:
-                _artist['solo_artists'].append(('add', members_add))
             if members_create:
                 _artist['solo_artists'].append(('create', members_create))
+            if members_add:
+                _artist['solo_artists'].append(('add', members_add))
 
         # create artist
         artists = Artist.create([_artist])
@@ -127,6 +128,7 @@ class AddArtist(FormController):
             'main-alert-success'
         )
 
+        # redirect
         self.redirect(ArtistResource, 'show', artist.code)
 
 
