@@ -1,13 +1,11 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
+import random
+import string
 import colander
 import deform
-from pkg_resources import resource_filename
 import logging
-
-from pyramid.threadlocal import get_current_request
-from pyramid.i18n import get_localizer
 
 from collecting_society_portal.models import (
     Tdb,
@@ -20,6 +18,7 @@ from collecting_society_portal.views.forms import (
 from ...services import _
 from ...models import Artist
 from ...resources import ArtistResource
+from .datatables import ArtistSequence
 
 log = logging.getLogger(__name__)
 
@@ -33,37 +32,16 @@ class EditArtist(FormController):
 
     def controller(self):
 
-        # get artist
-        code = self.request.subpath[0]
-        artist = Artist.search_by_code(code)
-        if not artist:
-            self.request.session.flash(
-                _(u"Could not edit artist - artist not found"),
-                'main-alert-warning'
-            )
-            self.redirect(ArtistResource, 'list')
-            return self.response
-
         # choose form
-        if artist.group:
-            self.form = edit_artist_group_form(self.request)
-        else:
-            self.form = edit_artist_solo_form(self.request)
+        self.form = edit_artist_form(self.request)
 
         # process form
         if self.submitted() and self.validate():
-            self.edit_artist(artist)
-        else: 
-            self.appstruct['metadata'] = {
-                'name': artist.name,
-                'description': artist.description
-            }
-            if artist.group:
-                self.appstruct['members'] = {'members': []}
-                for solo_artist in artist.solo_artists:
-                    self.appstruct['members']['members'].append(solo_artist.id)
-            self.render(self.appstruct)
+            self.edit_artist()
+        else:
+            self.fill_form()
 
+        # return response
         return self.response
 
     # --- Stages --------------------------------------------------------------
@@ -72,23 +50,59 @@ class EditArtist(FormController):
 
     # --- Actions -------------------------------------------------------------
 
-    @Tdb.transaction(readonly=False)
-    def edit_artist(self, artist):
-        email = self.request.unauthenticated_userid
-        log.debug(
-            (
-                "self.appstruct: %s\n"
-            ) % (
-                self.appstruct
-            )
-        )
+    @Tdb.transaction(readonly=True)
+    def fill_form(self):
+        artist = self.context.artist
 
+        # set appstruct
+        self.appstruct = {
+            'metadata': {
+                'group': artist.group,
+                'name': artist.name,
+                'description': artist.description
+            }
+        }
+        if artist.group:
+            _members = []
+            for member in artist.solo_artists:
+                _members.append({
+                    'mode': "add",
+                    'name': member.name,
+                    'code': member.code,
+                    'email': "",
+                    'key': member.code,
+                })
+            self.appstruct['members'] = _members
+
+        # render form with data
+        self.render(self.appstruct)
+
+    @Tdb.transaction(readonly=False)
+    def edit_artist(self):
+        artist = self.context.artist
+        email = self.request.unauthenticated_userid
+        party = WebUser.current_party(self.request)
+
+        # group
+        if artist.group != self.appstruct['metadata']['group']:
+            # if group status has changed
+            if artist.group:
+                # remove solo artists from current group artist
+                artist.solo_artists = []
+            else:
+                # remove current solo artist from group artists
+                artist.group_artists = []
+            artist.group = self.appstruct['metadata']['group']
+
+        # name
         if artist.name != self.appstruct['metadata']['name']:
             artist.name = self.appstruct['metadata']['name']
+
+        # description
         if artist.description != self.appstruct['metadata']['description']:
             artist.description = self.appstruct['metadata']['description']
-        if artist.group:
-            artist.solo_artists = self.appstruct['members']['members']   
+
+        # picture
         if self.appstruct['metadata']['picture_delete']:
             artist.picture_data = None
             artist.picture_data_mime_type = None
@@ -99,15 +113,90 @@ class EditArtist(FormController):
             mimetype = self.appstruct['metadata']['picture_change']['mimetype']
             artist.picture_data = picture_data
             artist.picture_data_mime_type = mimetype
+
+        # members
+        if artist.group:
+            members_current = list(artist.solo_artists)
+            members_remove = members_current
+            members_new = []
+            members_add = []
+            members_create = []
+            for member in self.appstruct['members']:
+
+                # sanity checks
+                if member['key'] == "NEW":
+                    continue
+
+                # add existing artists
+                if member['mode'] == "add":
+                    member_artist = Artist.search_by_code(member['code'])
+
+                    # sanity checks
+                    if not member_artist:
+                        continue
+                    if member_artist.group:
+                        continue
+                    members_new.append(member_artist)
+                    if member_artist in members_current:
+                        members_remove.remove(member_artist)
+                        continue
+
+                    # append artist id
+                    members_add.append(member_artist)
+
+                # group member data
+                if member['mode'] == "create":
+
+                    # create new webuser
+                    member_webuser = WebUser.create([{
+                        'email': member['email'],
+                        'password': ''.join(
+                            random.SystemRandom().choice(
+                                string.ascii_uppercase + string.digits
+                            ) for _ in range(64))
+                    }])
+                    member_webuser = member_webuser[0]
+                    member_webuser.party.name = member['email']
+                    member_webuser.save()
+
+                    # create vlist
+                    members_create.append({
+                        'group': False,
+                        'description': "",
+                        'party': member_webuser.party.id,
+                        'entity_creator': party.id,
+                        'name': member['name']
+                    })
+
+            # create new artists
+            if members_create:
+                members_created = Artist.create(members_create)
+                members_new += members_created
+
+            log.debug(
+                (
+                    "members_new: %s\n"
+                ) % (
+                    members_new
+                )
+            )
+
+            # add new member list
+            artist.solo_artists = members_new
+
+        # save
         artist.save()
 
+        # user feedback
         log.info("edit add successful for %s: %s" % (email, artist))
         self.request.session.flash(
             _(u"Artist edited: ") + artist.name + " (" + artist.code + ")",
             'main-alert-success'
         )
 
-        self.redirect(ArtistResource, 'show/' + artist.code)
+        # redirect
+        self.redirect(ArtistResource, 'show', artist.code)
+
 
 # --- Validators --------------------------------------------------------------
 
@@ -115,12 +204,10 @@ class EditArtist(FormController):
 
 # --- Fields ------------------------------------------------------------------
 
-@colander.deferred
-def solo_artists_select_widget(node, kw):
-    solo_artists = Artist.search_all_solo_artists()
-    solo_artist_options = [(artist.id, artist.name) for artist in solo_artists]
-    widget = deform.widget.Select2Widget(values=solo_artist_options)
-    return widget
+class GroupField(colander.SchemaNode):
+    oid = "group"
+    schema_type = colander.Boolean
+    widget = deform.widget.CheckboxWidget()
 
 
 class NameField(colander.SchemaNode):
@@ -149,86 +236,30 @@ class PictureDeleteField(colander.SchemaNode):
     missing = ""
 
 
-class MembersField(colander.SchemaNode):
-    oid = "members"
-    schema_type = colander.String
-    widget = solo_artists_select_widget
-
-
 # --- Schemas -----------------------------------------------------------------
 
 class MetadataSchema(colander.Schema):
-    name = NameField(
-        title=_(u"Name")
-    )
-    description = DescriptionField(
-        title=_(u"Description")
-    )
-    picture_delete = PictureDeleteField(
-        title=_(u"Delete Picture")
-    )
-    picture_change = PictureChangeField(
-        title=_(u"Change Picture")
-    )
+    widget = deform.widget.MappingWidget(template='tabs/mapping')
+    group = GroupField(title=_(u"Group"))
+    name = NameField(title=_(u"Name"))
+    description = DescriptionField(title=_(u"Description"))
+    picture_delete = PictureDeleteField(title=_(u"Delete Picture"))
+    picture_change = PictureChangeField(title=_(u"Change Picture"))
 
 
-class MembersSequence(colander.SequenceSchema):
-    member = MembersField(
-        title=""
-    )
-
-
-class MembersSchema(colander.Schema):
-    members = MembersSequence(
-        title=_(u"Members")
-    )
-
-
-class EditArtistGroupSchema(colander.Schema):
-    title = _(u"Edit Group Artist")
-    metadata = MetadataSchema(
-        title=_(u"Metadata")
-    )
-    members = MembersSchema(
-        title=_(u"Members")
-    )
-
-class EditArtistSoloSchema(colander.Schema):
-    title = _(u"Edit Solo Artist")
-    metadata = MetadataSchema(
-        title=_(u"Metadata")
-    )
+class EditArtistSchema(colander.Schema):
+    title = _(u"Edit Artist")
+    widget = deform.widget.FormWidget(template='tabs/form')
+    metadata = MetadataSchema(title=_(u"Metadata"))
+    members = ArtistSequence(title=_(u"Members"), missing="")
 
 
 # --- Forms -------------------------------------------------------------------
 
-# custom template
-def translator(term):
-    return get_localizer(get_current_request()).translate(term)
-
-
-zpt_renderer_tabs = deform.ZPTRendererFactory([
-    resource_filename('collecting_society_portal', 'templates/deform/tabs'),
-    resource_filename('collecting_society_portal', 'templates/deform'),
-    resource_filename('deform', 'templates')
-], translator=translator)
-
-
-def edit_artist_group_form(request):
+def edit_artist_form(request):
     return deform.Form(
-        renderer=zpt_renderer_tabs,
-        schema=EditArtistGroupSchema().bind(request=request),
+        schema=EditArtistSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]
     )
-
-def edit_artist_solo_form(request):
-    return deform.Form(
-        renderer=zpt_renderer_tabs,
-        schema=EditArtistSoloSchema().bind(request=request),
-        buttons=[
-            deform.Button('submit', _(u"Submit"))
-        ]
-    )
-

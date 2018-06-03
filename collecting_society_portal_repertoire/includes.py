@@ -171,6 +171,17 @@ def web_registry(config):
         reg['static']['css'] = [
             self.request.static_path(
                 'collecting_society_portal_repertoire:static/css/backend.css'
+            ),
+            self.request.static_path(
+                'collecting_society_portal:'
+                'static/lib/DataTables/datatables.min.css'
+            ),
+        ]
+        # js head
+        reg['static']['js']['head'] = [
+            self.request.static_path(
+                'collecting_society_portal:'
+                'static/lib/DataTables/datatables.min.js'
             )
         ]
         # favicon

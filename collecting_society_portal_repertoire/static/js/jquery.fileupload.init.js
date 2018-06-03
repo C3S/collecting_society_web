@@ -38,8 +38,6 @@ $(function () {
                 dataType: 'json'
             }).done(function (result) {
                 data.uploadedBytes = result.name && result.size;
-                console.log(result);
-                console.log(data.uploadedBytes);
                 $.blueimp.fileupload.prototype
                     .options.add.call(that, e, data);
             });
@@ -48,8 +46,6 @@ $(function () {
 
     // Abort chunkupload on serverside error
     $('#fileupload').bind("fileuploadchunksend", function (e, data) {
-        console.log(e);
-        console.log(data);
         var abortChunkSend = data.context[0].abortChunkSend;
         var error = data.context[0].error;
         if (abortChunkSend) {

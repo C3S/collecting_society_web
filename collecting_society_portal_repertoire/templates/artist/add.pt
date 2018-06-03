@@ -17,7 +17,25 @@
             </a>
         </div>
 
-        <div tal:content="structure AddArtistGroup"/>
+        <div tal:content="structure AddArtist"/>
+
+        <script>
+            $("#cs-tabbedform-tab-members").hide();
+            function item_group_control(checkbox) {
+                var tab = $("#cs-tabbedform-tab-members");
+                if ($("#item-group input:checked").length > 0) {
+                    tab.show();
+                } else {
+                    tab.hide();
+                }
+                redraw_formcontrols();
+            }
+            $(document).ready(function() {                
+                $("#item-group input").change(function() {
+                    item_group_control(this);
+                }).change();
+            });
+        </script>
 
     </tal:block>
 

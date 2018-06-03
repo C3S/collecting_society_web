@@ -20,9 +20,9 @@ from ..models import (
 from ..services import _
 from ..resources import ArtistResource
 from .forms import (
-    AddArtistSolo,
-    AddArtistGroup,
-    EditArtist
+    AddArtist,
+    EditArtist,
+    AddArtistMember
 )
 
 log = logging.getLogger(__name__)
@@ -67,19 +67,11 @@ class ArtistViews(ViewBase):
         }
 
     @view_config(
-        name='add_solo',
-        renderer='../templates/artist/add_solo.pt',
+        name='add',
+        renderer='../templates/artist/add.pt',
         decorator=Tdb.transaction(readonly=False))
-    def add_solo(self):
-        self.register_form(AddArtistSolo)
-        return self.process_forms()
-
-    @view_config(
-        name='add_group',
-        renderer='../templates/artist/add_group.pt',
-        decorator=Tdb.transaction(readonly=False))
-    def add_group(self):
-        self.register_form(AddArtistGroup)
+    def add(self):
+        self.register_form(AddArtist)
         return self.process_forms()
 
     @view_config(
@@ -87,8 +79,20 @@ class ArtistViews(ViewBase):
         renderer='../templates/artist/edit.pt',
         decorator=Tdb.transaction(readonly=False))
     def edit(self):
+        code = self.request.subpath[0]
+
+        artist = Artist.search_by_code(code)
+        if not artist:
+            self.request.session.flash(
+                _(u"Could not edit artist - artist not found"),
+                'main-alert-warning'
+            )
+            return self.redirect(ArtistResource, 'list')
+
         self.register_form(EditArtist)
-        return self.process_forms()
+        return self.process_forms({
+            'artist': artist
+        })
 
     @view_config(
         name='delete',
@@ -96,15 +100,15 @@ class ArtistViews(ViewBase):
     def delete(self):
         email = self.request.unauthenticated_userid
 
-        _code = self.request.subpath[0]
-        if _code is None:
+        code = self.request.subpath[0]
+        if code is None:
             self.request.session.flash(
                 _(u"Could not delete artist - code is missing"),
                 'main-alert-warning'
             )
             return self.redirect(ArtistResource, 'list')
 
-        artist = Artist.search_by_code(_code)
+        artist = Artist.search_by_code(code)
         if artist is None:
             self.request.session.flash(
                 _(u"Could not delete artist - artist not found"),
@@ -112,13 +116,13 @@ class ArtistViews(ViewBase):
             )
             return self.redirect(ArtistResource, 'list')
 
-        _name = artist.name
+        name = artist.name
         Artist.delete([artist])
         log.info("artist delete successful for %s: %s (%s)" % (
-            email, _name, _code
+            email, name, code
         ))
         self.request.session.flash(
-            _(u"Artist deleted: ") + _name + ' (' + _code + ')',
+            _(u"Artist deleted: ") + name + ' (' + code + ')',
             'main-alert-success'
         )
         return self.redirect(ArtistResource, 'list')

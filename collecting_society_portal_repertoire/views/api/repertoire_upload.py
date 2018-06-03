@@ -509,6 +509,28 @@ def still_banned_for(request):
     return seconds_still_banned_for
 
 
+# --- resources ---------------------------------------------------------------
+
+class UserResource(object):
+
+    def __init__(self, request):
+        self.request = request
+
+    def __acl__(self):
+        # no webuser logged in
+        if not self.request.user:
+            return [DENY_ALL]
+        # webuser logged in
+        return [
+            (
+                Allow,
+                self.request.unauthenticated_userid,
+                ('create', 'read', 'update', 'delete')
+            ),
+            DENY_ALL
+        ]
+
+
 # --- service: upload ---------------------------------------------------------
 
 repertoire_upload = Service(
@@ -516,7 +538,7 @@ repertoire_upload = Service(
     path=_prefix + '/v1/upload',
     description="uploads repertoire files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 
@@ -730,7 +752,7 @@ repertoire_list = Service(
     path=_prefix + '/v1/list',
     description="lists repertoire files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 
@@ -759,7 +781,7 @@ repertoire_show = Service(
     path=_prefix + '/v1/show/{filename}',
     description="checks partially uploaded files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 
@@ -793,7 +815,7 @@ repertoire_preview = Service(
     path=_prefix + '/v1/preview/{id}',
     description="previewed the uploaded repertoire files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 
@@ -827,7 +849,7 @@ repertoire_delete = Service(
     path=_prefix + '/v1/delete/{id}',
     description="deletes uploaded repertoire files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 

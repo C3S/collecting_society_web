@@ -35,6 +35,24 @@ body {
 
 a { outline:none!important; }
 
+.cs-thin { font-weight:normal; }
+.cs-datatables .nowrap { white-space:nowrap; }
+.form-inline .cs-datatables .form-group { display:block; margin-bottom:15px; }
+.form-inline .cs-datatables .form-control { display: inline-block; width: 100%; }
+.cs-datatables .child td { border-top:none; }
+.cs-datatables .child .cs-datatables-edit { margin-left: 15px; border-left: 1px dotted #31b0d5; padding-left: 25px; }
+
+.cs-tabbedform .panel-heading { background-color:transparent; }
+.cs-tabbedform .panel-default { border:none; }
+.cs-tabbedform .cs-tabbedform-nav li a { background-color:#eee; }
+.cs-tabbedform .cs-tabbedform-nav li a:hover { background-color:#fff; border-bottom-color:#fff; }
+.cs-tabbedform .cs-tabbedform-nav li:hover {  }
+.cs-tabbedform .cs-tabbedform-nav li.active a,
+.cs-tabbedform .cs-tabbedform-nav li.active a:hover { background-color:#fff; }
+.cs-tabbedform .cs-tabbedform-nav li.active:hover {  }
+.cs-tabbedform .cs-tabbedform-controls { margin-top:30px; padding-top:40px; border-top:1px solid #ddd; }
+.cs-tabbedform .cs-tabbedform-tabcontent { margin-top:20px; }
+
 /* Content Left */
 
 .cs-content-left { background: url('../img/element-menue-bg.png'); padding-top:6px; }
@@ -61,7 +79,7 @@ a { outline:none!important; }
 
 .cs-content-left .cs-menue-roles > li > a,
 .cs-content-left .cs-menue-roles > li > a:hover,
-.cs-content-left .cs-menue-roles > li > a:visited { color:#fff; background-color:transparent; border:none; font-weight:bold; }
+.cs-content-left .cs-menue-roles > li > a:visited { color:#fff; background-color:transparent; border:none!important; font-weight:bold; }
 
 /* Content Middle */
 
@@ -70,7 +88,8 @@ a { outline:none!important; }
 .cs-content-middle .fileupload-progress .progress { margin-bottom:5px; }
 .cs-content-middle .cs-audio-properties > span:after { color:#ddd; content: " | "; }
 
-.cs-artist-img { max-width: 200px }
+.cs-artist-img { max-width: 200px; }
+.cs-table-artist-img { max-height: 50px; max-width: 50px; }
 
 .cs-content-middle .template-upload td { padding:10px 5px; }
 .cs-content-middle .template-upload .progress { margin-bottom:0; }
