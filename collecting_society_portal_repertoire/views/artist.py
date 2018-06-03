@@ -21,8 +21,7 @@ from ..services import _
 from ..resources import ArtistResource
 from .forms import (
     AddArtist,
-    EditArtist,
-    AddArtistMember
+    EditArtist
 )
 
 log = logging.getLogger(__name__)
