@@ -19,6 +19,20 @@
 
         <div tal:content="structure AddArtist"/>
 
+        <script>
+            $("#cs-tabbedform-tab-members").hide();
+            $(document).ready(function(){
+                $("#item-group input").change(function() {
+                    if (this.checked) {
+                        $("#cs-tabbedform-tab-members").show();
+                    } else {
+                        $("#cs-tabbedform-tab-members").hide();
+                    }
+                    redraw_formcontrols();
+                });
+            });
+        </script>
+
     </tal:block>
 
 </tal:block>

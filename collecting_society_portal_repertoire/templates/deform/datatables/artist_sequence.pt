@@ -50,7 +50,6 @@
                 return false;
             // add sequence item
             var seq = $("#deform-seq-${oid}");
-            console.log(seq)
             deform.appendSequenceItem(seq);
             // fill in input values
             var seq_container = $(seq).children('.deform-seq-container');

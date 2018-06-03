@@ -30,12 +30,9 @@ class AddArtist(FormController):
     """
 
     def controller(self):
-
         self.form = add_artist_form(self.request)
-
         if self.submitted() and self.validate():
             self.create_artist()
-
         return self.response
 
     # --- Stages --------------------------------------------------------------
