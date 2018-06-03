@@ -35,6 +35,8 @@ body {
 
 a { outline:none!important; }
 
+h1, .h1 { color:#317a19 }
+
 .cs-thin { font-weight:normal; }
 .cs-datatables .nowrap { white-space:nowrap; }
 .form-inline .cs-datatables .form-group { display:block; margin-bottom:15px; }
@@ -52,6 +54,10 @@ a { outline:none!important; }
 .cs-tabbedform .cs-tabbedform-nav li.active:hover {  }
 .cs-tabbedform .cs-tabbedform-controls { margin-top:30px; padding-top:40px; border-top:1px solid #ddd; }
 .cs-tabbedform .cs-tabbedform-tabcontent { margin-top:20px; }
+.cs-tabbedform .cs-nav-pills a { color:#317a19; }
+.cs-tabbedform .cs-nav-pills a:hover { background-color:#d9f0c8;  color:#222; }
+.cs-tabbedform .cs-nav-pills .active a,
+.cs-tabbedform .cs-nav-pills .active a:hover { background: url('../img/element-menue-bg.png'); opacity:0.9; }
 
 /* Content Left */
 
