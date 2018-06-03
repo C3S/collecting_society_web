@@ -231,7 +231,7 @@ class PictureDeleteField(colander.SchemaNode):
 # --- Schemas -----------------------------------------------------------------
 
 class MetadataSchema(colander.Schema):
-    widget = deform.widget.MappingWidget(template='tabs/mapping')
+    widget = deform.widget.MappingWidget(template='navs/mapping')
     group = GroupField(title=_(u"Group"))
     name = NameField(title=_(u"Name"))
     description = DescriptionField(title=_(u"Description"))
@@ -241,7 +241,7 @@ class MetadataSchema(colander.Schema):
 
 class EditArtistSchema(colander.Schema):
     title = _(u"Edit Artist")
-    widget = deform.widget.FormWidget(template='tabs/form')
+    widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
     metadata = MetadataSchema(title=_(u"Metadata"))
     members = ArtistSequence(title=_(u"Members"), missing="")
 
