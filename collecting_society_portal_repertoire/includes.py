@@ -170,11 +170,11 @@ def web_registry(config):
         # css
         reg['static']['css'] = [
             self.request.static_path(
-                'collecting_society_portal_repertoire:static/css/backend.css'
-            ),
-            self.request.static_path(
                 'collecting_society_portal:'
                 'static/lib/DataTables/datatables.min.css'
+            ),
+            self.request.static_path(
+                'collecting_society_portal_repertoire:static/css/backend.css'
             ),
         ]
         # js head
