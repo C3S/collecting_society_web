@@ -26,6 +26,7 @@ $(function () {
         maxFileSize: 1024*1024*1024, // 1 GB
         maxChunkSize: 1024*1024, // 1 MB
         prependFiles: true,
+        limitConcurrentUploads: 3,
     });
 
     // Resume temporary upload at last position
