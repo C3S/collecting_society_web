@@ -380,6 +380,7 @@
                 info: false,
                 searching: false,
                 autoWidth: false,
+                fixedHeader: true,
                 responsive: {
                     details: {
                         renderer: addartist_more_div,
@@ -533,6 +534,7 @@
                 processing: true,
                 serverSide: true,
                 searchDelay: 600,
+                fixedHeader: true,
                 responsive: {
                     details: {
                         renderer: addartist_more_div,
