@@ -1,13 +1,10 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
-import colander
-import deform
 import logging
 import re
-
-from pyramid.threadlocal import get_current_request
-from pyramid.i18n import get_localizer
+import colander
+import deform
 
 from collecting_society_portal.models import (
     Tdb,
@@ -167,19 +164,10 @@ class PasswordField(colander.MappingSchema):
 # --- Schemas -----------------------------------------------------------------
 
 class ProfileSchema(colander.Schema):
-
-    # name = NameField(
-    #     title=_(u"Name")
-    # )
-    firstname = FirstnameField(
-        title=_(u"Firstname")
-    )
-    lastname = LastnameField(
-        title=_(u"Lastname")
-    )
-    email = EmailField(
-        title=_(u"Email")
-    )
+    # name = NameField(title=_(u"Name"))
+    firstname = FirstnameField(title=_(u"Firstname"))
+    lastname = LastnameField(title=_(u"Lastname"))
+    email = EmailField(title=_(u"Email"))
     password = PasswordField(
         title=_(u"Password (leave empty if you don't want to change it)")
     )
@@ -187,13 +175,7 @@ class ProfileSchema(colander.Schema):
 
 # --- Forms -------------------------------------------------------------------
 
-# custom template
-def translator(term):
-    return get_localizer(get_current_request()).translate(term)
-
-
 def edit_profile_form(request):
-
     form = deform.Form(
         schema=ProfileSchema(
             validator=validate_unique_user_email).bind(request=request),
@@ -201,5 +183,4 @@ def edit_profile_form(request):
             deform.Button('submit', _(u"Submit"))
         ]
     )
-
     return form

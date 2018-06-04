@@ -1,13 +1,9 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
+import logging
 import colander
 import deform
-from pkg_resources import resource_filename
-import logging
-
-from pyramid.threadlocal import get_current_request
-from pyramid.i18n import get_localizer
 
 from collecting_society_portal.models import (
     Tdb,
@@ -291,6 +287,7 @@ class GenreCheckboxField(colander.SchemaNode):
 # --- Schemas -----------------------------------------------------------------
 
 class GeneralSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
     title = TitleField(title=_(u"Title"))
     number_mediums = NumberOfMediumsField(title=_(u"Number of Mediums"))
     ean_upc_code = EanUpcCodeField(title=_(u"EAN or UPC Code"))
@@ -300,6 +297,7 @@ class GeneralSchema(colander.Schema):
 
 
 class ProductionSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
     copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
     copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
     production_date = ProductionDateField(title=_(u"Production Date"))
@@ -307,6 +305,7 @@ class ProductionSchema(colander.Schema):
 
 
 class DistributionSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
     label = LabelField(title=_(u"Label"))
     label_catalog_number = LabelCatalogNumberField(
         title=_(u"Label Catalog Number"))
@@ -324,11 +323,13 @@ class DistributionSchema(colander.Schema):
 
 
 class GenresSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
     genres = GenreCheckboxField(title=_(u"Genres"))
 
 
 class AddReleaseSchema(colander.Schema):
     title = _(u"Add Release")
+    widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
     general = GeneralSchema(title=_(u"General"))
     production = ProductionSchema(title=_(u"Production"))
     distribution = DistributionSchema(title=_(u"Distribution"))
@@ -337,21 +338,8 @@ class AddReleaseSchema(colander.Schema):
 
 # --- Forms -------------------------------------------------------------------
 
-# custom template
-def translator(term):
-    return get_localizer(get_current_request()).translate(term)
-
-
-zpt_renderer_tabs = deform.ZPTRendererFactory([
-    resource_filename('collecting_society_portal', 'templates/deform/tabs'),
-    resource_filename('collecting_society_portal', 'templates/deform'),
-    resource_filename('deform', 'templates')
-], translator=translator)
-
-
 def add_release_form(request):
     return deform.Form(
-        renderer=zpt_renderer_tabs,
         schema=AddReleaseSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))

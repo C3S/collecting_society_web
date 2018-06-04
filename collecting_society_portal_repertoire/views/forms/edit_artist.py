@@ -3,9 +3,9 @@
 
 import random
 import string
+import logging
 import colander
 import deform
-import logging
 
 from collecting_society_portal.models import (
     Tdb,
