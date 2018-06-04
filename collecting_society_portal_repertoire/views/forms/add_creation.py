@@ -71,7 +71,8 @@ class AddCreation(FormController):
         }
         if self.appstruct['contributions']['contributions']:
             _creation['contributions'] = []
-            for contribution in self.appstruct['contributions']['contributions']:
+            for contribution in self.appstruct[
+                    'contributions']['contributions']:
                 _creation['contributions'].append(
                     (
                         'create',
@@ -94,7 +95,8 @@ class AddCreation(FormController):
                 )
         if self.appstruct['relations']['original_creations']:
             _creation['original_relations'] = []
-            for original_creation in self.appstruct['relations']['original_creations']:
+            for original_creation in self.appstruct[
+                    'relations']['original_creations']:
                 _creation['original_relations'].append(
                     (
                         'create',
@@ -106,7 +108,8 @@ class AddCreation(FormController):
                 )
         if self.appstruct['relations']['derivative_creations']:
             _creation['derivative_relations'] = []
-            for derivative_creation in self.appstruct['relations']['derivative_creations']:
+            for derivative_creation in self.appstruct[
+                    'relations']['derivative_creations']:
                 _creation['derivative_relations'].append(
                     (
                         'create',
@@ -196,7 +199,8 @@ def solo_artists_select_widget(node, kw):
 def creations_select_widget(node, kw):
     creations = Creation.search_all()
     creations_options = [
-        (creation.id, creation.default_title + ' (' + creation.artist.name + ')')
+        (creation.id, creation.default_title +
+         ' (' + creation.artist.name + ')')
         for creation in creations
     ]
     widget = deform.widget.Select2Widget(values=creations_options)

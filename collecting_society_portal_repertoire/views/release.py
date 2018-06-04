@@ -13,11 +13,7 @@ from collecting_society_portal.models import (
     WebUser
 )
 from collecting_society_portal.views import ViewBase
-from ..models import (
-    Artist,
-    Creation,
-    Release
-)
+from ..models import Release
 from ..services import _
 from ..resources import ReleaseResource
 from .forms import (
@@ -64,7 +60,7 @@ class ReleaseViews(ViewBase):
     def show(self):
         release_code = self.request.subpath[-1]
         _release = Release.search_by_code(release_code)
-        _genres = _release.genres
+        # _genres = _release.genres
         if _release is None:
             return None
         return {
@@ -85,7 +81,7 @@ class ReleaseViews(ViewBase):
         decorator=Tdb.transaction(readonly=False))
     def edit(self):
         self.context.release_code = self.request.subpath[-1]
-        release = Release.search_by_code(self.context.release_code)
+        # release = Release.search_by_code(self.context.release_code)
         self.register_form(EditRelease)
         return self.process_forms()
 

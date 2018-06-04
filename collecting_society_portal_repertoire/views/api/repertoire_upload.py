@@ -23,20 +23,10 @@ from pyramid.security import (
     NO_PERMISSION_REQUIRED
 )
 from pyramid.httpexceptions import (
-    HTTPUnauthorized,
-    HTTPForbidden,
-    HTTPServiceUnavailable,
     HTTPInternalServerError,
     HTTPNotFound
 )
 from cornice import Service
-from colander import (
-    MappingSchema,
-    SchemaNode,
-    String,
-    OneOf,
-    Email
-)
 
 from collecting_society_portal.services import (
     benchmark,
@@ -154,7 +144,7 @@ def cleanup_temp_directory(request):
     now = time.time()
     expire_seconds = now - int(request.registry.settings[
         'api.c3supload.tempfile_expire_days']) * 86400
-    for root, _, files in os.walk(temp_directory):
+    for root, dirs, files in os.walk(temp_directory):
         level = root.replace(temp_directory, '').count(os.sep)
         if level == 1:
             for tmpfile in files:
@@ -598,15 +588,16 @@ def post_repertoire_upload(request):
         # abuse rank
         if rank:
             if is_banned(request):
+                # TODO: number wont be replaced, also see
+                # BirthdateField line 300+ in register_webuser.py
                 files.append({
-                              'name': fieldStorage.filename,
-                              'error': _(u"Abuse detected. Wait for {number}"
-                                         u" seconds before trying another"
-                                         u" upload.", mapping={'number': 
-                                         int(still_banned_for(request))}),
-                             })
-                             # TODO: number wont be replaced, also see
-                             # BirthdateField line 300+ in register_webuser.py
+                    'name': fieldStorage.filename,
+                    'error': _(
+                        u"Abuse detected. Wait for {number}"
+                        u" seconds before trying another"
+                        u" upload.",
+                        mapping={'number': int(still_banned_for(request))}
+                    )})
                 continue
             if is_collision(contentrange, checksum):
                 raise_abuse_rank(request)

@@ -19,11 +19,8 @@ from collecting_society_portal.views.forms import (
 )
 from ...services import _
 from ...models import (
-    Artist,
-    Creation,
     Genre,
     Label,
-    License,
     Party,
     Release
 )
@@ -56,23 +53,14 @@ class AddRelease(FormController):
 
     @Tdb.transaction(readonly=False)
     def save_release(self):
-        party = WebUser.current_party(self.request)
-
-        log.debug(
-            (
-                "self.appstruct: %s\n"
-            ) % (
-                self.appstruct
-            )
-        )
-
         release = {
             'entity_origin': "direct",
             'entity_creator': WebUser.current_web_user(self.request).party,
             'title': self.appstruct['general']['title']
-        }  
+        }
         # general tab
         tab = 'general'
+
         def get_formdata(value):    # a little embedded helper function
             if self.appstruct[tab][value]:
                 release[value] = self.appstruct[tab][value]
@@ -105,7 +93,7 @@ class AddRelease(FormController):
         get_formdata('online_release_date')
         get_formdata('online_cancellation_date')
         get_formdata('distribution_territory')
-        get_formdata('neighbouring_rights_society')        
+        get_formdata('neighbouring_rights_society')
         # genres tab
         if self.appstruct['genres']['genres']:
             release['genres'] = [(
@@ -115,15 +103,14 @@ class AddRelease(FormController):
 
         self.redirect(ReleaseResource, 'list')
 
+
 # --- Validators --------------------------------------------------------------
 
 # --- Options -----------------------------------------------------------------
 
-
 # --- Fields ------------------------------------------------------------------
 
 # -- General tab --
-
 
 class TitleField(colander.SchemaNode):
     oid = "title"
@@ -133,27 +120,25 @@ class TitleField(colander.SchemaNode):
 class NumberOfMediumsField(colander.SchemaNode):
     oid = "number_mediums"
     schema_type = colander.Int
-    validator = colander.Range(min=1,
-                min_err=_('Release has to include at least one medium.')
-    )
+    validator = colander.Range(
+        min=1, min_err=_('Release has to include at least one medium.'))
 
 
 class EanUpcCodeField(colander.SchemaNode):
     oid = "ean_upc_code"
     schema_type = colander.String
     validator = colander.All(
-                    colander.Length(min=12, max=13
-                    # TODO: find out why this is not working (old colander version?):
-                    # ,
-                    # min_err=_('at least 12 digits for a valid UPC barcode, 13 for an EAN code.'),
-                    # max_err=_('maximum of 13 digits for an EAN code (12 for a UPC).'
-                    ),
-                    #colander.ContainsOnly(
-                    #    '0123456789', 
-                    #    err_msg=_('may only contain digits') <- why no custom err_msg?!?
-                    #)
-                    colander.Regex('^[0-9]*$', msg=_('may only contain digits'))
-                )
+        # TODO: find out why this is not working (old colander version?):
+        # min_err=_('at least 12 digits for a valid UPC barcode,
+        #           '13 for an EAN code.'),
+        # max_err=_('maximum of 13 digits for an EAN code (12 for a UPC).'
+        colander.Length(min=12, max=13),
+        # colander.ContainsOnly(
+        #     '0123456789',
+        #     err_msg=_('may only contain digits') <- why no custom err_msg?!?
+        # )
+        colander.Regex('^[0-9]*$', msg=_('may only contain digits'))
+    )
     missing = ""
 
 
@@ -164,9 +149,7 @@ class IsrcCodeField(colander.SchemaNode):
                                'A-Z0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*$',
                                msg=_('Please enter a valid international '
                                      'standard recording code, for example: '
-                                     'DEA123456789'
-                                    )
-                              )
+                                     'DEA123456789'))
     missing = ""
 
 
@@ -182,8 +165,8 @@ class PictureField(colander.SchemaNode):
     widget = deferred_file_upload_widget
     missing = ""
 
-# -- Production Tab --
 
+# -- Production Tab --
 
 @colander.deferred
 def party_select_widget(node, kw):
@@ -193,8 +176,8 @@ def party_select_widget(node, kw):
     ]
     widget = deform.widget.Select2Widget(values=label_options)
     return widget
-    
-    
+
+
 class CopyrightDateField(colander.SchemaNode):
     oid = "copyright_date"
     schema_type = colander.Date
@@ -204,9 +187,9 @@ class CopyrightDateField(colander.SchemaNode):
 class CopyrightOwnerField(colander.SchemaNode):
     oid = "get_copyright_owners"
     schema_type = colander.String
-    #widget = party_select_widget <- no paries any more?
-    widget=deform.widget.TextInputWidget(readonly=True)
-    missing=colander.null
+    # widget = party_select_widget <- no paries any more?
+    widget = deform.widget.TextInputWidget(readonly=True)
+    missing = colander.null
     # displaying a read-only function field, assembled from the repective
     # copyright owners of the release creations
 
@@ -220,18 +203,18 @@ class ProductionDateField(colander.SchemaNode):
 class ProducerField(colander.SchemaNode):
     oid = "producer"
     schema_type = colander.String
-    #widget = party_select_widget <-- too complicated, too many implications
-    missing = "" 
+    # widget = party_select_widget <-- too complicated, too many implications
+    missing = ""
 
 
 # -- Distribution tab --
-
 
 @colander.deferred
 def labels_select_widget(node, kw):
     labels = Label.search_all()
     label_options = [
-        (label.gvl_code, 'LC' + label.gvl_code + ' - ' + label.name) for label in labels
+        (label.gvl_code, 'LC' + label.gvl_code + ' - ' + label.name)
+        for label in labels
     ]
     widget = deform.widget.Select2Widget(values=label_options)
     return widget
@@ -288,7 +271,6 @@ class NeighbouringRightsSocietyField(colander.SchemaNode):
 
 # -- Genres tab --
 
-
 @colander.deferred
 def deferred_checkbox_widget(node, kw):
     genres = Genre.search_all()
@@ -304,7 +286,7 @@ class GenreCheckboxField(colander.SchemaNode):
     validator = colander.Length(min=1)
     #    , min_err=_(u'Please choose at least one genre for this release'))
     missing = ""
-    
+
 
 # --- Schemas -----------------------------------------------------------------
 
@@ -325,12 +307,9 @@ class ProductionSchema(colander.Schema):
 
 
 class DistributionSchema(colander.Schema):
-    label = LabelField(
-        title=_(u"Label")
-    )
+    label = LabelField(title=_(u"Label"))
     label_catalog_number = LabelCatalogNumberField(
-        title=_(u"Label Catalog Number")
-    )
+        title=_(u"Label Catalog Number"))
     release_date = ReleaseDateField(title=_(u"Release Date"))
     release_cancellation_date = ReleaseCancellationDateField(
         title=_(u"Release Cancellation Date"))
@@ -344,24 +323,16 @@ class DistributionSchema(colander.Schema):
         title=_(u"Neighbouring Rights Society"))
 
 
-class GenresSchema(colander.Schema):    
+class GenresSchema(colander.Schema):
     genres = GenreCheckboxField(title=_(u"Genres"))
 
 
 class AddReleaseSchema(colander.Schema):
     title = _(u"Add Release")
-    general = GeneralSchema(
-        title=_(u"General")
-    )
-    production = ProductionSchema(
-        title=_(u"Production")
-    )
-    distribution = DistributionSchema(
-        title=_(u"Distribution")
-    )
-    genres = GenresSchema(
-        title=_(u"Genres")
-    )
+    general = GeneralSchema(title=_(u"General"))
+    production = ProductionSchema(title=_(u"Production"))
+    distribution = DistributionSchema(title=_(u"Distribution"))
+    genres = GenresSchema(title=_(u"Genres"))
 
 
 # --- Forms -------------------------------------------------------------------

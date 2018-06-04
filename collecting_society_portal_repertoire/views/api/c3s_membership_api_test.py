@@ -67,7 +67,7 @@ def save_token(service, email, token):
         try:
             # 2DO: save token for service and email
             return True
-        except:
+        except:  # noqa: E772
             return False
     return False
 
@@ -212,6 +212,7 @@ def post_generate_member_token(request):
     return {
         'token': token
     }
+
 
 # --- service: search_member --------------------------------------------------
 

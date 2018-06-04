@@ -3,8 +3,6 @@
 
 import logging
 
-from pyramid.security import forget
-from pyramid.httpexceptions import HTTPFound
 from pyramid.view import (
     view_config,
     view_defaults
@@ -44,9 +42,7 @@ class RepertoireViews(ViewBase):
     def dashboard(self):
         _webuser = WebUser.current_web_user(self.request)
         if _webuser:
-            return {
-            'webuser' : _webuser
-            }
+            return {'webuser': _webuser}
         else:
             return None
 

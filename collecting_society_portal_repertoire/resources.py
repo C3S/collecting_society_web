@@ -62,5 +62,3 @@ class ProfileResource(ResourceBase):
     __children__ = {}
     __registry__ = {}
     __acl__ = []
-
-

@@ -56,5 +56,6 @@ class Label(Tdb):
           obj: label
           None: if no match is found
         """
-        result = cls.get().search([('name', 'like', name_starting_with + '\%')])
+        result = cls.get().search(  # noqa
+            [('name', 'like', name_starting_with + '\%')])
         return result[0] or None

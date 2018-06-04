@@ -46,7 +46,7 @@ class Release(Tdb):
         """
         return cls.get().search([
             [
-               'OR',
+                'OR',
                 ('entity_creator', '=', party_id),
                 ('creations.creation.artist.party', '=', party_id)
             ],

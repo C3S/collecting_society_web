@@ -3,7 +3,6 @@
 
 import colander
 import deform
-from pkg_resources import resource_filename
 import logging
 import re
 
@@ -14,13 +13,9 @@ from collecting_society_portal.models import (
     Tdb,
     WebUser
 )
-from collecting_society_portal.views.forms import (
-    FormController,
-    deferred_file_upload_widget
-)
+from collecting_society_portal.views.forms import FormController
 from collecting_society_portal.services import send_mail
 from ...services import _
-#from ...models import Artist
 from ...resources import ProfileResource
 
 log = logging.getLogger(__name__)
@@ -34,7 +29,7 @@ class EditProfile(FormController):
     """
 
     def controller(self):
-        
+
         self.form = edit_profile_form(self.request)
         if not (self.submitted() and self.validate()):
             # initialize form
@@ -46,8 +41,8 @@ class EditProfile(FormController):
                 'email': web_user['email'] or ""
             }
             self.render(self.appstruct)
-        else:  
-            # submit validated data from form            
+        else:
+            # submit validated data from form
             self.change_profile()
 
         return self.response
@@ -61,13 +56,13 @@ class EditProfile(FormController):
     @Tdb.transaction(readonly=False)
     def change_profile(self):
         web_user = WebUser.current_web_user(self.request)
-        web_user.party.firstname = self.appstruct['firstname'] #save separately
-        web_user.party.lastname =  self.appstruct['lastname']  #for clarity
-        web_user.party.name = (web_user.party.firstname + ' ' 
-            + web_user.party.lastname)
-            #self.appstruct['name'] TODO: generate name using a tryton trigger
+        web_user.party.firstname = self.appstruct['firstname']  # save separate
+        web_user.party.lastname = self.appstruct['lastname']  # for clarity
+        web_user.party.name = (web_user.party.firstname + ' '
+                               + web_user.party.lastname)
+        # self.appstruct['name'] TODO: generate name using a tryton trigger
         if self.appstruct['email'] != web_user.email:
-            web_user.new_email = self.appstruct['email'] # needs email verification
+            web_user.new_email = self.appstruct['email']  # email verification!
             web_user.save()
             template_variables = {
                 'link': self.request.resource_url(
@@ -84,13 +79,15 @@ class EditProfile(FormController):
         web_user.party.save()
 
         if self.appstruct['email'] == web_user.email:
-            log.info("edit profile add successful for %s" % (web_user.party.name))
+            log.info(
+                "edit profile add successful for %s" % (web_user.party.name))
             self.request.session.flash(
                 _(u"Profile changed for: ") + web_user.party.name,
                 'main-alert-success'
             )
         else:
-            log.info("edit profile add successful for %s, activation email sent."
+            log.info(
+                "edit profile add successful for %s, activation email sent."
                 % (web_user.party.name))
             self.request.session.flash(
                 _(u"Profile changed for: ") + web_user.party.name +
@@ -102,9 +99,7 @@ class EditProfile(FormController):
         self.redirect(ProfileResource, 'show')
 
 
-
 # --- Validators --------------------------------------------------------------
-
 
 def not_empty(value):
     """Ensure field has at least two characters in it."""
@@ -112,7 +107,8 @@ def not_empty(value):
         return _(u"Please enter your name.")
     return True
 
-def validate_unique_user_email(node, values, **kwargs): # multi-field validator
+
+def validate_unique_user_email(node, values, **kwargs):  # multifield validator
     """Check for valid email and prevent duplicate usernames."""
 
     request = node.bindings["request"]
@@ -126,7 +122,8 @@ def validate_unique_user_email(node, values, **kwargs): # multi-field validator
 
     # finally, check email format
     if len(email_value) > 7:
-        if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email_value) != None:
+        if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+' +  # noqa: W605
+                    '(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email_value) is not None:
             return
     raise colander.Invalid(node, "Invalid email address")
 
@@ -134,11 +131,10 @@ def validate_unique_user_email(node, values, **kwargs): # multi-field validator
 
 # --- Fields ------------------------------------------------------------------
 
-
-#class NameField(colander.SchemaNode):
-#    oid = "name"
-#    schema_type = colander.String
-#    validator = colander.Function(not_empty)
+# class NameField(colander.SchemaNode):
+#     oid = "name"
+#     schema_type = colander.String
+#     validator = colander.Function(not_empty)
 
 
 class FirstnameField(colander.SchemaNode):
@@ -156,7 +152,7 @@ class LastnameField(colander.SchemaNode):
 class EmailField(colander.SchemaNode):
     oid = "email"
     schema_type = colander.String
-    #validator = colander.Function(validate_unique_user_email)
+    # validator = colander.Function(validate_unique_user_email)
     # ^ validate_unique_user_email is a multi-field validator now
 
 
@@ -172,9 +168,9 @@ class PasswordField(colander.MappingSchema):
 
 class ProfileSchema(colander.Schema):
 
-    #name = NameField(
-    #    title=_(u"Name")
-    #)
+    # name = NameField(
+    #     title=_(u"Name")
+    # )
     firstname = FirstnameField(
         title=_(u"Firstname")
     )

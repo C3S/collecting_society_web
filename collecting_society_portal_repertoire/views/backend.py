@@ -89,7 +89,7 @@ class WebUserViews(ViewBase):
 
         # new email activation
         web_user = WebUser.search_by_opt_in_uuid(str(opt_in_uuid))
-        if web_user:            
+        if web_user:
             if web_user.new_email:
                 web_user.email = web_user.new_email
                 web_user.new_email = ''
@@ -114,4 +114,3 @@ class WebUserViews(ViewBase):
             )
 
         return self.redirect(BackendResource)
-        

@@ -296,7 +296,7 @@ class Content(Tdb):
         if category is not 'all':
             search_clause.append(
                 ('category', '=', category)
-            ) 
+            )
         result = cls.get().search(search_clause)
         return result or None
 
@@ -324,19 +324,19 @@ class Content(Tdb):
         if reason is 'dupl':
             search_clause.append(
                 ('duplicate_of', '!=', None)
-            ) 
+            )
         if reason is 'ferror':
             search_clause.append(
                 ('rejection_reason', '=', 'format_error')
-            ) 
+            )
         if reason is 'lossyc':
             search_clause.append(
                 ('rejection_reason', '=', 'lossy_compression')
-            ) 
+            )
         if category is not 'all':
             search_clause.append(
                 ('category', '=', category)
-            ) 
+            )
         result = cls.get().search(search_clause)
         return result or None
 
@@ -364,7 +364,7 @@ class Content(Tdb):
         if category is not 'all':
             search_clause.append(
                 ('category', '=', category)
-            ) 
+            )
         result = cls.get().search(search_clause)
         return result or None
 
