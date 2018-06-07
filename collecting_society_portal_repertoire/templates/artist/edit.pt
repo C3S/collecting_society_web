@@ -19,6 +19,24 @@
 
         <div tal:content="structure EditArtist"/>
 
+        <script>
+            $("#cs-navform-item-menu-members").hide();
+            function item_group_control(checkbox) {
+                var nav = $("#cs-navform-item-menu-members");
+                if ($("#item-group input:checked").length > 0) {
+                    nav.show();
+                } else {
+                    nav.hide();
+                }
+                redraw_formcontrols();
+            }
+            $(document).ready(function() {                
+                $("#item-group input").change(function() {
+                    item_group_control(this);
+                }).change();
+            });
+        </script>
+
     </tal:block>
 
 </tal:block>

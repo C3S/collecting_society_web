@@ -1,10 +1,10 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
+import datetime
+import logging
 import colander
 import deform
-import logging
-import datetime
 
 from collecting_society_portal.resources import FrontendResource
 from collecting_society_portal.views.forms import LoginWebuser
@@ -142,19 +142,16 @@ class RegisterWebuser(LoginWebuser):
                 )
                 if opt_in_state == 'opted-in':
                     self.request.session.flash(
-                        _(u"You are already registered with your credentials."),
-                        'main-alert-info'
-                    )
+                        _(u"You are already registered with your "
+                          u"credentials."),
+                        'main-alert-info')
                     self.login()
                     return
                 else:
                     self.request.session.flash(
-                        _(
-                            u"Your email address is not verified yet. Please "
-                            u"follow the instructions in our email."
-                        ),
-                        'main-alert-info'
-                    )
+                        _(u"Your email address is not verified yet. Please "
+                          u"follow the instructions in our email."),
+                        'main-alert-info')
                     return
             # user fails authentication (email already registered)
             else:
@@ -222,10 +219,13 @@ class RegisterWebuser(LoginWebuser):
                 web_user.party.save()
             else:
                 # save values of non-c3s-member form fields
-                web_user.party.repertoire_terms_accepted = self.data['terms_accepted']
-                web_user.party.name = self.data['firstname'] + ' ' + self.data['lastname']
-                web_user.party.firstname = self.data['firstname']   # also save separately for clarity
-                web_user.party.lastname =  self.data['lastname']
+                web_user.party.repertoire_terms_accepted = self.data[
+                    'terms_accepted']
+                web_user.party.name = self.data['firstname'] + ' ' + self.data[
+                    'lastname']
+                # also save separately for clarity
+                web_user.party.firstname = self.data['firstname']
+                web_user.party.lastname = self.data['lastname']
                 web_user.party.birthdate = self.data['birthdate']
                 web_user.party.save()
 
@@ -301,11 +301,13 @@ class BirthdateField(colander.SchemaNode):
     oid = "birthdate"
     schema_type = colander.Date
     validator = colander.Range(
-        max=datetime.date.today() - datetime.timedelta(
-            days=AGE_ADULT*364),
-        max_err=_('Sorry, you have to be ${age} years or older to register here.',
-                  mapping={'age': AGE_ADULT})   # TODO: mapping doesn't work here
-                                                # also see line 580 in repertoire_upload.py
+        max=datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364),
+        max_err=_(
+            'Sorry, you have to be ${age} years or older to register here.',
+            # TODO: mapping doesn't work here
+            # also see line 580 in repertoire_upload.py
+            mapping={'age': AGE_ADULT}
+        )
     )
 
 
@@ -337,9 +339,7 @@ class RegisterMemberSchema(colander.MappingSchema):
             u"Please use the email address as in your membership application."
         )
     )
-    password = CheckedPasswordField(
-        title=_(u"Password")
-    )
+    password = CheckedPasswordField(title=_(u"Password"))
     terms_accepted = CheckboxWithLabel(
         title=_(u"Terms of Service"),
         label=_(u"I accept the terms of service.")
@@ -347,21 +347,11 @@ class RegisterMemberSchema(colander.MappingSchema):
 
 
 class RegisterNonmemberSchema(colander.MappingSchema):
-    firstname = FirstnameField(
-        title=_(u"Firstname")
-    )
-    lastname = LastnameField(
-        title=_(u"Lastname")
-    )
-    birthdate = BirthdateField(
-        title=_(u"Birthdate")
-    )
-    email = EmailField(
-        title=_(u"Email")
-    )
-    password = CheckedPasswordField(
-        title=_(u"Password")
-    )
+    firstname = FirstnameField(title=_(u"Firstname"))
+    lastname = LastnameField(title=_(u"Lastname"))
+    birthdate = BirthdateField(title=_(u"Birthdate"))
+    email = EmailField(title=_(u"Email"))
+    password = CheckedPasswordField(title=_(u"Password"))
     terms_accepted = CheckboxWithLabel(
         title=_(u"Terms of Service"),
         label=_(u"I accept the terms of service.")

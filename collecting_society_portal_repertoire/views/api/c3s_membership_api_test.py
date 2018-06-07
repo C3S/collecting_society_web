@@ -29,7 +29,7 @@ _services = [
 ]
 
 
-def authenticate(request):
+def authenticate(request, **kwargs):
     _api_key = request.headers['X-Api-Key']
     # api key not set serverside
     if 'api.c3smembership.api_key' not in request.registry.settings:
@@ -67,7 +67,7 @@ def save_token(service, email, token):
         try:
             # 2DO: save token for service and email
             return True
-        except:
+        except:  # noqa: E772
             return False
     return False
 
@@ -212,6 +212,7 @@ def post_generate_member_token(request):
     return {
         'token': token
     }
+
 
 # --- service: search_member --------------------------------------------------
 

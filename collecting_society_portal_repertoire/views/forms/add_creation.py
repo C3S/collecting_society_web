@@ -1,13 +1,9 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
+import logging
 import colander
 import deform
-from pkg_resources import resource_filename
-import logging
-
-from pyramid.threadlocal import get_current_request
-from pyramid.i18n import get_localizer
 
 from collecting_society_portal.models import (
     Tdb,
@@ -71,7 +67,8 @@ class AddCreation(FormController):
         }
         if self.appstruct['contributions']['contributions']:
             _creation['contributions'] = []
-            for contribution in self.appstruct['contributions']['contributions']:
+            for contribution in self.appstruct[
+                    'contributions']['contributions']:
                 _creation['contributions'].append(
                     (
                         'create',
@@ -94,7 +91,8 @@ class AddCreation(FormController):
                 )
         if self.appstruct['relations']['original_creations']:
             _creation['original_relations'] = []
-            for original_creation in self.appstruct['relations']['original_creations']:
+            for original_creation in self.appstruct[
+                    'relations']['original_creations']:
                 _creation['original_relations'].append(
                     (
                         'create',
@@ -106,7 +104,8 @@ class AddCreation(FormController):
                 )
         if self.appstruct['relations']['derivative_creations']:
             _creation['derivative_relations'] = []
-            for derivative_creation in self.appstruct['relations']['derivative_creations']:
+            for derivative_creation in self.appstruct[
+                    'relations']['derivative_creations']:
                 _creation['derivative_relations'].append(
                     (
                         'create',
@@ -196,7 +195,8 @@ def solo_artists_select_widget(node, kw):
 def creations_select_widget(node, kw):
     creations = Creation.search_all()
     creations_options = [
-        (creation.id, creation.default_title + ' (' + creation.artist.name + ')')
+        (creation.id, creation.default_title +
+         ' (' + creation.artist.name + ')')
         for creation in creations
     ]
     widget = deform.widget.Select2Widget(values=creations_options)
@@ -257,9 +257,7 @@ class ContentField(colander.SchemaNode):
 
 class ContributionTypeField(colander.SchemaNode):
     schema_type = colander.String
-    widget = deform.widget.SelectWidget(
-        values=artist_relation_options
-    )
+    widget = deform.widget.SelectWidget(values=artist_relation_options)
 
 
 class LicensesField(colander.SchemaNode):
@@ -276,9 +274,7 @@ class CreationField(colander.SchemaNode):
 
 class RelationTypeField(colander.SchemaNode):
     schema_type = colander.String
-    widget = deform.widget.SelectWidget(
-        values=creation_relation_options
-    )
+    widget = deform.widget.SelectWidget(values=creation_relation_options)
 
 
 class CollectingSocietyField(colander.SchemaNode):
@@ -364,20 +360,13 @@ class OnlineReleaseCancellationDateField(colander.SchemaNode):
 
 class UploadAudiofileSchema(colander.MappingSchema):
     title = _(u"Upload audiofile")
-    audiofile = AudiofileField(
-        title=_(u"Upload Audiofile")
-    )
+    audiofile = AudiofileField(title=_(u"Upload Audiofile"))
 
 
 class AddMetadataSchema(colander.MappingSchema):
     title = _(u"Add metadata")
-    creation_title = TitleField(
-        name='title',
-        title=_(u"Title")
-    )
-    artist = CurrentArtistField(
-        title=_(u"Featured Artist")
-    )
+    creation_title = TitleField(name='title', title=_(u"Title"))
+    artist = CurrentArtistField(title=_(u"Featured Artist"))
     collecting_society = CollectingSocietyField()
     neighbouring_rights = NeighbouringRightsField()
     neighbouring_rights_society = NeighbouringRightsSocietyField()
@@ -394,12 +383,8 @@ class AddMetadataSchema(colander.MappingSchema):
 
 
 class ArtistRelationSchema(colander.Schema):
-    artist = SoloArtistField(
-        title=_(u"Solo artist")
-    )
-    type = ContributionTypeField(
-        title=_(u"Type")
-    )
+    artist = SoloArtistField(title=_(u"Solo artist"))
+    type = ContributionTypeField(title=_(u"Type"))
 
 
 class ArtistRelationSequence(colander.SequenceSchema):
@@ -408,25 +393,17 @@ class ArtistRelationSequence(colander.SequenceSchema):
 
 class AddContributionsSchema(colander.MappingSchema):
     title = _(u"Add contributions")
-    contributions = ArtistRelationSequence(
-        title=_(u"Contributions")
-    )
+    contributions = ArtistRelationSequence(title=_(u"Contributions"))
 
 
 class AddLicencesSchema(colander.MappingSchema):
     title = _(u"Add licences")
-    licenses = LicensesField(
-        title=_(u"Licenses")
-    )
+    licenses = LicensesField(title=_(u"Licenses"))
 
 
 class CreationRelationSchema(colander.Schema):
-    creation = CreationField(
-        title=_(u"Artist")
-    )
-    type = RelationTypeField(
-        title=_(u"Type")
-    )
+    creation = CreationField(title=_(u"Artist"))
+    type = RelationTypeField(title=_(u"Type"))
 
 
 class CreationRelationSequence(colander.SequenceSchema):
@@ -445,29 +422,24 @@ class AddCreationRelationsSchema(colander.MappingSchema):
 
 class MetadataSchema(colander.Schema):
     title = _(u"Add metadata")
-    creation_title = TitleField(
-        name='title',
-        title=_(u"Title")
-    )
-    artist = CurrentArtistField(
-        title=_(u"Featured Artist")
-    )
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    creation_title = TitleField(name='title', title=_(u"Title"))
+    artist = CurrentArtistField(title=_(u"Featured Artist"))
     collecting_society = CollectingSocietyField()
 
 
 class ContributionsSchema(colander.Schema):
-    contributions = ArtistRelationSequence(
-        title=_(u"Contributions")
-    )
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    contributions = ArtistRelationSequence(title=_(u"Contributions"))
 
 
 class LicensesSchema(colander.Schema):
-    licenses = LicensesField(
-        title=_(u"Licenses")
-    )
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    licenses = LicensesField(title=_(u"Licenses"))
 
 
 class RelationsSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
     original_creations = CreationRelationSequence(
         title=_(u"Original creations")
     )
@@ -477,50 +449,25 @@ class RelationsSchema(colander.Schema):
 
 
 class ContentSchema(colander.Schema):
-    content = ContentField(
-        title=_(u"Content")
-    )
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    content = ContentField(title=_(u"Content"))
 
 
 class AddCreationSchema(colander.Schema):
     title = _(u"Add Solo Artist")
-    metadata = MetadataSchema(
-        title=_(u"Metadata")
-    )
-    # access = AccessSchema(
-    #     title=_(u"Access")
-    # )
-    contributions = ContributionsSchema(
-        title=_(u"Contributions")
-    )
-    licenses = LicensesSchema(
-        title=_(u"Licenses")
-    )
-    relations = RelationsSchema(
-        title=_(u"Relations")
-    )
-    content = ContentSchema(
-        title=_(u"Content")
-    )
+    widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
+    metadata = MetadataSchema(title=_(u"Metadata"))
+    # access = AccessSchema(title=_(u"Access"))
+    contributions = ContributionsSchema(title=_(u"Contributions"))
+    licenses = LicensesSchema(title=_(u"Licenses"))
+    relations = RelationsSchema(title=_(u"Relations"))
+    content = ContentSchema(title=_(u"Content"))
 
 
 # --- Forms -------------------------------------------------------------------
 
-# custom template
-def translator(term):
-    return get_localizer(get_current_request()).translate(term)
-
-
-zpt_renderer_tabs = deform.ZPTRendererFactory([
-    resource_filename('collecting_society_portal', 'templates/deform/tabs'),
-    resource_filename('collecting_society_portal', 'templates/deform'),
-    resource_filename('deform', 'templates')
-], translator=translator)
-
-
 def add_creation_form(request):
     return deform.Form(
-        renderer=zpt_renderer_tabs,
         schema=AddCreationSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))

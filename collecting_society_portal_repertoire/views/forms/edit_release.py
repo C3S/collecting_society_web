@@ -1,30 +1,14 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
-import colander
-import deform
-from pkg_resources import resource_filename
 import logging
 
-from pyramid.threadlocal import get_current_request
-from pyramid.i18n import get_localizer
+from collecting_society_portal.models import Tdb
+from collecting_society_portal.views.forms import FormController
 
-from collecting_society_portal.models import (
-    Tdb,
-    WebUser
-)
-from collecting_society_portal.views.forms import (
-    FormController,
-    deferred_file_upload_widget
-)
 from ...services import _
 from ...models import (
-    Artist,
-    Creation,
-    Genre,
     Label,
-    License,
-    Party,
     Release
 )
 from ...resources import ReleaseResource
@@ -54,17 +38,18 @@ class EditRelease(FormController):
                 _(u"Could not edit release - release not found"),
                 'main-alert-warning'
             )
-            return self.redirect(ReleaseResource, 'list')        
+            return self.redirect(ReleaseResource, 'list')
         self.context.release_code = code
 
-        self.form = add_release_form(self.request) # lend schemas from add_release
+        self.form = add_release_form(self.request)  # schemas from add_release
 
         if not (self.submitted() and self.validate()):
-            self.load_release()                    
+            self.load_release()
             self.render(self.appstruct)
-            self.response.update({'release': self.release}) # attach to display image in template
-        else:  
-            # submit validated data from form            
+            # attach release to display image in template
+            self.response.update({'release': self.release})
+        else:
+            # submit validated data from form
             self.save_release()
 
         return self.response
@@ -88,6 +73,7 @@ class EditRelease(FormController):
 
         # initialize form
         tab = 'general'
+
         def set_formdata(value):    # a little embedded helper function
             self.appstruct[tab][value] = getattr(self.release, value) or ""
         set_formdata('title')
@@ -111,22 +97,16 @@ class EditRelease(FormController):
         set_formdata('distribution_territory')
         set_formdata('neighbouring_rights_society')
         # genres tab
-        self.appstruct['genres']['genres'] = [unicode(genre.id) for genre in 
-            self.release.genres]
+        self.appstruct['genres']['genres'] = [
+            unicode(genre.id) for genre in self.release.genres]
 
     @Tdb.transaction(readonly=False)
     def save_release(self):
-        log.debug(
-            (
-                "self.appstruct: %s\n"
-            ) % (
-                self.appstruct
-            )
-        )
-  
+
         # general tab
         tab = 'general'
-        def get_formdata(value):    # a little embedded helper function
+
+        def get_formdata(value):  # a little embedded helper function
             if self.appstruct[tab][value]:
                 setattr(self.release, value, self.appstruct[tab][value])
         get_formdata('title')

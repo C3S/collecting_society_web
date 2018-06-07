@@ -35,6 +35,29 @@ body {
 
 a { outline:none!important; }
 
+h1, .h1 { color:#317a19 }
+
+.cs-thin { font-weight:normal; }
+.cs-datatables .nowrap { white-space:nowrap; }
+.form-inline .cs-datatables .form-group { display:block; margin-bottom:15px; }
+.form-inline .cs-datatables .form-control { display: inline-block; width: 100%; }
+.cs-datatables .child td { border-top:none; }
+.cs-datatables .child .cs-datatables-edit { margin-left: 15px; border-left: 1px dotted #31b0d5; padding-left: 25px; }
+
+.cs-navform .panel-heading { background-color:transparent; }
+.cs-navform .panel-default { border:none; }
+.cs-navform .cs-navform-controls { margin-top:30px; padding-top:40px; border-top:1px solid #ddd; }
+.cs-navform .cs-navform-item-content { margin-top:20px; }
+.cs-navform .cs-nav-tabs a { color:#666; }
+.cs-navform .cs-nav-tabs a:hover { color:#333; }
+.cs-navform .cs-nav-tabs .active a,
+.cs-navform .cs-nav-tabs .active a:hover,
+.cs-navform .cs-nav-tabs .active a:focus { color:#317a19; }
+.cs-navform .cs-nav-pills a { color:#317a19; }
+.cs-navform .cs-nav-pills a:hover { background-color:#d9f0c8;  color:#222; }
+.cs-navform .cs-nav-pills .active a,
+.cs-navform .cs-nav-pills .active a:hover { background: url('../img/element-menue-bg.png'); opacity:0.9; }
+
 /* Content Left */
 
 .cs-content-left { background: url('../img/element-menue-bg.png'); padding-top:6px; }
@@ -61,7 +84,7 @@ a { outline:none!important; }
 
 .cs-content-left .cs-menue-roles > li > a,
 .cs-content-left .cs-menue-roles > li > a:hover,
-.cs-content-left .cs-menue-roles > li > a:visited { color:#fff; background-color:transparent; border:none; font-weight:bold; }
+.cs-content-left .cs-menue-roles > li > a:visited { color:#fff; background-color:transparent; border:none!important; font-weight:bold; }
 
 /* Content Middle */
 
@@ -70,7 +93,8 @@ a { outline:none!important; }
 .cs-content-middle .fileupload-progress .progress { margin-bottom:5px; }
 .cs-content-middle .cs-audio-properties > span:after { color:#ddd; content: " | "; }
 
-.cs-artist-img { max-width: 200px }
+.cs-artist-img { max-width: 200px; }
+.cs-table-artist-img { max-height: 50px; max-width: 50px; }
 
 .cs-content-middle .template-upload td { padding:10px 5px; }
 .cs-content-middle .template-upload .progress { margin-bottom:0; }

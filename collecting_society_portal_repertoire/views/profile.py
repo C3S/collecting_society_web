@@ -15,10 +15,7 @@ from collecting_society_portal.models import (
 
 from collecting_society_portal.views import ViewBase
 
-from trytond.pool import Pool
 from collecting_society_portal.resources import ProfileResource
-
-from ..services import C3SMembershipApiClient
 
 from .forms import (
     EditProfile
@@ -45,7 +42,6 @@ class ProfileViews(ViewBase):
     )
     def show(self):
         _webuser = WebUser.current_web_user(self.request)
-        
         if _webuser is None:
             return None
         return {

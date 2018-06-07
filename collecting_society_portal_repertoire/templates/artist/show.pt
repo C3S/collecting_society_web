@@ -51,7 +51,15 @@
                     <td>${artist.description}</td>
                 </tr>
 
-                <tr tal:condition="artist.solo_artists">
+                <tr>
+                    <th i18n:translate="">Group</th>
+                    <td>
+                        <tal i18n:translate="" tal:condition="artist.group">Yes</tal>
+                        <tal i18n:translate="" tal:condition="not artist.group">No</tal>
+                    </td>
+                </tr>
+
+                <tr tal:condition="artist.group">
                     <th i18n:translate="">Solo Artists</th>
                     <td>
                         <div class="list-group">
@@ -64,7 +72,7 @@
                     </td>
                 </tr>
 
-                <tr tal:condition="artist.group_artists">
+                <tr tal:condition="not artist.group">
                     <th i18n:translate="">Group Artists</th>
                     <td>
                         <div class="list-group">

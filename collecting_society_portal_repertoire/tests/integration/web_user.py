@@ -11,8 +11,6 @@ from collecting_society_portal.models import Tdb, WebUser
 
 from ...views.forms.register_webuser import (
     claims_membership_form,
-    wants_membership_form,
-    register_member_form,
     register_nonmember_form
 )
 

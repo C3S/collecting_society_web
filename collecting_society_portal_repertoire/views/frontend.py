@@ -74,7 +74,7 @@ class PagePortalViews(ViewBase):
             if web_user:
                 if web_user.opt_in_state != 'opted-in':
                     web_user.opt_in_state = 'opted-in'
-                else: # already opted in? then this is a new email activation
+                else:  # already opted in? then this is a new email activation
                     if web_user.new_email:
                         web_user.email = web_user.new_email
                         web_user.new_email = ''

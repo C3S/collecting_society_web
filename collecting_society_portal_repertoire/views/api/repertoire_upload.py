@@ -23,20 +23,10 @@ from pyramid.security import (
     NO_PERMISSION_REQUIRED
 )
 from pyramid.httpexceptions import (
-    HTTPUnauthorized,
-    HTTPForbidden,
-    HTTPServiceUnavailable,
     HTTPInternalServerError,
     HTTPNotFound
 )
 from cornice import Service
-from colander import (
-    MappingSchema,
-    SchemaNode,
-    String,
-    OneOf,
-    Email
-)
 
 from collecting_society_portal.services import (
     benchmark,
@@ -154,7 +144,7 @@ def cleanup_temp_directory(request):
     now = time.time()
     expire_seconds = now - int(request.registry.settings[
         'api.c3supload.tempfile_expire_days']) * 86400
-    for root, _, files in os.walk(temp_directory):
+    for root, dirs, files in os.walk(temp_directory):
         level = root.replace(temp_directory, '').count(os.sep)
         if level == 1:
             for tmpfile in files:
@@ -509,6 +499,28 @@ def still_banned_for(request):
     return seconds_still_banned_for
 
 
+# --- resources ---------------------------------------------------------------
+
+class UserResource(object):
+
+    def __init__(self, request):
+        self.request = request
+
+    def __acl__(self):
+        # no webuser logged in
+        if not self.request.user:
+            return [DENY_ALL]
+        # webuser logged in
+        return [
+            (
+                Allow,
+                self.request.unauthenticated_userid,
+                ('create', 'read', 'update', 'delete')
+            ),
+            DENY_ALL
+        ]
+
+
 # --- service: upload ---------------------------------------------------------
 
 repertoire_upload = Service(
@@ -516,7 +528,7 @@ repertoire_upload = Service(
     path=_prefix + '/v1/upload',
     description="uploads repertoire files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 
@@ -576,15 +588,16 @@ def post_repertoire_upload(request):
         # abuse rank
         if rank:
             if is_banned(request):
+                # TODO: number wont be replaced, also see
+                # BirthdateField line 300+ in register_webuser.py
                 files.append({
-                              'name': fieldStorage.filename,
-                              'error': _(u"Abuse detected. Wait for {number}"
-                                         u" seconds before trying another"
-                                         u" upload.", mapping={'number': 
-                                         int(still_banned_for(request))}),
-                             })
-                             # TODO: number wont be replaced, also see
-                             # BirthdateField line 300+ in register_webuser.py
+                    'name': fieldStorage.filename,
+                    'error': _(
+                        u"Abuse detected. Wait for {number}"
+                        u" seconds before trying another"
+                        u" upload.",
+                        mapping={'number': int(still_banned_for(request))}
+                    )})
                 continue
             if is_collision(contentrange, checksum):
                 raise_abuse_rank(request)
@@ -730,7 +743,7 @@ repertoire_list = Service(
     path=_prefix + '/v1/list',
     description="lists repertoire files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 
@@ -759,7 +772,7 @@ repertoire_show = Service(
     path=_prefix + '/v1/show/{filename}',
     description="checks partially uploaded files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 
@@ -793,7 +806,7 @@ repertoire_preview = Service(
     path=_prefix + '/v1/preview/{id}',
     description="previewed the uploaded repertoire files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 
@@ -827,7 +840,7 @@ repertoire_delete = Service(
     path=_prefix + '/v1/delete/{id}',
     description="deletes uploaded repertoire files",
     cors_policy=get_cors_policy(),
-    acl=get_acl
+    factory=UserResource
 )
 
 
