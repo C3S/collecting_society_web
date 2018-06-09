@@ -21,6 +21,7 @@ from ...models import (
     Release
 )
 from ...resources import ReleaseResource
+from .datatables import LabelSequence
 
 log = logging.getLogger(__name__)
 
@@ -71,6 +72,15 @@ class AddRelease(FormController):
             mimetype = self.appstruct['general']['picture']['mimetype']
             release['picture_data'] = picture_data
             release['picture_data_mime_type'] = mimetype
+        # label tab
+        tab = 'label'
+        if self.appstruct[tab]['label_code']:
+            label = Label.search_by_gvl_code(
+                self.appstruct[tab]['label_code'])
+            if label:
+                release['label'] = label
+        get_formdata('label_name')
+        get_formdata('label_catalog_number')
         # production tab
         tab = 'production'
         get_formdata('copyright_date')
@@ -78,12 +88,6 @@ class AddRelease(FormController):
         get_formdata('producer')
         # distribution tab
         tab = 'distribution'
-        if self.appstruct['distribution']['label']:
-            label = Label.search_by_gvl_code(
-                self.appstruct['distribution']['label'])
-            if label:
-                release['label'] = label
-        get_formdata('label_catalog_number')
         get_formdata('release_date')
         get_formdata('release_cancellation_date')
         get_formdata('online_release_date')
@@ -162,6 +166,41 @@ class PictureField(colander.SchemaNode):
     missing = ""
 
 
+# -- Label tab --
+
+@colander.deferred
+def labels_select_widget(node, kw):
+    labels = Label.search_all()
+    label_options = [
+        (label.gvl_code, 'LC' + label.gvl_code + ' - ' + label.name)
+        for label in labels
+    ]
+    widget = deform.widget.Select2Widget(values=label_options)
+    return widget
+
+
+class LabelCodeField(colander.SchemaNode):
+    oid = "label_code"
+    schema_type = colander.String
+    widget = deform.widget.TextInputWidget()
+    validator = colander.Regex('^\d{5}$',
+                               msg=_('Please enter a valid five-digit '
+                                     'GVL code'))
+
+
+class LabelNameField(colander.SchemaNode):
+    oid = "label_name"
+    schema_type = colander.String
+    widget = deform.widget.TextInputWidget()
+    missing = ""
+
+
+class LabelCatalogNumberField(colander.SchemaNode):
+    oid = "label_catalog_number"
+    schema_type = colander.String
+    missing = ""
+
+
 # -- Production Tab --
 
 @colander.deferred
@@ -204,29 +243,6 @@ class ProducerField(colander.SchemaNode):
 
 
 # -- Distribution tab --
-
-@colander.deferred
-def labels_select_widget(node, kw):
-    labels = Label.search_all()
-    label_options = [
-        (label.gvl_code, 'LC' + label.gvl_code + ' - ' + label.name)
-        for label in labels
-    ]
-    widget = deform.widget.Select2Widget(values=label_options)
-    return widget
-
-
-class LabelField(colander.SchemaNode):
-    oid = "label"
-    schema_type = colander.String
-    widget = labels_select_widget
-    missing = ""
-
-
-class LabelCatalogNumberField(colander.SchemaNode):
-    oid = "label_catalog_number"
-    schema_type = colander.String
-    missing = ""
 
 
 class ReleaseDateField(colander.SchemaNode):
@@ -296,6 +312,15 @@ class GeneralSchema(colander.Schema):
     picture = PictureField(title=_(u"Picture"))
 
 
+class LabelSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    label_selector = LabelSequence(title=_(u"Select Label"))
+    label_code = LabelCodeField(title=_(u"Label Code"))
+    label_name = LabelNameField(title=_(u"Label Name"))
+    label_catalog_number = LabelCatalogNumberField(
+        title=_(u"Label Catalog Number of Release"))
+
+
 class ProductionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
@@ -305,10 +330,6 @@ class ProductionSchema(colander.Schema):
 
 
 class DistributionSchema(colander.Schema):
-    widget = deform.widget.MappingWidget(template='navs/mapping')
-    label = LabelField(title=_(u"Label"))
-    label_catalog_number = LabelCatalogNumberField(
-        title=_(u"Label Catalog Number"))
     release_date = ReleaseDateField(title=_(u"Release Date"))
     release_cancellation_date = ReleaseCancellationDateField(
         title=_(u"Release Cancellation Date"))
@@ -331,6 +352,7 @@ class AddReleaseSchema(colander.Schema):
     title = _(u"Add Release")
     widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
     general = GeneralSchema(title=_(u"General"))
+    label = LabelSchema(title=_(u"Label"))
     production = ProductionSchema(title=_(u"Production"))
     distribution = DistributionSchema(title=_(u"Distribution"))
     genres = GenresSchema(title=_(u"Genres"))

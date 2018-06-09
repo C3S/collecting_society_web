@@ -21,6 +21,7 @@ import colander
 
 from collecting_society_portal.models import Tdb
 from ...models import Artist
+from ...models import Label
 
 log = logging.getLogger(__name__)
 
@@ -92,6 +93,11 @@ class DatatablesSchema(colander.MappingSchema):
 
 
 class ArtistDatatablesSchema(DatatablesSchema):
+    group = colander.SchemaNode(
+        colander.Boolean(), missing="")
+
+
+class LabelDatatablesSchema(DatatablesSchema):
     group = colander.SchemaNode(
         colander.Boolean(), missing="")
 
@@ -186,6 +192,79 @@ def post_artists(request):
             'name': artist.name,
             'code': artist.code,
             'description': artist.description
+        })
+    # response
+    return {
+        'draw': data['draw'],
+        'recordsTotal': total,
+        'recordsFiltered': filtered,
+        'data': records,
+    }
+
+
+
+# --- service: labels --------------------------------------------------------
+
+labels = Service(
+    name=_prefix + 'labels',
+    path=_prefix + '/v1/labels',
+    description="provide labels for datatables",
+    cors_policy=get_cors_policy(),
+    factory=UserResource
+)
+
+
+@labels.options(
+    permission=NO_PERMISSION_REQUIRED)
+def options_labels(request):
+    response = request.response
+    response.headers['Access-Control-Allow-Headers'] = get_cors_headers()
+    return response
+
+
+@labels.post(
+    permission='read',
+    schema=LabelDatatablesSchema(),
+    validators=(colander_body_validator,))
+@Tdb.transaction(readonly=False)
+def post_labels(request):
+    data = request.validated
+    # domain
+    search = Tdb.escape(data['search']['value'], wrap=True)
+    domain = [
+        [
+            'OR',
+            ('gvl_code', 'ilike', search),
+            ('name', 'ilike', search)
+        ]
+    ]
+    for column in data['columns']:
+        if not column['searchable'] or not column['search']['value']:
+            continue
+        if column['name'] in ['name', 'code']:
+            search = Tdb.escape(column['search']['value'], wrap=True)
+            domain.append((column['name'], 'ilike', search))
+    # order
+    order = []
+    order_allowed = ['gvl_code', 'name']
+    for _order in data['order']:
+        name = data['columns'][_order['column']]['name']
+        if name in order_allowed:
+            order.append((name, _order['dir']))
+    # statistics
+    total_domain = []
+    total = Label.search_count(total_domain)
+    filtered = Label.search_count(domain)
+    # records
+    records = []
+    for label in Label.search(
+            domain=domain,
+            offset=data['start'],
+            limit=data['length'],
+            order=order):
+        records.append({
+            'gvl_code': label.gvl_code,
+            'name': label.name
         })
     # response
     return {

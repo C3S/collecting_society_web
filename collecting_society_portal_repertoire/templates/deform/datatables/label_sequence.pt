@@ -1,0 +1,187 @@
+<div tal:define="item_tmpl item_template|field.widget.item_template;
+                 oid oid|field.oid;
+                 name name|field.name;
+                 min_len min_len|field.widget.min_len;
+                 min_len min_len or 0;
+                 max_len max_len|field.widget.max_len;
+                 max_len max_len or 100000;
+                 now_len len(subfields);
+                 orderable orderable|field.widget.orderable;
+                 orderable orderable and 1 or 0;
+                 prototype field.widget.prototype(field);
+                 title title|field.title;
+                 api field.widget.api"
+     i18n:domain="collecting_society_portal_repertoire">
+
+    <!-- SelectLabel -->
+
+    <!-- Scripts: Actions -->
+    <script>
+        function select_label(row_id) {
+            // get data
+            var data = selectlabel.row(row_id).data();
+            oFormObject = document.forms['AddRelease'];
+            if (oFormObject == null) 
+                oFormObject = document.forms['EditRelease'];
+            if (oFormObject != null) {
+                oFormObject.elements['label_code'].value = data.gvl_code;
+                if (data.name[0] != '[')
+                    oFormObject.elements['label_name'].value = data.name;
+            }
+            return false;
+        }
+    </script>
+
+    <!-- SelectLabel: Header -->
+    <h2 i18n:translate="">Select GVL Label</h2>
+    <!-- SelectLabel: Datatable -->
+    <div class="container-fluid">
+        <table id="cs-table-selectlabel"
+               class="table table-hover cs-datatables">
+            <thead>
+                <th></th>
+                <th i18n:translate="">Label Code</th>
+                <th i18n:translate="">Label Name</th>
+                <th></th>
+            </thead>
+            <tfoot>
+                <th></th>
+                <th i18n:translate="" class="multifilter">Code</th>
+                <th i18n:translate="" class="multifilter">Name</th>
+                <th></th>
+            </tfoot>
+        </table>
+    </div>
+    <!-- SelectLabel: Scripts -->
+    <script>
+        /* format */
+        function selectlabel_more_col(data, type, row, meta) {
+            var hasData = false;
+            var releases = $('#cs-table-selectlabel').DataTable();
+            var isVisible = selectlabel.columns().responsiveHidden();
+            selectlabel.row(meta.row).columns().every(function(index) {
+                var name = selectlabel_columns[index].name;
+                if(!isVisible[index] && data[name])
+                    hasData = true;
+            });
+            if(hasData)
+                return '<span class="more">' +
+                            '<span class="glyphicon glyphicon-zoom-in"></span>' +
+                       '</span>';
+            return '';
+        }
+        function selectlabel_more_div(api, rowIdx, columns) {
+            var data = jQuery.map(columns, function(col, i) {
+                if(!col.data)
+                    return '';
+                return col.hidden ?
+                    '<tr data-dt-row="' + col.rowIndex + '" data-dt-column="' + col.columnIndex + '">' +
+                        '<td>' + col.title + ':' + '</td> ' +
+                        '<td>' + col.data + '</td>'+
+                    '</tr>' : '';
+            }).join('');
+            return data ? $('<table class="table"/>').append(data) : false;
+        }
+        function selectlabel_col(data, type, row, meta) {
+            return  '<a href="#" onclick="return select_label(' + meta.row + ');">' +
+                        '<span class="glyphicon glyphicon-cd"></span> ' +
+                        '<span i18n:translate="">Select</span>' +
+                    '</a>';
+        }
+        $(document).ready(function() {
+            /* columns */
+            selectlabel_columns = [
+                {
+                    name: "more",
+                    data: null,
+                    className: "text-center all",
+                    width: "30px",
+                    orderable: false,
+                    searchable: false,
+                    render: selectlabel_more_col
+                },
+                {
+                    name: "gvl_code",
+                    data: "gvl_code",
+                    orderable: true
+                },
+                {
+                    name: "name",
+                    data: "name",
+                    className: "all",
+                    orderable: true
+                },
+                {
+                    name: "add",
+                    data: null,
+                    width: "100px",
+                    className: "text-right nowrap all",
+                    orderable: false,
+                    searchable: false,
+                    render: selectlabel_col
+                },
+            ];
+            /* initialize */
+            selectlabel = $('#cs-table-selectlabel').DataTable({
+                processing: true,
+                serverSide: true,
+                searchDelay: 600,
+                fixedHeader: true,
+                responsive: {
+                    details: {
+                        renderer: selectlabel_more_div,
+                        type: 'column'
+                    }
+                },
+                autoWidth: false,
+                pageLength: 1,
+                fnInitComplete: function() { selectlabel.page.len(3).draw(); },
+                lengthMenu: [[1, 3, 10, 25, 50], [1, 3, 10, 25, 50]],
+                ajax: {
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    url: "${api}/labels",
+                    xhrFields: {withCredentials: true},
+                    dataType: "json",
+                    data: function(args) {
+                        args.group = false;
+                        return JSON.stringify(args);
+                    }
+                },
+                columns: selectlabel_columns,
+                order: [
+                    [ 1, "asc" ]
+                ]
+            });
+            /* more */
+            $('#cs-table-selectlabel tbody').on('click', 'span.more', function() {
+                var row = selectlabel.row($(this).closest('tr'));
+                if (row.child.isShown()) {
+                    row.child().show();
+                    $(this).html('<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>');
+                } else {
+                    row.child(true);
+                    $(this).html('<span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>');
+                }
+            });
+            /* column search */
+            $('#cs-table-selectlabel tfoot th.multifilter').each(function () {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search '+title+'" />');
+            });
+            selectlabel.columns().every(function () {
+                var that = this;
+                $('input', this.footer()).on('keyup change', function() {
+                    if (that.search() !== this.value) {
+                        that.search( this.value ).draw();
+                    }
+                });
+            });
+            /* redraw bug in bootstrap tabs */
+            $("a[data-toggle=\"tab\"]").on("shown.bs.tab", function (e) {
+                selectlabel.columns.adjust();
+            });
+        });
+    </script>
+
+</div>

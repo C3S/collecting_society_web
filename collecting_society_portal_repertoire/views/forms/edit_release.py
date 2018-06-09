@@ -66,14 +66,16 @@ class EditRelease(FormController):
         # tab superstructure
         self.appstruct = {
             'general': {},
+            'label': {},
             'production': {},
             'distribution': {},
             'genres': {}
         }
 
         # initialize form
-        tab = 'general'
 
+        # general tab
+        tab = 'general'
         def set_formdata(value):    # a little embedded helper function
             self.appstruct[tab][value] = getattr(self.release, value) or ""
         set_formdata('title')
@@ -81,6 +83,11 @@ class EditRelease(FormController):
         set_formdata('ean_upc_code')
         set_formdata('isrc_code')
         set_formdata('warning')
+        # label tab
+        tab = 'label'
+        self.appstruct[tab]['label_code'] = self.release.label.gvl_code
+        set_formdata('label_name')
+        set_formdata('label_catalog_number')
         # production tab
         tab = 'production'
         set_formdata('copyright_date')
@@ -88,8 +95,6 @@ class EditRelease(FormController):
         set_formdata('producer')
         # distribution tab
         tab = 'distribution'
-        self.appstruct['distribution']['label'] = self.release.label.gvl_code
-        set_formdata('label_catalog_number')
         set_formdata('release_date')
         set_formdata('release_cancellation_date')
         set_formdata('online_release_date')
@@ -121,6 +126,15 @@ class EditRelease(FormController):
             mimetype = self.appstruct['general']['picture']['mimetype']
             self.release.picture_data = picture_data
             self.release.picture_data_mime_type = mimetype
+        # label tab
+        tab = 'label'
+        if self.appstruct[tab]['label_code']:
+            label = Label.search_by_gvl_code(
+                self.appstruct[tab]['label_code'])
+            if label:
+                self.release.label = label
+        get_formdata('label_name')
+        get_formdata('label_catalog_number')
         # production tab
         tab = 'production'
         get_formdata('copyright_date')
@@ -128,12 +142,6 @@ class EditRelease(FormController):
         get_formdata('producer')
         # distribution tab
         tab = 'distribution'
-        if self.appstruct['distribution']['label']:
-            label = Label.search_by_gvl_code(
-                self.appstruct['distribution']['label'])
-            if label:
-                self.release.label = label
-        get_formdata('label_catalog_number')
         get_formdata('release_date')
         get_formdata('release_cancellation_date')
         get_formdata('online_release_date')

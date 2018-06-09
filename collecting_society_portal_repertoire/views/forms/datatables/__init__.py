@@ -3,3 +3,4 @@
 # flake8: noqa
 
 from .artist_sequence import ArtistSequence
+from .label_sequence import LabelSequence

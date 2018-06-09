@@ -15,6 +15,49 @@ class Label(Tdb):
 
     __name__ = 'label'
 
+
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search(cls, domain, offset=None, limit=None, order=None,
+               escape=False):
+        """
+        Searches labels by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          obj: list of labels
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape_domain(domain)
+        # search
+        result = cls.get().search(domain, offset, limit, order)
+        return result
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_count(cls, domain, escape=False, active=True):
+        """
+        Counts labels by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          int: number of labels
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape(domain)
+        if active:
+            domain.append(('active', 'in', (True, active)))
+        # search
+        result = cls.get().search_count(domain)
+        return result
+
     @classmethod
     @Tdb.transaction(readonly=True)
     def search_all(cls):
