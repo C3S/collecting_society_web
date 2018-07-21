@@ -1,3 +1,11 @@
-<span i18n:domain="collecting_society_portal_repertoire">
+<span data-toggle="tooltip" i18n:attributes="title"
+    title="Number of files you uploaded but didn't assign to a creation yet"
+    i18n:domain="collecting_society_portal_repertoire">
 <b><span i18n:translate="">Orphaned</span>: ${orph}</b>
 </span>
+
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>

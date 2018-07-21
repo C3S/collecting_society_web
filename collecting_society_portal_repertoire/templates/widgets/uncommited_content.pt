@@ -1,3 +1,11 @@
-<span i18n:domain="collecting_society_portal_repertoire">
+<span data-toggle="tooltip" i18n:attributes="title"
+    title="Number of artists, creations, and releases you didn't yet release to be valid in the C3S database"
+    i18n:domain="collecting_society_portal_repertoire">
 <b><span i18n:translate="">Uncommited</span>: ${uncomm}</b>
 </span>
+
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
