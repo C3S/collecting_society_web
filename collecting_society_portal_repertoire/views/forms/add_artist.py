@@ -1,14 +1,13 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
-import random
-import string
 import logging
 import colander
 import deform
 
 from collecting_society_portal.models import (
     Tdb,
+    Party,
     WebUser
 )
 from collecting_society_portal.views.forms import (
@@ -84,21 +83,23 @@ class AddArtist(FormController):
                     members_add.append(member_artist.id)
                 # group member data
                 if member['mode'] == "create":
-                    # create new webuser
-                    member_webuser = WebUser.create([{
-                        'email': member['email'],
-                        'password': ''.join(
-                            random.SystemRandom().choice(
-                                string.ascii_uppercase + string.digits
-                            ) for _ in range(64))
+                    # create new party
+                    member_party = Party.create([{
+                        'name': member['name'],
+                        'contact_mechanisms': [(
+                            'create',
+                            [{
+                                'type': 'email',
+                                'value': member['email']
+                            }]
+                        )]
                     }])
-                    member_webuser = member_webuser[0]
-                    member_webuser.party.name = member['email']
-                    member_webuser.save()
+                    member_party = member_party[0]
+                    # append member data
                     members_create.append({
                         'group': False,
                         'description': "",
-                        'party': member_webuser.party.id,
+                        'party': member_party.id,
                         'entity_creator': party.id,
                         'name': member['name']
                     })
