@@ -95,8 +95,6 @@ class AddArtist(FormController):
                         )]
                     }])
                     member_party = member_party[0]
-                    # member_party.contact_mechanisms.email = member['email']
-                    # member_party.save()
                     # append member data
                     members_create.append({
                         'group': False,
