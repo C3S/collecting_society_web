@@ -5,6 +5,8 @@ from pyramid.renderers import render
 
 from ...models import Content
 
+from ...services import _
+
 
 class UncommitedContentWidget():
 
@@ -12,6 +14,15 @@ class UncommitedContentWidget():
         self.party = request.party.id
         self.template = '../../templates/widgets/uncommited_content.pt'
         self.category = category
+
+    def icon(self):
+        return "glyphicon glyphicon-send"
+
+    def header(self):
+        return _(u"Uncommitted Content")
+
+    def description(self):
+        return _(u"Number of artists, creations, and releases you didn't yet release to be valid in the C3S database")
 
     def get_len(self, content_list):
         if content_list:
@@ -27,3 +38,7 @@ class UncommitedContentWidget():
             {'uncomm': uncomm}
         )
         return output
+
+    def badge(self):
+        return self.get_len(
+            Content.search_uncommits(self.party, self.category))

@@ -5,6 +5,8 @@ from pyramid.renderers import render
 
 from ...models import Content
 
+from ...services import _
+
 
 class OrphanedContentWidget():
 
@@ -12,6 +14,15 @@ class OrphanedContentWidget():
         self.party = request.party.id
         self.template = '../../templates/widgets/orphaned_content.pt'
         self.category = category
+
+    def icon(self):
+        return "glyphicon glyphicon-leaf"
+
+    def header(self):
+        return _(u"Orphaned Content")
+
+    def description(self):
+        return _(u"Number of files you uploaded but didn't assign to a creation yet")
 
     def get_len(self, content_list):
         if content_list:
@@ -26,3 +37,7 @@ class OrphanedContentWidget():
             {'orph': orph}
         )
         return output
+
+    def badge(self):
+        return self.get_len(Content.search_orphans(self.party, self.category))
+

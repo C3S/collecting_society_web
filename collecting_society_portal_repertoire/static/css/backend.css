@@ -118,20 +118,13 @@ h1, .h1 { color:#317a19 }
 
 /* Widgets */
 
-.dashboard-widget {
-    background-color: rgba(217,240,200,1);
-    border-radius: 25px;
-    min-height: 120px;
-    min-width: 120px;
-    text-align: center;
-    margin: 12px;
-    padding: 15px;
-}
+.dashboard-widget { background-color: rgba(217,240,200,1); border-radius: 25px; min-height: 120px; min-width: 120px; text-align: center; padding: 15px; }
+.rejected-table tr td:first-child { padding-right: 5px; text-align: right; }
+.cs-dashboard-tasks .cs-dashboard-task-left { float:left; text-align:center; width:10%; }
+.cs-dashboard-tasks .cs-dashboard-task-icon { width:30px; height:30px; font-size:30px; position:relative; top:7px; left:-8px; }
+.cs-dashboard-tasks .cs-dashboard-task-middle { float:left; width:65%; padding-right:7px; padding-left:5px; }     
+.cs-dashboard-tasks .cs-dashboard-task-right { float:left; width:25%; font-size:40px; }
 
-.rejected-table tr td:first-child {
-    padding-right: 5px;
-    text-align: right;
-}
 
 /*******************************************************************************
 
@@ -148,6 +141,11 @@ h1, .h1 { color:#317a19 }
     /* Content Middle */
 
     /* Content Right */
+
+    /* Widgets */
+    
+    .cs-dashboard-tasks .cs-dashboard-task-middle { width:80%; }
+    .cs-dashboard-tasks .cs-dashboard-task-right { width:10%; }
 
 }
 

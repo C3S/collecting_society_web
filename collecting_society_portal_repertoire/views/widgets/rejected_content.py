@@ -5,6 +5,8 @@ from pyramid.renderers import render
 
 from ...models import Content
 
+from ...services import _
+
 
 class RejectedContentWidget():
 
@@ -12,6 +14,12 @@ class RejectedContentWidget():
         self.party = request.party.id
         self.template = '../../templates/widgets/rejected_content.pt'
         self.category = category
+
+    def icon(self):
+        return "glyphicon glyphicon-ban-circle"
+
+    def header(self):
+        return _(u"Rejected Content")
 
     def dupl(self):
         return Content.search_rejects(self.party, 'dupl', self.category)
@@ -21,6 +29,9 @@ class RejectedContentWidget():
 
     def lossyc(self):
         return Content.search_rejects(self.party, 'lossyc', self.category)
+
+    def description(self):
+        return _(u"Total number of files you uploaded that where rejected")
 
     def get_len(self, content_list):
         if content_list:
@@ -43,3 +54,10 @@ class RejectedContentWidget():
             }
         )
         return output
+
+    def badge(self):
+        dupl = self.get_len(self.dupl())
+        ferrors = self.get_len(self.ferrors())
+        lossyc = self.get_len(self.lossyc())
+        rejects = dupl + ferrors + lossyc
+        return rejects;
