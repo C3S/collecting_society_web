@@ -3,13 +3,10 @@
 <tal:block metal:use-macro="backend39" i18n:domain="collecting_society_portal_repertoire">
 
     <tal:block metal:fill-slot="content-right">
-        <div>
-            <img style="height:150px" src="../../static/repertoire/img/avatar_example.png" />
-        </div>
 	    <div class="introtext">
             <span i18n:translate="">Welcome</span>
-		    ${webuser.nickname or ""},<br/>
-		    <span i18n:translate="">you can find the latest news and todos for your next steps here on this dashboard.</span>
+		    ${webuser.party.name.split(None, 1)[0] or ""},<br/><br/>
+		    <span i18n:translate="">you can find the latest news and todos for your next steps here on this dashboard.</span><br/><br/>
 	    </div>
         <br>
 
