@@ -136,6 +136,15 @@
                     </td>
                 </tr>
 
+                <tr>
+                    <th i18n:translate="">Styles</th>
+                    <td>
+                        <div class="style-list">
+                            <span tal:repeat="style release.styles" class="label label-primary label-as-badge">${style.name}</span>
+                        </div>
+                    </td>
+                </tr>
+
             </table>
 
         </div>

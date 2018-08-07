@@ -1,0 +1,60 @@
+# For copyright and style terms, see COPYRIGHT.rst (top level of repository)
+# Repository: https://github.com/C3S/collecting_society.portal.repertoire
+
+import logging
+
+from collecting_society_portal.models import Tdb
+
+log = logging.getLogger(__name__)
+
+
+class Style(Tdb):
+    """
+    Model wrapper for Tryton model object 'style'
+    """
+
+    __name__ = 'style'
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_all(cls):
+        """
+        Fetches all Styles
+
+        Returns:
+          list: styles
+          None: if no match is found
+        """
+        return cls.get().search([])
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_by_name(cls, name):
+        """
+        Searches a style by name
+
+        Args:
+          name (string): style.name
+
+        Returns:
+          obj: style
+          None: if no match is found
+        """
+        result = cls.get().search([('name', '=', name)])
+        return result[0] or None
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_by_id(cls, id):
+        """
+        Searches a style by id
+
+        Args:
+          id (int): style.id
+
+        Returns:
+          obj: style
+          None: if no match is found
+        """
+        result = cls.get().search([('id', '=', int(id))])
+        return result[0] or None

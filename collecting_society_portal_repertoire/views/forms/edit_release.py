@@ -102,8 +102,11 @@ class EditRelease(FormController):
         set_formdata('distribution_territory')
         set_formdata('neighbouring_rights_society')
         # genres tab
-        self.appstruct['genres']['genres'] = [
+        tab = 'genres'
+        self.appstruct[tab]['genres'] = [
             unicode(genre.id) for genre in self.release.genres]
+        self.appstruct[tab]['styles'] = [
+            unicode(style.id) for style in self.release.styles]
 
     @Tdb.transaction(readonly=False)
     def save_release(self):
@@ -149,8 +152,11 @@ class EditRelease(FormController):
         get_formdata('distribution_territory')
         get_formdata('neighbouring_rights_society')
         # genres tab
-        if self.appstruct['genres']['genres']:
-            self.release.genres = self.appstruct['genres']['genres']
+        tab = 'genres'
+        if self.appstruct[tab]['genres']:
+            self.release.genres = self.appstruct[tab]['genres']
+        if self.appstruct[tab]['styles']:
+            self.release.styles = self.appstruct[tab]['styles']
 
         self.release.save()
 

@@ -7,6 +7,7 @@ from .release import Release
 from .creation import Creation
 from .content import Content
 from .genre import Genre
+from .style import Style
 from .label import Label
 from .license import License
 from .party import Party

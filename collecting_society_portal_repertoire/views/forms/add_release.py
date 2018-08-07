@@ -16,6 +16,7 @@ from collecting_society_portal.views.forms import (
 from ...services import _
 from ...models import (
     Genre,
+    Style,
     Label,
     Party,
     Release
@@ -98,6 +99,9 @@ class AddRelease(FormController):
         if self.appstruct['genres']['genres']:
             release['genres'] = [(
                 'add', list(self.appstruct['genres']['genres']))]
+        if self.appstruct['genres']['styles']:
+            release['styles'] = [(
+                'add', list(self.appstruct['genres']['styles']))]
 
         Release.create([release])
 
@@ -290,6 +294,13 @@ def deferred_checkbox_widget(node, kw):
     widget = deform.widget.CheckboxChoiceWidget(values=genre_options)
     return widget
 
+@colander.deferred
+def deferred_checkbox_widget_style(node, kw):
+    styles = Style.search_all()
+    style_options = [(style.id, unicode(style.name)) for style in styles]
+    widget = deform.widget.CheckboxChoiceWidget(values=style_options)
+    return widget
+
 
 class GenreCheckboxField(colander.SchemaNode):
     oid = "genres"
@@ -297,6 +308,15 @@ class GenreCheckboxField(colander.SchemaNode):
     widget = deferred_checkbox_widget
     validator = colander.Length(min=1)
     #    , min_err=_(u'Please choose at least one genre for this release'))
+    missing = ""
+
+
+class StyleCheckboxField(colander.SchemaNode):
+    oid = "styles"
+    schema_type = colander.Set
+    widget = deferred_checkbox_widget_style
+    validator = colander.Length(min=1)
+    #    , min_err=_(u'Please choose at least one style for this release'))
     missing = ""
 
 
@@ -346,6 +366,7 @@ class DistributionSchema(colander.Schema):
 class GenresSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     genres = GenreCheckboxField(title=_(u"Genres"))
+    styles = StyleCheckboxField(title=_(u"Styles"))
 
 
 class AddReleaseSchema(colander.Schema):
@@ -355,7 +376,7 @@ class AddReleaseSchema(colander.Schema):
     label = LabelSchema(title=_(u"Label"))
     production = ProductionSchema(title=_(u"Production"))
     distribution = DistributionSchema(title=_(u"Distribution"))
-    genres = GenresSchema(title=_(u"Genres"))
+    genres = GenresSchema(title=_(u"Genres & Styles"))
 
 
 # --- Forms -------------------------------------------------------------------
