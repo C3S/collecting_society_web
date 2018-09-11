@@ -77,7 +77,7 @@ class AddRelease(FormController):
         tab = 'label'
         if self.appstruct[tab]['label_code']:
             label = Label.search_by_gvl_code(
-                self.appstruct[tab]['label_code'])
+                        self.appstruct[tab]['label_code'])
             if label:
                 release['label'] = label
         get_formdata('label_name')

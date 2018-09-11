@@ -180,7 +180,12 @@
                         </div>
                     </td>
                     <td>
-                        {% if (!file.error) { %}
+                        {% if (!file.error) { %}                        
+                            <a class="btn btn-success assign"
+                                    href="${request.resource_path(request.root['repertoire']['creations'], 'add')}?uuid={%=file.uuid%}"
+                                            >
+                                <i class="glyphicon glyphicon-cd"></i>
+                            </a>
                             <button class="btn btn-danger delete"
                                     data-type="{%=file.deleteType%}"
                                     data-url="{%=file.deleteUrl%}"
@@ -192,7 +197,7 @@
                 </tr>
             {% } %}
             </script>
-       </div>
+        </div>
         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">...</div>
         <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
         </div>

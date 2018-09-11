@@ -18,7 +18,8 @@ from ...models import (
     Artist,
     Creation,
     License,
-    Content
+    Content,
+    Release
 )
 from ...resources import CreationResource
 
@@ -40,6 +41,8 @@ class AddCreation(FormController):
 
         if self.submitted() and self.validate():
             self.save_creation()
+        else:
+            self.init_creation()
 
         return self.response
 
@@ -48,6 +51,29 @@ class AddCreation(FormController):
     # --- Conditions ----------------------------------------------------------
 
     # --- Actions -------------------------------------------------------------
+
+    @Tdb.transaction(readonly=False)
+    def init_creation(self):
+        """
+        initializes form with arguments passed via url from Content/Uploads
+        """
+
+        self.appstruct = {
+            'metadata': {},
+            'contributions': {},
+            'licenses': {},
+            'relations': {},
+            'content': {}
+        }
+
+        # contents tab
+        if 'uuid' in self.request.GET.keys():
+            _content = Content.search_by_uuid(self.request.GET['uuid'])
+            if not _content:
+                return
+            self.appstruct['content']['content'] = [(_content.id,
+                                                    _content.name)]
+            # TODO: further initialization via content metadata
 
     @Tdb.transaction(readonly=False)
     def save_creation(self):
@@ -62,9 +88,27 @@ class AddCreation(FormController):
         )
 
         _creation = {
-            'title': self.appstruct['metadata']['title'],
             'artist': self.appstruct['metadata']['artist'],
+            'entity_creator': WebUser.current_web_user(self.request).party,
+            'releases': self.appstruct['metadata']['releases'],
         }
+        if self.appstruct['metadata']['releases']:
+            _creation['releases'] = []
+            for release_id in self.appstruct['metadata']['releases']:
+                _creation['releases'].append(
+                    (
+                        'create',
+                        [{
+                            'release': release_id,
+                            'title': self.appstruct['metadata']['title'],
+                            # TODO: manage different titles for releases
+                            #       using a datatables control
+                            # 'medium_number': TODO: medium_number
+                            # 'track_number': TODO: track_number
+                            # 'license ': TODO: license
+                        }]
+                    )
+                )
         if self.appstruct['contributions']['contributions']:
             _creation['contributions'] = []
             for contribution in self.appstruct[
@@ -117,15 +161,25 @@ class AddCreation(FormController):
                         }]
                     )
                 )
-
-        if self.appstruct['content']['content']:
-            _creation['content'] = self.appstruct['content']['content']
+        # TODO: save content relations
+        #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
+        #if self.appstruct['content']['content']:
+        #    _creation['content'] = []
+        #    for content_id in self.appstruct['content']['content']:
+        #        _creation['content'].append(
+        #            (
+        #                'create',
+        #                [{
+        #                    'content': content_id
+        #                }]
+        #            )
+        #        )
 
         creations = Creation.create([_creation])
         if not creations:
             log.info("creation add failed for %s: %s" % (email, _creation))
             self.request.session.flash(
-                _(u"Creation could not be added: ") + _creation['title'],
+                _(u"Creation could not be added: ") + _creation['default_title'],
                 'main-alert-danger'
             )
             self.redirect(CreationResource, 'list')
@@ -144,8 +198,8 @@ class AddCreation(FormController):
 
         log.info("creation add successful for %s: %s" % (email, creation))
         self.request.session.flash(
-            _(u"Creation added: ")+creation.title+" ("+creation.code+")",
-            'main-alert-success'
+            _(u"Creation added: ") + creation.default_title
+            + " ("+creation.code+")", 'main-alert-success'
         )
         self.remove()
         self.clean()
@@ -184,6 +238,18 @@ def current_artists_select_widget(node, kw):
 
 
 @colander.deferred
+def releases_select_widget(node, kw):
+    request = kw.get('request')
+    web_user = WebUser.current_web_user(request)
+    releases = Release.search_by_party(web_user.party.id)
+    releases_options = [(int(release.id), release.title) for release in releases]
+    widget = deform.widget.Select2Widget(
+        values=releases_options, multiple=True
+    )
+    return widget
+
+
+@colander.deferred
 def solo_artists_select_widget(node, kw):
     solo_artists = Artist.search_all_solo_artists()
     solo_artist_options = [(artist.id, artist.name) for artist in solo_artists]
@@ -217,7 +283,7 @@ def licenses_select_widget(node, kw):
 def content_select_widget(node, kw):
     request = kw.get('request')
     web_user = WebUser.current_web_user(request)
-    contents = Content.search_orphans(web_user.id, 'audio')
+    contents = Content.search_orphans(web_user.party.id, 'audio')
     content_options = []
     if contents:
         content_options = [(content.id, content.name) for content in contents]
@@ -246,6 +312,12 @@ class CurrentArtistField(colander.SchemaNode):
     oid = "artist"
     schema_type = colander.Integer
     widget = current_artists_select_widget
+
+
+class ReleasesField(colander.SchemaNode):
+    oid = "releases"
+    schema_type = colander.List
+    widget = releases_select_widget
 
 
 class ContentField(colander.SchemaNode):
@@ -367,6 +439,7 @@ class AddMetadataSchema(colander.MappingSchema):
     title = _(u"Add metadata")
     creation_title = TitleField(name='title', title=_(u"Title"))
     artist = CurrentArtistField(title=_(u"Featured Artist"))
+    releases = ReleasesField(title=_(u"Releases"))
     collecting_society = CollectingSocietyField()
     neighbouring_rights = NeighbouringRightsField()
     neighbouring_rights_society = NeighbouringRightsSocietyField()
@@ -425,6 +498,7 @@ class MetadataSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     creation_title = TitleField(name='title', title=_(u"Title"))
     artist = CurrentArtistField(title=_(u"Featured Artist"))
+    releases = ReleasesField(title=_(u"Release"))
     collecting_society = CollectingSocietyField()
 
 

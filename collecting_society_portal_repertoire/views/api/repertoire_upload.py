@@ -174,6 +174,8 @@ def get_content_info(request, content):
         'size': content.size,
         'extension': content.extension,
         'type': content.mime_type,
+        'uuid': content.uuid,
+
         'duration': "{:.0f}:{:02.0f}".format(
             *divmod(int(content.length), 60)
         ),

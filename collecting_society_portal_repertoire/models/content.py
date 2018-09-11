@@ -292,6 +292,8 @@ class Content(Tdb):
             ('entity_creator', '=', party_id),
             ('creation', '=', None),
             ('processing_state', '!=', 'rejected')
+            # TODO: for quick testing this is ok, in the future the
+            #       processing_state needs to be dropped (or higher)
         ]
         if category is not 'all':
             search_clause.append(
