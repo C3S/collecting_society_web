@@ -27,9 +27,6 @@
             }
             return hash;
         }
-        function uid() {
-            return (Math.random().toString(36)+'00000000000000000').slice(2, N+2);
-        }
     </script>
     <!-- Scripts: Actions -->
     <script>
@@ -48,41 +45,30 @@
             // prevent multiple addition
             if(artist_added(data.code))
                 return false;
-            // add sequence item
-            var seq = $("#deform-seq-${oid}");
-            deform.appendSequenceItem(seq);
-            // fill in input values
-            var seq_container = $(seq).children('.deform-seq-container');
-            var seq_item = $(seq_container).find('.deform-seq-item').last();
-            var input_mode = $(seq_item).children("input[name='mode']");
-            var input_name = $(seq_item).children("input[name='name']");
-            var input_code = $(seq_item).children("input[name='code']");
-            var input_key = $(seq_item).children("input[name='key']");
-            input_mode.val("add");
-            input_name.val(data.name);
-            input_code.val(data.code);
-            input_key.val(data.code);
             // add row to artists table
             data.mode = "add";
             data.email = "";
             data.key = data.code;
             data.description = "";  // TODO: ajax calls to get object details
-            artists.row.add(data).draw();
+            data.sequence_item = "<span class='add'></span>";  // insert before
+            var row = artists.row.add(data);
+            row.draw();
+            // create sequence item
+            var proto = $(".artist-proto").first();
+            var before = $(row.node()).find(".sequence_item .add").first();
+            deform.addSequenceItem(proto, before);
+            // update input values
+            var seq = before.prev();
+            seq.children("input[name='mode']").val("add");
+            seq.children("input[name='name']").val(data.name);
+            seq.children("input[name='code']").val(data.code);
+            seq.children("input[name='key']").val(data.code);
+            // update table data
+            data.sequence_item = seq.parent().html();
+            row.data(data).draw();
             return false;
         }
         function remove_artist(link) {
-            // get data
-            var data = artists.row($(link).parents('tr')).data();
-            // remove sequence item
-            var seq = $("#deform-seq-${oid}");
-            var seq_container = $(seq).children('.deform-seq-container');
-            var seq_items = $(seq_container).find('.deform-seq-item');
-            seq_items.each(function() {
-                console.log($(this).children('input[name="key"]').val());
-                if($(this).children('input[name="key"]').val() == data.key)
-                    $(this).remove();
-            });
-            // remove row from artists table
             artists.row($(link).parents('tr')).remove().draw();
             return false;
         }
@@ -102,7 +88,8 @@
                 'code': '',
                 'description': '',
                 'email': '',
-                'key': 'NEW'
+                'key': 'NEW',
+                'sequence_item': "<span class='add'></span>"
             };
             var row = artists.row.add(data).draw();
             // open edit area
@@ -113,7 +100,6 @@
             var input = $(child).find('input');
             $(input).keypress(function (e) {
                 if (e.which == 13) {
-                    console.log(submit);
                     $(submit).click();
                     return false;
                 }
@@ -155,40 +141,33 @@
             // stop on errors
             if(error)
                 return false;
-            // get sequence items
-            var seq = $("#deform-seq-${oid}");
-            var seq_container = $(seq).children('.deform-seq-container');
-            var seq_items = $(seq_container).find('.deform-seq-item');
-            // get or create sequence item
-            var seq_item = $(seq_items).filter(function () {
-                return $(this).children('input[name="key"]').val() == data.key;
-            });
+            // set mode
             mode = "create";
             if(data.mode === "add")
                 mode = "edit";
-            if(!$(seq_item).length) {
-                deform.appendSequenceItem(seq);
-                seq_item = $(seq_container).find('.deform-seq-item').last();
+            // create sequence item, if not present
+            var seq = $(row.node()).find(".deform-seq-item").first();
+            if(!seq.length) {
+                var proto = $(".artist-proto").first();
+                var before = $(row.node()).find(".sequence_item .add").first();
+                deform.addSequenceItem(proto, before);
+                seq = $(row.node()).find(".deform-seq-item").first();
             }
-            seq_key_hash = hash(edit_name.val() + edit_email.val());
-            // update table data
+            // set table data
             data.mode = mode;
             data.name = edit_name.val();
             data.email = edit_email.val();
             data.code = edit_email.val();
-            data.key = seq_key_hash;
+            data.key = hash(data.name + data.email);
+            // update input values
+            seq.children("input[name='mode']").val(mode);
+            seq.children("input[name='name']").val(data.name);
+            seq.children("input[name='code']").val(data.code);
+            seq.children("input[name='email']").val(data.email);
+            seq.children("input[name='key']").val(data.key);
+            // update table data
+            data.sequence_item = seq.parent().html();
             row.data(data);
-            // fill in input values
-            var input_mode = $(seq_item).children("input[name='mode']");
-            var input_name = $(seq_item).children("input[name='name']");
-            var input_code = $(seq_item).children("input[name='code']");
-            var input_email = $(seq_item).children("input[name='email']");
-            var input_key = $(seq_item).children("input[name='key']");
-            input_mode.val(mode);
-            input_name.val(data.name);
-            input_code.val(data.code);
-            input_email.val(data.email);
-            input_key.val(data.key);
             // close edit area
             row.child.remove();
             return false;
@@ -199,6 +178,8 @@
     <!-- Artists -->
 
     <!-- Artists: Datatable  -->
+    <input type="hidden" name="__start__" value="${field.name}:sequence"
+           class="deform-proto artist-proto" tal:attributes="prototype prototype"/>
     <table id="cs-table-artists"
            class="table table-hover cs-datatables">
         <thead>
@@ -213,6 +194,7 @@
                 </a>
             </th>
             <th i18n:translate="">Description</th>
+            <th></th>
             <th></th>
             <th></th>
             <th></th>
@@ -237,6 +219,9 @@
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td>
+                        <div tal:replace="structure subfield.render_template(item_tmpl, parent=field)" />
+                    </td>
                     <td>${subfield.cstruct.email}</td>
                     <td>${subfield.cstruct.mode}</td>
                     <td>${subfield.cstruct.key}</td>
@@ -244,6 +229,7 @@
             </tr>
         </tbody>
     </table>
+    <input type="hidden" name="__end__" value="${field.name}:sequence"/>
     <!-- Artists: Scripts -->
     <script>
         /* format */
@@ -337,7 +323,7 @@
                     render: artists_edit_col
                 },
                 {
-                    name: "add",
+                    name: "remove",
                     data: null,
                     className: "text-right nowrap all",
                     width: "100px",
@@ -351,6 +337,13 @@
                     className: "none",
                     orderable: false,
                     searchable: true,
+                },
+                {
+                    name: "sequence_item",
+                    data: "sequence_item",
+                    className: "sequence_item hidden",
+                    orderable: false,
+                    searchable: false,
                 },
                 {
                     name: "email",
@@ -403,30 +396,12 @@
                     $(this).html('<span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>');
                 }
             });
-            /* edit */
-            $('#cs-table-artists tbody').on('click', 'span.edit', function() {
-                
-            });
             /* redraw bug in bootstrap tabs */
-            $("a[data-toggle=\"tab\"]").on("shown.bs.tab", function (e) {
+            $("a[data-toggle=\"tab\"]").on("shown.bs.tab", function(e) {
                 artists.columns.adjust();
             });
         });
     </script>
-    <!-- Artists: Hidden Fields -->
-    <div id="deform-seq-${oid}" class="deform-seq">
-        <!-- sequence -->
-        <input type="hidden" name="__start__" value="${field.name}:sequence"
-               class="deform-proto" tal:attributes="prototype prototype"/>
-        <div id="${oid}-orderable" class="deform-seq-container hidden">
-            <div tal:define="subfields [ x[1] for x in subfields ]"
-                tal:repeat="subfield subfields"
-                tal:replace="structure subfield.render_template(item_tmpl, parent=field)" />
-            <div class="deform-insert-before"></div>
-        </div>
-        <input type="hidden" name="__end__" value="${field.name}:sequence"/>
-        <!-- /sequence-->
-    </div>
 
 
     <!-- AddArtist -->
