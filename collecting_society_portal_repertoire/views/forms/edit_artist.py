@@ -36,8 +36,9 @@ class EditArtist(FormController):
         self.form = edit_artist_form(self.request)
 
         # process form
-        if self.submitted() and self.validate():
-            self.edit_artist()
+        if self.submitted():
+            if self.validate():
+                self.edit_artist()
         else:
             self.fill_form()
 

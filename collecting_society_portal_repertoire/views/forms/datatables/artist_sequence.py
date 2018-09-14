@@ -42,7 +42,7 @@ class CodeField(colander.SchemaNode):
 
 
 class EmailField(colander.SchemaNode):
-    oid = "name"
+    oid = "email"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
     validator = colander.Email()
