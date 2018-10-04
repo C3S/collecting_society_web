@@ -3,7 +3,10 @@
 
 import logging
 
-from collecting_society_portal.models import Tdb
+from collecting_society_portal.models import (
+    Tdb,
+    WebUser
+)
 
 log = logging.getLogger(__name__)
 
@@ -14,6 +17,39 @@ class Artist(Tdb):
     """
 
     __name__ = 'artist'
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def is_editable(cls, request, artist):
+        """
+        Checks if the artist is editable by the current webuser.
+
+        Checks, if the artist
+        - is a foreign object
+        - is still not claimed yet
+        - is created by the current web user
+        - TODO: was not part of a distribution
+
+        Args:
+          request (pyramid.request.Request): Current request.
+          artist (obj): Artist to check.
+
+        Returns:
+          true: if Artist is editable.
+          false: otherwise.
+        """
+        party = WebUser.current_web_user(request).party
+        # is a foreign object
+        if artist.entity_origin != 'indirect':
+            return False
+        # is still not claimed yet
+        if artist.claim_state != 'unclaimed':
+            return False
+        # is created by the current web user
+        if artist.entity_creator != party:
+            return False
+        # TODO: was not part of a distribution
+        return True
 
     @classmethod
     @Tdb.transaction(readonly=True)

@@ -145,7 +145,7 @@ class EditArtist(FormController):
                     # append artist id
                     members_add.append(member_artist)
 
-                # group member data
+                # create new artists
                 if member['mode'] == "create":
                     # create new party
                     member_party = Party.create([{
@@ -168,6 +168,22 @@ class EditArtist(FormController):
                         'entity_origin': 'indirect',
                         'name': member['name']
                     })
+
+                # edit created artists
+                if member['mode'] == "edit":
+                    member_artist = Artist.search_by_code(member['code'])
+                    # sanity checks
+                    if not member_artist:
+                        continue
+                    if not Artist.is_editable(self.request, member_artist):
+                        continue
+                    member_artist.name = member['name']
+                    for mechanism in member_artist.party.contact_mechanisms:
+                        if mechanism.type == 'email':
+                            mechanism.email = member['email']
+                            mechanism.save()
+                    member_artist.save()
+                    members_future.append(member_artist)
 
             # create new artists
             if members_create:

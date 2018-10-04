@@ -80,7 +80,7 @@ class AddArtist(FormController):
                     # append artist id
                     members_add.append(member_artist.id)
 
-                # group member data
+                # create new artists
                 if member['mode'] == "create":
                     # create new party
                     member_party = Party.create([{
