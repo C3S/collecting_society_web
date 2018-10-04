@@ -9,6 +9,7 @@ import deform
 
 from collecting_society_portal.models import (
     Tdb,
+    Party,
     WebUser
 )
 from collecting_society_portal.views.forms import (
@@ -66,12 +67,17 @@ class EditArtist(FormController):
         if artist.group:
             _members = []
             for member in artist.solo_artists:
+                mode = "add"
+                email = ""
+                if Artist.is_editable(self.request, member):
+                    mode = "edit"
+                    email = member.party.email
                 _members.append({
-                    'mode': "add",
+                    'mode': mode,
                     'name': member.name,
                     'code': member.code,
                     'description': member.description,
-                    'email': ""
+                    'email': email
                 })
             self.appstruct['members'] = _members
 
@@ -118,8 +124,8 @@ class EditArtist(FormController):
         # members
         if artist.group:
             members_current = list(artist.solo_artists)
+            members_future = []
             members_remove = members_current
-            members_new = []
             members_add = []
             members_create = []
             for member in self.appstruct['members']:
@@ -127,51 +133,49 @@ class EditArtist(FormController):
                 # add existing artists
                 if member['mode'] == "add":
                     member_artist = Artist.search_by_code(member['code'])
-
                     # sanity checks
                     if not member_artist:
                         continue
                     if member_artist.group:
                         continue
-                    members_new.append(member_artist)
+                    members_future.append(member_artist)
                     if member_artist in members_current:
                         members_remove.remove(member_artist)
                         continue
-
                     # append artist id
                     members_add.append(member_artist)
 
                 # group member data
                 if member['mode'] == "create":
-
-                    # create new webuser
-                    member_webuser = WebUser.create([{
-                        'email': member['email'],
-                        'password': ''.join(
-                            random.SystemRandom().choice(
-                                string.ascii_uppercase + string.digits
-                            ) for _ in range(64))
+                    # create new party
+                    member_party = Party.create([{
+                        'name': member['name'],
+                        'contact_mechanisms': [(
+                            'create',
+                            [{
+                                'type': 'email',
+                                'value': member['email']
+                            }]
+                        )]
                     }])
-                    member_webuser = member_webuser[0]
-                    member_webuser.party.name = member['email']
-                    member_webuser.save()
-
+                    member_party = member_party[0]
                     # create vlist
                     members_create.append({
                         'group': False,
                         'description': "",
-                        'party': member_webuser.party.id,
+                        'party': member_party.id,
                         'entity_creator': party.id,
+                        'entity_origin': 'indirect',
                         'name': member['name']
                     })
 
             # create new artists
             if members_create:
                 members_created = Artist.create(members_create)
-                members_new += members_created
+                members_future += members_created
 
             # add new member list
-            artist.solo_artists = members_new
+            artist.solo_artists = members_future
 
         # save
         artist.save()

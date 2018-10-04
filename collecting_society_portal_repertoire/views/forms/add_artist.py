@@ -47,7 +47,7 @@ class AddArtist(FormController):
         email = self.request.unauthenticated_userid
         party = WebUser.current_party(self.request)
 
-        # prepare artist data
+        # metadata
         _artist = {
             'group': self.appstruct['metadata']['group'],
             'party': party,
@@ -63,14 +63,12 @@ class AddArtist(FormController):
             _artist['picture_data'] = picture_data
             _artist['picture_data_mime_type'] = mimetype
 
-        # group members data
+        # members
         if self.appstruct['metadata']['group']:
             members_add = []
             members_create = []
             for member in self.appstruct['members']:
-                # sanity checks
-                if member['key'] == "NEW":
-                    continue
+
                 # add existing artists
                 if member['mode'] == "add":
                     member_artist = Artist.search_by_code(member['code'])
@@ -81,6 +79,7 @@ class AddArtist(FormController):
                         continue
                     # append artist id
                     members_add.append(member_artist.id)
+
                 # group member data
                 if member['mode'] == "create":
                     # create new party
@@ -103,6 +102,7 @@ class AddArtist(FormController):
                         'entity_creator': party.id,
                         'name': member['name']
                     })
+
             # append directives
             _artist['solo_artists'] = []
             if members_create:

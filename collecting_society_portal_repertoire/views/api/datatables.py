@@ -192,7 +192,7 @@ def post_artists(request):
             'name': artist.name,
             'code': artist.code,
             'description': artist.description,
-            'email': ""  # TODO: return for foreign objects
+            'email': ""
         })
     # response
     return {
