@@ -1,6 +1,6 @@
 <div tal:define="item_tmpl item_template|field.widget.item_template;
                  oid oid|field.oid;
-                 name name|field.name;
+                 name field.name;
                  min_len min_len|field.widget.min_len;
                  min_len min_len or 0;
                  max_len max_len|field.widget.max_len;
@@ -9,559 +9,79 @@
                  orderable orderable|field.widget.orderable;
                  orderable orderable and 1 or 0;
                  prototype field.widget.prototype(field);
-                 title title|field.title;
-                 api field.widget.api"
+                 rows rows;
+                 lang lang;
+                 api api"
      i18n:domain="collecting_society_portal_repertoire">
 
-    <!-- Scripts  -->
+    <!-- html node for tables -->
+    <div class="datatable_sequence_${oid}"
+         data-rows="${rows}" data-lang="${lang}"></div>
 
-    <!-- Scripts: Utiliy  -->
+    <!-- datatable sequence-->
     <script>
-        function hash(string) {
-            var hash = 0, i, chr;
-            if (string.length === 0) return hash;
-            for (i = 0; i < string.length; i++) {
-                chr   = string.charCodeAt(i);
-                hash  = ((hash << 5) - hash) + chr;
-                hash |= 0; // Convert to 32bit integer
-            }
-            return hash;
-        }
-    </script>
-    <!-- Scripts: Actions -->
-    <script>
-        function artist_added(artist_code) {
-            // check, if artist was already added
-            var added = false;
-            artists.rows().every(function() {
-                if(!added && this.data().code == artist_code)
-                    added = true;
-            });
-            return added;
-        }
-        function add_artist(row_id) {
-            // get data
-            var data = addartist.row(row_id).data();
-            // prevent multiple addition
-            if(artist_added(data.code))
-                return false;
-            // add row to artists table
-            data.mode = "add";
-            data.email = "";
-            data.key = data.code;
-            data.description = "";  // TODO: ajax calls to get object details
-            data.sequence_item = "<span class='add'></span>";  // insert before
-            var row = artists.row.add(data);
-            row.draw();
-            // create sequence item
-            var proto = $(".artist-proto").first();
-            var before = $(row.node()).find(".sequence_item .add").first();
-            deform.addSequenceItem(proto, before);
-            // update input values
-            var seq = before.prev();
-            seq.children("input[name='mode']").val("add");
-            seq.children("input[name='name']").val(data.name);
-            seq.children("input[name='code']").val(data.code);
-            seq.children("input[name='key']").val(data.code);
-            // update table data
-            data.sequence_item = seq.parent().html();
-            row.data(data).draw();
-            return false;
-        }
-        function remove_artist(link) {
-            artists.row($(link).parents('tr')).remove().draw();
-            return false;
-        }
-        function create_artist() {
-            // prevent muliple
-            var create = true;
-            artists.rows().every(function() {
-                if(create && this.data().key == "NEW")
-                    create = false;
-            });
-            if(!create)
-                return false;
-            // set data template
-            var data = {
-                'mode': 'create',
-                'name': '',
-                'code': '',
-                'description': '',
-                'email': '',
-                'key': 'NEW',
-                'sequence_item': "<span class='add'></span>"
-            };
-            var row = artists.row.add(data).draw();
-            // open edit area
-            $(row.node()).find('a.edit').click();
-            // catch enter key
-            var child = $(row.node()).next('tr');
-            var submit = $(child).find('.cs-datatables-apply');
-            var input = $(child).find('input');
-            $(input).keypress(function (e) {
-                if (e.which == 13) {
-                    $(submit).click();
-                    return false;
-                }
-            });
-            return false;
-        }
-        function edit_artist(link) {
-            $(link).hide();
-            var row = artists.row($(link).closest('tr'));
-            row.child(artists_edit_div(row.data())).show();
-            $(row.child()).addClass('child');
-            return false;
-        }
-        function save_artist(link) {
-            // get elements
-            var child = $(link).parents('tr');
-            var row = artists.row($(child).prev('tr')[1]);
-            var data = row.data();
-            // get inputs
-            var edit_name = $(child).find("input[name='edit_name']");
-            var edit_email = $(child).find("input[name='edit_email']");
-            var edit_name_group = $(edit_name).closest('.form-group');
-            var edit_email_group = $(edit_email).closest('.form-group');
-            var error = false;
-            // error handling: empty name
-            if(edit_name.val() === "") {
-                error = true;
-                edit_name_group.addClass('has-error');
-            } else {
-                edit_name_group.removeClass('has-error');
-            }
-            // error handling: empty email
-            if(edit_email.val() === "") {
-                error = true;
-                edit_email_group.addClass('has-error');
-            } else {
-                edit_email_group.removeClass('has-error');
-            }
-            // stop on errors
-            if(error)
-                return false;
-            // set mode
-            mode = "create";
-            if(data.mode === "add")
-                mode = "edit";
-            // create sequence item, if not present
-            var seq = $(row.node()).find(".deform-seq-item").first();
-            if(!seq.length) {
-                var proto = $(".artist-proto").first();
-                var before = $(row.node()).find(".sequence_item .add").first();
-                deform.addSequenceItem(proto, before);
-                seq = $(row.node()).find(".deform-seq-item").first();
-            }
-            // set table data
-            data.mode = mode;
-            data.name = edit_name.val();
-            data.email = edit_email.val();
-            data.code = edit_email.val();
-            data.key = hash(data.name + data.email);
-            // update input values
-            seq.children("input[name='mode']").val(mode);
-            seq.children("input[name='name']").val(data.name);
-            seq.children("input[name='code']").val(data.code);
-            seq.children("input[name='email']").val(data.email);
-            seq.children("input[name='key']").val(data.key);
-            // update table data
-            data.sequence_item = seq.parent().html();
-            row.data(data);
-            // close edit area
-            row.child.remove();
-            return false;
-        }
-    </script>
-
-
-    <!-- Artists -->
-
-    <!-- Artists: Datatable  -->
-    <input type="hidden" name="__start__" value="${field.name}:sequence"
-           class="deform-proto artist-proto" tal:attributes="prototype prototype"/>
-    <table id="cs-table-artists"
-           class="table table-hover cs-datatables">
-        <thead>
-            <th></th>
-            <th i18n:translate="">Name</th>
-            <th i18n:translate="">Code</th>
-            <th></th>
-            <th>
-                <a href="#" class="pull-right cs-thin" onclick="return create_artist();">
-                    <span class="glyphicon glyphicon-plus"></span>
-                    <span i18n:translate="">Create</span>
-                </a>
-            </th>
-            <th i18n:translate="">Description</th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </thead>
-        <tbody>
-            <tr tal:define="subfields [ x[1] for x in subfields ]"
-                tal:repeat="subfield subfields">
-                <tal:block tal:define="create subfield.children[0].cstruct == 'create';
-                                       error_name create and subfield.children[1].error;
-                                       error_email create and subfield.children[3].error;
-                                       errormsg_name subfield.children[1].errormsg;
-                                       errormsg_email subfield.children[3].errormsg">
-                    <td></td>
-                    <td>
-                        ${subfield.cstruct.name}
-                        <small class="text-danger" tal:condition="error_name"><br>${errormsg_name}</small>
-                    </td>
-                    <td>
-                        ${subfield.cstruct.code}
-                        <small class="text-danger" tal:condition="error_email"><br>${errormsg_email}</small>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div tal:replace="structure subfield.render_template(item_tmpl, parent=field)" />
-                    </td>
-                    <td>${subfield.cstruct.email}</td>
-                    <td>${subfield.cstruct.mode}</td>
-                    <td>${subfield.cstruct.key}</td>
-                </tal:block>
-            </tr>
-        </tbody>
-    </table>
-    <input type="hidden" name="__end__" value="${field.name}:sequence"/>
-    <!-- Artists: Scripts -->
-    <script>
-        /* format */
-        function artists_more_col(data, type, row, meta) {
-            if(data.mode === "create")
-                return '<span class="label label-info" i18n:translate="">New</span>';
-            // var hasData = false;
-            // var artists = $('#cs-table-artists').DataTable();
-            // var isVisible = artists.columns().responsiveHidden();
-            // artists.row(meta.row).columns().every(function(index) {
-            //     var name = artists_columns[index].name;
-            //     if(!isVisible[index] && data[name])
-            //         hasData = true;
-            // });
-            // if(hasData)
-            //     return '<span class="more">' +
-            //                 '<span class="glyphicon glyphicon-zoom-in"></span>' +
-            //            '</span>';
-            return '';
-        }
-        function artists_more_div(api, rowIdx, columns) {
-            var data = jQuery.map(columns, function(col, i) {
-                if(!col.data)
-                    return '';
-                return col.hidden ?
-                    '<tr data-dt-row="' + col.rowIndex + '" data-dt-column="' + col.columnIndex + '">' +
-                        '<td>' + col.title + ':' + '</td> ' +
-                        '<td>' + col.data + '</td>'+
-                    '</tr>' : '';
-            }).join('');
-            return data ? $('<table class="table"/>').append(data) : false;
-        }
-        function artists_edit_col(data, type, row, meta) {
-            if(data.mode === "create" || data.mode === "edit")
-                return  '<a href="" onclick="return edit_artist(this);" class="edit">' +
-                            '<span class="glyphicon glyphicon-pencil"></span> ' +
-                            '<span i18n:translate="">Edit</span>' +
-                        '</a>';
-            return '';
-        }
-        function artists_edit_div(data) {
-            data =  '<div class="form-group">' +
-                        '<label class="control-label" for="edit_name" i18n:translate="">Name</label>' +
-                        '<input name="edit_name" class="form-control" type="text" value="' + data.name + '">' +
-                    '</div>' +
-                    '<div class="form-group">' +
-                        '<label class="control-label" for="edit_email" i18n:translate="">Email</label>' +
-                        '<input name="edit_email" class="form-control" type="text" value="' + data.email + '">' +
-                    '</div>' +
-                    '<a href="#" class="cs-datatables-apply" onclick="return save_artist(this);">' +
-                        '<button class="btn btn-info" i18n:translate="">Apply</button>' +
-                    '</a>';
-            return $('<div class="cs-datatables-edit"/>').append(data);
-        }
-        function artists_remove_col(data, type, row, meta) {
-            return  '<a href="#" onclick="return remove_artist(this);">' +
-                        '<span class="glyphicon glyphicon-minus"></span> ' +
-                        '<span i18n:translate="">Remove</span>' +
-                    '</a>';
-        }
-        $(document).ready(function() {
-            /* columns */
-            artists_columns = [
-                {
-                    name: "more",
-                    data: null,
-                    className: "text-center all",
-                    width: "30px",
-                    orderable: false,
-                    searchable: false,
-                    render: artists_more_col
-                },
+        // init of datatable sequence
+        var datatableSequence = new deform.DatatableSequence({
+            oid: "${oid}",
+            name: "${name}",
+            minLen: "${min_len}",
+            maxLen: "${max_len}",
+            nowLen: "${now_len}",
+            proto: "${prototype}",
+            api: "${api}/artists",
+            unique: "code",
+            columns: [
                 {
                     name: "name",
+                    title: "${_('Name')}",
                     data: "name",
                     className: "all",
-                    orderable: true
+                    orderable: true,
+                    datatableSequence: {
+                        position: "displayed",
+                        footerSearch: true,
+                        createShow: true,
+                        createForm: true,
+                        createError: true
+                    }
                 },
                 {
                     name: "code",
+                    title: "${_('Code')}",
                     data: "code",
-                    orderable: true
-                },
-                {
-                    name: "edit",
-                    data: null,
-                    className: "text-right nowrap all",
-                    width: "60px",
-                    orderable: false,
-                    searchable: false,
-                    render: artists_edit_col
-                },
-                {
-                    name: "remove",
-                    data: null,
-                    className: "text-right nowrap all",
-                    width: "100px",
-                    orderable: false,
-                    searchable: false,
-                    render: artists_remove_col
+                    orderable: true,
+                    datatableSequence: {
+                        position: "displayed",
+                        footerSearch: true,
+                    }
                 },
                 {
                     name: "description",
+                    title: "${_('Description')}",
                     data: "description",
                     className: "none",
                     orderable: false,
                     searchable: true,
-                },
-                {
-                    name: "sequence_item",
-                    data: "sequence_item",
-                    className: "sequence_item hidden",
-                    orderable: false,
-                    searchable: false,
+                    datatableSequence: {
+                        position: "collapsed",
+                    }
                 },
                 {
                     name: "email",
+                    title: "${_('Email')}",
                     data: "email",
                     visible: false,
                     orderable: false,
                     searchable: false,
-                },
-                {
-                    name: "mode",
-                    data: "mode",
-                    visible: false,
-                    orderable: false,
-                    searchable: false,
-                },
-                {
-                    name: "key",
-                    data: "key",
-                    visible: false,
-                    orderable: false,
-                    searchable: false,
-                }
-            ];
-            /* initialize */
-            artists = $('#cs-table-artists').DataTable({
-                paging: false,
-                info: false,
-                searching: false,
-                autoWidth: false,
-                fixedHeader: true,
-                responsive: {
-                    details: {
-                        renderer: addartist_more_div,
-                        type: 'column'
+                    datatableSequence: {
+                        position: "invisible",
+                        createShow: true,
+                        createForm: true,
+                        createError: true
                     }
                 },
-                columns: artists_columns,
-                order: [
-                    [ 1, "asc" ]
-                ]
-            });
-            /* more */
-            $('#cs-table-artists tbody').on('click', 'span.more', function() {
-                var row = artists.row($(this).closest('tr'));
-                if (row.child.isShown()) {
-                    row.child().show();
-                    $(this).html('<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>');
-                } else {
-                    row.child(true);
-                    $(this).html('<span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>');
-                }
-            });
-            /* redraw bug in bootstrap tabs */
-            $("a[data-toggle=\"tab\"]").on("shown.bs.tab", function(e) {
-                artists.columns.adjust();
-            });
-        });
-    </script>
-
-
-    <!-- AddArtist -->
-
-    <!-- AddArtist: Header -->
-    <h2 i18n:translate="">Add</h2>
-    <!-- AddArtist: Datatable -->
-    <div class="container-fluid">
-        <table id="cs-table-addartist"
-               class="table table-hover cs-datatables">
-            <thead>
-                <th></th>
-                <th i18n:translate="">Name</th>
-                <th i18n:translate="">Code</th>
-                <th></th>
-                <th i18n:translate="">Description</th>
-            </thead>
-            <tfoot>
-                <th></th>
-                <th i18n:translate="" class="multifilter">Search Name</th>
-                <th i18n:translate="" class="multifilter">Search Code</th>
-                <th></th>
-                <th></th>
-            </tfoot>
-        </table>
-    </div>
-    <!-- AddArtist: Scripts -->
-    <script>
-        /* format */
-        function addartist_more_col(data, type, row, meta) {
-            var hasData = false;
-            var artists = $('#cs-table-addartist').DataTable();
-            var isVisible = addartist.columns().responsiveHidden();
-            addartist.row(meta.row).columns().every(function(index) {
-                var name = addartist_columns[index].name;
-                if(!isVisible[index] && data[name])
-                    hasData = true;
-            });
-            if(hasData)
-                return '<span class="more">' +
-                            '<span class="glyphicon glyphicon-zoom-in"></span>' +
-                       '</span>';
-            return '';
-        }
-        function addartist_more_div(api, rowIdx, columns) {
-            var data = jQuery.map(columns, function(col, i) {
-                if(!col.data)
-                    return '';
-                return col.hidden ?
-                    '<tr data-dt-row="' + col.rowIndex + '" data-dt-column="' + col.columnIndex + '">' +
-                        '<td>' + col.title + ':' + '</td> ' +
-                        '<td>' + col.data + '</td>'+
-                    '</tr>' : '';
-            }).join('');
-            return data ? $('<table class="table"/>').append(data) : false;
-        }
-        function addartist_add_col(data, type, row, meta) {
-            return  '<a href="#" onclick="return add_artist(' + meta.row + ');">' +
-                        '<span class="glyphicon glyphicon-plus"></span> ' +
-                        '<span i18n:translate="">Add</span>' +
-                    '</a>';
-        }
-        $(document).ready(function() {
-            /* columns */
-            addartist_columns = [
-                {
-                    name: "more",
-                    data: null,
-                    className: "text-center all",
-                    width: "30px",
-                    orderable: false,
-                    searchable: false,
-                    render: addartist_more_col
-                },
-                {
-                    name: "name",
-                    data: "name",
-                    className: "all",
-                    orderable: true
-                },
-                {
-                    name: "code",
-                    data: "code",
-                    orderable: true
-                },
-                {
-                    name: "add",
-                    data: null,
-                    width: "100px",
-                    className: "text-right nowrap all",
-                    orderable: false,
-                    searchable: false,
-                    render: addartist_add_col
-                },
-                {
-                    name: "description",
-                    data: "description",
-                    className: "none",
-                    orderable: false,
-                    searchable: true,
-                },
-            ];
-            /* initialize */
-            addartist = $('#cs-table-addartist').DataTable({
-                processing: true,
-                serverSide: true,
-                searchDelay: 600,
-                fixedHeader: true,
-                responsive: {
-                    details: {
-                        renderer: addartist_more_div,
-                        type: 'column'
-                    }
-                },
-                autoWidth: false,
-                ajax: {
-                    type: "POST",
-                    contentType: "application/json; charset=utf-8",
-                    url: "${api}/artists",
-                    xhrFields: {withCredentials: true},
-                    dataType: "json",
-                    data: function(args) {
-                        args.group = false;
-                        return JSON.stringify(args);
-                    }
-                },
-                columns: addartist_columns,
-                order: [
-                    [ 1, "asc" ]
-                ]
-            });
-            /* more */
-            $('#cs-table-addartist tbody').on('click', 'span.more', function() {
-                var row = addartist.row($(this).closest('tr'));
-                if (row.child.isShown()) {
-                    row.child().show();
-                    $(this).html('<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>');
-                } else {
-                    row.child(true);
-                    $(this).html('<span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>');
-                }
-            });
-            /* column search */
-            $('#cs-table-addartist tfoot th.multifilter').each(function () {
-                var title = $(this).text();
-                $(this).html('<input type="text" placeholder="Search '+title+'" />');
-            });
-            addartist.columns().every(function () {
-                var that = this;
-                $('input', this.footer()).on('keyup change', function() {
-                    if (that.search() !== this.value) {
-                        that.search( this.value ).draw();
-                    }
-                });
-            });
-            /* redraw bug in bootstrap tabs */
-            $("a[data-toggle=\"tab\"]").on("shown.bs.tab", function (e) {
-                addartist.columns.adjust();
-            });
-        });
+            ],
+        }).init();
     </script>
 
 </div>

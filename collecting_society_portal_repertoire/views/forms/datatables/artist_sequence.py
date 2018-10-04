@@ -4,21 +4,19 @@
 import colander
 import deform
 
+from collecting_society_portal.views.forms.datatables import (
+    DatatableSequenceWidget
+)
+
 
 # --- Fields ------------------------------------------------------------------
 
 @colander.deferred
 def artists_sequence_widget(node, kw):
-    request = kw.get('request')
-    settings = request.registry.settings
-    return deform.widget.SequenceWidget(
+    return DatatableSequenceWidget(
+        request=kw.get('request'),
         template='datatables/artist_sequence',
         item_template='datatables/artist_sequence_item',
-        category='structural',
-        api=''.join([
-            settings['api.datatables.url'], '/',
-            settings['api.datatables.version']
-        ])
     )
 
 
@@ -41,6 +39,13 @@ class CodeField(colander.SchemaNode):
     missing = ""
 
 
+class DescriptionField(colander.SchemaNode):
+    oid = "description"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    missing = ""
+
+
 class EmailField(colander.SchemaNode):
     oid = "email"
     schema_type = colander.String
@@ -49,20 +54,14 @@ class EmailField(colander.SchemaNode):
     missing = ""
 
 
-class KeyField(colander.SchemaNode):
-    oid = "key"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-
-
 # --- Schemas -----------------------------------------------------------------
 
 class ArtistSchema(colander.Schema):
     mode = ModeField()
     name = NameField()
+    description = DescriptionField()
     code = CodeField()
     email = EmailField()
-    key = KeyField()
     title = ""
 
 

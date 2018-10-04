@@ -182,6 +182,10 @@ def web_registry(config):
             self.request.static_path(
                 'collecting_society_portal:'
                 'static/lib/DataTables/datatables.min.js'
+            ),
+            self.request.static_path(
+                'collecting_society_portal:'
+                'static/js/deform.datatables.widget.js'
             )
         ]
         # favicon

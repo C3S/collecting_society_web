@@ -70,8 +70,8 @@ class EditArtist(FormController):
                     'mode': "add",
                     'name': member.name,
                     'code': member.code,
-                    'email': "",
-                    'key': member.code,
+                    'description': member.description,
+                    'email': ""
                 })
             self.appstruct['members'] = _members
 
@@ -123,10 +123,6 @@ class EditArtist(FormController):
             members_add = []
             members_create = []
             for member in self.appstruct['members']:
-
-                # sanity checks
-                if member['key'] == "NEW":
-                    continue
 
                 # add existing artists
                 if member['mode'] == "add":

@@ -191,7 +191,8 @@ def post_artists(request):
         records.append({
             'name': artist.name,
             'code': artist.code,
-            'description': artist.description
+            'description': artist.description,
+            'email': ""  # TODO: return for foreign objects
         })
     # response
     return {
@@ -200,7 +201,6 @@ def post_artists(request):
         'recordsFiltered': filtered,
         'data': records,
     }
-
 
 
 # --- service: labels --------------------------------------------------------
