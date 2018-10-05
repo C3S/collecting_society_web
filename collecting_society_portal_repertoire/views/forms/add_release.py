@@ -75,12 +75,12 @@ class AddRelease(FormController):
             release['picture_data_mime_type'] = mimetype
         # label tab
         tab = 'label'
-        if self.appstruct[tab]['label_code']:
-            label = Label.search_by_gvl_code(
-                self.appstruct[tab]['label_code'])
-            if label:
-                release['label'] = label
-        get_formdata('label_name')
+        # if self.appstruct[tab]['label_code']:
+        #     label = Label.search_by_gvl_code(
+        #         self.appstruct[tab]['label_code'])
+        #     if label:
+        #         release['label'] = label
+        # get_formdata('label_name')
         get_formdata('label_catalog_number')
         # production tab
         tab = 'production'
@@ -183,20 +183,20 @@ def labels_select_widget(node, kw):
     return widget
 
 
-class LabelCodeField(colander.SchemaNode):
-    oid = "label_code"
-    schema_type = colander.String
-    widget = deform.widget.TextInputWidget()
-    validator = colander.Regex('^\d{5}$',
-                               msg=_('Please enter a valid five-digit '
-                                     'GVL code'))
+# class LabelCodeField(colander.SchemaNode):
+#     oid = "label_code"
+#     schema_type = colander.String
+#     widget = deform.widget.TextInputWidget()
+#     validator = colander.Regex('^\d{5}$',
+#                                msg=_('Please enter a valid five-digit '
+#                                      'GVL code'))
 
 
-class LabelNameField(colander.SchemaNode):
-    oid = "label_name"
-    schema_type = colander.String
-    widget = deform.widget.TextInputWidget()
-    missing = ""
+# class LabelNameField(colander.SchemaNode):
+#     oid = "label_name"
+#     schema_type = colander.String
+#     widget = deform.widget.TextInputWidget()
+#     missing = ""
 
 
 class LabelCatalogNumberField(colander.SchemaNode):
@@ -294,6 +294,7 @@ def deferred_checkbox_widget(node, kw):
     widget = deform.widget.CheckboxChoiceWidget(values=genre_options)
     return widget
 
+
 @colander.deferred
 def deferred_checkbox_widget_style(node, kw):
     styles = Style.search_all()
@@ -334,9 +335,9 @@ class GeneralSchema(colander.Schema):
 
 class LabelSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    label_selector = LabelSequence(title=_(u"Select Label"))
-    label_code = LabelCodeField(title=_(u"Label Code"))
-    label_name = LabelNameField(title=_(u"Label Name"))
+    label = LabelSequence(title=_(u"Select Label"))
+    # label_code = LabelCodeField(title=_(u"Label Code"))
+    # label_name = LabelNameField(title=_(u"Label Name"))
     label_catalog_number = LabelCatalogNumberField(
         title=_(u"Label Catalog Number of Release"))
 

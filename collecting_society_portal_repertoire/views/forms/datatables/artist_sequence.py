@@ -12,11 +12,10 @@ from collecting_society_portal.views.forms.datatables import (
 # --- Fields ------------------------------------------------------------------
 
 @colander.deferred
-def artists_sequence_widget(node, kw):
+def artist_sequence_widget(node, kw):
     return DatatableSequenceWidget(
         request=kw.get('request'),
-        template='datatables/artist_sequence',
-        item_template='datatables/artist_sequence_item',
+        template='datatables/artist_sequence'
     )
 
 
@@ -67,4 +66,4 @@ class ArtistSchema(colander.Schema):
 
 class ArtistSequence(colander.SequenceSchema):
     artist = ArtistSchema()
-    widget = artists_sequence_widget
+    widget = artist_sequence_widget

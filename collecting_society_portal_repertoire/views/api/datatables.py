@@ -241,7 +241,7 @@ def post_labels(request):
     for column in data['columns']:
         if not column['searchable'] or not column['search']['value']:
             continue
-        if column['name'] in ['name', 'code']:
+        if column['name'] in ['name', 'gvl_code']:
             search = Tdb.escape(column['search']['value'], wrap=True)
             domain.append((column['name'], 'ilike', search))
     # order

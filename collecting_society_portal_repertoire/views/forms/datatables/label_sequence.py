@@ -4,28 +4,33 @@
 import colander
 import deform
 
+from collecting_society_portal.views.forms.datatables import (
+    DatatableSequenceWidget
+)
+
 
 # --- Fields ------------------------------------------------------------------
 
 @colander.deferred
-def labels_sequence_widget(node, kw):
-    request = kw.get('request')
-    settings = request.registry.settings
-    return deform.widget.SequenceWidget(
+def label_sequence_widget(node, kw):
+    return DatatableSequenceWidget(
+        request=kw.get('request'),
         template='datatables/label_sequence',
-        item_template='datatables/label_sequence_item',
-        category='structural',
-        api=''.join([
-            settings['api.datatables.url'], '/',
-            settings['api.datatables.version']
-        ])
+        max_len=1
     )
+
+
+class ModeField(colander.SchemaNode):
+    oid = "mode"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
 
 
 class GvlCodeField(colander.SchemaNode):
     oid = "gvl_code"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
+    missing = ""
 
 
 class NameField(colander.SchemaNode):
@@ -37,6 +42,7 @@ class NameField(colander.SchemaNode):
 # --- Schemas -----------------------------------------------------------------
 
 class LabelSchema(colander.Schema):
+    mode = ModeField()
     name = NameField()
     gvl_code = GvlCodeField()
     title = ""
@@ -44,4 +50,4 @@ class LabelSchema(colander.Schema):
 
 class LabelSequence(colander.SequenceSchema):
     label = LabelSchema()
-    widget = labels_sequence_widget
+    widget = label_sequence_widget
