@@ -64,6 +64,13 @@ h1, .h1 { color:#317a19 }
 .cs-navform .cs-nav-pills .active .cs-error,
 .cs-navform .cs-nav-pills .active .cs-error:hover { background-image: none; background-color:#a94442; color:#fff; }
 
+.dataTables_wrapper .dataTables_processing { background: url('../img/element-menue-bg.png'); opacity:0.9; color:#fff; }
+.cs-modal-header { background: url('../img/element-menue-bg.png'); opacity:0.9; color:#fff; }
+.cs-modal-header .close { color:#fff; margin-left:7px; margin-top:0; opacity:0.7; text-shadow: 0 1px 0 #000; }
+.cs-modal-header .close:hover { color:#fff; opacity:1; }
+.cs-modal .pinned,
+.cs-modal .pinned:hover { color:#faa; opacity:1; }
+
 /* Content Left */
 
 .cs-content-left { background: url('../img/element-menue-bg.png'); padding-top:6px; }
