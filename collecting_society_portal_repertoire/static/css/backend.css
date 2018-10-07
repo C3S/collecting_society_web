@@ -70,6 +70,7 @@ h1, .h1 { color:#317a19 }
 .cs-modal-header .close:hover { color:#fff; opacity:1; }
 .cs-modal .pinned,
 .cs-modal .pinned:hover { color:#faa; opacity:1; }
+.cs-row-controls a.btn { width:80px; }
 
 /* Content Left */
 
