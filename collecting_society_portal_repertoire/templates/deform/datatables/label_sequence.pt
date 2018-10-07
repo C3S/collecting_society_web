@@ -1,6 +1,7 @@
 <div tal:define="item_tmpl item_template|field.widget.item_template;
                  oid oid|field.oid;
                  name field.name;
+                 title title|field.title;
                  min_len min_len|field.widget.min_len;
                  min_len min_len or 0;
                  max_len max_len|field.widget.max_len;
@@ -8,15 +9,18 @@
                  now_len len(subfields);
                  orderable orderable|field.widget.orderable;
                  orderable orderable and 1 or 0;
-                 prototype field.widget.prototype(field);
-                 rows rows;
-                 lang lang;
-                 api api"
+                 prototype field.widget.prototype(field)"
      i18n:domain="collecting_society_portal_repertoire">
+
+    <script>
+        $(document).ready(function() {
+            $('#cs-navform-item-menu-label a').first().click();
+        });
+    </script>
 
     <!-- html node for tables -->
     <div class="datatable_sequence_${oid}"
-         data-rows="${rows}" data-lang="${lang}"></div>
+         data-data="${data}" data-language="${language}"></div>
 
     <!-- datatable sequence-->
     <script>
@@ -24,6 +28,7 @@
         var datatableSequence = new deform.DatatableSequence({
             oid: "${oid}",
             name: "${name}",
+            title: "${title}",
             minLen: "${min_len}",
             maxLen: "${max_len}",
             nowLen: "${now_len}",
