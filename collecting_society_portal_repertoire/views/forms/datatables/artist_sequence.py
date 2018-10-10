@@ -13,8 +13,14 @@ from collecting_society_portal.views.forms.datatables import (
 log = logging.getLogger(__name__)
 
 
-def ignore_required_email(value):
+def email_ignored(value):
     return value if value else "IGNORE@DUMMY.EMAIL"
+
+
+def email_required_conditionally(value):
+    if value['mode'] != "add" and value['email'] == "IGNORE@DUMMY.EMAIL":
+        value['email'] = ""
+    return value
 
 
 # --- Fields ------------------------------------------------------------------
@@ -31,6 +37,7 @@ class ModeField(colander.SchemaNode):
     oid = "mode"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
+    validator = colander.OneOf(['add', 'create', 'edit'])
 
 
 class NameField(colander.SchemaNode):
@@ -58,7 +65,7 @@ class EmailField(colander.SchemaNode):
     schema_type = colander.String
     widget = deform.widget.TextInputWidget()
     validator = colander.Email()
-    preparer = [ignore_required_email]
+    preparer = [email_ignored]
 
 
 # --- Schemas -----------------------------------------------------------------
@@ -70,6 +77,7 @@ class ArtistSchema(colander.Schema):
     code = CodeField()
     email = EmailField()
     title = ""
+    preparer = [email_required_conditionally]
 
 
 class ArtistSequence(colander.SequenceSchema):

@@ -12,12 +12,6 @@
                  prototype field.widget.prototype(field)"
      i18n:domain="collecting_society_portal_repertoire">
 
-    <script>
-        $(document).ready(function() {
-            $('#cs-navform-item-menu-label a').first().click();
-        });
-    </script>
-
     <!-- html node for tables -->
     <div class="datatable_sequence_${oid}"
          data-data="${data}" data-language="${language}"></div>
@@ -30,10 +24,10 @@
             name: "${name}",
             title: "${title}",
             minLen: "${min_len}",
-            maxLen: "${max_len}",
-            nowLen: "${now_len}",
+            maxLen: "${max_len}",            
             proto: "${prototype}",
             api: "${api}/labels",
+            unique: false,
             columns: [
                 {
                     name: "name",

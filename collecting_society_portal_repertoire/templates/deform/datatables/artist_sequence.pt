@@ -12,12 +12,6 @@
                  prototype field.widget.prototype(field)"
      i18n:domain="collecting_society_portal_repertoire">
 
-    <script>
-        $(document).ready(function() {
-            $('#cs-navform-item-menu-members a').first().click();
-        });
-    </script>
-
     <!-- html node for tables -->
     <div class="datatable_sequence_${oid}"
          data-data="${data}" data-language="${language}"></div>
@@ -28,10 +22,9 @@
         var datatableSequence = new deform.DatatableSequence({
             oid: "${oid}",
             name: "${name}",
-            title: "${title}",
+            title: false,
             minLen: "${min_len}",
             maxLen: "${max_len}",
-            nowLen: "${now_len}",
             proto: "${prototype}",
             api: "${api}/artists",
             unique: "code",
@@ -44,10 +37,9 @@
                     orderable: true,
                     datatableSequence: {
                         position: "displayed",
+                        widgetType: 'TextInputWidget',
                         footerSearch: true,
                         createShow: true,
-                        createForm: true,
-                        createError: true
                     }
                 },
                 {
@@ -57,6 +49,7 @@
                     orderable: true,
                     datatableSequence: {
                         position: "displayed",
+                        widgetType: 'HiddenWidget',
                         footerSearch: true,
                     }
                 },
@@ -69,6 +62,7 @@
                     searchable: true,
                     datatableSequence: {
                         position: "collapsed",
+                        widgetType: 'HiddenWidget',
                     }
                 },
                 {
@@ -80,9 +74,8 @@
                     searchable: false,
                     datatableSequence: {
                         position: "invisible",
+                        widgetType: 'TextInputWidget',
                         createShow: true,
-                        createForm: true,
-                        createError: true
                     }
                 },
             ],

@@ -61,8 +61,8 @@ h1, .h1 { color:#317a19 }
 .cs-navform .cs-nav-pills .active a:hover { background: url('../img/element-menue-bg.png'); opacity:0.9; }
 .cs-navform .cs-nav-pills .cs-error,
 .cs-navform .cs-nav-pills .cs-error:hover { background-color:#f2dede; color:#a94442; }
-.cs-navform .cs-nav-pills .active .cs-error,
-.cs-navform .cs-nav-pills .active .cs-error:hover { background-image: none; background-color:#a94442; color:#fff; }
+.cs-navform .cs-nav-pills .active .cs-error { background-image: none; background-color:#d9534f; color:#fff; }
+.cs-navform .cs-nav-pills .active .cs-error:hover { background-image: none; background-color:#c9302c; color:#fff; }
 
 .dataTables_wrapper .dataTables_processing { background: url('../img/element-menue-bg.png'); opacity:0.9; color:#fff; }
 .cs-modal-header { background: url('../img/element-menue-bg.png'); opacity:0.9; color:#fff; }
