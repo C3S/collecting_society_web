@@ -128,13 +128,6 @@ class EditArtist(FormController):
             members_remove = members_current
             members_add = []
             members_create = []
-            log.debug(
-                (
-                    "self.appstruct: %s\n"
-                ) % (
-                    self.appstruct
-                )
-            )
             for member in self.appstruct['members']:
 
                 # add existing artists

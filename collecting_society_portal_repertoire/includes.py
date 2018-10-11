@@ -181,12 +181,16 @@ def web_registry(config):
         reg['static']['js']['head'] = [
             self.request.static_path(
                 'collecting_society_portal:'
+                'static/lib/JavaScript-Templates/js/tmpl.min.js'
+            ),
+            self.request.static_path(
+                'collecting_society_portal:'
                 'static/lib/DataTables/datatables.min.js'
             ),
             self.request.static_path(
                 'collecting_society_portal:'
                 'static/js/deform.datatables.widget.js'
-            )
+            ),
         ]
         # favicon
         reg['static']['favicon'] = self.request.static_path(
@@ -323,10 +327,6 @@ def web_registry(config):
         # js
         reg['static']['js']['body'] = [
             self.request.static_path(jfu + 'js/vendor/jquery.ui.widget.js'),
-            self.request.static_path(
-                'collecting_society_portal:'
-                'static/lib/JavaScript-Templates/js/tmpl.min.js'
-            ),
             self.request.static_path(
                 'collecting_society_portal:'
                 'static/lib/JavaScript-Load-Image/js/load-image.all.min.js'
