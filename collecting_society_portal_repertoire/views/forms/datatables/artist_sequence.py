@@ -81,5 +81,5 @@ class ArtistSchema(colander.Schema):
 
 
 class ArtistSequence(colander.SequenceSchema):
-    artist = ArtistSchema()
+    artist_sequence = ArtistSchema()
     widget = artist_sequence_widget

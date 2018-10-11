@@ -24,6 +24,7 @@ class ModeField(colander.SchemaNode):
     oid = "mode"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
+    validator = colander.OneOf(['add', 'create', 'edit'])
 
 
 class GvlCodeField(colander.SchemaNode):
@@ -36,7 +37,7 @@ class GvlCodeField(colander.SchemaNode):
 class NameField(colander.SchemaNode):
     oid = "name"
     schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
+    widget = deform.widget.TextInputWidget()
 
 
 # --- Schemas -----------------------------------------------------------------
@@ -49,5 +50,5 @@ class LabelSchema(colander.Schema):
 
 
 class LabelSequence(colander.SequenceSchema):
-    label = LabelSchema()
+    label_sequence = LabelSchema()
     widget = label_sequence_widget

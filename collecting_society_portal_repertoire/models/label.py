@@ -83,6 +83,13 @@ class Label(Tdb):
           obj: label
           None: if no match is found
         """
+        log.debug(
+            (
+                "gvl_code: %s\n"
+            ) % (
+                gvl_code
+            )
+        )
         result = cls.get().search([('gvl_code', '=', gvl_code)])
         return result[0] or None
 

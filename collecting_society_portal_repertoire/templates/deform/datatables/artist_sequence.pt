@@ -19,7 +19,7 @@
             var datatableSequence = new deform.DatatableSequence({
                 oid: "${oid}",
                 name: "${name}",
-                title: false,
+                title: "${title}",
                 minLen: "${min_len}",
                 maxLen: "${max_len}",
                 proto: "${prototype}",

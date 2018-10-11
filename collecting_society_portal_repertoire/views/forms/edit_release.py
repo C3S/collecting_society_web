@@ -41,16 +41,17 @@ class EditRelease(FormController):
             return self.redirect(ReleaseResource, 'list')
         self.context.release_code = code
 
-        self.form = add_release_form(self.request)  # schemas from add_release
+        # choose form
+        self.form = add_release_form(self.request)
 
-        if not (self.submitted() and self.validate()):
-            self.load_release()
-            self.render(self.appstruct)
+        # process form
+        if self.submitted():
+            if self.validate():
+                self.update_release()
+        else:
+            self.edit_release()
             # attach release to display image in template
             self.response.update({'release': self.release})
-        else:
-            # submit validated data from form
-            self.save_release()
 
         return self.response
 
@@ -61,106 +62,163 @@ class EditRelease(FormController):
     # --- Actions -------------------------------------------------------------
 
     @Tdb.transaction(readonly=True)
-    def load_release(self):
+    def edit_release(self):
+        r = self.release
 
-        # tab superstructure
+        # set appstruct
         self.appstruct = {
-            'general': {},
-            'label': {},
-            'production': {},
-            'distribution': {},
-            'genres': {}
+            'general': {
+                'title':
+                    r.title or '',
+                'number_mediums':
+                    r.number_mediums or '',
+                'ean_upc_code':
+                    r.ean_upc_code or '',
+                'isrc_code':
+                    r.isrc_code or '',
+                'warning':
+                    r.warning or '',
+            },
+            'label': {
+                'label_catalog_number':
+                    r.label_catalog_number or '',
+            },
+            'production': {
+                'copyright_date':
+                    r.copyright_date or '',
+                'production_date':
+                    r.production_date or '',
+                'producer':
+                    r.producer or '',
+            },
+            'distribution': {
+                'release_date':
+                    r.release_date or '',
+                'release_cancellation_date':
+                    r.release_cancellation_date or '',
+                'online_release_date':
+                    r.online_release_date or '',
+                'online_cancellation_date':
+                    r.online_cancellation_date or '',
+                'distribution_territory':
+                    r.distribution_territory or '',
+                'neighbouring_rights_society':
+                    r.neighbouring_rights_society or '',
+            },
+            'genres': {
+                'genres':
+                    [unicode(genre.id) for genre in r.genres],
+                'styles':
+                    [unicode(style.id) for style in r.styles],
+            }
         }
 
-        # initialize form
+        # set label
+        if r.label:
+            self.appstruct['label']['label'] = [{
+                'mode': 'add',
+                'name': r.label.name,
+                'gvl_code': r.label.gvl_code,
+            }]
+        elif r.label_name:
+            self.appstruct['label']['label'] = [{
+                'mode': 'edit',
+                'name': r.label_name,
+                'gvl_code': '',
+            }]
 
-        # general tab
-        tab = 'general'
-        def set_formdata(value):    # a little embedded helper function
-            self.appstruct[tab][value] = getattr(self.release, value) or ""
-        set_formdata('title')
-        set_formdata('number_mediums')
-        set_formdata('ean_upc_code')
-        set_formdata('isrc_code')
-        set_formdata('warning')
-        # label tab
-        tab = 'label'
-        self.appstruct[tab]['label_code'] = self.release.label.gvl_code
-        set_formdata('label_name')
-        set_formdata('label_catalog_number')
-        # production tab
-        tab = 'production'
-        set_formdata('copyright_date')
-        set_formdata('production_date')
-        set_formdata('producer')
-        # distribution tab
-        tab = 'distribution'
-        set_formdata('release_date')
-        set_formdata('release_cancellation_date')
-        set_formdata('online_release_date')
-        set_formdata('online_cancellation_date')
-        set_formdata('distribution_territory')
-        set_formdata('neighbouring_rights_society')
-        # genres tab
-        tab = 'genres'
-        self.appstruct[tab]['genres'] = [
-            unicode(genre.id) for genre in self.release.genres]
-        self.appstruct[tab]['styles'] = [
-            unicode(style.id) for style in self.release.styles]
+        # render form with data
+        self.render(self.appstruct)
 
     @Tdb.transaction(readonly=False)
-    def save_release(self):
+    def update_release(self):
+        a = self.appstruct
+        email = self.request.unauthenticated_userid
+        release = self.release
 
-        # general tab
-        tab = 'general'
+        # generate vlist
+        _release = {
+            'title':
+                a['general']['title'],
+            'number_mediums':
+                a['general']['number_mediums'],
+            'ean_upc_code':
+                a['general']['ean_upc_code'],
+            'isrc_code':
+                a['general']['isrc_code'],
+            'warning':
+                a['general']['warning'],
+            'label_catalog_number':
+                a['label']['label_catalog_number'],
+            'copyright_date':
+                a['production']['copyright_date'],
+            'production_date':
+                a['production']['production_date'],
+            'producer':
+                a['production']['producer'],
+            'release_date':
+                a['distribution']['release_date'],
+            'release_cancellation_date':
+                a['distribution']['release_cancellation_date'],
+            'online_release_date':
+                a['distribution']['online_release_date'],
+            'online_cancellation_date':
+                a['distribution']['online_cancellation_date'],
+            'distribution_territory':
+                a['distribution']['distribution_territory'],
+            'neighbouring_rights_society':
+                a['distribution']['neighbouring_rights_society'],
+            'genres':
+                [('add', map(int, a['genres']['genres']))],
+            'styles':
+                [('add', map(int, a['genres']['styles']))],
+        }
 
-        def get_formdata(value):  # a little embedded helper function
-            if self.appstruct[tab][value]:
-                setattr(self.release, value, self.appstruct[tab][value])
-        get_formdata('title')
-        get_formdata('number_mediums')
-        get_formdata('ean_upc_code')
-        get_formdata('isrc_code')
-        get_formdata('warning')
-        if self.appstruct['general']['picture']:
-            with open(self.appstruct['general']['picture']['fp'].name,
+        # label
+        _label = a['label']['label'] and a['label']['label'][0]
+        if not _label:
+            release.label_name = None
+            release.label = None
+            release.save()
+        else:
+            if _label['mode'] == "add":
+                label = Label.search_by_gvl_code(_label['gvl_code'])
+                if label:
+                    release.label_name = None
+                    release.label = label.id
+                    release.save()
+            if _label['mode'] in ["create", "edit"]:
+                release.label_name = _label['name']
+                release.label = None
+                release.save()
+
+        # picture
+        if a['general']['picture']:
+            with open(a['general']['picture']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
-            mimetype = self.appstruct['general']['picture']['mimetype']
-            self.release.picture_data = picture_data
-            self.release.picture_data_mime_type = mimetype
-        # label tab
-        tab = 'label'
-        if self.appstruct[tab]['label_code']:
-            label = Label.search_by_gvl_code(
-                self.appstruct[tab]['label_code'])
-            if label:
-                self.release.label = label
-        get_formdata('label_name')
-        get_formdata('label_catalog_number')
-        # production tab
-        tab = 'production'
-        get_formdata('copyright_date')
-        get_formdata('production_date')
-        get_formdata('producer')
-        # distribution tab
-        tab = 'distribution'
-        get_formdata('release_date')
-        get_formdata('release_cancellation_date')
-        get_formdata('online_release_date')
-        get_formdata('online_cancellation_date')
-        get_formdata('distribution_territory')
-        get_formdata('neighbouring_rights_society')
-        # genres tab
-        tab = 'genres'
-        if self.appstruct[tab]['genres']:
-            self.release.genres = self.appstruct[tab]['genres']
-        if self.appstruct[tab]['styles']:
-            self.release.styles = self.appstruct[tab]['styles']
+            mimetype = a['general']['picture']['mimetype']
+            _release['picture_data'] = picture_data
+            _release['picture_data_mime_type'] = mimetype
 
-        self.release.save()
+        # remove empty fields
+        for index, value in _release.items():
+            if not value:
+                del _release[index]
 
+        # update release
+        release.write([release], _release)
+
+        # user feedback
+        log.info("edit release successful for %s: %s" % (email, release))
+        self.request.session.flash(
+            _(u"Release edited: ") + release.title + " (" + release.code + ")",
+            'main-alert-success'
+        )
+
+        # redirect
         self.redirect(ReleaseResource, 'list')
+
 
 # --- Validators --------------------------------------------------------------
 

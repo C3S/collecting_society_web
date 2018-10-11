@@ -1,60 +1,61 @@
-<div tal:define="item_tmpl item_template|field.widget.item_template;
-                 oid oid|field.oid;
-                 name field.name;
-                 title title|field.title;
-                 min_len min_len|field.widget.min_len;
-                 min_len min_len or 0;
-                 max_len max_len|field.widget.max_len;
-                 max_len max_len or 100000;
-                 now_len len(subfields);
-                 orderable orderable|field.widget.orderable;
-                 orderable orderable and 1 or 0;
-                 prototype field.widget.prototype(field)"
-     i18n:domain="collecting_society_portal_repertoire">
-
-    <!-- html node for tables -->
-    <div class="datatable_sequence_${oid}"
-         data-data="${data}" data-language="${language}"></div>
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_portal_repertoire"
+           tal:define="oid oid|field.oid;
+                       name field.name;
+                       title title|field.title;
+                       min_len min_len|field.widget.min_len;
+                       min_len min_len or 0;
+                       max_len max_len|field.widget.max_len;
+                       max_len max_len or 100000;
+                       now_len len(subfields);
+                       orderable orderable|field.widget.orderable;
+                       orderable orderable and 1 or 0;
+                       prototype field.widget.prototype(field)">
 
     <!-- datatable sequence-->
-    <script>
-        // init of datatable sequence
-        var datatableSequence = new deform.DatatableSequence({
-            oid: "${oid}",
-            name: "${name}",
-            title: "${title}",
-            minLen: "${min_len}",
-            maxLen: "${max_len}",            
-            proto: "${prototype}",
-            api: "${api}/labels",
-            unique: false,
-            columns: [
-                {
-                    name: "name",
-                    title: "${_('Name')}",
-                    data: "name",
-                    className: "all",
-                    orderable: true,
-                    datatableSequence: {
-                        position: "displayed",
-                        footerSearch: true,
-                        createShow: true,
-                        createForm: true,
-                        createError: true
-                    }
-                },
-                {
-                    name: "gvl_code",
-                    title: "${_('Code')}",
-                    data: "gvl_code",
-                    orderable: true,
-                    datatableSequence: {
-                        position: "displayed",
-                        footerSearch: true,
-                    }
-                },
-            ],
-        }).init();
-    </script>
+    <tal:block metal:fill-slot="init">
+        <script>
+            // init of datatable sequence
+            var datatableSequence = new deform.DatatableSequence({
+                oid: "${oid}",
+                name: "${name}",
+                title: "${title}",
+                minLen: "${min_len}",
+                maxLen: "${max_len}",            
+                proto: "${prototype}",
+                api: "${api}/labels",
+                unique: false,
+                actions: ['add', 'create', 'edit'],
+                columns: [
+                    {
+                        name: "name",
+                        title: "${_('Name')}",
+                        data: "name",
+                        className: "all",
+                        orderable: true,
+                        render: $.fn.dataTable.render.text(),
+                        datatableSequence: {
+                            position: "displayed",
+                            widgetType: 'TextInputWidget',
+                            footerSearch: true,
+                            createShow: true,
+                        }
+                    },
+                    {
+                        name: "gvl_code",
+                        title: "${_('Code')}",
+                        data: "gvl_code",
+                        orderable: true,
+                        render: $.fn.dataTable.render.text(),
+                        datatableSequence: {
+                            position: "displayed",
+                            widgetType: 'HiddenWidget',
+                            footerSearch: true,
+                        }
+                    },
+                ],
+            }).init();
+        </script>
+    </tal:block>
 
-</div>
+</tal:block>

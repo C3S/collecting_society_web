@@ -17,8 +17,8 @@ from ...services import _
 from ...models import (
     Genre,
     Style,
-    Label,
     Party,
+    Label,
     Release
 )
 from ...resources import ReleaseResource
@@ -35,12 +35,9 @@ class AddRelease(FormController):
     """
 
     def controller(self):
-
         self.form = add_release_form(self.request)
-
         if self.submitted() and self.validate():
-            self.save_release()
-
+            self.create_release()
         return self.response
 
     # --- Stages --------------------------------------------------------------
@@ -50,61 +47,97 @@ class AddRelease(FormController):
     # --- Actions -------------------------------------------------------------
 
     @Tdb.transaction(readonly=False)
-    def save_release(self):
-        release = {
-            'entity_origin': "direct",
-            'entity_creator': WebUser.current_web_user(self.request).party,
-            'title': self.appstruct['general']['title']
-        }
-        # general tab
-        tab = 'general'
+    def create_release(self):
+        a = self.appstruct
+        email = self.request.unauthenticated_userid
+        party = WebUser.current_party(self.request)
 
-        def get_formdata(value):    # a little embedded helper function
-            if self.appstruct[tab][value]:
-                release[value] = self.appstruct[tab][value]
-        get_formdata('number_mediums')
-        get_formdata('ean_upc_code')
-        get_formdata('isrc_code')
-        get_formdata('warning')
-        if self.appstruct['general']['picture']:
-            with open(self.appstruct['general']['picture']['fp'].name,
+        # generate vlist
+        _release = {
+            'entity_origin':
+                "direct",
+            'entity_creator':
+                party,
+            'title':
+                a['general']['title'],
+            'number_mediums':
+                a['general']['number_mediums'],
+            'ean_upc_code':
+                a['general']['ean_upc_code'],
+            'isrc_code':
+                a['general']['isrc_code'],
+            'warning':
+                a['general']['warning'],
+            'label_catalog_number':
+                a['label']['label_catalog_number'],
+            'copyright_date':
+                a['production']['copyright_date'],
+            'production_date':
+                a['production']['production_date'],
+            'producer':
+                a['production']['producer'],
+            'release_date':
+                a['distribution']['release_date'],
+            'release_cancellation_date':
+                a['distribution']['release_cancellation_date'],
+            'online_release_date':
+                a['distribution']['online_release_date'],
+            'online_cancellation_date':
+                a['distribution']['online_cancellation_date'],
+            'distribution_territory':
+                a['distribution']['distribution_territory'],
+            'neighbouring_rights_society':
+                a['distribution']['neighbouring_rights_society'],
+            'genres':
+                [('add', map(int, a['genres']['genres']))],
+            'styles':
+                [('add', map(int, a['genres']['styles']))],
+        }
+
+        # label
+        _label = a['label']['label'] and a['label']['label'][0]
+        if _label:
+            if _label['mode'] is "add":
+                label = Label.search_by_gvl_code(_label['code'])
+                if label:
+                    _release['label'] = label.id
+            if _label['mode'] is "create":
+                _release['label_name'] = _label['name']
+
+        # picture
+        if a['general']['picture']:
+            with open(a['general']['picture']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
-            mimetype = self.appstruct['general']['picture']['mimetype']
-            release['picture_data'] = picture_data
-            release['picture_data_mime_type'] = mimetype
-        # label tab
-        tab = 'label'
-        # if self.appstruct[tab]['label_code']:
-        #     label = Label.search_by_gvl_code(
-        #         self.appstruct[tab]['label_code'])
-        #     if label:
-        #         release['label'] = label
-        # get_formdata('label_name')
-        get_formdata('label_catalog_number')
-        # production tab
-        tab = 'production'
-        get_formdata('copyright_date')
-        get_formdata('production_date')
-        get_formdata('producer')
-        # distribution tab
-        tab = 'distribution'
-        get_formdata('release_date')
-        get_formdata('release_cancellation_date')
-        get_formdata('online_release_date')
-        get_formdata('online_cancellation_date')
-        get_formdata('distribution_territory')
-        get_formdata('neighbouring_rights_society')
-        # genres tab
-        if self.appstruct['genres']['genres']:
-            release['genres'] = [(
-                'add', list(self.appstruct['genres']['genres']))]
-        if self.appstruct['genres']['styles']:
-            release['styles'] = [(
-                'add', list(self.appstruct['genres']['styles']))]
+            mimetype = a['general']['picture']['mimetype']
+            _release['picture_data'] = picture_data
+            _release['picture_data_mime_type'] = mimetype
 
-        Release.create([release])
+        # remove empty fields
+        for index, value in _release.items():
+            if not value:
+                del _release[index]
 
+        # create release
+        release = Release.create([_release])
+
+        # user feedback
+        if not release:
+            log.info("release add failed for %s: %s" % (email, _release))
+            self.request.session.flash(
+                _(u"Release could not be added: ") + _release['title'],
+                'main-alert-danger'
+            )
+            self.redirect(ReleaseResource, 'list')
+            return
+        release = release[0]
+        log.info("release add successful for %s: %s" % (email, release))
+        self.request.session.flash(
+            _(u"Release added: ") + release.title + " (" + release.code + ")",
+            'main-alert-success'
+        )
+
+        # redirect
         self.redirect(ReleaseResource, 'list')
 
 
@@ -171,33 +204,6 @@ class PictureField(colander.SchemaNode):
 
 
 # -- Label tab --
-
-@colander.deferred
-def labels_select_widget(node, kw):
-    labels = Label.search_all()
-    label_options = [
-        (label.gvl_code, 'LC' + label.gvl_code + ' - ' + label.name)
-        for label in labels
-    ]
-    widget = deform.widget.Select2Widget(values=label_options)
-    return widget
-
-
-# class LabelCodeField(colander.SchemaNode):
-#     oid = "label_code"
-#     schema_type = colander.String
-#     widget = deform.widget.TextInputWidget()
-#     validator = colander.Regex('^\d{5}$',
-#                                msg=_('Please enter a valid five-digit '
-#                                      'GVL code'))
-
-
-# class LabelNameField(colander.SchemaNode):
-#     oid = "label_name"
-#     schema_type = colander.String
-#     widget = deform.widget.TextInputWidget()
-#     missing = ""
-
 
 class LabelCatalogNumberField(colander.SchemaNode):
     oid = "label_catalog_number"
@@ -291,7 +297,7 @@ class NeighbouringRightsSocietyField(colander.SchemaNode):
 def deferred_checkbox_widget(node, kw):
     genres = Genre.search_all()
     genre_options = [(genre.id, unicode(genre.name)) for genre in genres]
-    widget = deform.widget.CheckboxChoiceWidget(values=genre_options)
+    widget = deform.widget.Select2Widget(values=genre_options, multiple=True)
     return widget
 
 
@@ -299,7 +305,7 @@ def deferred_checkbox_widget(node, kw):
 def deferred_checkbox_widget_style(node, kw):
     styles = Style.search_all()
     style_options = [(style.id, unicode(style.name)) for style in styles]
-    widget = deform.widget.CheckboxChoiceWidget(values=style_options)
+    widget = deform.widget.Select2Widget(values=style_options, multiple=True)
     return widget
 
 
@@ -335,9 +341,7 @@ class GeneralSchema(colander.Schema):
 
 class LabelSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    label = LabelSequence(title=_(u"Select Label"))
-    # label_code = LabelCodeField(title=_(u"Label Code"))
-    # label_name = LabelNameField(title=_(u"Label Name"))
+    label = LabelSequence(title=_(u"Label"))
     label_catalog_number = LabelCatalogNumberField(
         title=_(u"Label Catalog Number of Release"))
 
@@ -351,6 +355,7 @@ class ProductionSchema(colander.Schema):
 
 
 class DistributionSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
     release_date = ReleaseDateField(title=_(u"Release Date"))
     release_cancellation_date = ReleaseCancellationDateField(
         title=_(u"Release Cancellation Date"))

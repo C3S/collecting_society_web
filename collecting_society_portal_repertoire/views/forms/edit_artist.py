@@ -39,9 +39,9 @@ class EditArtist(FormController):
         # process form
         if self.submitted():
             if self.validate():
-                self.edit_artist()
+                self.update_artist()
         else:
-            self.fill_form()
+            self.edit_artist()
 
         # return response
         return self.response
@@ -53,7 +53,7 @@ class EditArtist(FormController):
     # --- Actions -------------------------------------------------------------
 
     @Tdb.transaction(readonly=True)
-    def fill_form(self):
+    def edit_artist(self):
         artist = self.context.artist
 
         # set appstruct
@@ -79,13 +79,15 @@ class EditArtist(FormController):
                     'description': member.description,
                     'email': email
                 })
-            self.appstruct['members'] = _members
+            self.appstruct['members'] = {
+                'members': _members
+            }
 
         # render form with data
         self.render(self.appstruct)
 
     @Tdb.transaction(readonly=False)
-    def edit_artist(self):
+    def update_artist(self):
         artist = self.context.artist
         email = self.request.unauthenticated_userid
         party = WebUser.current_party(self.request)
@@ -128,7 +130,7 @@ class EditArtist(FormController):
             members_remove = members_current
             members_add = []
             members_create = []
-            for member in self.appstruct['members']:
+            for member in self.appstruct['members']['members']:
 
                 # add existing artists
                 if member['mode'] == "add":
@@ -193,11 +195,11 @@ class EditArtist(FormController):
             # add new member list
             artist.solo_artists = members_future
 
-        # save
+        # update artist
         artist.save()
 
         # user feedback
-        log.info("edit add successful for %s: %s" % (email, artist))
+        log.info("edit artist successful for %s: %s" % (email, artist))
         self.request.session.flash(
             _(u"Artist edited: ") + artist.name + " (" + artist.code + ")",
             'main-alert-success'
@@ -256,11 +258,16 @@ class MetadataSchema(colander.Schema):
     picture_change = PictureChangeField(title=_(u"Change Picture"))
 
 
+class MembersSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    members = ArtistSequence(title="", missing="")
+
+
 class EditArtistSchema(colander.Schema):
     title = _(u"Edit Artist")
     widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
     metadata = MetadataSchema(title=_(u"Metadata"))
-    members = ArtistSequence(title=_(u"Members"), missing="")
+    members = MembersSchema(title=_(u"Members"))
 
 
 # --- Forms -------------------------------------------------------------------

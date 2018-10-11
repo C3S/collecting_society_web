@@ -47,7 +47,7 @@ class AddArtist(FormController):
         email = self.request.unauthenticated_userid
         party = WebUser.current_party(self.request)
 
-        # metadata
+        # generate vlist
         _artist = {
             'group': self.appstruct['metadata']['group'],
             'party': party,
@@ -63,11 +63,11 @@ class AddArtist(FormController):
             _artist['picture_data'] = picture_data
             _artist['picture_data_mime_type'] = mimetype
 
-        # members
+        # set members
         if self.appstruct['metadata']['group']:
             members_add = []
             members_create = []
-            for member in self.appstruct['members']:
+            for member in self.appstruct['members']['members']:
 
                 # add existing artists
                 if member['mode'] == "add":
@@ -174,11 +174,16 @@ class MetadataSchema(colander.Schema):
     picture = PictureField(title=_(u"Picture"))
 
 
+class MembersSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    members = ArtistSequence(title="")
+
+
 class AddArtistSchema(colander.Schema):
     title = _(u"Add Artist")
     widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
     metadata = MetadataSchema(title=_(u"Metadata"))
-    members = ArtistSequence(title=_(u"Members"), missing="")
+    members = MembersSchema(title=_(u"Members"))
 
 
 # --- Forms -------------------------------------------------------------------
