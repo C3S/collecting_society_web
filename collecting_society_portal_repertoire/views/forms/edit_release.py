@@ -2,16 +2,15 @@
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
 import logging
+import deform
 
 from collecting_society_portal.models import Tdb
 from collecting_society_portal.views.forms import FormController
 
 from ...services import _
-from ...models import (
-    Label
-)
+from ...models import Label
 from ...resources import ReleaseResource
-from .add_release import add_release_form
+from .add_release import AddReleaseSchema
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +23,7 @@ class EditRelease(FormController):
     """
 
     def controller(self):
-        self.form = add_release_form(self.request)
+        self.form = edit_release_form(self.request)
         if self.submitted():
             if self.validate():
                 self.update_release()
@@ -203,4 +202,16 @@ class EditRelease(FormController):
 
 # --- Fields ------------------------------------------------------------------
 
-# --> gets Schemas from add_release.py!
+# --- Schemas -----------------------------------------------------------------
+
+# --- Forms -------------------------------------------------------------------
+
+def edit_release_form(request):
+    return deform.Form(
+        schema=AddReleaseSchema(
+            title=_(u"Edit Release")
+        ).bind(request=request),
+        buttons=[
+            deform.Button('submit', _(u"Submit"))
+        ]
+    )
