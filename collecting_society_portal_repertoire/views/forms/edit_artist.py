@@ -1,8 +1,6 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
-import random
-import string
 import logging
 import colander
 import deform
@@ -32,18 +30,12 @@ class EditArtist(FormController):
     """
 
     def controller(self):
-
-        # choose form
         self.form = edit_artist_form(self.request)
-
-        # process form
         if self.submitted():
             if self.validate():
                 self.update_artist()
         else:
             self.edit_artist()
-
-        # return response
         return self.response
 
     # --- Stages --------------------------------------------------------------

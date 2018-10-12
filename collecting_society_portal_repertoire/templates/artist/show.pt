@@ -30,7 +30,7 @@
 
         <img tal:condition="artist.picture_data"
              tal:define="pic h.b64encode(artist.picture_data) | None"
-             class="cs-artist-img clearfix center-block"
+             class="img-responsive cs-artist-img clearfix center-block"
              src="data:${artist.picture_data_mime_type};base64,${pic}" />
 
         <div class="cs-musician-artist">

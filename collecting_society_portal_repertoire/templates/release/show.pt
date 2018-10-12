@@ -30,7 +30,7 @@
 
         <img tal:condition="release.picture_data"
              tal:define="pic h.b64encode(release.picture_data) | None"
-             class="cs-release-img clearfix center-block"
+             class="img-responsive cs-release-img clearfix center-block"
              src="data:${release.picture_data_mime_type};base64,${pic}" />
 
         <div class="cs-release">

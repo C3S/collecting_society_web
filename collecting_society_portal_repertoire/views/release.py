@@ -80,8 +80,23 @@ class ReleaseViews(ViewBase):
         renderer='../templates/release/edit.pt',
         decorator=Tdb.transaction(readonly=False))
     def edit(self):
-        self.context.release_code = self.request.subpath[-1]
-        # release = Release.search_by_code(self.context.release_code)
+        # add record to context
+        code = self.request.subpath[-1]
+        if code is None:
+            self.request.session.flash(
+                _(u"Could not edit release - code is missing"),
+                'main-alert-warning'
+            )
+            return self.redirect(ReleaseResource, 'list')
+        release = Release.search_by_code(code)
+        if release is None:
+            self.request.session.flash(
+                _(u"Could not edit release - release not found"),
+                'main-alert-warning'
+            )
+            return self.redirect(ReleaseResource, 'list')
+        self.context.release = release
+        # add form
         self.register_form(EditRelease)
         return self.process_forms()
 

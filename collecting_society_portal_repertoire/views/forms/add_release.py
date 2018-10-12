@@ -314,8 +314,7 @@ class GenreCheckboxField(colander.SchemaNode):
     schema_type = colander.Set
     widget = deferred_checkbox_widget
     validator = colander.Length(min=1)
-    #    , min_err=_(u'Please choose at least one genre for this release'))
-    missing = ""
+    #    , min_err=_(u'Please choose at least one genre for this release')
 
 
 class StyleCheckboxField(colander.SchemaNode):
@@ -324,7 +323,6 @@ class StyleCheckboxField(colander.SchemaNode):
     widget = deferred_checkbox_widget_style
     validator = colander.Length(min=1)
     #    , min_err=_(u'Please choose at least one style for this release'))
-    missing = ""
 
 
 # --- Schemas -----------------------------------------------------------------

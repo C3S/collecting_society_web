@@ -8,8 +8,7 @@ from collecting_society_portal.views.forms import FormController
 
 from ...services import _
 from ...models import (
-    Label,
-    Release
+    Label
 )
 from ...resources import ReleaseResource
 from .add_release import add_release_form
@@ -25,34 +24,12 @@ class EditRelease(FormController):
     """
 
     def controller(self):
-        code = self.context.release_code
-        if code is None:
-            self.request.session.flash(
-                _(u"Could not edit release - code is missing"),
-                'main-alert-warning'
-            )
-            return self.redirect(ReleaseResource, 'list')
-        self.release = Release.search_by_code(code)
-        if self.release is None:
-            self.request.session.flash(
-                _(u"Could not edit release - release not found"),
-                'main-alert-warning'
-            )
-            return self.redirect(ReleaseResource, 'list')
-        self.context.release_code = code
-
-        # choose form
         self.form = add_release_form(self.request)
-
-        # process form
         if self.submitted():
             if self.validate():
                 self.update_release()
         else:
             self.edit_release()
-            # attach release to display image in template
-            self.response.update({'release': self.release})
-
         return self.response
 
     # --- Stages --------------------------------------------------------------
@@ -63,7 +40,7 @@ class EditRelease(FormController):
 
     @Tdb.transaction(readonly=True)
     def edit_release(self):
-        r = self.release
+        r = self.context.release
 
         # set appstruct
         self.appstruct = {
@@ -134,7 +111,7 @@ class EditRelease(FormController):
     def update_release(self):
         a = self.appstruct
         email = self.request.unauthenticated_userid
-        release = self.release
+        release = self.context.release
 
         # generate vlist
         _release = {
