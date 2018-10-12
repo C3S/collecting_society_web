@@ -62,20 +62,24 @@ class AddRelease(FormController):
                 a['general']['title'],
             'number_mediums':
                 a['general']['number_mediums'],
+            'genres':
+                [('add', map(int, a['general']['genres']))],
+            'styles':
+                [('add', map(int, a['general']['styles']))],
             'ean_upc_code':
                 a['general']['ean_upc_code'],
             'isrc_code':
                 a['general']['isrc_code'],
             'warning':
                 a['general']['warning'],
-            'label_catalog_number':
-                a['label']['label_catalog_number'],
+            'producer':
+                a['production']['producer'],
             'copyright_date':
                 a['production']['copyright_date'],
             'production_date':
                 a['production']['production_date'],
-            'producer':
-                a['production']['producer'],
+            'label_catalog_number':
+                a['distribution']['label_catalog_number'],
             'release_date':
                 a['distribution']['release_date'],
             'release_cancellation_date':
@@ -88,14 +92,10 @@ class AddRelease(FormController):
                 a['distribution']['distribution_territory'],
             'neighbouring_rights_society':
                 a['distribution']['neighbouring_rights_society'],
-            'genres':
-                [('add', map(int, a['genres']['genres']))],
-            'styles':
-                [('add', map(int, a['genres']['styles']))],
         }
 
         # label
-        _label = a['label']['label'] and a['label']['label'][0]
+        _label = a['distribution']['label'] and a['distribution']['label'][0]
         if _label:
             if _label['mode'] is "add":
                 label = Label.search_by_gvl_code(_label['code'])
@@ -331,29 +331,27 @@ class GeneralSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     title = TitleField(title=_(u"Title"))
     number_mediums = NumberOfMediumsField(title=_(u"Number of Mediums"))
+    genres = GenreCheckboxField(title=_(u"Genres"))
+    styles = StyleCheckboxField(title=_(u"Styles"))
     ean_upc_code = EanUpcCodeField(title=_(u"EAN or UPC Code"))
     isrc_code = IsrcCodeField(title=_(u"ISRC Code"))
     warning = WarningField(title=_(u"Warning"))
     picture = PictureField(title=_(u"Picture"))
 
 
-class LabelSchema(colander.Schema):
-    widget = deform.widget.MappingWidget(template='navs/mapping')
-    label = LabelSequence(title=_(u"Label"))
-    label_catalog_number = LabelCatalogNumberField(
-        title=_(u"Label Catalog Number of Release"))
-
-
 class ProductionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
+    producer = ProducerField(title=_(u"Producer"))
     copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
     copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
     production_date = ProductionDateField(title=_(u"Production Date"))
-    producer = ProducerField(title=_(u"Producer"))
 
 
 class DistributionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
+    label = LabelSequence(title=_(u"Label"))
+    label_catalog_number = LabelCatalogNumberField(
+        title=_(u"Label Catalog Number of Release"))
     release_date = ReleaseDateField(title=_(u"Release Date"))
     release_cancellation_date = ReleaseCancellationDateField(
         title=_(u"Release Cancellation Date"))
@@ -367,20 +365,12 @@ class DistributionSchema(colander.Schema):
         title=_(u"Neighbouring Rights Society"))
 
 
-class GenresSchema(colander.Schema):
-    widget = deform.widget.MappingWidget(template='navs/mapping')
-    genres = GenreCheckboxField(title=_(u"Genres"))
-    styles = StyleCheckboxField(title=_(u"Styles"))
-
-
 class AddReleaseSchema(colander.Schema):
     title = _(u"Add Release")
     widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
     general = GeneralSchema(title=_(u"General"))
-    label = LabelSchema(title=_(u"Label"))
     production = ProductionSchema(title=_(u"Production"))
     distribution = DistributionSchema(title=_(u"Distribution"))
-    genres = GenresSchema(title=_(u"Genres & Styles"))
 
 
 # --- Forms -------------------------------------------------------------------

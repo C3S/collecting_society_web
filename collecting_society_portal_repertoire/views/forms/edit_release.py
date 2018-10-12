@@ -48,6 +48,10 @@ class EditRelease(FormController):
                     r.title or '',
                 'number_mediums':
                     r.number_mediums or '',
+                'genres':
+                    [unicode(genre.id) for genre in r.genres],
+                'styles':
+                    [unicode(style.id) for style in r.styles],
                 'ean_upc_code':
                     r.ean_upc_code or '',
                 'isrc_code':
@@ -55,19 +59,17 @@ class EditRelease(FormController):
                 'warning':
                     r.warning or '',
             },
-            'label': {
-                'label_catalog_number':
-                    r.label_catalog_number or '',
-            },
             'production': {
+                'producer':
+                    r.producer or '',
                 'copyright_date':
                     r.copyright_date or '',
                 'production_date':
                     r.production_date or '',
-                'producer':
-                    r.producer or '',
             },
             'distribution': {
+                'label_catalog_number':
+                    r.label_catalog_number or '',
                 'release_date':
                     r.release_date or '',
                 'release_cancellation_date':
@@ -81,23 +83,17 @@ class EditRelease(FormController):
                 'neighbouring_rights_society':
                     r.neighbouring_rights_society or '',
             },
-            'genres': {
-                'genres':
-                    [unicode(genre.id) for genre in r.genres],
-                'styles':
-                    [unicode(style.id) for style in r.styles],
-            }
         }
 
         # set label
         if r.label:
-            self.appstruct['label']['label'] = [{
+            self.appstruct['distribution']['label'] = [{
                 'mode': 'add',
                 'name': r.label.name,
                 'gvl_code': r.label.gvl_code,
             }]
         elif r.label_name:
-            self.appstruct['label']['label'] = [{
+            self.appstruct['distribution']['label'] = [{
                 'mode': 'edit',
                 'name': r.label_name,
                 'gvl_code': '',
@@ -118,20 +114,24 @@ class EditRelease(FormController):
                 a['general']['title'],
             'number_mediums':
                 a['general']['number_mediums'],
+            'genres':
+                [('add', map(int, a['general']['genres']))],
+            'styles':
+                [('add', map(int, a['general']['styles']))],
             'ean_upc_code':
                 a['general']['ean_upc_code'],
             'isrc_code':
                 a['general']['isrc_code'],
             'warning':
                 a['general']['warning'],
-            'label_catalog_number':
-                a['label']['label_catalog_number'],
+            'producer':
+                a['production']['producer'],
             'copyright_date':
                 a['production']['copyright_date'],
             'production_date':
                 a['production']['production_date'],
-            'producer':
-                a['production']['producer'],
+            'label_catalog_number':
+                a['distribution']['label_catalog_number'],
             'release_date':
                 a['distribution']['release_date'],
             'release_cancellation_date':
@@ -144,14 +144,10 @@ class EditRelease(FormController):
                 a['distribution']['distribution_territory'],
             'neighbouring_rights_society':
                 a['distribution']['neighbouring_rights_society'],
-            'genres':
-                [('add', map(int, a['genres']['genres']))],
-            'styles':
-                [('add', map(int, a['genres']['styles']))],
         }
 
         # label
-        _label = a['label']['label'] and a['label']['label'][0]
+        _label = a['distribution']['label'] and a['distribution']['label'][0]
         if not _label:
             release.label_name = None
             release.label = None
