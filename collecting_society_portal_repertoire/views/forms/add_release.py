@@ -66,10 +66,6 @@ class AddRelease(FormController):
                 [('add', map(int, a['general']['genres']))],
             'styles':
                 [('add', map(int, a['general']['styles']))],
-            'ean_upc_code':
-                a['general']['ean_upc_code'],
-            'isrc_code':
-                a['general']['isrc_code'],
             'warning':
                 a['general']['warning'],
             'producer':
@@ -80,6 +76,10 @@ class AddRelease(FormController):
                 a['production']['production_date'],
             'label_catalog_number':
                 a['distribution']['label_catalog_number'],
+            'ean_upc_code':
+                a['distribution']['ean_upc_code'],
+            'isrc_code':
+                a['distribution']['isrc_code'],
             'release_date':
                 a['distribution']['release_date'],
             'release_cancellation_date':
@@ -97,11 +97,11 @@ class AddRelease(FormController):
         # label
         _label = a['distribution']['label'] and a['distribution']['label'][0]
         if _label:
-            if _label['mode'] is "add":
-                label = Label.search_by_gvl_code(_label['code'])
+            if _label['mode'] == "add":
+                label = Label.search_by_gvl_code(_label['gvl_code'])
                 if label:
                     _release['label'] = label.id
-            if _label['mode'] is "create":
+            if _label['mode'] == "create":
                 _release['label_name'] = _label['name']
 
         # picture
@@ -112,6 +112,14 @@ class AddRelease(FormController):
             mimetype = a['general']['picture']['mimetype']
             _release['picture_data'] = picture_data
             _release['picture_data_mime_type'] = mimetype
+
+        log.debug(
+            (
+                "_release: %s\n"
+            ) % (
+                _release
+            )
+        )
 
         # remove empty fields
         for index, value in _release.items():
@@ -147,6 +155,32 @@ class AddRelease(FormController):
 
 # --- Fields ------------------------------------------------------------------
 
+@colander.deferred
+def party_select_widget(node, kw):
+    parties = Party.search_all()
+    label_options = [
+        (party.code, party.name) for party in parties
+    ]
+    widget = deform.widget.Select2Widget(values=label_options)
+    return widget
+
+
+@colander.deferred
+def deferred_checkbox_widget(node, kw):
+    genres = Genre.search_all()
+    genre_options = [(genre.id, unicode(genre.name)) for genre in genres]
+    widget = deform.widget.Select2Widget(values=genre_options, multiple=True)
+    return widget
+
+
+@colander.deferred
+def deferred_checkbox_widget_style(node, kw):
+    styles = Style.search_all()
+    style_options = [(style.id, unicode(style.name)) for style in styles]
+    widget = deform.widget.Select2Widget(values=style_options, multiple=True)
+    return widget
+
+
 # -- General tab --
 
 class TitleField(colander.SchemaNode):
@@ -161,33 +195,20 @@ class NumberOfMediumsField(colander.SchemaNode):
         min=1, min_err=_('Release has to include at least one medium.'))
 
 
-class EanUpcCodeField(colander.SchemaNode):
-    oid = "ean_upc_code"
-    schema_type = colander.String
-    validator = colander.All(
-        # TODO: find out why this is not working (old colander version?):
-        # min_err=_('at least 12 digits for a valid UPC barcode,
-        #           '13 for an EAN code.'),
-        # max_err=_('maximum of 13 digits for an EAN code (12 for a UPC).'
-        colander.Length(min=12, max=13),
-        # colander.ContainsOnly(
-        #     '0123456789',
-        #     err_msg=_('may only contain digits') <- why no custom err_msg?!?
-        # )
-        colander.Regex('^[0-9]*$', msg=_('may only contain digits'))
-    )
-    missing = ""
+class GenreCheckboxField(colander.SchemaNode):
+    oid = "genres"
+    schema_type = colander.Set
+    widget = deferred_checkbox_widget
+    validator = colander.Length(min=1)
+    #    , min_err=_(u'Please choose at least one genre for this release')
 
 
-class IsrcCodeField(colander.SchemaNode):
-    oid = "isrc_code"
-    schema_type = colander.String
-    validator = colander.Regex('^[a-zA-Z][a-zA-Z][a-zA-Z0-9][a-zA-Z0-9][a-z'
-                               'A-Z0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*$',
-                               msg=_('Please enter a valid international '
-                                     'standard recording code, for example: '
-                                     'DEA123456789'))
-    missing = ""
+class StyleCheckboxField(colander.SchemaNode):
+    oid = "styles"
+    schema_type = colander.Set
+    widget = deferred_checkbox_widget_style
+    validator = colander.Length(min=1)
+    #    , min_err=_(u'Please choose at least one style for this release'))
 
 
 class WarningField(colander.SchemaNode):
@@ -203,24 +224,13 @@ class PictureField(colander.SchemaNode):
     missing = ""
 
 
-# -- Label tab --
-
-class LabelCatalogNumberField(colander.SchemaNode):
-    oid = "label_catalog_number"
-    schema_type = colander.String
-    missing = ""
-
-
 # -- Production Tab --
 
-@colander.deferred
-def party_select_widget(node, kw):
-    parties = Party.search_all()
-    label_options = [
-        (party.code, party.name) for party in parties
-    ]
-    widget = deform.widget.Select2Widget(values=label_options)
-    return widget
+class ProducerField(colander.SchemaNode):
+    oid = "producer"
+    schema_type = colander.String
+    # widget = party_select_widget <-- too complicated, too many implications
+    missing = ""
 
 
 class CopyrightDateField(colander.SchemaNode):
@@ -245,14 +255,41 @@ class ProductionDateField(colander.SchemaNode):
     missing = ""
 
 
-class ProducerField(colander.SchemaNode):
-    oid = "producer"
+# -- Distribution tab --
+
+class LabelCatalogNumberField(colander.SchemaNode):
+    oid = "label_catalog_number"
     schema_type = colander.String
-    # widget = party_select_widget <-- too complicated, too many implications
     missing = ""
 
 
-# -- Distribution tab --
+class EanUpcCodeField(colander.SchemaNode):
+    oid = "ean_upc_code"
+    schema_type = colander.String
+    validator = colander.All(
+        # TODO: find out why this is not working (old colander version?):
+        # min_err=_('at least 12 digits for a valid UPC barcode,
+        #           '13 for an EAN code.'),
+        # max_err=_('maximum of 13 digits for an EAN code (12 for a UPC).'
+        colander.Length(min=12, max=13),
+        # colander.ContainsOnly(
+        #     '0123456789',
+        #     err_msg=_('may only contain digits') <- why no custom err_msg?!?
+        # )
+        colander.Regex('^[0-9]*$', msg=_('May only contain digits'))
+    )
+    missing = ""
+
+
+class IsrcCodeField(colander.SchemaNode):
+    oid = "isrc_code"
+    schema_type = colander.String
+    validator = colander.Regex('^[a-zA-Z][a-zA-Z][a-zA-Z0-9][a-zA-Z0-9][a-z'
+                               'A-Z0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*$',
+                               msg=_('Please enter a valid international '
+                                     'standard recording code, for example: '
+                                     'DEA123456789'))
+    missing = ""
 
 
 class ReleaseDateField(colander.SchemaNode):
@@ -291,40 +328,6 @@ class NeighbouringRightsSocietyField(colander.SchemaNode):
     missing = ""
 
 
-# -- Genres tab --
-
-@colander.deferred
-def deferred_checkbox_widget(node, kw):
-    genres = Genre.search_all()
-    genre_options = [(genre.id, unicode(genre.name)) for genre in genres]
-    widget = deform.widget.Select2Widget(values=genre_options, multiple=True)
-    return widget
-
-
-@colander.deferred
-def deferred_checkbox_widget_style(node, kw):
-    styles = Style.search_all()
-    style_options = [(style.id, unicode(style.name)) for style in styles]
-    widget = deform.widget.Select2Widget(values=style_options, multiple=True)
-    return widget
-
-
-class GenreCheckboxField(colander.SchemaNode):
-    oid = "genres"
-    schema_type = colander.Set
-    widget = deferred_checkbox_widget
-    validator = colander.Length(min=1)
-    #    , min_err=_(u'Please choose at least one genre for this release')
-
-
-class StyleCheckboxField(colander.SchemaNode):
-    oid = "styles"
-    schema_type = colander.Set
-    widget = deferred_checkbox_widget_style
-    validator = colander.Length(min=1)
-    #    , min_err=_(u'Please choose at least one style for this release'))
-
-
 # --- Schemas -----------------------------------------------------------------
 
 class GeneralSchema(colander.Schema):
@@ -333,8 +336,6 @@ class GeneralSchema(colander.Schema):
     number_mediums = NumberOfMediumsField(title=_(u"Number of Mediums"))
     genres = GenreCheckboxField(title=_(u"Genres"))
     styles = StyleCheckboxField(title=_(u"Styles"))
-    ean_upc_code = EanUpcCodeField(title=_(u"EAN or UPC Code"))
-    isrc_code = IsrcCodeField(title=_(u"ISRC Code"))
     warning = WarningField(title=_(u"Warning"))
     picture = PictureField(title=_(u"Picture"))
 
@@ -352,6 +353,8 @@ class DistributionSchema(colander.Schema):
     label = LabelSequence(title=_(u"Label"))
     label_catalog_number = LabelCatalogNumberField(
         title=_(u"Label Catalog Number of Release"))
+    ean_upc_code = EanUpcCodeField(title=_(u"EAN or UPC Code"))
+    isrc_code = IsrcCodeField(title=_(u"ISRC Code"))
     release_date = ReleaseDateField(title=_(u"Release Date"))
     release_cancellation_date = ReleaseCancellationDateField(
         title=_(u"Release Cancellation Date"))

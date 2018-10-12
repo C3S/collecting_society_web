@@ -52,10 +52,6 @@ class EditRelease(FormController):
                     [unicode(genre.id) for genre in r.genres],
                 'styles':
                     [unicode(style.id) for style in r.styles],
-                'ean_upc_code':
-                    r.ean_upc_code or '',
-                'isrc_code':
-                    r.isrc_code or '',
                 'warning':
                     r.warning or '',
             },
@@ -70,6 +66,10 @@ class EditRelease(FormController):
             'distribution': {
                 'label_catalog_number':
                     r.label_catalog_number or '',
+                'ean_upc_code':
+                    r.ean_upc_code or '',
+                'isrc_code':
+                    r.isrc_code or '',
                 'release_date':
                     r.release_date or '',
                 'release_cancellation_date':
@@ -118,10 +118,6 @@ class EditRelease(FormController):
                 [('add', map(int, a['general']['genres']))],
             'styles':
                 [('add', map(int, a['general']['styles']))],
-            'ean_upc_code':
-                a['general']['ean_upc_code'],
-            'isrc_code':
-                a['general']['isrc_code'],
             'warning':
                 a['general']['warning'],
             'producer':
@@ -132,6 +128,10 @@ class EditRelease(FormController):
                 a['production']['production_date'],
             'label_catalog_number':
                 a['distribution']['label_catalog_number'],
+            'ean_upc_code':
+                a['distribution']['ean_upc_code'],
+            'isrc_code':
+                a['distribution']['isrc_code'],
             'release_date':
                 a['distribution']['release_date'],
             'release_cancellation_date':
