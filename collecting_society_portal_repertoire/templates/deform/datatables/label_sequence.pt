@@ -3,6 +3,7 @@
            tal:define="oid oid|field.oid;
                        name field.name;
                        title title|field.title;
+                       actions actions|field.widget.actions;
                        min_len min_len|field.widget.min_len;
                        min_len min_len or 0;
                        max_len max_len|field.widget.max_len;
@@ -20,12 +21,12 @@
                 oid: "${oid}",
                 name: "${name}",
                 title: "${title}",
+                actions: '${actions}',
                 minLen: "${min_len}",
                 maxLen: "${max_len}",            
                 proto: "${prototype}",
                 api: "${api}/labels",
                 unique: false,
-                actions: ['add', 'create', 'edit'],
                 columns: [
                     {
                         name: "name",
