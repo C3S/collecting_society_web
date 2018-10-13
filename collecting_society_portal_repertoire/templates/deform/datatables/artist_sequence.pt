@@ -1,93 +1,66 @@
 <tal:block metal:extend-macro="sequence"
-           i18n:domain="collecting_society_portal_repertoire"
-           tal:define="oid oid|field.oid;
-                       name field.name;
-                       title title|field.title;
-                       actions actions|field.widget.actions;
-                       min_len min_len|field.schema.min_len
-                                      |field.widget.min_len
-                                      |0;
-                       max_len max_len|field.schema.max_len
-                                      |field.widget.max_len
-                                      |100000;
-                       now_len len(subfields);
-                       orderable orderable|field.widget.orderable;
-                       orderable orderable and 1 or 0;
-                       prototype field.widget.prototype(field);
-                       errormsg field.errormsg">
+           i18n:domain="collecting_society_portal_repertoire">
 
-    <!-- datatable sequence-->
-    <tal:block metal:fill-slot="init">
-        <script>
-            // init of datatable sequence
-            var datatableSequence = new deform.DatatableSequence({
-                oid: "${oid}",
-                name: "${name}",
-                title: "${title}",
-                actions: '${actions}',
-                minLen: "${min_len}",
-                maxLen: "${max_len}",
-                errormsg: "${errormsg}",
-                proto: "${prototype}",
-                api: "${api}/artists",
-                unique: "code",
-                columns: [
-                    {
-                        name: "name",
-                        title: "${_('Name')}",
-                        data: "name",
-                        className: "all",
-                        orderable: true,
-                        render: $.fn.dataTable.render.text(),
-                        datatableSequence: {
-                            position: "displayed",
-                            widgetType: 'TextInputWidget',
-                            footerSearch: true,
-                            createShow: true,
-                        }
-                    },
-                    {
-                        name: "code",
-                        title: "${_('Code')}",
-                        data: "code",
-                        orderable: true,
-                        render: $.fn.dataTable.render.text(),
-                        datatableSequence: {
-                            position: "displayed",
-                            widgetType: 'HiddenWidget',
-                            footerSearch: true,
-                        }
-                    },
-                    {
-                        name: "description",
-                        title: "${_('Description')}",
-                        data: "description",
-                        className: "none",
-                        orderable: false,
-                        searchable: true,
-                        render: $.fn.dataTable.render.text(),
-                        datatableSequence: {
-                            position: "collapsed",
-                            widgetType: 'HiddenWidget',
-                        }
-                    },
-                    {
-                        name: "email",
-                        title: "${_('Email')}",
-                        data: "email",
-                        visible: false,
-                        orderable: false,
-                        searchable: false,
-                        render: $.fn.dataTable.render.text(),
-                        datatableSequence: {
-                            position: "invisible",
-                            widgetType: 'TextInputWidget',
-                            createShow: true,
-                        }
-                    },
-                ],
-            }).init();
-        </script>
-    </tal:block>
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            apiPath: "artists",
+            unique: "code",
+            columns: [
+                {
+                    name: "name",
+                    title: "${_('Name')}",
+                    data: "name",
+                    className: "all",
+                    orderable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: true,
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "code",
+                    title: "${_('Code')}",
+                    data: "code",
+                    orderable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'HiddenWidget',
+                        footerSearch: true,
+                    }
+                },
+                {
+                    name: "description",
+                    title: "${_('Description')}",
+                    data: "description",
+                    className: "none",
+                    orderable: false,
+                    searchable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "collapsed",
+                        widgetType: 'HiddenWidget',
+                    }
+                },
+                {
+                    name: "email",
+                    title: "${_('Email')}",
+                    data: "email",
+                    visible: false,
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "invisible",
+                        widgetType: 'TextInputWidget',
+                        createShow: true,
+                    }
+                },
+            ],
+        };
+    </script>
 
 </tal:block>
