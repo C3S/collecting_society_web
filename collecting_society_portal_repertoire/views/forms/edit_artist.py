@@ -252,7 +252,7 @@ class MetadataSchema(colander.Schema):
 
 class MembersSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    members = ArtistSequence(title="", missing="")
+    members = ArtistSequence(title="")
 
 
 class EditArtistSchema(colander.Schema):
