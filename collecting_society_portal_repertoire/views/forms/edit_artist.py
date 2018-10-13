@@ -53,7 +53,7 @@ class EditArtist(FormController):
             'metadata': {
                 'group': artist.group,
                 'name': artist.name,
-                'description': artist.description
+                'description': artist.description or ''
             }
         }
         if artist.group:
@@ -68,7 +68,7 @@ class EditArtist(FormController):
                     'mode': mode,
                     'name': member.name,
                     'code': member.code,
-                    'description': member.description,
+                    'description': member.description or '',
                     'email': email
                 })
             self.appstruct['members'] = {
