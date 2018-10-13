@@ -5,6 +5,7 @@ import colander
 import deform
 
 from collecting_society_portal.views.forms.datatables import (
+    DatatableSequence,
     DatatableSequenceWidget
 )
 
@@ -15,8 +16,7 @@ from collecting_society_portal.views.forms.datatables import (
 def label_sequence_widget(node, kw):
     return DatatableSequenceWidget(
         request=kw.get('request'),
-        template='datatables/label_sequence',
-        max_len=1
+        template='datatables/label_sequence'
     )
 
 
@@ -49,6 +49,6 @@ class LabelSchema(colander.Schema):
     title = ""
 
 
-class LabelSequence(colander.SequenceSchema):
+class LabelSequence(DatatableSequence):
     label_sequence = LabelSchema()
     widget = label_sequence_widget

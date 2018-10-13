@@ -7,6 +7,7 @@ import colander
 import deform
 
 from collecting_society_portal.views.forms.datatables import (
+    DatatableSequence,
     DatatableSequenceWidget
 )
 
@@ -80,6 +81,6 @@ class ArtistSchema(colander.Schema):
     preparer = [email_required_conditionally]
 
 
-class ArtistSequence(colander.SequenceSchema):
+class ArtistSequence(DatatableSequence):
     artist_sequence = ArtistSchema()
     widget = artist_sequence_widget

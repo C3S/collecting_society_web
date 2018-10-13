@@ -350,7 +350,7 @@ class ProductionSchema(colander.Schema):
 
 class DistributionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    label = LabelSequence(title=_(u"Label"))
+    label = LabelSequence(title=_(u"Label"), min_len=1, max_len=1)
     label_catalog_number = LabelCatalogNumberField(
         title=_(u"Label Catalog Number of Release"))
     ean_upc_code = EanUpcCodeField(title=_(u"EAN or UPC Code"))
