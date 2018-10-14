@@ -22,7 +22,10 @@ from ...models import (
     Release
 )
 from ...resources import ReleaseResource
-from .datatables import LabelSequence
+from .datatables import (
+    CreationSequence,
+    LabelSequence
+)
 
 log = logging.getLogger(__name__)
 
@@ -153,7 +156,7 @@ class AddRelease(FormController):
 
 # --- Options -----------------------------------------------------------------
 
-# --- Fields ------------------------------------------------------------------
+# --- Widgets -----------------------------------------------------------------
 
 @colander.deferred
 def party_select_widget(node, kw):
@@ -180,6 +183,8 @@ def deferred_checkbox_widget_style(node, kw):
     widget = deform.widget.Select2Widget(values=style_options, multiple=True)
     return widget
 
+
+# --- Fields ------------------------------------------------------------------
 
 # -- General tab --
 
@@ -239,14 +244,14 @@ class CopyrightDateField(colander.SchemaNode):
     missing = ""
 
 
-class CopyrightOwnerField(colander.SchemaNode):
-    oid = "get_copyright_owners"
-    schema_type = colander.String
-    # widget = party_select_widget <- no paries any more?
-    widget = deform.widget.TextInputWidget(readonly=True)
-    missing = colander.null
-    # displaying a read-only function field, assembled from the repective
-    # copyright owners of the release creations
+# class CopyrightOwnerField(colander.SchemaNode):
+#     oid = "get_copyright_owners"
+#     schema_type = colander.String
+#     # widget = party_select_widget <- no paries any more?
+#     widget = deform.widget.TextInputWidget(readonly=True)
+#     missing = colander.null
+#     # displaying a read-only function field, assembled from the repective
+#     # copyright owners of the release creations
 
 
 class ProductionDateField(colander.SchemaNode):
@@ -340,11 +345,16 @@ class GeneralSchema(colander.Schema):
     picture = PictureField(title=_(u"Picture"))
 
 
+class TracksSchema(colander.Schema):
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    tracks = CreationSequence(title="")
+
+
 class ProductionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     producer = ProducerField(title=_(u"Producer"))
     copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
-    copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
+    # copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
     production_date = ProductionDateField(title=_(u"Production Date"))
 
 
@@ -372,6 +382,7 @@ class AddReleaseSchema(colander.Schema):
     title = _(u"Add Release")
     widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
     general = GeneralSchema(title=_(u"General"))
+    tracks = TracksSchema(title=_(u"Tracks"))
     production = ProductionSchema(title=_(u"Production"))
     distribution = DistributionSchema(title=_(u"Distribution"))
 

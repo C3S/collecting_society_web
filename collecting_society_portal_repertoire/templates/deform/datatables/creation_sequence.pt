@@ -3,8 +3,8 @@
 
     <script metal:fill-slot="settings">
         var datatableSequenceSettings = {
-            apiPath: "label",
-            unique: false,
+            apiPath: "creation",
+            unique: "code",
             columns: [
                 {
                     name: "name",
@@ -12,6 +12,7 @@
                     data: "name",
                     className: "all",
                     orderable: true,
+                    searchable: true,
                     render: $.fn.dataTable.render.text(),
                     datatableSequence: {
                         position: "displayed",
@@ -21,10 +22,26 @@
                     }
                 },
                 {
-                    name: "gvl_code",
-                    title: "${_('Code')}",
-                    data: "gvl_code",
+                    name: "artist",
+                    title: "${_('Artist')}",
+                    data: "artist",
+                    className: "none",
                     orderable: true,
+                    searchable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: true,
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "code",
+                    title: "${_('Code')}",
+                    data: "code",
+                    orderable: true,
+                    searchable: true,
                     render: $.fn.dataTable.render.text(),
                     datatableSequence: {
                         position: "displayed",

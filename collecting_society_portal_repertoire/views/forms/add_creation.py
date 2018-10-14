@@ -30,20 +30,13 @@ log = logging.getLogger(__name__)
 
 class AddCreation(FormController):
     """
-    form controller for creation of creations
+    form controller for add creation
     """
 
-    __stage__ = 'upload_audiofile'  # initial stage
-
     def controller(self):
-
         self.form = add_creation_form(self.request)
-
         if self.submitted() and self.validate():
-            self.save_creation()
-        else:
-            self.init_creation()
-
+            self.create_creation()
         return self.response
 
     # --- Stages --------------------------------------------------------------
@@ -53,45 +46,18 @@ class AddCreation(FormController):
     # --- Actions -------------------------------------------------------------
 
     @Tdb.transaction(readonly=False)
-    def init_creation(self):
-        """
-        initializes form with arguments passed via url from Content/Uploads
-        """
-
-        self.appstruct = {
-            'metadata': {},
-            'contributions': {},
-            'licenses': {},
-            'relations': {},
-            'content': {}
-        }
-
-        # contents tab
-        if 'uuid' in self.request.GET.keys():
-            _content = Content.search_by_uuid(self.request.GET['uuid'])
-            if not _content:
-                return
-            self.appstruct['content']['content'] = [(_content.id,
-                                                    _content.name)]
-            # TODO: further initialization via content metadata
-
-    @Tdb.transaction(readonly=False)
-    def save_creation(self):
+    def create_creation(self):
         email = self.request.unauthenticated_userid
+        party = WebUser.current_party(self.request)
 
-        log.debug(
-            (
-                "self.appstruct: %s\n"
-            ) % (
-                self.appstruct
-            )
-        )
-
+        # generate vlist
         _creation = {
             'artist': self.appstruct['metadata']['artist'],
             'entity_creator': WebUser.current_web_user(self.request).party,
             'releases': self.appstruct['metadata']['releases'],
         }
+
+        # -------------------------------------------------------
         if self.appstruct['metadata']['releases']:
             _creation['releases'] = []
             for release_id in self.appstruct['metadata']['releases']:
@@ -225,7 +191,7 @@ creation_relation_options = (
 )
 
 
-# --- Fields ------------------------------------------------------------------
+# --- Widgets -----------------------------------------------------------------
 
 @colander.deferred
 def current_artists_select_widget(node, kw):
@@ -278,6 +244,8 @@ def licenses_select_widget(node, kw):
     )
     return widget
 
+
+# --- Fields ------------------------------------------------------------------
 
 @colander.deferred
 def content_select_widget(node, kw):

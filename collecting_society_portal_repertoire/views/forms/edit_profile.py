@@ -126,6 +126,8 @@ def validate_unique_user_email(node, values, **kwargs):  # multifield validator
 
 # --- Options -----------------------------------------------------------------
 
+# --- Widgets -----------------------------------------------------------------
+
 # --- Fields ------------------------------------------------------------------
 
 # class NameField(colander.SchemaNode):

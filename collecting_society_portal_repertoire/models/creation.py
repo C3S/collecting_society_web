@@ -17,6 +17,49 @@ class Creation(Tdb):
 
     @classmethod
     @Tdb.transaction(readonly=True)
+    def search(cls, domain, offset=None, limit=None, order=None,
+               escape=False, active=True):
+        """
+        Searches creations by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          obj: list of creations
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape_domain(domain)
+        if active:
+            domain.append(('active', 'in', (True, active)))
+        # search
+        result = cls.get().search(domain, offset, limit, order)
+        return result
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_count(cls, domain, escape=False, active=True):
+        """
+        Counts creations by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          int: number of creations
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape(domain)
+        if active:
+            domain.append(('active', 'in', (True, active)))
+        # search
+        result = cls.get().search_count(domain)
+        return result
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
     def search_all(cls, active=True):
         """
         Fetches all Creations

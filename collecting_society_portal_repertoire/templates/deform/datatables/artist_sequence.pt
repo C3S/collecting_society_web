@@ -3,7 +3,7 @@
 
     <script metal:fill-slot="settings">
         var datatableSequenceSettings = {
-            apiPath: "artists",
+            apiPath: "artist",
             unique: "code",
             columns: [
                 {
@@ -12,6 +12,7 @@
                     data: "name",
                     className: "all",
                     orderable: true,
+                    searchable: true,
                     render: $.fn.dataTable.render.text(),
                     datatableSequence: {
                         position: "displayed",
@@ -25,6 +26,7 @@
                     title: "${_('Code')}",
                     data: "code",
                     orderable: true,
+                    searchable: true,
                     render: $.fn.dataTable.render.text(),
                     datatableSequence: {
                         position: "displayed",
