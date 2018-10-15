@@ -90,6 +90,7 @@ class Creation(Tdb):
         return cls.get().search([
             [
                 'OR',
+                ('entity_creator', '=', party_id),
                 ('artist.party', '=', party_id),
                 ('contributions.artist.party', '=', party_id),
                 ('contributions.artist.solo_artists.party', '=', party_id),
@@ -102,7 +103,7 @@ class Creation(Tdb):
     @Tdb.transaction(readonly=True)
     def search_by_id(cls, creation_id, active=True):
         """
-        Searches an creation by creation id
+        Searches a creation by creation id
 
         Args:
           creation_id (int): creation.id

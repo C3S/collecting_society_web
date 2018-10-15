@@ -496,7 +496,7 @@ class ContentSchema(colander.Schema):
 
 
 class AddCreationSchema(colander.Schema):
-    title = _(u"Add Solo Artist")
+    title = _(u"Add Creation")
     widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
     metadata = MetadataSchema(title=_(u"Metadata"))
     # access = AccessSchema(title=_(u"Access"))

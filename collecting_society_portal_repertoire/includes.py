@@ -286,7 +286,7 @@ def web_registry(config):
                 )
             },
             {
-                'name': _(u'Songs'),
+                'name': _(u'Creations'),
                 'url': self.request.resource_path(
                     CreationResource(self.request), ''
                 ),
