@@ -76,14 +76,14 @@
                     <td>${release.production_date}</td>
                 </tr>
 
-                <tr>
+                <!-- tr>
                     <th i18n:translate="">Producer</th>
-                    <td>${release.producers}</td>
-                </tr>
+                    <td>%%%%%%%%%%{release.producers}</td>
+                </tr-->
 
                 <tr>
                     <th i18n:translate="">Label</th>
-                    <td>${release.label_as_string}</td>
+                    <td>${release.label.name}</td>
                 </tr>
 
                 <tr>
@@ -116,10 +116,10 @@
                     <td>${release.distribution_territory}</td>
                 </tr>
 
-                <tr>
+                <!--tr>
                     <th i18n:translate="">Neighbouring Rights Society</th>
-                    <td>${release.neighbouring_rights_society}</td>
-                </tr>
+                    <td>%%%%%%%%%%{release.neighbouring_rights_society}</td>
+                </tr-->
 
                 <tr>
                     <th i18n:translate="">Tracklist</th>
@@ -128,7 +128,6 @@
 
                 <tr>
                     <th i18n:translate="">Genres</th>
-                    <!-- <td>${release.genres_as_string}</td> -->
                     <td>
                         <div class="genre-list">
                             <span tal:repeat="genre release.genres" class="label label-primary label-as-badge">${genre.name}</span>

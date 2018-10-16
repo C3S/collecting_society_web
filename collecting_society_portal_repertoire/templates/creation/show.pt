@@ -75,23 +75,23 @@
                     </td>
                 </tr>
 
-                <tr tal:condition="creation.licenses">
+                <!--tr tal:condition="creation.licenses">
                     <th i18n:translate="">Licenses</th>
                     <td>
                         <div class="list-group">
                             <a tal:repeat="creation_license creation.licenses"
                                tal:attributes="href '#legalcode'"
                                class="list-group-item">
-                                ${creation_license.license.name}
+                                %%%%%%%%%%%%{creation_license.license.name}
                                 <div class="text-right">
                                     <div class="label label-info">
-                                        ${creation_license.license.code}
+                                        %%%%%%%%%{creation_license.license.code}
                                     </div>
                                 </div>
                             </a>
                         </div>
                     </td>
-                </tr>
+                </tr-->
 
                 <tr tal:condition="creation.original_relations">
                     <th i18n:translate="">Origins</th>
