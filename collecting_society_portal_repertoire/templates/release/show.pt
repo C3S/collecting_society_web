@@ -78,7 +78,7 @@
 
                 <tr>
                     <th i18n:translate="">Producer</th>
-                    <td>${release.producer}</td>
+                    <td>${release.producers}</td>
                 </tr>
 
                 <tr>

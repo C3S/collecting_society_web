@@ -360,7 +360,7 @@ class Content(Tdb):
         search_clause = [
                 ('active', '=', True),
                 ('entity_creator', '=', party_id),
-                ('user_committed_state', '=', False),
+                ('commit_state', '=', 'uncommited'),
                 ('processing_state', '!=', 'rejected')
             ]
         if category is not 'all':
