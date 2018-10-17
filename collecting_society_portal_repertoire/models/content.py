@@ -74,6 +74,49 @@ class Content(Tdb):
 
     @classmethod
     @Tdb.transaction(readonly=True)
+    def search(cls, domain, offset=None, limit=None, order=None,
+               escape=False, active=True):
+        """
+        Searches content entries by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          obj: list of content entries
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape_domain(domain)
+        if active:
+            domain.append(('active', 'in', (True, active)))
+        # search
+        result = cls.get().search(domain, offset, limit, order)
+        return result
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
+    def search_count(cls, domain, escape=False, active=True):
+        """
+        Counts content entries by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          int: number of content entries
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape(domain)
+        if active:
+            domain.append(('active', 'in', (True, active)))
+        # search
+        result = cls.get().search_count(domain)
+        return result
+
+    @classmethod
+    @Tdb.transaction(readonly=True)
     def search_all(cls):
         """
         Gets all content.

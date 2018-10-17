@@ -22,6 +22,7 @@ from ...models import (
     Release
 )
 from ...resources import CreationResource
+from .datatables import ContentSequence
 
 log = logging.getLogger(__name__)
 
@@ -145,7 +146,7 @@ class AddCreation(FormController):
         if not creations:
             log.info("creation add failed for %s: %s" % (email, _creation))
             self.request.session.flash(
-                _(u"Creation could not be added: ") + _creation['default_title'],
+                _(u"Creation could not be added: ") + _creation['title'],
                 'main-alert-danger'
             )
             self.redirect(CreationResource, 'list')
@@ -164,7 +165,7 @@ class AddCreation(FormController):
 
         log.info("creation add successful for %s: %s" % (email, creation))
         self.request.session.flash(
-            _(u"Creation added: ") + creation.default_title
+            _(u"Creation added: ") + creation.title
             + " ("+creation.code+")", 'main-alert-success'
         )
         self.remove()
@@ -227,7 +228,7 @@ def solo_artists_select_widget(node, kw):
 def creations_select_widget(node, kw):
     creations = Creation.search_all()
     creations_options = [
-        (creation.id, creation.default_title +
+        (creation.id, creation.title +
          ' (' + creation.artist.name + ')')
         for creation in creations
     ]
@@ -492,7 +493,7 @@ class RelationsSchema(colander.Schema):
 
 class ContentSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    content = ContentField(title=_(u"Content"))
+    content = ContentSequence()
 
 
 class AddCreationSchema(colander.Schema):
