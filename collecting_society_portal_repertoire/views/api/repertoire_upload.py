@@ -192,12 +192,14 @@ def get_content_info(request, content):
             'uuid': content.uuid,
             'category': content.category,
 
-            'duration': "{:.0f}:{:02.0f}".format(
+            'duration': content.length and "{:.0f}:{:02.0f}".format(
                 *divmod(int(content.length), 60)
-            ),
+            ) or 0,
             'channels': 'mono' if content.channels == 1 else 'stereo',
-            'sample_width': '{:d} bit'.format(content.sample_width),
-            'frame_rate': '{:d} Hz'.format(content.sample_rate),
+            'sample_width': content.sample_width and '{:d} bit'.format(
+                content.sample_width) or 0,
+            'frame_rate': content.sample_rate and '{:d} Hz'.format(
+                content.sample_rate) or 0,
             'preview_processed': bool(content.preview_path),
 
             'metadata_artist': content.metadata_artist,
@@ -657,6 +659,10 @@ def post_repertoire_upload(request):
         uploaded_path = get_path(request, _path_uploaded, content_uuid)
         rejected_path = get_path(request, _path_rejected, content_uuid)
 
+        file_category = get_category_from_mimetype(temporary_path)
+        file_size = os.path.getsize(temporary_path)
+        mime_type = str(mime.from_file(temporary_path))
+
         # validate file
         error = validate_upload(filename, temporary_path)
         if error:
@@ -679,9 +685,9 @@ def post_repertoire_upload(request):
                 'entity_origin': "direct",
                 'entity_creator': WebUser.current_web_user(request).party,
                 'name': str(name),
-                'category': get_category_from_mimetype(rejected_path),
-                'mime_type': str(mime.from_file(rejected_path)),
-                'size': os.path.getsize(rejected_path),
+                'category': file_category,
+                'mime_type': mime_type,
+                'size': file_size,
                 'path': rejected_path
             }
             content = save_upload_to_db(_content)
