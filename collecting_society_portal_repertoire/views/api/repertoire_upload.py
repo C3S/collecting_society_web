@@ -45,6 +45,10 @@ from ...services.lossless_audio_formats import (
     lossless_audio_extensions,
     lossless_audio_mimetypes
 )
+from ...services.sheet_music_formats import (
+    sheet_music_extensions,
+    sheet_music_mimetypes
+)
 
 
 log = logging.getLogger(__name__)
@@ -169,45 +173,57 @@ def cleanup_temp_directory(request):
 
 
 def get_content_info(request, content):
-    return {
-        'name': content.name,
-        'size': content.size,
-        'extension': content.extension,
-        'type': content.mime_type,
-        'uuid': content.uuid,
+    if content.category == 'sheet':     # pdf
+        return {
+            'name': content.name,
+            'size': content.size,
+            'extension': content.extension,
+            'type': content.mime_type,
+            'uuid': content.uuid,
+            'category': content.category,
+        }
 
-        'duration': "{:.0f}:{:02.0f}".format(
-            *divmod(int(content.length), 60)
-        ),
-        'channels': 'mono' if content.channels == 1 else 'stereo',
-        'sample_width': '{:d} bit'.format(content.sample_width),
-        'frame_rate': '{:d} Hz'.format(content.sample_rate),
-        'preview_processed': bool(content.preview_path),
+    if content.category == 'audio':     # lossless audio
+        return {
+            'name': content.name,
+            'size': content.size,
+            'extension': content.extension,
+            'type': content.mime_type,
+            'uuid': content.uuid,
+            'category': content.category,
 
-        'metadata_artist': content.metadata_artist,
-        'metadata_title': content.metadata_title,
-        'metadata_release': content.metadata_release,
-        'metadata_release_date': content.metadata_release_date,
-        'metadata_track_number': content.metadata_track_number,
+            'duration': "{:.0f}:{:02.0f}".format(
+                *divmod(int(content.length), 60)
+            ),
+            'channels': 'mono' if content.channels == 1 else 'stereo',
+            'sample_width': '{:d} bit'.format(content.sample_width),
+            'frame_rate': '{:d} Hz'.format(content.sample_rate),
+            'preview_processed': bool(content.preview_path),
 
-        'processing_state': content.processing_state,
-        'rejection_reason': content.rejection_reason,
-        'rejection_reason_details': content.rejection_reason_details,
+            'metadata_artist': content.metadata_artist,
+            'metadata_title': content.metadata_title,
+            'metadata_release': content.metadata_release,
+            'metadata_release_date': content.metadata_release_date,
+            'metadata_track_number': content.metadata_track_number,
 
-        'previewUrl': get_url(
-            url=request.registry.settings['api.c3supload.url'],
-            version=request.registry.settings['api.c3supload.version'],
-            action='preview',
-            content_id=content.id
-        ),
-        'deleteUrl': get_url(
-            url=request.registry.settings['api.c3supload.url'],
-            version=request.registry.settings['api.c3supload.version'],
-            action='delete',
-            content_id=content.id
-        ),
-        'deleteType': 'GET'
-    }
+            'processing_state': content.processing_state,
+            'rejection_reason': content.rejection_reason,
+            'rejection_reason_details': content.rejection_reason_details,
+
+            'previewUrl': get_url(
+                url=request.registry.settings['api.c3supload.url'],
+                version=request.registry.settings['api.c3supload.version'],
+                action='preview',
+                content_id=content.id
+            ),
+            'deleteUrl': get_url(
+                url=request.registry.settings['api.c3supload.url'],
+                version=request.registry.settings['api.c3supload.version'],
+                action='delete',
+                content_id=content.id
+            ),
+            'deleteType': 'GET'
+        }
 
 
 def create_path(path):
@@ -359,13 +375,24 @@ def validate_upload(filename, absolute_path):
     extension = os.path.splitext(filename)[1]
     if extension:
         extension = extension[1:]
-    if extension not in lossless_audio_extensions():
+    if (extension not in lossless_audio_extensions() and
+            extension not in sheet_music_extensions()):
         return _(u'Filetype not allowed.')
 
     # check mimetype
     mimetype = mime.from_file(absolute_path)
-    if mimetype not in lossless_audio_mimetypes():
+    if (mimetype not in lossless_audio_mimetypes() and
+            mimetype not in sheet_music_mimetypes()):
         return _(u'Mimetype not allowed.')
+
+
+def get_category_from_mimetype(absolute_path):
+    mimetype = mime.from_file(absolute_path)
+    if mimetype in lossless_audio_mimetypes():
+        return 'audio'
+    if mimetype in sheet_music_mimetypes():
+        return 'sheet'
+    return None
 
 
 def create_checksum(descriptor, algorithm=hashlib.sha256):
@@ -652,7 +679,7 @@ def post_repertoire_upload(request):
                 'entity_origin': "direct",
                 'entity_creator': WebUser.current_web_user(request).party,
                 'name': str(name),
-                'category': 'audio',
+                'category': get_category_from_mimetype(rejected_path),
                 'mime_type': str(mime.from_file(rejected_path)),
                 'size': os.path.getsize(rejected_path),
                 'path': rejected_path
@@ -683,7 +710,9 @@ def post_repertoire_upload(request):
 
         # we used to create a preview, now done in repertoire processing
         # this is only for displaying some file properties
-        audio = AudioSegment.from_file(temporary_path)
+        # audio = AudioSegment.from_file(temporary_path)
+
+        file_category = get_category_from_mimetype(temporary_path)
 
         # move files (temporary -> uploaded)
         ok = move_files_with_prefixes(
@@ -704,14 +733,14 @@ def post_repertoire_upload(request):
             'entity_origin': "direct",
             'entity_creator': WebUser.current_web_user(request).party,
             'name': str(filename),
-            'category': 'audio',
+            'category': file_category,
             'mime_type': str(mime.from_file(uploaded_path)),
             'size': os.path.getsize(uploaded_path),
             'path': uploaded_path,
-            'length': "%.6f" % audio.duration_seconds,
-            'channels': int(audio.channels),
-            'sample_rate': int(audio.frame_rate),
-            'sample_width': int(audio.sample_width * 8)
+            # 'length': "%.6f" % audio.duration_seconds,
+            # 'channels': int(audio.channels),
+            # 'sample_rate': int(audio.frame_rate),
+            # 'sample_width': int(audio.sample_width * 8)
         }
         content = save_upload_to_db(_content)
         if not content:
@@ -760,7 +789,7 @@ def options_repertoire_list(request):
 @Tdb.transaction(readonly=False)
 def get_repertoire_list(request):
     files = []
-    contents = Content.current_orphans(request, 'audio')
+    contents = Content.current_orphans(request)
     if contents:
         for content in contents:
             files.append(get_content_info(request, content))

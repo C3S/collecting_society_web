@@ -89,7 +89,7 @@ class CreationViews(ViewBase):
             )
             return self.redirect(CreationResource, 'list')
 
-        _title = creation.title
+        _title = creation.default_title
         _artist = creation.artist.name
         _code = creation.code
 
