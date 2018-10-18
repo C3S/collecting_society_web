@@ -76,8 +76,8 @@ def post_creation(request):
         [
             'OR',
             ('code', 'ilike', search),
-            ('releases.title', 'ilike', search),
-            ('artist.name', 'ilike', search)
+            # ('releases.title', 'ilike', search),
+            ('title', 'ilike', search)
         ]
     ]
     for column in data['columns']:
@@ -86,22 +86,27 @@ def post_creation(request):
         if column['name'] == 'code':
             search = Tdb.escape(column['search']['value'], wrap=True)
             domain.append(('code', 'ilike', search))
+        if column['name'] == 'titlefield':
+            search = Tdb.escape(column['search']['value'], wrap=True)
+            domain.append(('title', 'ilike', search))
         if column['name'] == 'artist':
             search = Tdb.escape(column['search']['value'], wrap=True)
             domain.append(('artist.name', 'ilike', search))
-        if column['name'] == 'name':
-            search = Tdb.escape(column['search']['value'], wrap=True)
-            domain.append(('releases.title', 'ilike', search))
+        # if column['name'] == 'name':
+        #     search = Tdb.escape(column['search']['value'], wrap=True)
+        #     domain.append(('releases.title', 'ilike', search))
     # order
     order = []
     for _order in data['order']:
         name = data['columns'][_order['column']]['name']
         if name == 'code':
             order.append(('code', _order['dir']))
+        if name == 'titlefield':
+            order.append(('title', _order['dir']))
         if name == 'artist':
-            order.append(('artist.name', _order['dir']))
-        if name == 'name':
-            order.append(('releases.title', _order['dir']))
+            order.append(('artist', _order['dir']))
+        # if name == 'code':
+        #     order.append(('releases.title', _order['dir']))
     # statistics
     total_domain = []
     total = Creation.search_count(total_domain)
@@ -114,7 +119,7 @@ def post_creation(request):
             limit=data['length'],
             order=order):
         records.append({
-            'name': creation.name,
+            'titlefield': creation.title,
             'artist': creation.artist.name,
             'code': creation.code,
         })

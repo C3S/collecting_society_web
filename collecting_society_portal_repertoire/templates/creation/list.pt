@@ -23,7 +23,7 @@
                 </tr>
 
                 <tr>
-                    <th i18n:translate="">Title</th>
+                    <th i18n:translate="">Working Title</th>
                     <th i18n:translate="">Artist</th>
                     <th colspan="4"></th>
                     <th class="text-right" i18n:translate="">C3S ID</th>

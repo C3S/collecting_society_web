@@ -138,7 +138,7 @@
                                 {% } else { %}
                                 <i class="glyphicon glyphicon-cd">
                                 {% } %}
-                                </i>&nbsp;&nbsp;'{%=file.category%}' is currently being processed. Please come back again later.</span></div>
+                                </i>&nbsp;&nbsp;'{%=file.name%}' is currently being processed. Please come back again later.</span></div>
                                 <span i18n:translate=""><b></b></span>                            
                             {% } %}
                         </span>
@@ -201,7 +201,7 @@
                     </td>
                     <td>
                         {% if (!file.error) { %}
-                            {% if (file.name.substr(file.name.length - 4) == '.pxxdf') { %}
+                            {% if (file.category == 'audio') { %}
                                 <a class="btn btn-success assign"
                                         href="${request.resource_path(request.root['repertoire']['creations'], 'add')}?uuid={%=file.uuid%}"
                                                 >

@@ -31,8 +31,8 @@ class ModeField(colander.SchemaNode):
     validator = colander.OneOf(['add', 'create', 'edit'])
 
 
-class NameField(colander.SchemaNode):
-    oid = "name"
+class TitleField(colander.SchemaNode):
+    oid = "titlefield"
     schema_type = colander.String
     widget = deform.widget.TextInputWidget()
 
@@ -54,12 +54,12 @@ class CodeField(colander.SchemaNode):
 
 class CreationSchema(colander.Schema):
     mode = ModeField()
-    name = NameField()
+    titlefield = TitleField()
     artist = ArtistField()
     code = CodeField()
     title = ""
 
 
 class CreationSequence(DatatableSequence):
-    artist_sequence = CreationSchema()
+    creation_sequence = CreationSchema()
     widget = creation_sequence_widget

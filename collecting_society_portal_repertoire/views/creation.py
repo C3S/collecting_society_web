@@ -64,6 +64,8 @@ class CreationViews(ViewBase):
         renderer='../templates/creation/add.pt',
         decorator=Tdb.transaction(readonly=False))
     def add(self):
+        if 'uuid' in self.request.GET.keys():
+            self.context.content_uuid = self.request.GET['uuid']
         self.register_form(AddCreation)
         return self.process_forms()
 

@@ -38,6 +38,8 @@ class AddCreation(FormController):
         self.form = add_creation_form(self.request)
         if self.submitted() and self.validate():
             self.create_creation()
+        else:
+            self.init_creation()
         return self.response
 
     # --- Stages --------------------------------------------------------------
@@ -47,12 +49,41 @@ class AddCreation(FormController):
     # --- Actions -------------------------------------------------------------
 
     @Tdb.transaction(readonly=False)
+    def init_creation(self):
+        """
+        initializes form with arguments passed via url from Content/Uploads
+        """
+
+        self.appstruct = {
+            'metadata': {},
+            'contributions': {},
+            'licenses': {},
+            'relations': {},
+            'content': {}
+        }
+        # contents tab
+        if getattr(self.context, 'content_uuid', False):
+            _content = Content.search_by_uuid(self.context.content_uuid)
+            if not _content:
+                return
+            # self.appstruct['content']['content'] = [(_content.id,
+            #                                         _content.name)]
+            self.appstruct['metadata']['title'] = _content.metadata_title
+            meta_artist = Artist.search_by_name(_content.metadata_artist)
+            if meta_artist:
+                self.appstruct['metadata']['artist'] = meta_artist[0].id
+
+        # render form with init data
+        self.render(self.appstruct)
+
+    @Tdb.transaction(readonly=False)
     def create_creation(self):
         email = self.request.unauthenticated_userid
         party = WebUser.current_party(self.request)
 
         # generate vlist
         _creation = {
+            'title': self.appstruct['metadata']['title'],
             'artist': self.appstruct['metadata']['artist'],
             'entity_creator': WebUser.current_web_user(self.request).party,
             'releases': self.appstruct['metadata']['releases'],
@@ -89,17 +120,18 @@ class AddCreation(FormController):
                         }]
                     )
                 )
-        if self.appstruct['licenses']['licenses']:
-            _creation['licenses'] = []
-            for license_id in self.appstruct['licenses']['licenses']:
-                _creation['licenses'].append(
-                    (
-                        'create',
-                        [{
-                            'license': license_id
-                        }]
-                    )
-                )
+        # license depends on the release. set in ReleaseCreation!        
+        # if self.appstruct['licenses']['licenses']:
+        #     _creation['licenses'] = []
+        #     for license_id in self.appstruct['licenses']['licenses']:
+        #         _creation['licenses'].append(
+        #             (
+        #                 'create',
+        #                 [{
+        #                     'license': license_id
+        #                 }]
+        #             )
+        #         )
         if self.appstruct['relations']['original_creations']:
             _creation['original_relations'] = []
             for original_creation in self.appstruct[
@@ -406,7 +438,7 @@ class UploadAudiofileSchema(colander.MappingSchema):
 
 class AddMetadataSchema(colander.MappingSchema):
     title = _(u"Add metadata")
-    creation_title = TitleField(name='title', title=_(u"Title"))
+    working_title = TitleField(name='title', title=_(u"Working Title"))
     artist = CurrentArtistField(title=_(u"Featured Artist"))
     releases = ReleasesField(title=_(u"Releases"))
     collecting_society = CollectingSocietyField()
@@ -465,7 +497,7 @@ class AddCreationRelationsSchema(colander.MappingSchema):
 class MetadataSchema(colander.Schema):
     title = _(u"Add metadata")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    creation_title = TitleField(name='title', title=_(u"Title"))
+    working_title = TitleField(name='title', title=_(u"Working Title"))
     artist = CurrentArtistField(title=_(u"Featured Artist"))
     releases = ReleasesField(title=_(u"Release"))
     collecting_society = CollectingSocietyField()

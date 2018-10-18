@@ -347,7 +347,7 @@ class GeneralSchema(colander.Schema):
 
 class TracksSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    tracks = CreationSequence(title="")
+    tracks = CreationSequence(title="", actions=['add'])
 
 
 class ProductionSchema(colander.Schema):

@@ -204,10 +204,10 @@ class Creation(Tdb):
         """
         log.debug('create creation:\n{}'.format(vlist))
         for values in vlist:
-            # if 'title' not in values:
-            #     raise KeyError('title is missing')
-            # TODO: rather check if there is at least one valid title in a
-            #       ReleaseCreation
+            if 'title' not in values:
+                raise KeyError('title is missing')
+            # TODO: if commited, also check if there is at least one valid
+            #       title in ReleaseCreation. if not: dashboard warning
             if 'artist' not in values:
                 raise KeyError('artist is missing')
         result = cls.get().create(vlist)

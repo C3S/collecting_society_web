@@ -7,9 +7,9 @@
             unique: "code",
             columns: [
                 {
-                    name: "name",
-                    title: "${_('Name')}",
-                    data: "name",
+                    name: "titlefield",
+                    title: "${_('Working Title')}",
+                    data: "titlefield",
                     className: "all",
                     orderable: true,
                     searchable: true,
@@ -25,7 +25,7 @@
                     name: "artist",
                     title: "${_('Artist')}",
                     data: "artist",
-                    className: "none",
+                    className: "all",
                     orderable: true,
                     searchable: true,
                     render: $.fn.dataTable.render.text(),

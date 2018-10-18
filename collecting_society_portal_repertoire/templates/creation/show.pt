@@ -32,12 +32,12 @@
             <table class="table table-hover">
 
                 <tr>
-                    <th i18n:translate="">ID</th>
-                    <td>${creation.id}</td>
+                    <th i18n:translate="">C3S ID</th>
+                    <td>${creation.code}</td>
                 </tr>
 
                 <tr>
-                    <th i18n:translate="">Title</th>
+                    <th i18n:translate="">Working Title</th>
                     <td>${creation.title}</td>
                 </tr>
 
