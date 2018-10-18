@@ -181,6 +181,18 @@ def get_content_info(request, content):
             'type': content.mime_type,
             'uuid': content.uuid,
             'category': content.category,
+
+            'processing_state': content.processing_state,
+            'rejection_reason': content.rejection_reason,
+            'rejection_reason_details': content.rejection_reason_details,
+
+            'deleteUrl': get_url(
+                url=request.registry.settings['api.c3supload.url'],
+                version=request.registry.settings['api.c3supload.version'],
+                action='delete',
+                content_id=content.id
+            ),
+            'deleteType': 'GET'
         }
 
     if content.category == 'audio':     # lossless audio
