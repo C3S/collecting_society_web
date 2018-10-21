@@ -44,7 +44,6 @@ class EditArtist(FormController):
 
     # --- Actions -------------------------------------------------------------
 
-    @Tdb.transaction(readonly=True)
     def edit_artist(self):
         artist = self.context.artist
 

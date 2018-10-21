@@ -19,7 +19,6 @@ class Artist(Tdb):
     __name__ = 'artist'
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def is_editable(cls, request, artist):
         """
         Checks if the artist is editable by the current webuser.
@@ -38,7 +37,7 @@ class Artist(Tdb):
           true: if Artist is editable.
           false: otherwise.
         """
-        party = WebUser.current_web_user(request).party
+        party = request.party
         # is a foreign object
         if artist.entity_origin != 'indirect':
             return False
@@ -52,7 +51,6 @@ class Artist(Tdb):
         return True
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search(cls, domain, offset=None, limit=None, order=None,
                escape=False, active=True):
         """
@@ -74,7 +72,6 @@ class Artist(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_count(cls, domain, escape=False, active=True):
         """
         Counts artists by domain
@@ -95,7 +92,6 @@ class Artist(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_all(cls, active=True):
         """
         Fetches all Artists
@@ -107,7 +103,6 @@ class Artist(Tdb):
         return cls.get().search([('active', 'in', (True, active))])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_all_solo_artists(cls, active=True):
         """
         Fetches all solo artists
@@ -125,7 +120,6 @@ class Artist(Tdb):
         ])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_fulltext(cls, search_string, active=True):
         """
         Searches artists by fulltext search of
@@ -157,7 +151,6 @@ class Artist(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_party(cls, party_id, active=True):
         """
         Searches artists by party id
@@ -179,7 +172,6 @@ class Artist(Tdb):
         ])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_solo_artists_by_party(cls, party_id, active=True):
         """
         Searches solo artists by party id
@@ -197,7 +189,6 @@ class Artist(Tdb):
         ])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_group_artists_by_party(cls, party_id, active=True):
         """
         Searches group artists by party id
@@ -215,7 +206,6 @@ class Artist(Tdb):
         ])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_id(cls, artist_id, active=True):
         """
         Searches an artist by artist id
@@ -234,7 +224,6 @@ class Artist(Tdb):
         return result[0] or None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_code(cls, artist_code, active=True):
         """
         Searches an artist by artist code
@@ -255,7 +244,6 @@ class Artist(Tdb):
         return result[0]
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_name(cls, artist_name, active=True):
         """
         Searches artists by artist name

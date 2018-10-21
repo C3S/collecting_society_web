@@ -16,7 +16,6 @@ class License(Tdb):
     __name__ = 'license'
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_all(cls):
         """
         Fetches all Licenses
@@ -28,7 +27,6 @@ class License(Tdb):
         return cls.get().search([])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_id(cls, license_id):
         """
         Searches an license by license id

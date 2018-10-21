@@ -16,7 +16,6 @@ class Release(Tdb):
     __name__ = 'release'
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_all(cls, active=True):
         """
         Fetches all Releases
@@ -31,7 +30,6 @@ class Release(Tdb):
         return cls.get().search([('active', 'in', (True, active))])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_party(cls, party_id, active=True):
         """
         Searches releases by party id
@@ -54,7 +52,6 @@ class Release(Tdb):
         ])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_code(cls, release_code, active=True):
         """
         Searches an release by release code
@@ -75,7 +72,6 @@ class Release(Tdb):
         return result[0]
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_id(cls, uid, active=True):
         """
         Searches releases by id

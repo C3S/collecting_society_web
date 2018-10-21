@@ -25,19 +25,19 @@ log = logging.getLogger(__name__)
 
 
 @view_defaults(
-    context='..resources.ReleaseResource',
-    permission='read')
+    context='..resources.ReleaseResource')
 class ReleaseViews(ViewBase):
 
     @view_config(
-        name='')
+        name='',
+        permission='release_root')
     def root(self):
         return self.redirect(ReleaseResource, 'list')
 
     @view_config(
         name='list',
         renderer='../templates/release/list.pt',
-        decorator=Tdb.transaction(readonly=True))
+        permission='list_releases')
     def list(self):
         web_user = WebUser.current_web_user(self.request)
         _party_id = web_user.party.id
@@ -56,7 +56,7 @@ class ReleaseViews(ViewBase):
     @view_config(
         name='show',
         renderer='../templates/release/show.pt',
-        decorator=Tdb.transaction(readonly=True))
+        permission='show_release')
     def show(self):
         release_code = self.request.subpath[-1]
         _release = Release.search_by_code(release_code)
@@ -70,7 +70,7 @@ class ReleaseViews(ViewBase):
     @view_config(
         name='add',
         renderer='../templates/release/add.pt',
-        decorator=Tdb.transaction(readonly=False))
+        permission='add_release')
     def add(self):
         self.register_form(AddRelease)
         return self.process_forms()
@@ -78,7 +78,7 @@ class ReleaseViews(ViewBase):
     @view_config(
         name='edit',
         renderer='../templates/release/edit.pt',
-        decorator=Tdb.transaction(readonly=False))
+        permission='edit_release')
     def edit(self):
         # add record to context
         code = self.request.subpath[-1]
@@ -102,7 +102,8 @@ class ReleaseViews(ViewBase):
 
     @view_config(
         name='delete',
-        decorator=Tdb.transaction(readonly=False))
+        decorator=Tdb.transaction(readonly=False),
+        permission='delete_release')
     def delete(self):
         email = self.request.unauthenticated_userid
 

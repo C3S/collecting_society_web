@@ -84,7 +84,7 @@ class DatatablesResource(object):
 
     def __acl__(self):
         # no webuser logged in
-        if not self.request.user:
+        if not self.request.web_user:
             return [DENY_ALL]
         # webuser logged in
         return [

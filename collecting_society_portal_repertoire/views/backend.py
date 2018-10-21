@@ -31,39 +31,40 @@ class WebUserViews(ViewBase):
 
     @view_config(
         name='',
-        permission='read'
-    )
+        permission='backend_root')
+    def root(self):
+        return self.redirect(BackendResource, 'dashboard')
+
+    @view_config(
+        name='dashboard',
+        permission='show_dashboard')
     def dashboard(self):
         return self.redirect(RepertoireResource)
 
     @view_config(
         name='help',
         renderer='../templates/backend/help.pt',
-        permission='read'
-    )
+        permission='show_help')
     def help(self):
         return {}
 
     @view_config(
         name='contact',
         renderer='../templates/backend/contact.pt',
-        permission='read'
-    )
+        permission='show_contact')
     def contact(self):
         return {}
 
     @view_config(
         name='terms',
         renderer='../templates/backend/terms.pt',
-        permission='read'
-    )
+        permission='show_terms')
     def terms(self):
         return {}
 
     @view_config(
         name='logout',
-        permission='read'
-    )
+        permission='logout')
     def logout(self):
         self.request.session.invalidate()
         log.info(
@@ -79,7 +80,7 @@ class WebUserViews(ViewBase):
     @view_config(
         name='verify_email',
         decorator=Tdb.transaction(readonly=False),
-        permission='read')
+        permission='verify_email')
     def verify_email(self):
 
         # sanity checks

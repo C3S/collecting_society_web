@@ -67,7 +67,7 @@ def options_content(request):
     permission='read',
     schema=ContentDatatablesSchema(),
     validators=(colander_body_validator,))
-@Tdb.transaction(readonly=False)
+@Tdb.transaction(readonly=True)
 def post_content(request):
     data = request.validated
     # domain

@@ -16,7 +16,6 @@ class Genre(Tdb):
     __name__ = 'genre'
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_all(cls):
         """
         Fetches all Genres
@@ -28,7 +27,6 @@ class Genre(Tdb):
         return cls.get().search([])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_name(cls, name):
         """
         Searches a genre by name
@@ -44,7 +42,6 @@ class Genre(Tdb):
         return result[0] or None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_id(cls, id):
         """
         Searches a genre by id

@@ -14,6 +14,8 @@ The following functions are called by convention on app creation:
 - api_views
 """
 
+import logging
+
 from collecting_society_portal.resources import (
     FrontendResource,
     BackendResource,
@@ -27,6 +29,7 @@ from .services import (
 )
 from .resources import (
     ArtistResource,
+    EditArtistResource,
     ReleaseResource,
     CreationResource,
     RepertoireResource,
@@ -38,6 +41,8 @@ from .views.widgets import (
     OrphanedContentWidget,
     UncommitedContentWidget
 )
+
+log = logging.getLogger(__name__)
 
 
 def web_resources(config):
@@ -55,10 +60,14 @@ def web_resources(config):
     """
     BackendResource.add_child(ProfileResource)
     BackendResource.add_child(RepertoireResource)
+
     RepertoireResource.add_child(UploadResource)
     RepertoireResource.add_child(ArtistResource)
     RepertoireResource.add_child(ReleaseResource)
     RepertoireResource.add_child(CreationResource)
+
+    ArtistResource.add_child(EditArtistResource)
+
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
 

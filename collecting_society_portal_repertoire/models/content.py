@@ -19,7 +19,6 @@ class Content(Tdb):
     __name__ = 'content'
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def current_orphans(cls, request, category='all'):
         """
         Searches orphan content in category of current web user.
@@ -36,7 +35,6 @@ class Content(Tdb):
         return cls.search_orphans(party.id, category)
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def current_rejects(cls, request, reason, category='all'):
         """
         Searches rejected content
@@ -55,7 +53,6 @@ class Content(Tdb):
         return cls.search_rejects(party.id, reason, category)
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def current_uncommits(cls, request, category='all'):
         """
         Searches uncommited content
@@ -73,7 +70,6 @@ class Content(Tdb):
         return cls.search_uncommits(party.id, category)
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search(cls, domain, offset=None, limit=None, order=None,
                escape=False, active=True):
         """
@@ -95,7 +91,6 @@ class Content(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_count(cls, domain, escape=False, active=True):
         """
         Counts content entries by domain
@@ -116,7 +111,6 @@ class Content(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_all(cls):
         """
         Gets all content.
@@ -128,7 +122,6 @@ class Content(Tdb):
         return cls.get().search([('active', '=', True)])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_id(cls, uid):
         """
         Searches a content by id.
@@ -149,7 +142,6 @@ class Content(Tdb):
         return result[0] if result else None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_name(cls, name):
         """
         Searches a content by name.
@@ -169,7 +161,6 @@ class Content(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_uuid(cls, uuid):
         """
         Searches a content by uuid.
@@ -190,7 +181,6 @@ class Content(Tdb):
         return result[0] if result else None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_archive(cls, archive):
         """
         Searches a content by archive.
@@ -210,7 +200,6 @@ class Content(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_party(cls, party_id):
         """
         Searches a content by party id.
@@ -230,7 +219,6 @@ class Content(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_web_user(cls, web_user_id):
         """
         Searches a content by web user id.
@@ -253,7 +241,6 @@ class Content(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_creation(cls, creation_id):
         """
         Searches a content by creation id.
@@ -274,7 +261,6 @@ class Content(Tdb):
         return result[0] if result else None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_extension(cls, extension):
         """
         Searches a content by extension.
@@ -294,7 +280,6 @@ class Content(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_mime_type(cls, mime_type):
         """
         Searches a content by mime type.
@@ -314,7 +299,6 @@ class Content(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_orphans(cls, party_id, category):
         """
         Searches orphan content in category of web user.
@@ -346,7 +330,6 @@ class Content(Tdb):
         return result or None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_rejects(cls, party_id, reason, category):
         """
         Searches duplicate content of current user.
@@ -386,7 +369,6 @@ class Content(Tdb):
         return result or None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_uncommits(cls, party_id, category):
         """
         Searches uncommited content of current user.

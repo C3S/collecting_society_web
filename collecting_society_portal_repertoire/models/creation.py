@@ -16,7 +16,6 @@ class Creation(Tdb):
     __name__ = 'creation'
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search(cls, domain, offset=None, limit=None, order=None,
                escape=False, active=True):
         """
@@ -38,7 +37,6 @@ class Creation(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_count(cls, domain, escape=False, active=True):
         """
         Counts creations by domain
@@ -59,7 +57,6 @@ class Creation(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_all(cls, active=True):
         """
         Fetches all Creations
@@ -74,7 +71,6 @@ class Creation(Tdb):
         return cls.get().search([('active', 'in', (True, active))])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_party(cls, party_id, active=True):
         """
         Searches creations by party id
@@ -100,7 +96,6 @@ class Creation(Tdb):
         ])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_id(cls, creation_id, active=True):
         """
         Searches a creation by creation id
@@ -120,7 +115,6 @@ class Creation(Tdb):
         return result[0] or None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_artist(cls, artist_id, active=True):
         """
         Searches creations by artist id
@@ -140,7 +134,6 @@ class Creation(Tdb):
         return result or None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_contributions_of_artist(cls, artist_id, active=True):
         """
         Searches creations by contributions of artist id

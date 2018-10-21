@@ -22,19 +22,19 @@ log = logging.getLogger(__name__)
 
 
 @view_defaults(
-    context='..resources.CreationResource',
-    permission='read')
+    context='..resources.CreationResource')
 class CreationViews(ViewBase):
 
     @view_config(
-        name='')
+        name='',
+        permission='creation_root')
     def root(self):
         return self.redirect(CreationResource, 'list')
 
     @view_config(
         name='list',
         renderer='../templates/creation/list.pt',
-        decorator=Tdb.transaction(readonly=True))
+        permission='list_creations')
     def list(self):
         web_user = WebUser.current_web_user(self.request)
         _creations = sorted(
@@ -46,7 +46,7 @@ class CreationViews(ViewBase):
     @view_config(
         name='show',
         renderer='../templates/creation/show.pt',
-        decorator=Tdb.transaction(readonly=True))
+        permission='show_creation')
     def show(self):
         artist_id = self.request.subpath[-1]
         _creation = Creation.search_by_id(artist_id)
@@ -62,7 +62,7 @@ class CreationViews(ViewBase):
     @view_config(
         name='add',
         renderer='../templates/creation/add.pt',
-        decorator=Tdb.transaction(readonly=False))
+        permission='add_creation')
     def add(self):
         if 'uuid' in self.request.GET.keys():
             self.context.content_uuid = self.request.GET['uuid']
@@ -70,8 +70,16 @@ class CreationViews(ViewBase):
         return self.process_forms()
 
     @view_config(
+        name='edit',
+        renderer='../templates/creation/edit.pt',
+        permission='edit_creation')
+    def edit(self):
+        pass
+
+    @view_config(
         name='delete',
-        decorator=Tdb.transaction(readonly=False))
+        decorator=Tdb.transaction(readonly=False),
+        permission='delete_creation')
     def delete(self):
         email = self.request.unauthenticated_userid
 

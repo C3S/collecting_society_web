@@ -29,17 +29,14 @@ class ProfileViews(ViewBase):
 
     @view_config(
         name='',
-        permission='read'
-    )
-    def dashboard(self):
+        permission='profile_root')
+    def root(self):
         return self.redirect(ProfileResource, 'show')
 
     @view_config(
         name='show',
         renderer='../templates/profile/show.pt',
-        decorator=Tdb.transaction(readonly=True),
-        permission='read'
-    )
+        permission='show_profile')
     def show(self):
         _webuser = WebUser.current_web_user(self.request)
         if _webuser is None:
@@ -52,9 +49,7 @@ class ProfileViews(ViewBase):
     @view_config(
         name='edit',
         renderer='../templates/profile/edit.pt',
-        decorator=Tdb.transaction(readonly=False),
-        permission='read'
-    )
+        permission='edit_profile')
     def edit(self):
         self.register_form(EditProfile)
         return self.process_forms()

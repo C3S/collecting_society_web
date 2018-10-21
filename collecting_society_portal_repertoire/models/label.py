@@ -15,10 +15,7 @@ class Label(Tdb):
 
     __name__ = 'label'
 
-
-
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search(cls, domain, offset=None, limit=None, order=None,
                escape=False):
         """
@@ -38,7 +35,6 @@ class Label(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_count(cls, domain, escape=False, active=True):
         """
         Counts labels by domain
@@ -59,7 +55,6 @@ class Label(Tdb):
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_all(cls):
         """
         Fetches all Labels
@@ -71,7 +66,6 @@ class Label(Tdb):
         return cls.get().search([])
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_gvl_code(cls, gvl_code):
         """
         Searches a label by gvl code
@@ -94,7 +88,6 @@ class Label(Tdb):
         return result[0] or None
 
     @classmethod
-    @Tdb.transaction(readonly=True)
     def search_by_name_starting_with(cls, name_starting_with):
         """
         Searches a label for a name starting with certaion characters

@@ -7,7 +7,8 @@ import deform
 
 from collecting_society_portal.models import (
     Tdb,
-    WebUser
+    WebUser,
+    Party
 )
 from collecting_society_portal.views.forms import (
     FormController,
@@ -17,7 +18,6 @@ from ...services import _
 from ...models import (
     Genre,
     Style,
-    Party,
     Label,
     Release
 )

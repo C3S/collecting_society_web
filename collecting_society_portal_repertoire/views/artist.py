@@ -18,7 +18,10 @@ from ..models import (
     Creation
 )
 from ..services import _
-from ..resources import ArtistResource
+from ..resources import (
+    ArtistResource,
+    EditArtistResource
+)
 from .forms import (
     AddArtist,
     EditArtist
@@ -28,19 +31,19 @@ log = logging.getLogger(__name__)
 
 
 @view_defaults(
-    context='..resources.ArtistResource',
-    permission='read')
+    context='..resources.ArtistResource')
 class ArtistViews(ViewBase):
 
     @view_config(
-        name='')
+        name='',
+        permission='artist_root')
     def root(self):
         return self.redirect(ArtistResource, 'list')
 
     @view_config(
         name='list',
         renderer='../templates/artist/list.pt',
-        decorator=Tdb.transaction(readonly=True))
+        permission='list_aritsts')
     def list(self):
         web_user = WebUser.current_web_user(self.request)
         _party_id = web_user.party.id
@@ -51,7 +54,7 @@ class ArtistViews(ViewBase):
     @view_config(
         name='show',
         renderer='../templates/artist/show.pt',
-        decorator=Tdb.transaction(readonly=True))
+        permission='show_artist')
     def show(self):
         artist_code = self.request.subpath[-1]
         _artist = Artist.search_by_code(artist_code)
@@ -68,34 +71,25 @@ class ArtistViews(ViewBase):
     @view_config(
         name='add',
         renderer='../templates/artist/add.pt',
-        decorator=Tdb.transaction(readonly=False))
+        permission='add_artist')
     def add(self):
         self.register_form(AddArtist)
         return self.process_forms()
 
     @view_config(
-        name='edit',
+        name='',
+        context=EditArtistResource,
         renderer='../templates/artist/edit.pt',
-        decorator=Tdb.transaction(readonly=False))
+        permission='edit_artist')
     def edit(self):
-        code = self.request.subpath[0]
-
-        artist = Artist.search_by_code(code)
-        if not artist:
-            self.request.session.flash(
-                _(u"Could not edit artist - artist not found"),
-                'main-alert-warning'
-            )
-            return self.redirect(ArtistResource, 'list')
-
         self.register_form(EditArtist)
         return self.process_forms({
-            'artist': artist
+            'artist': self.context.artist
         })
 
     @view_config(
         name='delete',
-        decorator=Tdb.transaction(readonly=False))
+        permission='delete_artist')
     def delete(self):
         email = self.request.unauthenticated_userid
 

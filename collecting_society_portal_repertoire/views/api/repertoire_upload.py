@@ -91,7 +91,7 @@ def get_cors_headers():
 
 def get_acl(request):
     # no webuser logged in
-    if not request.user:
+    if not request.web_user:
         return [DENY_ALL]
     # webuser logged in
     return [
@@ -115,7 +115,7 @@ def get_url(url, version, action, content_id):
 
 
 def get_path(request, directory, filename=None):
-    webuser_directory = str(request.user.id)
+    webuser_directory = str(request.web_user.id)
     # special case: for previews use content base path
     if directory == _path_previews:
         content_base_directory = (
@@ -315,7 +315,7 @@ def panic(request, reason, identifiers):
             "- User %s\n"
             "- Identifiers %s\n"
         ) % (
-            reason, request.user, identifiers
+            reason, request.web_user, identifiers
         )
     )
     delete_files_with_identifiers(request, identifiers)
@@ -551,7 +551,7 @@ class UserResource(object):
 
     def __acl__(self):
         # no webuser logged in
-        if not self.request.user:
+        if not self.request.web_user:
             return [DENY_ALL]
         # webuser logged in
         return [
@@ -873,7 +873,7 @@ def get_repertoire_preview(request):
     preview_path = content.preview_path
     if not preview_path or not os.path.isfile(preview_path):
         raise HTTPNotFound()
-    # if content.entity_creator != request.user.party: <-make serious acl here!
+    # if content.entity_creator != request.party: <-make serious acl here!
     #    raise HTTPForbidden()
     return FileResponse(
         preview_path,
@@ -907,7 +907,7 @@ def get_repertoire_delete(request):
     content = Content.search_by_id(content_id)
     info = get_content_info(request, content)
     # admin feedback
-    log.info("{} deleted content {}\n".format(request.user, info))
+    log.info("{} deleted content {}\n".format(request.web_user, info))
     name = content.name
     content.active = False
     content.save()

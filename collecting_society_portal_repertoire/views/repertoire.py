@@ -24,22 +24,20 @@ from ..services.sheet_music_formats import sheet_music_extensions
 log = logging.getLogger(__name__)
 
 
-@view_defaults(context=RepertoireResource)
+@view_defaults(
+    context=RepertoireResource)
 class RepertoireViews(ViewBase):
 
     @view_config(
         name='',
-        permission='read'
-    )
+        permission='repertoire_root')
     def root(self):
         return self.redirect(RepertoireResource, 'dashboard')
 
     @view_config(
         name='dashboard',
         renderer='../templates/repertoire/dashboard.pt',
-        decorator=Tdb.transaction(readonly=True),
-        permission='read'
-    )
+        permission='show_dashboard')
     def dashboard(self):
         _webuser = WebUser.current_web_user(self.request)
         if _webuser:
@@ -51,8 +49,7 @@ class RepertoireViews(ViewBase):
         context=UploadResource,
         name='',
         renderer='../templates/repertoire/upload.pt',
-        permission='read'
-    )
+        permission='upload_files')
     def upload(self):
         settings = self.request.registry.settings
         return {
