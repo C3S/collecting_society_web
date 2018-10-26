@@ -201,7 +201,7 @@
                     </td>
                     <td>
                         {% if (!file.error) { %}
-                            {% if (file.category == 'audio') { %}
+                            {% if (file.category == 'audio' && file.processing_state != 'uploaded') { %}
                                 <a class="btn btn-success assign"
                                         href="${request.resource_path(request.root['repertoire']['creations'], 'add')}?uuid={%=file.uuid%}"
                                                 >
