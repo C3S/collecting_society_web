@@ -20,51 +20,41 @@ from collecting_society_portal.models import (
     WebUser
 )
 
-from ..resources import RepertoireResource
 from ..services import _
 
 log = logging.getLogger(__name__)
 
 
-@view_defaults(context=BackendResource)
-class WebUserViews(ViewBase):
+@view_defaults(
+    context=BackendResource,
+    permission='authenticated')
+class BackendViews(ViewBase):
 
     @view_config(
-        name='',
-        permission='backend_root')
-    def root(self):
-        return self.redirect(BackendResource, 'dashboard')
-
-    @view_config(
-        name='dashboard',
-        permission='show_dashboard')
+        name='')
     def dashboard(self):
-        return self.redirect(RepertoireResource)
+        return self.redirect('repertoire')
 
     @view_config(
         name='help',
-        renderer='../templates/backend/help.pt',
-        permission='show_help')
+        renderer='../templates/backend/help.pt')
     def help(self):
         return {}
 
     @view_config(
         name='contact',
-        renderer='../templates/backend/contact.pt',
-        permission='show_contact')
+        renderer='../templates/backend/contact.pt')
     def contact(self):
         return {}
 
     @view_config(
         name='terms',
-        renderer='../templates/backend/terms.pt',
-        permission='show_terms')
+        renderer='../templates/backend/terms.pt')
     def terms(self):
         return {}
 
     @view_config(
-        name='logout',
-        permission='logout')
+        name='logout')
     def logout(self):
         self.request.session.invalidate()
         log.info(
@@ -79,8 +69,7 @@ class WebUserViews(ViewBase):
 
     @view_config(
         name='verify_email',
-        decorator=Tdb.transaction(readonly=False),
-        permission='verify_email')
+        decorator=Tdb.transaction(readonly=False))
     def verify_email(self):
 
         # sanity checks
@@ -114,4 +103,4 @@ class WebUserViews(ViewBase):
                 'main-alert-danger'
             )
 
-        return self.redirect(BackendResource)
+        return self.redirect()

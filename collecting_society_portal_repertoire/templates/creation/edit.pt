@@ -18,12 +18,7 @@
             </a>
         </div>
 
-        <img tal:condition="context.release and context.release.picture_data"
-             tal:define="pic h.b64encode(context.release.picture_data) | None"
-             class="img-responsive cs-release-img clearfix center-block"
-             src="data:${context.release.picture_data_mime_type};base64,${pic}" />
-
-        <div tal:content="structure EditRelease"/>
+        <!--<div tal:content="structure EditCreation"/>-->
 
     </tal:block>
 

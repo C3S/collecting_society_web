@@ -37,7 +37,6 @@ class EditRelease(FormController):
 
     # --- Actions -------------------------------------------------------------
 
-    @Tdb.transaction(readonly=True)
     def edit_release(self):
         r = self.context.release
 
@@ -56,8 +55,6 @@ class EditRelease(FormController):
                     r.warning or '',
             },
             'production': {
-                'producer':
-                    r.producer or '',
                 'copyright_date':
                     r.copyright_date or '',
                 'production_date':
@@ -80,8 +77,6 @@ class EditRelease(FormController):
                     r.online_cancellation_date or '',
                 'distribution_territory':
                     r.distribution_territory or '',
-                'neighbouring_rights_society':
-                    r.neighbouring_rights_society or '',
             },
         }
 
@@ -120,8 +115,6 @@ class EditRelease(FormController):
                 [('add', map(int, a['general']['styles']))],
             'warning':
                 a['general']['warning'],
-            'producer':
-                a['production']['producer'],
             'copyright_date':
                 a['production']['copyright_date'],
             'production_date':
@@ -142,8 +135,6 @@ class EditRelease(FormController):
                 a['distribution']['online_cancellation_date'],
             'distribution_territory':
                 a['distribution']['distribution_territory'],
-            'neighbouring_rights_society':
-                a['distribution']['neighbouring_rights_society'],
         }
 
         # label
@@ -189,7 +180,7 @@ class EditRelease(FormController):
         )
 
         # redirect
-        self.redirect(ReleaseResource, 'list')
+        self.redirect('..')
 
 
 # --- Validators --------------------------------------------------------------

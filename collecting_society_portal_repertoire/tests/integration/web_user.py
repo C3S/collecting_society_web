@@ -51,7 +51,6 @@ class TestWebUser(IntegrationTestBase):
         self.screenshot()
         self.assertIn("User mail address not verified", self.cli.page_source)
 
-    @Tdb.transaction(readonly=False)
     def test_030_validate_user_registration(self):
         """
         validate user registration succeeds and logs user in

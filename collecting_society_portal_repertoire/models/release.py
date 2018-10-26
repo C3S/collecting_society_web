@@ -16,6 +16,20 @@ class Release(Tdb):
     __name__ = 'release'
 
     @classmethod
+    def current_viewable(cls, request):
+        """
+        Searches releases, which the current web user is allowed to view.
+
+        Args:
+          party_id (int): party.party.id
+
+        Returns:
+          list: viewable releases of current web_user
+          None: if no match is found
+        """
+        return cls.search_viewable_by_web_user(request.web_user.id)
+
+    @classmethod
     def search_all(cls, active=True):
         """
         Fetches all Releases
@@ -28,48 +42,6 @@ class Release(Tdb):
           None: if no match is found
         """
         return cls.get().search([('active', 'in', (True, active))])
-
-    @classmethod
-    def search_by_party(cls, party_id, active=True):
-        """
-        Searches releases by party id
-
-        Args:
-          party_id (int): party.party.id
-
-        Returns:
-          list: releases of web_user
-                and of releases the web user has creations on
-          None: if no match is found
-        """
-        return cls.get().search([
-            [
-                'OR',
-                ('entity_creator', '=', party_id),
-                ('creations.creation.artist.party', '=', party_id)
-            ],
-            ('active', 'in', (True, active))
-        ])
-
-    @classmethod
-    def search_by_code(cls, release_code, active=True):
-        """
-        Searches an release by release code
-
-        Args:
-          release_code (string): release.code
-
-        Returns:
-          obj: release
-          None: if no match is found
-        """
-        result = cls.get().search([
-            ('code', '=', release_code),
-            ('active', 'in', (True, active))
-        ])
-        if not result:
-            return None
-        return result[0]
 
     @classmethod
     def search_by_id(cls, uid, active=True):
@@ -92,7 +64,73 @@ class Release(Tdb):
         return releases[0]
 
     @classmethod
-    @Tdb.transaction(readonly=False)
+    def search_by_code(cls, release_code, active=True):
+        """
+        Searches an release by release code
+
+        Args:
+          release_code (string): release.code
+
+        Returns:
+          obj: release
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('code', '=', release_code),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
+    def search_by_party(cls, party_id, active=True):
+        """
+        Searches releases by party id
+
+        Args:
+          party_id (int): party.party.id
+
+        Returns:
+          list: releases of web_user
+                and of releases the web user has creations on
+          None: if no match is found
+        """
+        return cls.get().search([
+            [
+                'OR',
+                ('entity_creator', '=', party_id),
+                ('tracks.creation.artist.party', '=', party_id)
+            ],
+            ('active', 'in', (True, active))
+        ])
+
+    @classmethod
+    def search_viewable_by_web_user(cls, web_user_id, active=True):
+        """
+        Searches releases, which the web_user is allowed to view.
+
+        Args:
+          web_user_id (int): web.user.id
+
+        Returns:
+          list: viewable releases of web_user, empty if none were found
+        """
+        return cls.get().search([
+            [
+                'OR',
+                [
+                    ('acl.web_user', '=', web_user_id),
+                    ('acl.roles.permissions.code', '=', 'view_release')
+                ], [
+                    ('artists.artist.acl.web_user', '=', web_user_id),
+                    ('artists.artist.acl.roles.permissions.code',
+                        '=', 'view_artist_releases'),
+                ]
+            ]
+        ])
+
+    @classmethod
     def delete(cls, release):
         """
         Deletes release
@@ -108,7 +146,6 @@ class Release(Tdb):
         return cls.get().delete(release)
 
     @classmethod
-    @Tdb.transaction(readonly=False)
     def create(cls, vlist):
         """
         Creates Releases

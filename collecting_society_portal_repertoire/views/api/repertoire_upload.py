@@ -13,8 +13,6 @@ import time
 
 from cgi import FieldStorage
 
-from pydub import AudioSegment
-
 from webob.byterange import ContentRange
 from pyramid.response import FileResponse
 from pyramid.security import (
@@ -376,6 +374,7 @@ def save_upload_to_fs(descriptor, absolute_path, contentrange=None):
     )
 
 
+@Tdb.transaction(readonly=False)
 def save_upload_to_db(content):
     contents = Content.create([content])
     if not len(contents) == 1:
@@ -548,6 +547,22 @@ class UserResource(object):
 
     def __init__(self, request):
         self.request = request
+        self.readonly = False
+
+    # triggered by ContextFound event to load resources after traversal
+    def _context_found(self):
+        if not self.readonly:
+            self._context_found_writable()
+        else:
+            self.context_found()
+
+    # wrapping function needed for writable transaction decorator
+    @Tdb.transaction(readonly=False)
+    def _context_found_writable(self):
+        self.context_found()
+
+    def context_found(self):
+        pass
 
     def __acl__(self):
         # no webuser logged in
@@ -804,7 +819,6 @@ def options_repertoire_list(request):
 
 @repertoire_list.get(
     permission='read')
-@Tdb.transaction(readonly=False)
 def get_repertoire_list(request):
     files = []
     contents = Content.current_orphans(request)
@@ -833,7 +847,6 @@ def options_repertoire_show(request):
 
 @repertoire_show.get(
     permission='read')
-@Tdb.transaction(readonly=True)
 def get_repertoire_show(request):
     filename = request.matchdict['filename'].encode('utf-8')
     if not filename:
@@ -867,7 +880,6 @@ def options_repertoire_preview(request):
 
 @repertoire_preview.get(
     permission='read')
-@Tdb.transaction(readonly=True)
 def get_repertoire_preview(request):
     content = Content.search_by_id(request.matchdict['id'])
     preview_path = content.preview_path

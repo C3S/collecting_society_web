@@ -9,54 +9,23 @@ from pyramid.view import (
 )
 
 from collecting_society_portal.views import ViewBase
-from collecting_society_portal.models import (
-    Tdb,
-    WebUser
-)
-
-from ..resources import (
-    RepertoireResource,
-    UploadResource
-)
-from ..services.lossless_audio_formats import lossless_audio_extensions
-from ..services.sheet_music_formats import sheet_music_extensions
 
 log = logging.getLogger(__name__)
 
 
 @view_defaults(
-    context=RepertoireResource)
+    context='..resources.RepertoireResource')
 class RepertoireViews(ViewBase):
 
     @view_config(
         name='',
-        permission='repertoire_root')
+        permission='authenticated')
     def root(self):
-        return self.redirect(RepertoireResource, 'dashboard')
+        return self.redirect('dashboard')
 
     @view_config(
         name='dashboard',
         renderer='../templates/repertoire/dashboard.pt',
-        permission='show_dashboard')
+        permission='authenticated')
     def dashboard(self):
-        _webuser = WebUser.current_web_user(self.request)
-        if _webuser:
-            return {'webuser': _webuser}
-        else:
-            return None
-
-    @view_config(
-        context=UploadResource,
-        name='',
-        renderer='../templates/repertoire/upload.pt',
-        permission='upload_files')
-    def upload(self):
-        settings = self.request.registry.settings
-        return {
-            'extensions': (lossless_audio_extensions() +
-                           sheet_music_extensions()),
-            'url': ''.join([
-                settings['api.c3supload.url'], '/',
-                settings['api.c3supload.version']
-            ])
-        }
+        return {}

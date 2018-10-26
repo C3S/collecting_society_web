@@ -67,7 +67,6 @@ def options_artist(request):
     permission='read',
     schema=ArtistDatatablesSchema(),
     validators=(colander_body_validator,))
-@Tdb.transaction(readonly=True)
 def post_artist(request):
     data = request.validated
     # domain

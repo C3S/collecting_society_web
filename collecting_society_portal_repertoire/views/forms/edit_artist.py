@@ -16,7 +16,6 @@ from collecting_society_portal.views.forms import (
 )
 from ...services import _
 from ...models import Artist
-from ...resources import ArtistResource
 from .datatables import ArtistSequence
 
 log = logging.getLogger(__name__)
@@ -60,7 +59,7 @@ class EditArtist(FormController):
             for member in artist.solo_artists:
                 mode = "add"
                 email = ""
-                if Artist.is_editable(self.request, member):
+                if Artist.is_foreign_member(self.request, artist, member):
                     mode = "edit"
                     email = member.party.email
                 _members.append({
@@ -165,16 +164,34 @@ class EditArtist(FormController):
                 # edit created artists
                 if member['mode'] == "edit":
                     member_artist = Artist.search_by_code(member['code'])
+                    member_party = member_artist.party
                     # sanity checks
                     if not member_artist:
                         continue
-                    if not Artist.is_editable(self.request, member_artist):
+                    # security checks
+                    if not Artist.is_foreign_member(
+                            self.request, artist, member_artist):
                         continue
+                    # edit artist
                     member_artist.name = member['name']
-                    for mechanism in member_artist.party.contact_mechanisms:
-                        if mechanism.type == 'email':
-                            mechanism.email = member['email']
-                            mechanism.save()
+                    has_email = False
+                    log.debug(
+                        (
+                            "member_artist.party.contact_mechanisms: {}\n"
+                        ).format(
+                            member_artist.party.contact_mechanisms
+                        )
+                    )
+                    if member_party.contact_mechanisms:
+                        for contact in member_party.contact_mechanisms:
+                            if contact.type == 'email':
+                                has_email = True
+                                contact.email = member['email']
+                                contact.save()
+                    if not has_email:
+                        # TODO: find out, how to create a new contact mechanism
+                        # without triggering a user validation error on email
+                        log.debug("warning: member email not created (TODO)")
                     member_artist.save()
                     members_future.append(member_artist)
 
@@ -197,7 +214,7 @@ class EditArtist(FormController):
         )
 
         # redirect
-        self.redirect(ArtistResource, 'show', artist.code)
+        self.redirect()
 
 
 # --- Validators --------------------------------------------------------------

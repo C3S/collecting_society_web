@@ -10,7 +10,8 @@ from collecting_society_portal.resources import FrontendResource
 from collecting_society_portal.views.forms import LoginWebuser
 from collecting_society_portal.models import (
     Tdb,
-    WebUser
+    WebUser,
+    WebUserRole
 )
 from collecting_society_portal.services import send_mail
 
@@ -128,7 +129,8 @@ class RegisterWebuser(LoginWebuser):
         _create = False
         _web_user = {
             'email': self.data['email'],
-            'password': self.data['password']
+            'password': self.data['password'],
+            'roles': [('add', [WebUserRole.search_by_code('licenser').id])]
         }
         _c3smembership = self.context.registry['services']['c3smembership']
         template_variables = {}
@@ -364,6 +366,7 @@ class RegisterNonmemberSchema(colander.MappingSchema):
 
 def claims_membership_form():
     return deform.Form(
+        action="/register",
         title=_(u"Are you a C3S member?"),
         schema=colander.MappingSchema(),
         buttons=[
@@ -377,6 +380,7 @@ def claims_membership_form():
 
 def wants_membership_form():
     return deform.Form(
+        action="/register",
         title=_(u"Do you want to apply for C3S membership?"),
         schema=colander.MappingSchema(),
         buttons=[
@@ -389,6 +393,7 @@ def wants_membership_form():
 
 def register_member_form():
     return deform.Form(
+        action="/register",
         schema=RegisterMemberSchema(),
         buttons=[
             deform.Button(
@@ -401,6 +406,7 @@ def register_member_form():
 
 def register_nonmember_form():
     return deform.Form(
+        action="/register",
         schema=RegisterNonmemberSchema(),
         buttons=[
             deform.Button(

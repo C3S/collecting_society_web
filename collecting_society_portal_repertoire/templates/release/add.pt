@@ -1,6 +1,7 @@
 <!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
       Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
-<tal:block metal:use-macro="backend39" i18n:domain="collecting_society_portal_repertoire">
+<tal:block metal:use-macro="backend39"
+           i18n:domain="collecting_society_portal_repertoire">
 
     <!-- content left -->
     <tal:block metal:fill-slot="content-left"></tal:block>

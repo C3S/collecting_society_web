@@ -61,6 +61,12 @@ class AddRelease(FormController):
                 "direct",
             'entity_creator':
                 party,
+            'artists':
+                [('add', [1])],  # TODO: artists (also in edit_release)
+            'type':
+                'artist',  # TODO: types (also in edit_release)
+            'tracks':
+                None,  # TODO: tracks (also in edit_release)
             'title':
                 a['general']['title'],
             'number_mediums':
@@ -71,8 +77,6 @@ class AddRelease(FormController):
                 [('add', map(int, a['general']['styles']))],
             'warning':
                 a['general']['warning'],
-            'producer':
-                a['production']['producer'],
             'copyright_date':
                 a['production']['copyright_date'],
             'production_date':
@@ -93,8 +97,6 @@ class AddRelease(FormController):
                 a['distribution']['online_cancellation_date'],
             'distribution_territory':
                 a['distribution']['distribution_territory'],
-            'neighbouring_rights_society':
-                a['distribution']['neighbouring_rights_society'],
         }
 
         # label
@@ -116,14 +118,6 @@ class AddRelease(FormController):
             _release['picture_data'] = picture_data
             _release['picture_data_mime_type'] = mimetype
 
-        log.debug(
-            (
-                "_release: %s\n"
-            ) % (
-                _release
-            )
-        )
-
         # remove empty fields
         for index, value in _release.items():
             if not value:
@@ -139,7 +133,7 @@ class AddRelease(FormController):
                 _(u"Release could not be added: ") + _release['title'],
                 'main-alert-danger'
             )
-            self.redirect(ReleaseResource, 'list')
+            self.redirect()
             return
         release = release[0]
         log.info("release add successful for %s: %s" % (email, release))
@@ -149,7 +143,7 @@ class AddRelease(FormController):
         )
 
         # redirect
-        self.redirect(ReleaseResource, 'list')
+        self.redirect()
 
 
 # --- Validators --------------------------------------------------------------
@@ -230,13 +224,6 @@ class PictureField(colander.SchemaNode):
 
 
 # -- Production Tab --
-
-class ProducerField(colander.SchemaNode):
-    oid = "producer"
-    schema_type = colander.String
-    # widget = party_select_widget <-- too complicated, too many implications
-    missing = ""
-
 
 class CopyrightDateField(colander.SchemaNode):
     oid = "copyright_date"
@@ -327,12 +314,6 @@ class DistributionTerritoryField(colander.SchemaNode):
     missing = ""
 
 
-class NeighbouringRightsSocietyField(colander.SchemaNode):
-    oid = "neighbouring_rights_society"
-    schema_type = colander.String
-    missing = ""
-
-
 # --- Schemas -----------------------------------------------------------------
 
 class GeneralSchema(colander.Schema):
@@ -352,7 +333,6 @@ class TracksSchema(colander.Schema):
 
 class ProductionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    producer = ProducerField(title=_(u"Producer"))
     copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
     # copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
     production_date = ProductionDateField(title=_(u"Production Date"))
@@ -374,8 +354,6 @@ class DistributionSchema(colander.Schema):
         title=_(u"Online Release Cancellation Date"))
     distribution_territory = DistributionTerritoryField(
         title=_(u"Distribution Territory"))
-    neighbouring_rights_society = NeighbouringRightsSocietyField(
-        title=_(u"Neighbouring Rights Society"))
 
 
 class AddReleaseSchema(colander.Schema):

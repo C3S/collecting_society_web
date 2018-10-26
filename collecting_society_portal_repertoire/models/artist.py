@@ -3,10 +3,7 @@
 
 import logging
 
-from collecting_society_portal.models import (
-    Tdb,
-    WebUser
-)
+from collecting_society_portal.models import Tdb
 
 log = logging.getLogger(__name__)
 
@@ -19,36 +16,54 @@ class Artist(Tdb):
     __name__ = 'artist'
 
     @classmethod
-    def is_editable(cls, request, artist):
+    def is_foreign_member(cls, request, group, member):
         """
-        Checks if the artist is editable by the current webuser.
+        Checks if the member is a foreign object and still editable by the
+        current webuser.
 
-        Checks, if the artist
-        - is a foreign object
-        - is still not claimed yet
-        - is created by the current web user
-        - TODO: was not part of a distribution
+        Checks, if the member
+            1) is a foreign object
+            2) is still not claimed yet
+            3) is editable by the current web user
+            4) TODO: was not part of a distribution yet
 
         Args:
           request (pyramid.request.Request): Current request.
-          artist (obj): Artist to check.
+          group (obj): Group of the member in the current context
+          member (obj): Member to check.
 
         Returns:
-          true: if Artist is editable.
+          true: if member is editable.
           false: otherwise.
         """
-        party = request.party
-        # is a foreign object
-        if artist.entity_origin != 'indirect':
+        # sanity checks
+        if member not in group.solo_artists:
             return False
-        # is still not claimed yet
-        if artist.claim_state != 'unclaimed':
+        # 1) member is a foreign object
+        if member.entity_origin != 'indirect':
             return False
-        # is created by the current web user
-        if artist.entity_creator != party:
+        # 2) member is still not claimed yet
+        if member.claim_state != 'unclaimed':
             return False
-        # TODO: was not part of a distribution
+        # 3) member is editable by the current web user
+        if not group.permits(request.web_user, 'edit_artist'):
+            return False
+        # 4) TODO: member was not part of a distribution yet
         return True
+
+    @classmethod
+    def current_viewable(cls, request):
+        """
+        Searches artists, which the current web_user is allowed to view.
+
+        Args:
+          party_id (int): party.party.id
+
+        Returns:
+          list: viewable artists of web_user
+          None: if no match is found
+        """
+        return cls.search_viewable_by_web_user(request.web_user.id)
 
     @classmethod
     def search(cls, domain, offset=None, limit=None, order=None,
@@ -120,32 +135,56 @@ class Artist(Tdb):
         ])
 
     @classmethod
-    def search_fulltext(cls, search_string, active=True):
+    def search_by_id(cls, artist_id, active=True):
         """
-        Searches artists by fulltext search of
-        - code
-        - name
-        - description
+        Searches an artist by artist id
 
         Args:
-          search_string (str): string to search for
+          artist_id (int): artist.id
+
+        Returns:
+          obj: artist
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('id', '=', artist_id),
+            ('active', 'in', (True, active))
+        ])
+        return result[0] or None
+
+    @classmethod
+    def search_by_code(cls, artist_code, active=True):
+        """
+        Searches an artist by artist code
+
+        Args:
+          artist_code (int): artist.code
+
+        Returns:
+          obj: artist
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('code', '=', artist_code),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
+    def search_by_name(cls, artist_name, active=True):
+        """
+        Searches artists by artist name
+
+        Args:
+          artist_name (str): artist.name
 
         Returns:
           obj: list of artists
         """
-        # escape operands
-        search_string.replace('_', '\\_')
-        search_string.replace('%', '\\_')
-        # wrap search string
-        search_string = "%" + search_string + "%"
-        # search
         result = cls.get().search([
-            [
-                'OR',
-                ('code', 'ilike', search_string),
-                ('name', 'ilike', search_string),
-                ('description', 'ilike', search_string)
-            ],
+            ('name', '=', artist_name),
             ('active', 'in', (True, active))
         ])
         return result
@@ -206,62 +245,53 @@ class Artist(Tdb):
         ])
 
     @classmethod
-    def search_by_id(cls, artist_id, active=True):
+    def search_fulltext(cls, search_string, active=True):
         """
-        Searches an artist by artist id
+        Searches artists by fulltext search of
+        - code
+        - name
+        - description
 
         Args:
-          artist_id (int): artist.id
-
-        Returns:
-          obj: artist
-          None: if no match is found
-        """
-        result = cls.get().search([
-            ('id', '=', artist_id),
-            ('active', 'in', (True, active))
-        ])
-        return result[0] or None
-
-    @classmethod
-    def search_by_code(cls, artist_code, active=True):
-        """
-        Searches an artist by artist code
-
-        Args:
-          artist_code (int): artist.code
-
-        Returns:
-          obj: artist
-          None: if no match is found
-        """
-        result = cls.get().search([
-            ('code', '=', artist_code),
-            ('active', 'in', (True, active))
-        ])
-        if not result:
-            return None
-        return result[0]
-
-    @classmethod
-    def search_by_name(cls, artist_name, active=True):
-        """
-        Searches artists by artist name
-
-        Args:
-          artist_name (str): artist.name
+          search_string (str): string to search for
 
         Returns:
           obj: list of artists
         """
+        # escape operands
+        search_string.replace('_', '\\_')
+        search_string.replace('%', '\\_')
+        # wrap search string
+        search_string = "%" + search_string + "%"
+        # search
         result = cls.get().search([
-            ('name', '=', artist_name),
+            [
+                'OR',
+                ('code', 'ilike', search_string),
+                ('name', 'ilike', search_string),
+                ('description', 'ilike', search_string)
+            ],
             ('active', 'in', (True, active))
         ])
         return result
 
     @classmethod
-    @Tdb.transaction(readonly=False)
+    def search_viewable_by_web_user(cls, web_user_id, active=True):
+        """
+        Searches artists, which the web_user is allowed to view.
+
+        Args:
+          web_user_id (int): web.user.id
+
+        Returns:
+          list: viewable artists of web_user, empty if none were found
+        """
+        return cls.get().search([
+            ('acl.web_user', '=', web_user_id),
+            ('acl.roles.permissions.code', '=', 'view_artist')
+        ])
+
+    @classmethod
     def delete(cls, artist):
         """
         Deletes artist
@@ -277,7 +307,6 @@ class Artist(Tdb):
         return cls.get().delete(artist)
 
     @classmethod
-    @Tdb.transaction(readonly=False)
     def create(cls, vlist):
         """
         Creates artists

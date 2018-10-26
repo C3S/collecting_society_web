@@ -67,7 +67,6 @@ def options_label(request):
     permission='read',
     schema=LabelDatatablesSchema(),
     validators=(colander_body_validator,))
-@Tdb.transaction(readonly=True)
 def post_label(request):
     data = request.validated
     # domain

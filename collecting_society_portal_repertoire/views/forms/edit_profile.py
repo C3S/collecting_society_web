@@ -10,10 +10,10 @@ from collecting_society_portal.models import (
     Tdb,
     WebUser
 )
+from collecting_society_portal.resources import ProfileResource
 from collecting_society_portal.views.forms import FormController
 from collecting_society_portal.services import send_mail
 from ...services import _
-from ...resources import ProfileResource
 
 log = logging.getLogger(__name__)
 

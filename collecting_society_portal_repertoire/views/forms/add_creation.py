@@ -48,7 +48,6 @@ class AddCreation(FormController):
 
     # --- Actions -------------------------------------------------------------
 
-    @Tdb.transaction(readonly=False)
     def init_creation(self):
         """
         initializes form with arguments passed via url from Content/Uploads
@@ -62,14 +61,12 @@ class AddCreation(FormController):
             'content': {}
         }
         # contents tab
-        if getattr(self.context, 'content_uuid', False):
-            _content = Content.search_by_uuid(self.context.content_uuid)
-            if not _content:
-                return
-            # self.appstruct['content']['content'] = [(_content.id,
-            #                                         _content.name)]
-            self.appstruct['metadata']['title'] = _content.metadata_title
-            meta_artist = Artist.search_by_name(_content.metadata_artist)
+        content = getattr(self.context, 'content_uuid', False)
+        if content:
+            # self.appstruct['content']['content'] = [(content.id,
+            #                                          content.name)]
+            self.appstruct['metadata']['title'] = content.metadata_title
+            meta_artist = Artist.search_by_name(content.metadata_artist)
             if meta_artist:
                 self.appstruct['metadata']['artist'] = meta_artist[0].id
 
@@ -120,7 +117,7 @@ class AddCreation(FormController):
                         }]
                     )
                 )
-        # license depends on the release. set in ReleaseCreation!        
+        # license depends on the release. set in ReleaseCreation!
         # if self.appstruct['licenses']['licenses']:
         #     _creation['licenses'] = []
         #     for license_id in self.appstruct['licenses']['licenses']:
@@ -181,7 +178,7 @@ class AddCreation(FormController):
                 _(u"Creation could not be added: ") + _creation['title'],
                 'main-alert-danger'
             )
-            self.redirect(CreationResource, 'list')
+            self.redirect('..')
             return
         creation = creations[0]
 
@@ -202,7 +199,7 @@ class AddCreation(FormController):
         )
         self.remove()
         self.clean()
-        self.redirect(CreationResource, 'list')
+        self.redirect('..')
 
 
 # --- Validators --------------------------------------------------------------

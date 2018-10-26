@@ -28,12 +28,11 @@ from .services import (
     C3SMembershipApiClient
 )
 from .resources import (
-    ArtistResource,
-    EditArtistResource,
-    ReleaseResource,
-    CreationResource,
+    ArtistsResource,
+    ReleasesResource,
+    CreationsResource,
     RepertoireResource,
-    UploadResource,
+    FilesResource,
     DebugC3sMembershipApiResource
 )
 from .views.widgets import (
@@ -61,12 +60,10 @@ def web_resources(config):
     BackendResource.add_child(ProfileResource)
     BackendResource.add_child(RepertoireResource)
 
-    RepertoireResource.add_child(UploadResource)
-    RepertoireResource.add_child(ArtistResource)
-    RepertoireResource.add_child(ReleaseResource)
-    RepertoireResource.add_child(CreationResource)
-
-    ArtistResource.add_child(EditArtistResource)
+    RepertoireResource.add_child(FilesResource)
+    RepertoireResource.add_child(ArtistsResource)
+    RepertoireResource.add_child(ReleasesResource)
+    RepertoireResource.add_child(CreationsResource)
 
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
@@ -267,7 +264,7 @@ def web_registry(config):
             {
                 'name': _(u'Upload'),
                 'url': self.request.resource_path(
-                    RepertoireResource(self.request), 'upload'
+                    FilesResource(self.request), 'upload'
                 ),
                 'icon': self.request.static_path(
                     'collecting_society_portal_repertoire:'
@@ -277,7 +274,7 @@ def web_registry(config):
             {
                 'name': _(u'Artists'),
                 'url': self.request.resource_path(
-                    ArtistResource(self.request), ''
+                    ArtistsResource(self.request), ''
                 ),
                 'icon': self.request.static_path(
                     'collecting_society_portal_repertoire:'
@@ -287,7 +284,7 @@ def web_registry(config):
             {
                 'name': _(u'Releases'),
                 'url': self.request.resource_path(
-                    ReleaseResource(self.request), ''
+                    ReleasesResource(self.request), ''
                 ),
                 'icon': self.request.static_path(
                     'collecting_society_portal_repertoire:'
@@ -297,7 +294,7 @@ def web_registry(config):
             {
                 'name': _(u'Creations'),
                 'url': self.request.resource_path(
-                    CreationResource(self.request), ''
+                    CreationsResource(self.request), ''
                 ),
                 'icon': self.request.static_path(
                     'collecting_society_portal_repertoire:'
@@ -321,7 +318,7 @@ def web_registry(config):
         ]
         return reg
 
-    @UploadResource.extend_registry
+    @FilesResource.extend_registry
     def upload(self):
         reg = self.dict()
         jfu = 'collecting_society_portal:static/lib/jQuery-File-Upload/'

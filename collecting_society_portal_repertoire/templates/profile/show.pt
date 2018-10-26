@@ -1,6 +1,7 @@
 <!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
       Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
-<tal:block metal:use-macro="backend363" i18n:domain="collecting_society_portal_repertoire">
+<tal:block metal:use-macro="backend363"
+           i18n:domain="collecting_society_portal_repertoire">
 
     <!-- content middle -->
     <tal:block metal:fill-slot="content-middle">
@@ -20,34 +21,34 @@
                 <!-- 
                 <tr>
                     <th i18n:translate="">Name</th>
-                    <td>${webuser.party.name or ""}</td>
+                    <td>${request.web_user.party.name or ""}</td>
                 </tr>
                 -->
 
                 <tr>
                     <th i18n:translate="">Firstname</th>
-                    <td>${webuser.party.firstname or ""}</td>
+                    <td>${request.web_user.party.firstname or ""}</td>
                 </tr>
 
                 <tr>
                     <th i18n:translate="">Lastname</th>
-                    <td>${webuser.party.lastname or ""}</td>
+                    <td>${request.web_user.party.lastname or ""}</td>
                 </tr>
 
                 <tr>
                     <th i18n:translate="">EMail</th>
-                    <td>${webuser.email or ""}</td>
+                    <td>${request.web_user.email or ""}</td>
                 </tr>
 
                 <tr>
                     <th i18n:translate="">Create date</th>
-                    <td>${webuser.create_date.strftime("%d.%m.%Y") or ""}</td>
+                    <td>${request.web_user.create_date.strftime("%d.%m.%Y") or ""}</td>
                 </tr>
 
                 <!-- 
                 <tr>
                     <th i18n:translate="">Password</th>
-                    <td>${webuser.password}</td>
+                    <td>${request.web_user.password}</td>
                 </tr>
                 -->
 

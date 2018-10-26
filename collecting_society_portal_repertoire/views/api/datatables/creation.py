@@ -67,7 +67,6 @@ def options_creation(request):
     permission='read',
     schema=CreationDatatablesSchema(),
     validators=(colander_body_validator,))
-@Tdb.transaction(readonly=True)
 def post_creation(request):
     data = request.validated
     # domain

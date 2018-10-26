@@ -16,6 +16,20 @@ class Creation(Tdb):
     __name__ = 'creation'
 
     @classmethod
+    def current_viewable(cls, request):
+        """
+        Searches creations, which the current web_user is allowed to view.
+
+        Args:
+          party_id (int): party.party.id
+
+        Returns:
+          list: viewable creations of current web_user
+          None: if no match is found
+        """
+        return cls.search_viewable_by_web_user(request.web_user.id)
+
+    @classmethod
     def search(cls, domain, offset=None, limit=None, order=None,
                escape=False, active=True):
         """
@@ -71,6 +85,45 @@ class Creation(Tdb):
         return cls.get().search([('active', 'in', (True, active))])
 
     @classmethod
+    def search_by_id(cls, creation_id, active=True):
+        """
+        Searches a creation by creation id
+
+        Args:
+          creation_id (int): creation.id
+          active (bool, optional): active records only? Defaults to True.
+
+        Returns:
+          obj: creation
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('id', '=', creation_id),
+            ('active', 'in', (True, active))
+        ])
+        return result[0] or None
+
+    @classmethod
+    def search_by_code(cls, creation_code, active=True):
+        """
+        Searches a creation by artist code
+
+        Args:
+          creation_code (int): creation.code
+
+        Returns:
+          obj: creation
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('code', '=', creation_code),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_party(cls, party_id, active=True):
         """
         Searches creations by party id
@@ -94,25 +147,6 @@ class Creation(Tdb):
             ],
             ('active', 'in', (True, active))
         ])
-
-    @classmethod
-    def search_by_id(cls, creation_id, active=True):
-        """
-        Searches a creation by creation id
-
-        Args:
-          creation_id (int): creation.id
-          active (bool, optional): active records only? Defaults to True.
-
-        Returns:
-          obj: creation
-          None: if no match is found
-        """
-        result = cls.get().search([
-            ('id', '=', creation_id),
-            ('active', 'in', (True, active))
-        ])
-        return result[0] or None
 
     @classmethod
     def search_by_artist(cls, artist_id, active=True):
@@ -153,7 +187,31 @@ class Creation(Tdb):
         return result or None
 
     @classmethod
-    @Tdb.transaction(readonly=False)
+    def search_viewable_by_web_user(cls, web_user_id, active=True):
+        """
+        Searches creations, which the web_user is allowed to view.
+
+        Args:
+          web_user_id (int): web.user.id
+
+        Returns:
+          list: viewable creations of web_user, empty if none were found
+        """
+        return cls.get().search([
+            [
+                'OR',
+                [
+                    ('acl.web_user', '=', web_user_id),
+                    ('acl.roles.permissions.code', '=', 'view_creations')
+                ], [
+                    ('artist.acl.web_user', '=', web_user_id),
+                    ('artist.acl.roles.permissions.code',
+                        '=', 'view_artist_creations'),
+                ]
+            ]
+        ])
+
+    @classmethod
     def delete(cls, creation):
         """
         Deletes creation
@@ -169,7 +227,6 @@ class Creation(Tdb):
         return cls.get().delete(creation)
 
     @classmethod
-    @Tdb.transaction(readonly=False)
     def create(cls, vlist):
         """
         Creates creations

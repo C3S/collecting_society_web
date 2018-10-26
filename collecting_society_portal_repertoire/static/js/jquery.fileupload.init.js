@@ -1,5 +1,4 @@
-$(function () {
-    'use strict';
+function init_jquery_fileupload() {
 
     /*
         2DOs: 
@@ -80,15 +79,19 @@ $(function () {
             .call(this, $.Event('done'), {result: result});
     });
 
-});
-
-// Play only one file at a time
-$('#fileupload').delegate("audio", "click", function () {
-    var that = $(this);
-    $(this).unbind("play").one("play", function() {
-        $('audio').each(function (i, el) {
-            if (!$(el).is(that))
-                $(el).trigger('pause');
+    // Play only one file at a time
+    $('#fileupload').delegate("audio", "click", function () {
+        var that = $(this);
+        $(this).unbind("play").one("play", function() {
+            $('audio').each(function (i, el) {
+                if (!$(el).is(that))
+                    $(el).trigger('pause');
+            });
         });
     });
+}
+
+$(document).ready(function(){
+    if($('#fileupload').length)
+        init_jquery_fileupload();
 });

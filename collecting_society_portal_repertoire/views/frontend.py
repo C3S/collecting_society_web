@@ -32,26 +32,13 @@ log = logging.getLogger(__name__)
 @view_defaults(
     context=FrontendResource,
     permission=NO_PERMISSION_REQUIRED)
-class PagePortalViews(ViewBase):
-
-    def __init__(self, context, request):
-        super(PagePortalViews, self).__init__(context, request)
-
-        # c3s membership api connection test
-        c3smembership = self.context.registry['services']['c3smembership']
-        connected = c3smembership.is_connected()
-        if not connected:
-            self.request.session.flash(
-                _(
-                    u"Service temporary not available. "
-                    u"Please come back later."
-                ),
-                'main-alert-danger'
-            )
-        self.response.update({'c3smembership_api_connected': connected})
+class FrontentViews(ViewBase):
 
     @view_config(
         name='',
+        renderer='../templates/frontend/home.pt')
+    @view_config(
+        name='register',
         renderer='../templates/frontend/home.pt')
     def home(self):
         self.register_form(LoginWebuser)
@@ -105,4 +92,4 @@ class PagePortalViews(ViewBase):
                 'main-alert-danger'
             )
 
-        return self.redirect(FrontendResource)
+        return self.redirect()

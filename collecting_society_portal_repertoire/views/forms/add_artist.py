@@ -17,7 +17,6 @@ from collecting_society_portal.views.forms import (
 
 from ...services import _
 from ...models import Artist
-from ...resources import ArtistResource
 from .datatables import ArtistSequence
 
 log = logging.getLogger(__name__)
@@ -120,7 +119,7 @@ class AddArtist(FormController):
                 _(u"Artist could not be added: ") + _artist['name'],
                 'main-alert-danger'
             )
-            self.redirect(ArtistResource, 'list')
+            self.redirect()
             return
         artist = artists[0]
         log.info("artist add successful for %s: %s" % (email, artist))
@@ -130,7 +129,7 @@ class AddArtist(FormController):
         )
 
         # redirect
-        self.redirect(ArtistResource, 'show', artist.code)
+        self.redirect(artist.code)
 
 
 # --- Validators --------------------------------------------------------------

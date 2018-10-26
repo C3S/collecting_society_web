@@ -8,17 +8,34 @@ from pyramid.view import (
     view_defaults
 )
 
-from collecting_society_portal.models import (
-    Tdb,
-    WebUser
-)
+from collecting_society_portal.models import Tdb
 from collecting_society_portal.views import ViewBase
+
 from ..models import Creation
 from ..services import _
-from ..resources import CreationResource
 from .forms import AddCreation
 
 log = logging.getLogger(__name__)
+
+
+@view_defaults(
+    context='..resources.CreationsResource')
+class CreationsViews(ViewBase):
+
+    @view_config(
+        name='',
+        renderer='../templates/creation/list.pt',
+        permission='list_creations')
+    def list(self):
+        return {}
+
+    @view_config(
+        name='add',
+        renderer='../templates/creation/add.pt',
+        permission='add_creation')
+    def add(self):
+        self.register_form(AddCreation)
+        return self.process_forms()
 
 
 @view_defaults(
@@ -27,89 +44,37 @@ class CreationViews(ViewBase):
 
     @view_config(
         name='',
-        permission='creation_root')
-    def root(self):
-        return self.redirect(CreationResource, 'list')
-
-    @view_config(
-        name='list',
-        renderer='../templates/creation/list.pt',
-        permission='list_creations')
-    def list(self):
-        web_user = WebUser.current_web_user(self.request)
-        _creations = sorted(
-            Creation.search_by_party(web_user.party.id),
-            key=lambda creation: creation.artist.name
-        )
-        return {'creations': _creations}
-
-    @view_config(
-        name='show',
         renderer='../templates/creation/show.pt',
-        permission='show_creation')
+        permission='view_creation')
     def show(self):
-        artist_id = self.request.subpath[-1]
-        _creation = Creation.search_by_id(artist_id)
-        _contributions = sorted(
-            _creation.contributions,
-            key=lambda contribution: contribution.type
-        )
-        return {
-            'creation': _creation,
-            'contributions': _contributions
-        }
-
-    @view_config(
-        name='add',
-        renderer='../templates/creation/add.pt',
-        permission='add_creation')
-    def add(self):
-        if 'uuid' in self.request.GET.keys():
-            self.context.content_uuid = self.request.GET['uuid']
-        self.register_form(AddCreation)
-        return self.process_forms()
+        # artist_id = self.request.subpath[-1]
+        # _creation = Creation.search_by_id(artist_id)
+        # _contributions = sorted(
+        #     _creation.contributions,
+        #     key=lambda contribution: contribution.type
+        # )
+        return {}
 
     @view_config(
         name='edit',
         renderer='../templates/creation/edit.pt',
         permission='edit_creation')
     def edit(self):
-        pass
+        return {}
 
     @view_config(
         name='delete',
         decorator=Tdb.transaction(readonly=False),
         permission='delete_creation')
     def delete(self):
-        email = self.request.unauthenticated_userid
-
-        _id = self.request.subpath[0]
-        if _id is None:
-            self.request.session.flash(
-                _(u"Could not delete creation - id is missing"),
-                'main-alert-warning'
-            )
-            return self.redirect(CreationResource, 'list')
-
-        creation = Creation.search_by_id(_id)
-        if creation is None:
-            self.request.session.flash(
-                _(u"Could not delete creation - creation not found"),
-                'main-alert-warning'
-            )
-            return self.redirect(CreationResource, 'list')
-
-        _title = creation.default_title
-        _artist = creation.artist.name
-        _code = creation.code
-
-        creation.active = False
-        creation.save()
+        title = self.context.creation.title
+        artist = self.context.creation.artist.name
+        Creation.delete([self.context.creation])
         log.info("creation delete successful for %s (%s): %s (%s)" % (
-            email, _title, _artist, _code
+            self.request.web_user, title, artist, self.context.code
         ))
         self.request.session.flash(
-            _(u"Creation deleted: ") + _title + ' (' + _code + ')',
+            _(u"Creation deleted: ") + title + ' (' + self.context.code + ')',
             'main-alert-success'
         )
-        return self.redirect(CreationResource, 'list')
+        return self.redirect('..')

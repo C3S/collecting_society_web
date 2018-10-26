@@ -9,6 +9,8 @@ from pyramid.security import (
     DENY_ALL,
 )
 
+from collecting_society_portal.models import Tdb
+
 _prefix = 'datatables'
 
 
@@ -81,6 +83,22 @@ class DatatablesResource(object):
 
     def __init__(self, request):
         self.request = request
+        self.readonly = True
+
+    # triggered by ContextFound event to load resources after traversal
+    def _context_found(self):
+        if not self.readonly:
+            self._context_found_writable()
+        else:
+            self.context_found()
+
+    # wrapping function needed for writable transaction decorator
+    @Tdb.transaction(readonly=False)
+    def _context_found_writable(self):
+        self.context_found()
+
+    def context_found(self):
+        pass
 
     def __acl__(self):
         # no webuser logged in

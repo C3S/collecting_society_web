@@ -396,7 +396,6 @@ class Content(Tdb):
         return result or None
 
     @classmethod
-    @Tdb.transaction(readonly=False)
     def create(cls, vlist):
         """
         Creates content.
