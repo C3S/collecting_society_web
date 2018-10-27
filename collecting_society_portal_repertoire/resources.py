@@ -33,7 +33,7 @@ valid = {
     'release':  r'^R\d{10}\Z',
     'creation': r'^C\d{10}\Z',
     'content':  r'^D\d{10}\Z',
-    'uuid':     r'^[0-9a-f]{32}\Z'
+    'uuid':     r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z'
 }
 
 
@@ -150,12 +150,17 @@ class CreationsResource(ResourceBase):
         # views needing writable transactions
         if key in self._write:
             self.readonly = False
-        raise KeyError(key)
+        raise KeyError(key)       
 
     # load resources
     def context_found(self):
         if self.request.view_name == '':
             self.creations = Creation.current_viewable(self.request)
+        # in add creation, provide content uuid, set by upload form
+        if self.request.view_name == 'add':
+            uuid = self.request.params.get('uuid', '')
+            if re.match(valid['uuid'], uuid):
+                self.content = Content.search_by_uuid(uuid)
 
 
 class CreationResource(ModelResource):
@@ -165,9 +170,6 @@ class CreationResource(ModelResource):
 
     # load resources
     def context_found(self):
-        uuid = self.request.params.get('uuid', '')
-        if re.match(valid['uuid'], uuid):
-            self.content = Content.search_by_uuid(uuid)
         self.creation = Creation.search_by_code(self.code)
 
     # add instance level permissions

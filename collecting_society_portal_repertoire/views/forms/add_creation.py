@@ -60,8 +60,8 @@ class AddCreation(FormController):
             'relations': {},
             'content': {}
         }
-        # contents tab
-        content = getattr(self.context, 'content_uuid', False)
+        # add metadata from content uuid, provided by upload form
+        content = getattr(self.context, 'content', False)
         if content:
             # self.appstruct['content']['content'] = [(content.id,
             #                                          content.name)]
