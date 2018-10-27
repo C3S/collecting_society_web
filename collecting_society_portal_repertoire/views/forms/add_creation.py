@@ -36,8 +36,9 @@ class AddCreation(FormController):
 
     def controller(self):
         self.form = add_creation_form(self.request)
-        if self.submitted() and self.validate():
-            self.create_creation()
+        if self.submitted():
+            if self.validate():
+                self.create_creation()
         else:
             self.init_creation()
         return self.response
@@ -52,7 +53,7 @@ class AddCreation(FormController):
         """
         initializes form with arguments passed via url from Content/Uploads
         """
-
+    
         self.appstruct = {
             'metadata': {},
             'contributions': {},
@@ -157,19 +158,18 @@ class AddCreation(FormController):
                         }]
                     )
                 )
-        # TODO: save content relations
-        # import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
-        # if self.appstruct['content']['content']:
-        #    _creation['content'] = []
-        #    for content_id in self.appstruct['content']['content']:
-        #        _creation['content'].append(
-        #            (
-        #                'create',
-        #                [{
-        #                    'content': content_id
-        #                }]
-        #            )
-        #        )
+
+        if self.appstruct['content']['content']:
+            _creation['content'] = []
+            for contentlistenty in self.appstruct['content']['content']:
+                content = Content.search_by_code(contentlistenty['code'])
+                if content:
+                    _creation['content'].append(
+                        (
+                            'add',
+                            [content.id]
+                        )
+                    )
 
         creations = Creation.create([_creation])
         if not creations:
@@ -178,7 +178,7 @@ class AddCreation(FormController):
                 _(u"Creation could not be added: ") + _creation['title'],
                 'main-alert-danger'
             )
-            self.redirect('..')
+            self.redirect()
             return
         creation = creations[0]
 
@@ -197,12 +197,39 @@ class AddCreation(FormController):
             _(u"Creation added: ") + creation.title
             + " ("+creation.code+")", 'main-alert-success'
         )
-        self.remove()
-        self.clean()
-        self.redirect('..')
+
+        self.redirect()
 
 
 # --- Validators --------------------------------------------------------------
+
+def validate_content(node, values, **kwargs):  # multifield validator
+    """Check if content is already assigned to another creation"""
+
+    # Content.search_by_id()
+    # request = node.bindings["request"]
+    contents = values["content"]["content"]
+    if contents == [] or None:
+        raise colander.Invalid(node, _(
+            u"Please assign a uploaded file to this creation"))
+    audio_count = 0
+    sheet_count = 0
+    for contentlistenty in contents:
+        c = Content.search_by_code(contentlistenty['code'])
+        if c.creation != None:
+            raise colander.Invalid(node, _(u"Content file ${coco} is already "
+                                           "assigned to creation ${crco}.",
+                                           mapping={'coco': c.code, 
+                                                    'crco': c.creation.code}))
+        if c.category == 'audio':
+            audio_count = audio_count + 1
+        if c.category == 'sheet':
+            sheet_count = sheet_count + 1
+    if audio_count > 1 or sheet_count > 1:
+        raise colander.Invalid(node, _(u"Only one uploaded content file "
+                                       "for each file type (audio and sheet "
+                                       "music)."))
+
 
 # --- Options -----------------------------------------------------------------
 
@@ -540,7 +567,8 @@ class AddCreationSchema(colander.Schema):
 
 def add_creation_form(request):
     return deform.Form(
-        schema=AddCreationSchema().bind(request=request),
+        schema=AddCreationSchema(validator=validate_content).bind(
+            request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]
