@@ -110,8 +110,7 @@ def post_artist(request):
         records.append({
             'name': artist.name,
             'code': artist.code,
-            'description': artist.description,
-            'email': ""
+            'description': artist.description
         })
     # response
     return {
