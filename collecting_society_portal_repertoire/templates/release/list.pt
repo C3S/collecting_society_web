@@ -19,9 +19,6 @@
                             <a href="${request.resource_path(context, 'add')}">
                                 <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Add</span>
                             </a>
-                            <a href="#" class="pull-right cs-fullscreen-toggle">
-                                <span class="glyphicon glyphicon-fullscreen"></span>
-                            </a>
                         </div>
                     </td>
                 </tr>

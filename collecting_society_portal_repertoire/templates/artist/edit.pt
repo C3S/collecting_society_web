@@ -16,9 +16,6 @@
             <a href="${request.resource_path(context, '..')}">
                 <span class="glyphicon glyphicon-list"></span>
             </a>
-            <a href="#" class="pull-right cs-fullscreen-toggle">
-                <span class="glyphicon glyphicon-fullscreen"></span>
-            </a>
         </div>
 
         <div tal:content="structure EditArtist"/>
