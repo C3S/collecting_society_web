@@ -197,6 +197,10 @@ def web_registry(config):
                 'collecting_society_portal:'
                 'static/js/deform.datatables.widget.js'
             ),
+            self.request.static_path(
+                'collecting_society_portal:'
+                'static/js/toggle-fullscreen.js'
+            ),
         ]
         # favicon
         reg['static']['favicon'] = self.request.static_path(
