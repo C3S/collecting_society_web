@@ -13,12 +13,21 @@
             <a href="javascript: history.back(1);">
                 <span class="glyphicon glyphicon-arrow-left"></span>
             </a>
-            <a href="${request.resource_path(context, 'list')}">
+            <a href="${request.resource_path(context)}">
                 <span class="glyphicon glyphicon-list"></span>
+            </a>
+            <a href="#" class="pull-right cs-fullscreen-toggle">
+                <span class="glyphicon glyphicon-fullscreen"></span>
             </a>
         </div>
 
         <div tal:content="structure AddCreation"/>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $("#cs-navform-item-menu-originals a").click();
+            });
+        </script>
 
     </tal:block>
 
