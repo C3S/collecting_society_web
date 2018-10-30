@@ -13,7 +13,10 @@ from collecting_society_portal.views import ViewBase
 
 from ..models import Creation
 from ..services import _
-from .forms import AddCreation
+from .forms import (
+    AddCreation,
+    EditCreation
+)
 
 log = logging.getLogger(__name__)
 
@@ -60,7 +63,8 @@ class CreationViews(ViewBase):
         renderer='../templates/creation/edit.pt',
         permission='edit_creation')
     def edit(self):
-        return {}
+        self.register_form(EditCreation)
+        return self.process_forms()
 
     @view_config(
         name='delete',
