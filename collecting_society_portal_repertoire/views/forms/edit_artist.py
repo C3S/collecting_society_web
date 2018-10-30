@@ -214,7 +214,7 @@ class EditArtist(FormController):
         )
 
         # redirect
-        self.redirect()
+        self.redirect('..')
 
 
 # --- Validators --------------------------------------------------------------

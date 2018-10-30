@@ -18,7 +18,7 @@
             </a>
         </div>
 
-        <!--<div tal:content="structure EditCreation"/>-->
+        <div tal:content="structure EditCreation"/>
 
     </tal:block>
 

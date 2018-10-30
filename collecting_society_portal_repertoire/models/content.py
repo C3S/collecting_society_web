@@ -142,6 +142,26 @@ class Content(Tdb):
         return result[0] if result else None
 
     @classmethod
+    def search_by_code(cls, content_code, active=True):
+        """
+        Searches a content by content code
+
+        Args:
+          content_code (int): content.code
+
+        Returns:
+          obj: content
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('code', '=', content_code),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_name(cls, name):
         """
         Searches a content by name.

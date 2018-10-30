@@ -26,9 +26,12 @@ class EditProfile(FormController):
     """
 
     def controller(self):
-
         self.form = edit_profile_form(self.request)
-        if not (self.submitted() and self.validate()):
+        if self.submitted():
+            # submit validated data from form
+            if self.validate():
+                self.change_profile()
+        else:
             # initialize form
             web_user = WebUser.current_web_user(self.request)
             self.appstruct = {
@@ -38,9 +41,6 @@ class EditProfile(FormController):
                 'email': web_user['email'] or ""
             }
             self.render(self.appstruct)
-        else:
-            # submit validated data from form
-            self.change_profile()
 
         return self.response
 
