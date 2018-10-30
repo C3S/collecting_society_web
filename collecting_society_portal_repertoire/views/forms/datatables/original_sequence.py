@@ -12,6 +12,7 @@ from collecting_society_portal.views.forms.datatables import (
 )
 
 from ....services import _
+from . import CreationSequence
 
 log = logging.getLogger(__name__)
 
@@ -19,10 +20,10 @@ log = logging.getLogger(__name__)
 # --- Fields ------------------------------------------------------------------
 
 @colander.deferred
-def creation_sequence_widget(node, kw):
+def original_sequence_widget(node, kw):
     return DatatableSequenceWidget(
         request=kw.get('request'),
-        template='datatables/creation_sequence'
+        template='datatables/original_sequence'
     )
 
 
@@ -33,18 +34,6 @@ class ModeField(colander.SchemaNode):
     validator = colander.OneOf(['add', 'create', 'edit'])
 
 
-class TitleField(colander.SchemaNode):
-    oid = "titlefield"
-    schema_type = colander.String
-    widget = deform.widget.TextInputWidget()
-
-
-class ArtistField(colander.SchemaNode):
-    oid = "artist"
-    schema_type = colander.String
-    widget = deform.widget.TextInputWidget()
-
-
 class CodeField(colander.SchemaNode):
     oid = "code"
     schema_type = colander.String
@@ -52,16 +41,27 @@ class CodeField(colander.SchemaNode):
     missing = ""
 
 
+class TypeField(colander.SchemaNode):
+    oid = "type"
+    schema_type = colander.String
+    widget = deform.widget.Select2Widget(values=(
+        ('adaption', _('Adaption')),
+        ('cover', _('Cover')),
+        ('remix', _('Remix')),
+    ))
+    missing = ""
+
+
 # --- Schemas -----------------------------------------------------------------
 
-class CreationSchema(colander.Schema):
+class OriginalSchema(colander.Schema):
     mode = ModeField()
-    titlefield = TitleField(title=_("Title"))
-    artist = ArtistField()
-    code = CodeField()
+    type = TypeField()
+    original = CreationSequence(min_len=1, max_len=1)
     title = ""
 
 
-class CreationSequence(DatatableSequence):
-    creation_sequence = CreationSchema()
-    widget = creation_sequence_widget
+class OriginalSequence(DatatableSequence):
+    original_sequence = OriginalSchema()
+    widget = original_sequence_widget
+    actions = ['create', 'edit']

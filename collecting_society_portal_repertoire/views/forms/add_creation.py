@@ -21,8 +21,10 @@ from ...models import (
     Content,
     Release
 )
-from ...resources import CreationResource
-from .datatables import ContentSequence
+from .datatables import (
+    ContentSequence,
+    OriginalSequence,
+)
 
 log = logging.getLogger(__name__)
 
@@ -36,8 +38,9 @@ class AddCreation(FormController):
 
     def controller(self):
         self.form = add_creation_form(self.request)
-        if self.submitted() and self.validate():
-            self.create_creation()
+        if self.submitted():
+            if self.validate():
+                self.create_creation()
         else:
             self.init_creation()
         return self.response
@@ -142,21 +145,7 @@ class AddCreation(FormController):
                         }]
                     )
                 )
-        if self.appstruct['relations']['derivative_creations']:
-            _creation['derivative_relations'] = []
-            for derivative_creation in self.appstruct[
-                    'relations']['derivative_creations']:
-                _creation['derivative_relations'].append(
-                    (
-                        'create',
-                        [{
-                            'derivative_creation': derivative_creation[
-                                'creation'
-                            ],
-                            'allocation_type': derivative_creation['type']
-                        }]
-                    )
-                )
+
         # TODO: save content relations
         # import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
         # if self.appstruct['content']['content']:
@@ -472,23 +461,23 @@ class AddLicencesSchema(colander.MappingSchema):
     licenses = LicensesField(title=_(u"Licenses"))
 
 
-class CreationRelationSchema(colander.Schema):
-    creation = CreationField(title=_(u"Artist"))
-    type = RelationTypeField(title=_(u"Type"))
+# class CreationRelationSchema(colander.Schema):
+#     creation = CreationField(title=_(u"Artist"))
+#     type = RelationTypeField(title=_(u"Type"))
 
 
-class CreationRelationSequence(colander.SequenceSchema):
-    creation = CreationRelationSchema()
+# class CreationRelationSequence(colander.SequenceSchema):
+#     creation = CreationRelationSchema()
 
 
-class AddCreationRelationsSchema(colander.MappingSchema):
-    title = _(u"Add relations to other creations")
-    original_creations = CreationRelationSequence(
-        title=_(u"Original creations")
-    )
-    derivative_creations = CreationRelationSequence(
-        title=_(u"Derivative creations")
-    )
+# class AddCreationRelationsSchema(colander.MappingSchema):
+#     title = _(u"Add relations to other creations")
+#     original_creations = CreationRelationSequence(
+#         title=_(u"Original creations")
+#     )
+#     derivative_creations = CreationRelationSequence(
+#         title=_(u"Derivative creations")
+#     )
 
 
 class MetadataSchema(colander.Schema):
@@ -510,14 +499,9 @@ class LicensesSchema(colander.Schema):
     licenses = LicensesField(title=_(u"Licenses"))
 
 
-class RelationsSchema(colander.Schema):
+class OriginalsSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    original_creations = CreationRelationSequence(
-        title=_(u"Original creations")
-    )
-    derivative_creations = CreationRelationSequence(
-        title=_(u"Derivative creations")
-    )
+    originals = OriginalSequence(title="")
 
 
 class ContentSchema(colander.Schema):
@@ -532,7 +516,7 @@ class AddCreationSchema(colander.Schema):
     # access = AccessSchema(title=_(u"Access"))
     contributions = ContributionsSchema(title=_(u"Contributions"))
     licenses = LicensesSchema(title=_(u"Licenses"))
-    relations = RelationsSchema(title=_(u"Relations"))
+    originals = OriginalsSchema(title=_(u"Relations"))
     content = ContentSchema(title=_(u"Content"))
 
 
