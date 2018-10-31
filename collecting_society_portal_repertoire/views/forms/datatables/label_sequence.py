@@ -10,6 +10,16 @@ from collecting_society_portal.views.forms.datatables import (
 )
 
 
+def oid_ignored(value):
+    return value if value else "OIDIGNORED"
+
+
+def oid_required_conditionally(value):
+    if value['mode'] != "add" and value['oid'] == "OIDIGNORED":
+        value['oid'] = ""
+    return value
+
+
 # --- Fields ------------------------------------------------------------------
 
 @colander.deferred
@@ -25,6 +35,13 @@ class ModeField(colander.SchemaNode):
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
     validator = colander.OneOf(['add', 'create', 'edit'])
+
+
+class OidField(colander.SchemaNode):
+    oid = "oid"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    preparer = [oid_ignored]
 
 
 class GvlCodeField(colander.SchemaNode):
@@ -47,6 +64,9 @@ class LabelSchema(colander.Schema):
     name = NameField()
     gvl_code = GvlCodeField()
     title = ""
+    preparer = [
+        oid_required_conditionally,
+    ]
 
 
 class LabelSequence(DatatableSequence):

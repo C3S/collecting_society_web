@@ -3,17 +3,7 @@
 
 import logging
 
-from pyramid.security import (
-    Allow,
-    DENY_ALL,
-    NO_PERMISSION_REQUIRED
-)
-# from pyramid.httpexceptions import (
-#     HTTPUnauthorized,
-#     HTTPForbidden,
-#     HTTPServiceUnavailable,
-#     HTTPInternalServerError
-# )
+from pyramid.security import NO_PERMISSION_REQUIRED
 from cornice import Service
 from cornice.validators import colander_body_validator
 import colander
@@ -38,12 +28,6 @@ class ArtistDatatablesSchema(DatatablesSchema):
     group = colander.SchemaNode(colander.Boolean(), missing="")
 
 
-# --- resources ---------------------------------------------------------------
-
-class ArtistResource(DatatablesResource):
-    pass
-
-
 # --- service: artist --------------------------------------------------------
 
 artist = Service(
@@ -51,7 +35,7 @@ artist = Service(
     path=_prefix + '/v1/artist',
     description="provide artist for datatables",
     cors_policy=get_cors_policy(),
-    factory=ArtistResource
+    factory=DatatablesResource
 )
 
 
@@ -108,6 +92,7 @@ def post_artist(request):
             limit=data['length'],
             order=order):
         records.append({
+            'oid': artist.oid,
             'name': artist.name,
             'code': artist.code,
             'description': artist.description

@@ -17,6 +17,16 @@ from . import CreationSequence
 log = logging.getLogger(__name__)
 
 
+def oid_ignored(value):
+    return value if value else "OIDIGNORED"
+
+
+def oid_required_conditionally(value):
+    if value['mode'] != "add" and value['oid'] == "OIDIGNORED":
+        value['oid'] = ""
+    return value
+
+
 # --- Fields ------------------------------------------------------------------
 
 @colander.deferred
@@ -27,18 +37,18 @@ def original_sequence_widget(node, kw):
     )
 
 
+class OidField(colander.SchemaNode):
+    oid = "oid"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    preparer = [oid_ignored]
+
+
 class ModeField(colander.SchemaNode):
     oid = "mode"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
     validator = colander.OneOf(['add', 'create', 'edit'])
-
-
-class CodeField(colander.SchemaNode):
-    oid = "code"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-    missing = ""
 
 
 class TypeField(colander.SchemaNode):
@@ -49,16 +59,17 @@ class TypeField(colander.SchemaNode):
         ('cover', _('Cover')),
         ('remix', _('Remix')),
     ))
-    missing = ""
 
 
 # --- Schemas -----------------------------------------------------------------
 
 class OriginalSchema(colander.Schema):
+    oid = OidField()
     mode = ModeField()
     type = TypeField()
     original = CreationSequence(min_len=1, max_len=1)
     title = ""
+    preparer = [oid_required_conditionally]
 
 
 class OriginalSequence(DatatableSequence):

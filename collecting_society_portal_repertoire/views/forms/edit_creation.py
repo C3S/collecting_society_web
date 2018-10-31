@@ -8,10 +8,7 @@ from collecting_society_portal.models import Tdb
 from collecting_society_portal.views.forms import FormController
 
 from ...services import _
-from ...models import (
-    Creation,
-    Content
-)
+from ...models import Content
 from .add_creation import (
     AddCreationSchema,
     validate_content
@@ -43,9 +40,6 @@ class EditCreation(FormController):
     # --- Actions -------------------------------------------------------------
 
     def edit_creation(self):
-        """
-        initializes form with existing values of the Release entry
-        """
         c = self.context.creation
 
         # set appstruct
@@ -73,16 +67,16 @@ class EditCreation(FormController):
             # 'content': {
             # }
         }
-        if c.contributions:
-            _contributions = []
-            for contribution in c.contributions:
-                _contributions.append({
-                    'type': contribution.type,
-                    'artist': contribution.artist.id
-                })
-            self.appstruct['contributions'] = {
-                'contributions': _contributions
-            }
+        # if c.contributions:
+        #     _contributions = []
+        #     for contribution in c.contributions:
+        #         _contributions.append({
+        #             'type': contribution.type,
+        #             'artist': contribution.artist.id
+        #         })
+        #     self.appstruct['contributions'] = {
+        #         'contributions': _contributions
+        #     }
 
         # render form with init data
         self.render(self.appstruct)

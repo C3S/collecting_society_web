@@ -3,20 +3,9 @@
 
 import logging
 
-from pyramid.security import (
-    Allow,
-    DENY_ALL,
-    NO_PERMISSION_REQUIRED
-)
-# from pyramid.httpexceptions import (
-#     HTTPUnauthorized,
-#     HTTPForbidden,
-#     HTTPServiceUnavailable,
-#     HTTPInternalServerError
-# )
+from pyramid.security import NO_PERMISSION_REQUIRED
 from cornice import Service
 from cornice.validators import colander_body_validator
-import colander
 
 from collecting_society_portal.models import Tdb
 
@@ -38,12 +27,6 @@ class LabelDatatablesSchema(DatatablesSchema):
     pass
 
 
-# --- resources ---------------------------------------------------------------
-
-class LabelResource(DatatablesResource):
-    pass
-
-
 # --- service: label ----------------------------------------------------------
 
 label = Service(
@@ -51,7 +34,7 @@ label = Service(
     path=_prefix + '/v1/label',
     description="provide labels for datatables",
     cors_policy=get_cors_policy(),
-    factory=LabelResource
+    factory=DatatablesResource
 )
 
 
@@ -103,6 +86,7 @@ def post_label(request):
             limit=data['length'],
             order=order):
         records.append({
+            'oid': label.oid,
             'gvl_code': label.gvl_code,
             'name': label.name
         })

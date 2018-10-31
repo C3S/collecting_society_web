@@ -14,13 +14,33 @@ from collecting_society_portal.views.forms.datatables import (
 log = logging.getLogger(__name__)
 
 
+def oid_ignored(value):
+    return value if value else "OIDIGNORED"
+
+
+def code_ignored(value):
+    return value if value else "CODEIGNORED"
+
+
 def email_ignored(value):
-    return value if value else "IGNORE@DUMMY.EMAIL"
+    return value if value else "DUMMY@EMAIL.IGNORED"
+
+
+def oid_required_conditionally(value):
+    if value['mode'] != "add" and value['oid'] == "OIDIGNORED":
+        value['oid'] = ""
+    return value
 
 
 def email_required_conditionally(value):
-    if value['mode'] != "add" and value['email'] == "IGNORE@DUMMY.EMAIL":
+    if value['mode'] != "add" and value['email'] == "DUMMY@EMAIL.IGNORED":
         value['email'] = ""
+    return value
+
+
+def code_required_conditionally(value):
+    if value['mode'] == "add" and value['code'] == "CODEIGNORED":
+        value['code'] = ""
     return value
 
 
@@ -41,6 +61,13 @@ class ModeField(colander.SchemaNode):
     validator = colander.OneOf(['add', 'create', 'edit'])
 
 
+class OidField(colander.SchemaNode):
+    oid = "oid"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    preparer = [oid_ignored]
+
+
 class NameField(colander.SchemaNode):
     oid = "name"
     schema_type = colander.String
@@ -51,7 +78,7 @@ class CodeField(colander.SchemaNode):
     oid = "code"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    missing = ""
+    preparer = [code_ignored]
 
 
 class DescriptionField(colander.SchemaNode):
@@ -73,12 +100,17 @@ class EmailField(colander.SchemaNode):
 
 class ArtistSchema(colander.Schema):
     mode = ModeField()
+    oid = OidField()
     name = NameField()
     description = DescriptionField()
     code = CodeField()
     email = EmailField()
     title = ""
-    preparer = [email_required_conditionally]
+    preparer = [
+        oid_required_conditionally,
+        code_required_conditionally,
+        email_required_conditionally,
+    ]
 
 
 class ArtistSequence(DatatableSequence):

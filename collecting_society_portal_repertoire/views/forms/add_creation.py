@@ -9,15 +9,11 @@ from collecting_society_portal.models import (
     Tdb,
     WebUser
 )
-from collecting_society_portal.views.forms import (
-    FormController,
-    deferred_file_upload_widget
-)
+from collecting_society_portal.views.forms import FormController
 from ...services import _
 from ...models import (
     Artist,
     Creation,
-    License,
     Content,
     Release
 )
