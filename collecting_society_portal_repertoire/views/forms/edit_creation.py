@@ -84,6 +84,15 @@ class EditCreation(FormController):
             self.appstruct['contributions'] = {
                 'contributions': _contributions
             }
+        if c.content:
+            _contentfiles = []
+            for contentfile in c.content:
+                _contentfiles.append(
+                    {'code': contentfile.code}
+                )
+            self.appstruct['content'] = {
+                'content': _contentfiles
+            }
 
         # render form with init data
         self.render(self.appstruct)
@@ -172,7 +181,6 @@ class EditCreation(FormController):
                         }]
                     )
                 )
-
         if a['content']['content']:
             _creation['content'] = []
             for contentlistenty in a['content']['content']:

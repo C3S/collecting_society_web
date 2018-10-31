@@ -168,6 +168,8 @@ class AddCreation(FormController):
                         (
                             'add',
                             [content.id]
+                            
+# >>>>>>>>>>>>>>>>>>>
                         )
                     )
 
@@ -207,20 +209,24 @@ def validate_content(node, values, **kwargs):  # multifield validator
     """Check if content is already assigned to another creation"""
 
     # Content.search_by_id()
-    # request = node.bindings["request"]
+    request = node.bindings["request"]
     contents = values["content"]["content"]
     if contents == [] or None:
         raise colander.Invalid(node, _(
             u"Please assign a uploaded file to this creation"))
     audio_count = 0
     sheet_count = 0
+    edit_creation_code = getattr(request.context, 'code', None)
     for contentlistenty in contents:
         c = Content.search_by_code(contentlistenty['code'])
-        if c.creation != None:
-            raise colander.Invalid(node, _(u"Content file ${coco} is already "
-                                           "assigned to creation ${crco}.",
-                                           mapping={'coco': c.code, 
-                                                    'crco': c.creation.code}))
+        if c.creation:  # selected content is already assigned some creation
+            crco = c.creation.code  # creation code of contentlistenty
+            if (edit_creation_code is None or  # either in Add Creation or
+                    edit_creation_code != crco):    # in Edit Creation and code
+                raise colander.Invalid(    # doesn't fit the creation?
+                    node, _(u"Content file ${coco} is "
+                            "already assigned to creation ${crco}.",
+                            mapping={'coco': c.code, 'crco': crco}))
         if c.category == 'audio':
             audio_count = audio_count + 1
         if c.category == 'sheet':
