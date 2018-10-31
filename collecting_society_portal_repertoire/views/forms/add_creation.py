@@ -137,15 +137,15 @@ class AddCreation(FormController):
         # content
         if self.appstruct['content']['content']:
             _creation['content'] = []
-            for contentlistenty in self.appstruct['content']['content']:
-                content = Content.search_by_code(contentlistenty['code'])
+            for content_listenty in self.appstruct['content']['content']:
+                content = Content.search_by_code(content_listenty['code'])
                 if content:
                     _creation['content'].append(
                         (
                             'add',
-                            [content.id]
-                            
-# >>>>>>>>>>>>>>>>>>>
+                            [content.id],
+                            [content.name],
+                            [content.category]
                         )
                     )
 
@@ -187,10 +187,10 @@ def validate_content(node, values, **kwargs):  # multifield validator
     audio_count = 0
     sheet_count = 0
     edit_creation_code = getattr(request.context, 'code', None)
-    for contentlistenty in contents:
-        c = Content.search_by_code(contentlistenty['code'])
+    for content_listenty in contents:
+        c = Content.search_by_code(content_listenty['code'])
         if c.creation:  # selected content is already assigned some creation
-            crco = c.creation.code  # creation code of contentlistenty
+            crco = c.creation.code  # creation code of content_listenty
             if (edit_creation_code is None or  # either in Add Creation or
                     edit_creation_code != crco):    # in Edit Creation and code
                 raise colander.Invalid(    # doesn't fit the creation?
