@@ -93,6 +93,8 @@ class ArtistResource(ModelResource):
 
     # add instance level permissions
     def __acl__(self):
+        if not hasattr(self.artist, 'permissions'):
+            return []
         return [
             (Allow, self.request.authenticated_userid,
                 self.artist.permissions(self.request.web_user, self._permit))
@@ -131,6 +133,8 @@ class ReleaseResource(ModelResource):
 
     # add instance level permissions
     def __acl__(self):
+        if not hasattr(self.release, 'permissions'):
+            return []
         return [
             (Allow, self.request.authenticated_userid,
                 self.release.permissions(self.request.web_user, self._permit))
@@ -150,7 +154,7 @@ class CreationsResource(ResourceBase):
         # views needing writable transactions
         if key in self._write:
             self.readonly = False
-        raise KeyError(key)       
+        raise KeyError(key)
 
     # load resources
     def context_found(self):
@@ -174,6 +178,8 @@ class CreationResource(ModelResource):
 
     # add instance level permissions
     def __acl__(self):
+        if not hasattr(self.creation, 'permissions'):
+            return []
         return [
             (Allow, self.request.authenticated_userid,
                 self.creation.permissions(self.request.web_user, self._permit))
