@@ -66,6 +66,26 @@ class Label(Tdb):
         return cls.get().search([])
 
     @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches a label by oid (public api id)
+
+        Args:
+          oid (int): label.oid
+
+        Returns:
+          obj: label
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_gvl_code(cls, gvl_code):
         """
         Searches a label by gvl code

@@ -16,7 +16,13 @@
                     className: "all",
                     orderable: true,
                     searchable: true,
-                    render: $.fn.dataTable.render.text(),
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        if(row.mode != 'add')
+                            return tmpl.encode(row.name + " (" + row.email + ")");
+                        return tmpl.encode(data);
+                    },
                     datatableSequence: {
                         position: "displayed",
                         widgetType: 'TextInputWidget',

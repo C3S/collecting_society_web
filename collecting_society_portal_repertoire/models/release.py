@@ -64,6 +64,26 @@ class Release(Tdb):
         return releases[0]
 
     @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches a release by oid (public api id)
+
+        Args:
+          oid (int): release.oid
+
+        Returns:
+          obj: release
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_code(cls, release_code, active=True):
         """
         Searches an release by release code

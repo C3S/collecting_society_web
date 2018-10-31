@@ -55,3 +55,23 @@ class Style(Tdb):
         """
         result = cls.get().search([('id', '=', int(id))])
         return result[0] or None
+
+    @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches a style by oid (public api id)
+
+        Args:
+          oid (int): style.oid
+
+        Returns:
+          obj: style
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]

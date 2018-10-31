@@ -40,3 +40,23 @@ class License(Tdb):
         """
         result = cls.get().search([('id', '=', license_id)])
         return result[0] or None
+
+    @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches a license by oid (public api id)
+
+        Args:
+          oid (int): license.oid
+
+        Returns:
+          obj: license
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]

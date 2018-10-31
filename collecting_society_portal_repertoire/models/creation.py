@@ -104,6 +104,26 @@ class Creation(Tdb):
         return result[0] or None
 
     @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches a creation by oid (public api id)
+
+        Args:
+          oid (int): creation.oid
+
+        Returns:
+          obj: creation
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_code(cls, creation_code, active=True):
         """
         Searches a creation by artist code
