@@ -52,6 +52,10 @@ class EditCreation(FormController):
                 'releases':
                     [unicode(release.id) for release in c.releases]
             },
+            'contributions': {},
+            'licenses': {},
+            'relations': {},
+            'content': {}
             # 'contributions': {
             #     'contributions':
             #         [
@@ -67,16 +71,29 @@ class EditCreation(FormController):
             # 'content': {
             # }
         }
-        # if c.contributions:
-        #     _contributions = []
-        #     for contribution in c.contributions:
-        #         _contributions.append({
-        #             'type': contribution.type,
-        #             'artist': contribution.artist.id
-        #         })
-        #     self.appstruct['contributions'] = {
-        #         'contributions': _contributions
-        #     }
+        if c.contributions:
+            _contributions = []
+            for contribution in c.contributions:
+                _contributions.append({
+                    'type': contribution.type,
+                    'artist': contribution.artist.id
+                })
+            self.appstruct['contributions'] = {
+                'contributions': _contributions
+            }
+        if c.content:
+            _contentfiles = []
+            for contentfile in c.content:
+                _contentfiles.append(
+                    {
+                        'code': contentfile.code,
+                        'name': contentfile.name,
+                        'category': contentfile.category
+                    }
+                )
+            self.appstruct['content'] = {
+                'content': _contentfiles
+            }
 
         # render form with init data
         self.render(self.appstruct)
@@ -142,8 +159,37 @@ class EditCreation(FormController):
         #                 }]
         #             )
         #         )
+        
+        # older version, merge rubbish? maybe can be deleted:
+        # if a['relations']['original_creations']:
+        #    _creation['original_relations'] = []
+        #    for original_creation in a[
+        #            'relations']['original_creations']:
+        #        _creation['original_relations'].append(
+        #            (
+        #                'create',
+        #                [{
+        #                    'original_creation': original_creation['creation'],
+        #                    'allocation_type': original_creation['type']
+        #                }]
+        #            )
+        #        )
+        # if a['relations']['derivative_creations']:
+        #    _creation['derivative_relations'] = []
+        #    for derivative_creation in a[
+        #            'relations']['derivative_creations']:
+        #        _creation['derivative_relations'].append(
+        #            (
+        #                'create',
+        #                [{
+        #                    'derivative_creation': derivative_creation[
+        #                        'creation'
+        #                    ],
+        #                    'allocation_type': derivative_creation['type']
+        #                }]
+        #            )
+        #        )
 
-        # content
         if a['content']['content']:
             _creation['content'] = []
             for contentlistenty in a['content']['content']:
@@ -190,7 +236,7 @@ class EditCreation(FormController):
 def edit_creation_form(request):
     return deform.Form(
         schema=AddCreationSchema(
-            title=_(u"Edit Release"),
+            title=_(u"Edit Creation"),
             validator=validate_content).bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))

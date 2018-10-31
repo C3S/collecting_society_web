@@ -137,13 +137,15 @@ class AddCreation(FormController):
         # content
         if self.appstruct['content']['content']:
             _creation['content'] = []
-            for contentlistenty in self.appstruct['content']['content']:
-                content = Content.search_by_code(contentlistenty['code'])
+            for content_listenty in self.appstruct['content']['content']:
+                content = Content.search_by_code(content_listenty['code'])
                 if content:
                     _creation['content'].append(
                         (
                             'add',
-                            [content.id]
+                            [content.id],
+                            [content.name],
+                            [content.category]
                         )
                     )
 
@@ -176,7 +178,7 @@ def validate_content(node, values, **kwargs):  # multifield validator
     """Check if content is already assigned to another creation"""
 
     # Content.search_by_id()
-    # request = node.bindings["request"]
+    request = node.bindings["request"]
     contents = values["content"]["content"]
     if contents == [] or None:
         return
@@ -184,13 +186,17 @@ def validate_content(node, values, **kwargs):  # multifield validator
         #     u"Please assign a uploaded file to this creation"))
     audio_count = 0
     sheet_count = 0
-    for contentlistenty in contents:
-        c = Content.search_by_code(contentlistenty['code'])
-        if c.creation is not None:
-            raise colander.Invalid(node, _(u"Content file ${coco} is already "
-                                           "assigned to creation ${crco}.",
-                                           mapping={'coco': c.code,
-                                                    'crco': c.creation.code}))
+    edit_creation_code = getattr(request.context, 'code', None)
+    for content_listenty in contents:
+        c = Content.search_by_code(content_listenty['code'])
+        if c.creation:  # selected content is already assigned some creation
+            crco = c.creation.code  # creation code of content_listenty
+            if (edit_creation_code is None or  # either in Add Creation or
+                    edit_creation_code != crco):    # in Edit Creation and code
+                raise colander.Invalid(    # doesn't fit the creation?
+                    node, _(u"Content file ${coco} is "
+                            "already assigned to creation ${crco}.",
+                            mapping={'coco': c.code, 'crco': crco}))
         if c.category == 'audio':
             audio_count = audio_count + 1
         if c.category == 'sheet':
@@ -287,7 +293,7 @@ class OriginalsSchema(colander.Schema):
 
 class ContentSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    content = ContentSequence()
+    content = ContentSequence(actions=['add'])
 
 
 class AddCreationSchema(colander.Schema):
