@@ -153,6 +153,26 @@ class Artist(Tdb):
         return result[0] or None
 
     @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches an artist by oid (public api id)
+
+        Args:
+          oid (int): artist.oid
+
+        Returns:
+          obj: artist
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_code(cls, artist_code, active=True):
         """
         Searches an artist by artist code

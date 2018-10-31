@@ -55,3 +55,23 @@ class Genre(Tdb):
         """
         result = cls.get().search([('id', '=', int(id))])
         return result[0] or None
+
+    @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches an genre by oid (public api id)
+
+        Args:
+          oid (int): genre.oid
+
+        Returns:
+          obj: genre
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]

@@ -142,6 +142,26 @@ class Content(Tdb):
         return result[0] if result else None
 
     @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches a content by oid (public api id)
+
+        Args:
+          oid (int): content.oid
+
+        Returns:
+          obj: content
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_code(cls, content_code, active=True):
         """
         Searches a content by content code
