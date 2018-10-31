@@ -94,23 +94,20 @@ def web_registry(config):
                     'id': 'en',
                     'name': _(u'english'),
                     'icon': request.static_path(
-                        'collecting_society_portal:static/img/en.png'
-                    )
-                },
+                                'collecting_society_portal:'
+                                'static/img/en.png')},
                 {
                     'id': 'de',
                     'name': _(u'deutsch'),
                     'icon': request.static_path(
-                        'collecting_society_portal:static/img/de.png'
-                    )
-                },
+                                'collecting_society_portal:'
+                                'static/img/de.png')},
                 {
                     'id': 'es',
                     'name': _(u'español'),
                     'icon': request.static_path(
-                        'collecting_society_portal:static/img/es.gif'
-                    )
-                }
+                                'collecting_society_portal:'
+                                'static/img/es.gif')}
             ]
         }
 
@@ -122,49 +119,41 @@ def web_registry(config):
         # css
         reg['static']['css'] = [
             self.request.static_path(
-                'collecting_society_portal_repertoire:static/css/frontend.css'
-            )
+                'collecting_society_portal_repertoire:'
+                'static/css/frontend.css')
         ]
         # favicon
         reg['static']['favicon'] = self.request.static_path(
-            'collecting_society_portal_repertoire:static/img/favicon.png'
-        )
+            'collecting_society_portal_repertoire:static/img/favicon.png')
         # logo
         reg['static']['logo'] = self.request.static_path(
-            'collecting_society_portal_repertoire:static/img/logo-c3s.png'
-        )
+            'collecting_society_portal_repertoire:static/img/logo-c3s.png')
         # services
         reg['services']['c3smembership'] = C3SMembershipApiClient(
             base_url=settings['api.c3smembership.url'],
             version=settings['api.c3smembership.version'],
-            api_key=settings['api.c3smembership.api_key']
-        )
+            api_key=settings['api.c3smembership.api_key'])
         # top menue
         reg['menues']['top'] = []
         if reg['services']['c3smembership'].is_connected():
             reg['menues']['top'] += [
                 {
                     'name': _(u'register'),
-                    'page': 'register'
-                }
+                    'page': 'register'}
             ]
         reg['menues']['top'] += [
             {
                 'name': _(u'about'),
-                'page': 'about'
-            },
+                'page': 'about'},
             {
                 'name': _(u'howto'),
-                'page': 'howto'
-            },
+                'page': 'howto'},
             {
                 'name': _(u'contact'),
-                'page': 'contact'
-            },
+                'page': 'contact'},
             {
                 'name': _(u'terms'),
-                'page': 'terms'
-            }
+                'page': 'terms'}
         ]
         return reg
 
@@ -177,130 +166,99 @@ def web_registry(config):
         reg['static']['css'] = [
             self.request.static_path(
                 'collecting_society_portal:'
-                'static/lib/DataTables/datatables.min.css'
-            ),
+                'static/lib/DataTables/datatables.min.css'),
             self.request.static_path(
-                'collecting_society_portal_repertoire:static/css/backend.css'
-            ),
+                'collecting_society_portal_repertoire:'
+                'static/css/backend.css'),
         ]
         # js head
         reg['static']['js']['head'] = [
-            self.request.static_path(
-                'collecting_society_portal:'
-                'static/lib/JavaScript-Templates/js/tmpl.min.js'
-            ),
-            self.request.static_path(
-                'collecting_society_portal:'
-                'static/lib/DataTables/datatables.min.js'
-            ),
-            self.request.static_path(
-                'collecting_society_portal:'
-                'static/js/deform.datatables.widget.js'
-            ),
+            {
+                'src':  self.request.static_path(
+                            'collecting_society_portal:'
+                            'static/lib/JavaScript-Templates/js/tmpl.min.js')},
+            {
+                'src':  self.request.static_path(
+                            'collecting_society_portal:'
+                            'static/lib/DataTables/datatables.min.js')},
+            {
+                'src':  self.request.static_path(
+                            'collecting_society_portal:'
+                            'static/js/deform.datatables.widget.js')},
         ]
         # favicon
         reg['static']['favicon'] = self.request.static_path(
-            'collecting_society_portal_repertoire:static/img/favicon.png'
-        )
+            'collecting_society_portal_repertoire:static/img/favicon.png')
         # logo
         reg['static']['logo'] = self.request.static_path(
-            'collecting_society_portal_repertoire:static/img/logo-c3s.png'
-        )
+            'collecting_society_portal_repertoire:static/img/logo-c3s.png')
         # main menue
         reg['menues']['roles'] = [
             {
-                'name': _(u'Repertoire'),
-                'active': RepertoireResource,
-                'url': self.request.resource_path(
-                    RepertoireResource(self.request), ''
-                )
-            }
+                'name': _(u'Repertoire'), 'active': RepertoireResource,
+                'url':  self.request.resource_path(
+                            RepertoireResource(self.request), '')}
         ]
         # top menue
         reg['menues']['top'] = [
             {
                 'name': _(u'Profile'),
-                'url': self.request.resource_path(
-                    BackendResource(self.request), 'profile'
-                )
-            },
+                'url':  self.request.resource_path(
+                            BackendResource(self.request), 'profile')},
             {
                 'name': _(u'Help'),
-                'url': self.request.resource_path(
-                    BackendResource(self.request), 'help'
-                )
-            },
+                'url':  self.request.resource_path(
+                            BackendResource(self.request), 'help')},
             {
                 'name': _(u'Contact'),
-                'url': self.request.resource_path(
-                    BackendResource(self.request), 'contact'
-                )
-            },
+                'url':  self.request.resource_path(
+                            BackendResource(self.request), 'contact')},
             {
                 'name': _(u'Terms'),
-                'url': self.request.resource_path(
-                    BackendResource(self.request), 'terms'
-                )
-            },
+                'url':  self.request.resource_path(
+                            BackendResource(self.request), 'terms')},
             {
                 'name': _(u'Logout'),
-                'url': self.request.resource_path(
-                    BackendResource(self.request), 'logout'
-                )
-            }
+                'url':  self.request.resource_path(
+                            BackendResource(self.request), 'logout')}
         ]
         # main menue
         reg['menues']['main'] = [
             {
                 'name': _(u'Dashboard'),
-                'url': self.request.resource_path(
-                    RepertoireResource(self.request), 'dashboard'
-                ),
+                'url':  self.request.resource_path(
+                            RepertoireResource(self.request), 'dashboard'),
                 'icon': self.request.static_path(
-                    'collecting_society_portal_repertoire:'
-                    'static/img/element-icon-dashboard.png'
-                )
-            },
+                            'collecting_society_portal_repertoire:'
+                            'static/img/element-icon-dashboard.png')},
             {
                 'name': _(u'Upload'),
-                'url': self.request.resource_path(
-                    FilesResource(self.request), 'upload'
-                ),
+                'url':  self.request.resource_path(
+                            FilesResource(self.request), 'upload'),
                 'icon': self.request.static_path(
-                    'collecting_society_portal_repertoire:'
-                    'static/img/element-icon-upload.png'
-                )
-            },
+                            'collecting_society_portal_repertoire:'
+                            'static/img/element-icon-upload.png')},
             {
                 'name': _(u'Artists'),
-                'url': self.request.resource_path(
-                    ArtistsResource(self.request), ''
-                ),
+                'url':  self.request.resource_path(
+                            ArtistsResource(self.request), ''),
                 'icon': self.request.static_path(
-                    'collecting_society_portal_repertoire:'
-                    'static/img/element-icon-soloartists.png'
-                )
-            },
+                            'collecting_society_portal_repertoire:'
+                            'static/img/element-icon-soloartists.png')},
             {
                 'name': _(u'Releases'),
-                'url': self.request.resource_path(
-                    ReleasesResource(self.request), ''
-                ),
+                'url':  self.request.resource_path(
+                            ReleasesResource(self.request), ''),
                 'icon': self.request.static_path(
-                    'collecting_society_portal_repertoire:'
-                    'static/img/element-icon-releases.png'
-                )
-            },
+                            'collecting_society_portal_repertoire:'
+                            'static/img/element-icon-releases.png')},
             {
                 'name': _(u'Creations'),
-                'url': self.request.resource_path(
-                    CreationsResource(self.request), ''
-                ),
+                'url':  self.request.resource_path(
+                            CreationsResource(self.request), ''),
                 'icon': self.request.static_path(
-                    'collecting_society_portal_repertoire:'
-                    'static/img/element-icon-songs.png'
-                )
-            }
+                            'collecting_society_portal_repertoire:'
+                            'static/img/element-icon-songs.png')}
         ]
         # widgets content-right
         reg['widgets']['content-right'] = [
@@ -325,28 +283,45 @@ def web_registry(config):
         # css
         reg['static']['css'] = [
             self.request.static_path(
-                'collecting_society_portal_repertoire:static/css/backend.css'
-            ),
-            self.request.static_path(jfu + 'css/jquery.fileupload.css'),
-            self.request.static_path(jfu + 'css/jquery.fileupload-ui.css')
+                'collecting_society_portal_repertoire:'
+                'static/css/backend.css'),
+            self.request.static_path(
+                jfu + 'css/jquery.fileupload.css'),
+            self.request.static_path(
+                jfu + 'css/jquery.fileupload-ui.css')
         ]
         # js
         reg['static']['js']['body'] = [
-            self.request.static_path(jfu + 'js/vendor/jquery.ui.widget.js'),
-            self.request.static_path(
-                'collecting_society_portal:'
-                'static/lib/JavaScript-Load-Image/js/load-image.all.min.js'
-            ),
-            self.request.static_path(jfu + 'js/jquery.iframe-transport.js'),
-            self.request.static_path(jfu + 'js/jquery.fileupload.js'),
-            self.request.static_path(jfu + 'js/jquery.fileupload-process.js'),
-            self.request.static_path(jfu + 'js/jquery.fileupload-audio.js'),
-            self.request.static_path(jfu + 'js/jquery.fileupload-validate.js'),
-            self.request.static_path(jfu + 'js/jquery.fileupload-ui.js'),
-            self.request.static_path(
-                'collecting_society_portal_repertoire:'
-                'static/js/jquery.fileupload.init.js'
-            )
+            {
+                "src": self.request.static_path(
+                    jfu + 'js/vendor/jquery.ui.widget.js')},
+            {
+                "src": self.request.static_path(
+                    'collecting_society_portal:'
+                    'static/lib/JavaScript-Load-Image/js/'
+                    'load-image.all.min.js')},
+            {
+                "src": self.request.static_path(
+                    jfu + 'js/jquery.iframe-transport.js')},
+            {
+                "src": self.request.static_path(
+                    jfu + 'js/jquery.fileupload.js')},
+            {
+                "src": self.request.static_path(
+                    jfu + 'js/jquery.fileupload-process.js')},
+            {
+                "src": self.request.static_path(
+                    jfu + 'js/jquery.fileupload-audio.js')},
+            {
+                "src": self.request.static_path(
+                    jfu + 'js/jquery.fileupload-validate.js')},
+            {
+                "src": self.request.static_path(
+                    jfu + 'js/jquery.fileupload-ui.js')},
+            {
+                "src": self.request.static_path(
+                    'collecting_society_portal_repertoire:'
+                    'static/js/jquery.fileupload.init.js')},
         ]
         return reg
 

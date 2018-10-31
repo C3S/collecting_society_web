@@ -8,10 +8,7 @@ from collecting_society_portal.models import Tdb
 from collecting_society_portal.views.forms import FormController
 
 from ...services import _
-from ...models import (
-    Creation,
-    Content
-)
+from ...models import Content
 from .add_creation import (
     AddCreationSchema,
     validate_content
@@ -43,10 +40,6 @@ class EditCreation(FormController):
     # --- Actions -------------------------------------------------------------
 
     def edit_creation(self):
-        """
-        initializes form with existing values of the Release entry
-        """
-    
         c = self.context.creation
 
         # set appstruct
@@ -59,20 +52,20 @@ class EditCreation(FormController):
                 'releases':
                     [unicode(release.id) for release in c.releases]
             },
-            #'contributions': {
-            #    'contributions':
-            #        [
-            #            {
-            #                'type': contribution.type,
-            #                'artist': contribution.artist
-            #            }
-            #            for contribution in c.contributions
-            #        ]
-            #},
-            #'relations': {
-            #},
-            #'content': {
-            #}
+            # 'contributions': {
+            #     'contributions':
+            #         [
+            #             {
+            #                 'type': contribution.type,
+            #                 'artist': contribution.artist
+            #             }
+            #             for contribution in c.contributions
+            #         ]
+            # },
+            # 'relations': {
+            # },
+            # 'content': {
+            # }
         }
         if c.contributions:
             _contributions = []
@@ -100,7 +93,7 @@ class EditCreation(FormController):
     @Tdb.transaction(readonly=False)
     def update_creation(self):
         a = self.appstruct
-        email = self.request.unauthenticated_userid
+        web_user = self.request.web_user
         creation = self.context.creation
 
         # generate vlist
@@ -110,7 +103,7 @@ class EditCreation(FormController):
             'releases': a['metadata']['releases'],
         }
 
-        # -------------------------------------------------------
+        # releases
         if a['metadata']['releases']:
             _creation['releases'] = []
             for release_id in a['metadata']['releases']:
@@ -128,28 +121,33 @@ class EditCreation(FormController):
                         }]
                     )
                 )
-        if a['contributions']['contributions']:
-            _creation['contributions'] = []
-            for contribution in a[
-                    'contributions']['contributions']:
-                _creation['contributions'].append(
-                    (
-                        'create',
-                        [{
-                            'type': contribution['type'],
-                            'artist': contribution['artist']
-                        }]
-                    )
-                )
-        # license depends on the release. set in ReleaseCreation!
-        # if a['licenses']['licenses']:
-        #     _creation['licenses'] = []
-        #     for license_id in a['licenses']['licenses']:
-        #         _creation['licenses'].append(
+
+        # contributions
+        # if a['contributions']['contributions']:
+        #     _creation['contributions'] = []
+        #     for contribution in a[
+        #             'contributions']['contributions']:
+        #         _creation['contributions'].append(
         #             (
         #                 'create',
         #                 [{
-        #                     'license': license_id
+        #                     'type': contribution['type'],
+        #                     'artist': contribution['artist']
+        #                 }]
+        #             )
+        #         )
+
+        # derivation
+        # if a['relations']['original_creations']:
+        #     _creation['original_relations'] = []
+        #     for original_creation in a[
+        #             'relations']['original_creations']:
+        #         _creation['original_relations'].append(
+        #             (
+        #                 'create',
+        #                 [{
+        #                     'original_creation': original_creation['creation'],
+        #                     'allocation_type': original_creation['type']
         #                 }]
         #             )
         #         )
@@ -201,12 +199,14 @@ class EditCreation(FormController):
         # update creation
         creation.write([creation], _creation)
 
-        log.info("creation edit successful for %s: %s" % (email, creation))
+        # user feedback
+        log.info("creation edit successful for %s: %s" % (web_user, creation))
         self.request.session.flash(
             _(u"Creation edited: ") + creation.title
             + " ("+creation.code+")", 'main-alert-success'
         )
 
+        # redirect
         self.redirect()
 
 

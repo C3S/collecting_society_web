@@ -3,24 +3,14 @@
 
 import logging
 
-from pyramid.security import (
-    Allow,
-    DENY_ALL,
-    NO_PERMISSION_REQUIRED
-)
-# from pyramid.httpexceptions import (
-#     HTTPUnauthorized,
-#     HTTPForbidden,
-#     HTTPServiceUnavailable,
-#     HTTPInternalServerError
-# )
+from pyramid.security import NO_PERMISSION_REQUIRED
 from cornice import Service
 from cornice.validators import colander_body_validator
-import colander
 
 from collecting_society_portal.models import Tdb
 
 from ....models import Content
+from ....services import _
 from . import (
     _prefix,
     get_cors_policy,
@@ -32,15 +22,18 @@ from . import (
 log = logging.getLogger(__name__)
 
 
+# --- options -----------------------------------------------------------------
+
+content_category = {
+    'audio': _("Audio"),
+    'sheet': _("Sheet Music"),
+    'lyrics': _("Lyrics"),
+}
+
+
 # --- schemas -----------------------------------------------------------------
 
 class ContentDatatablesSchema(DatatablesSchema):
-    pass
-
-
-# --- resources ---------------------------------------------------------------
-
-class ContentResource(DatatablesResource):
     pass
 
 
@@ -51,7 +44,7 @@ content = Service(
     path=_prefix + '/v1/content',
     description="provide contents for datatables",
     cors_policy=get_cors_policy(),
-    factory=ContentResource
+    factory=DatatablesResource
 )
 
 
@@ -112,9 +105,10 @@ def post_content(request):
             limit=data['length'],
             order=order):
         records.append({
+            'oid': content.oid,
             'name': content.name,
             'code': content.code,
-            'category': content.category,
+            'category': content_category[content.category],
         })
     # response
     return {

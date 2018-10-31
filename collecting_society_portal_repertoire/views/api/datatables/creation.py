@@ -3,20 +3,9 @@
 
 import logging
 
-from pyramid.security import (
-    Allow,
-    DENY_ALL,
-    NO_PERMISSION_REQUIRED
-)
-# from pyramid.httpexceptions import (
-#     HTTPUnauthorized,
-#     HTTPForbidden,
-#     HTTPServiceUnavailable,
-#     HTTPInternalServerError
-# )
+from pyramid.security import NO_PERMISSION_REQUIRED
 from cornice import Service
 from cornice.validators import colander_body_validator
-import colander
 
 from collecting_society_portal.models import Tdb
 
@@ -38,12 +27,6 @@ class CreationDatatablesSchema(DatatablesSchema):
     pass
 
 
-# --- resources ---------------------------------------------------------------
-
-class CreationResource(DatatablesResource):
-    pass
-
-
 # --- service: creation -------------------------------------------------------
 
 creation = Service(
@@ -51,7 +34,7 @@ creation = Service(
     path=_prefix + '/v1/creation',
     description="provide creations for datatables",
     cors_policy=get_cors_policy(),
-    factory=CreationResource
+    factory=DatatablesResource
 )
 
 
@@ -118,6 +101,7 @@ def post_creation(request):
             limit=data['length'],
             order=order):
         records.append({
+            'oid': creation.oid,
             'titlefield': creation.title,
             'artist': creation.artist.name,
             'code': creation.code,

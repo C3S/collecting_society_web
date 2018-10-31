@@ -4,6 +4,9 @@
     <script metal:fill-slot="settings">
         var datatableSequenceSettings = {
             apiPath: "artist",
+            apiArgs: function(args) {
+                args.group = false;
+            },
             unique: "code",
             columns: [
                 {
@@ -54,6 +57,7 @@
                     visible: false,
                     orderable: false,
                     searchable: false,
+                    defaultContent: "",
                     render: $.fn.dataTable.render.text(),
                     datatableSequence: {
                         position: "invisible",

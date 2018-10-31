@@ -1,6 +1,8 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
+import logging
+
 import colander
 import deform
 
@@ -8,6 +10,11 @@ from collecting_society_portal.views.forms.datatables import (
     DatatableSequence,
     DatatableSequenceWidget
 )
+
+from ....services import _
+from . import CreationSequence
+
+log = logging.getLogger(__name__)
 
 
 def oid_ignored(value):
@@ -23,18 +30,11 @@ def oid_required_conditionally(value):
 # --- Fields ------------------------------------------------------------------
 
 @colander.deferred
-def label_sequence_widget(node, kw):
+def original_sequence_widget(node, kw):
     return DatatableSequenceWidget(
         request=kw.get('request'),
-        template='datatables/label_sequence'
+        template='datatables/original_sequence'
     )
-
-
-class ModeField(colander.SchemaNode):
-    oid = "mode"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-    validator = colander.OneOf(['add', 'create', 'edit'])
 
 
 class OidField(colander.SchemaNode):
@@ -44,31 +44,35 @@ class OidField(colander.SchemaNode):
     preparer = [oid_ignored]
 
 
-class GvlCodeField(colander.SchemaNode):
-    oid = "gvl_code"
+class ModeField(colander.SchemaNode):
+    oid = "mode"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    missing = ""
+    validator = colander.OneOf(['add', 'create', 'edit'])
 
 
-class NameField(colander.SchemaNode):
-    oid = "name"
+class TypeField(colander.SchemaNode):
+    oid = "type"
     schema_type = colander.String
-    widget = deform.widget.TextInputWidget()
+    widget = deform.widget.Select2Widget(values=(
+        ('adaption', _('Adaption')),
+        ('cover', _('Cover')),
+        ('remix', _('Remix')),
+    ))
 
 
 # --- Schemas -----------------------------------------------------------------
 
-class LabelSchema(colander.Schema):
+class OriginalSchema(colander.Schema):
+    oid = OidField()
     mode = ModeField()
-    name = NameField()
-    gvl_code = GvlCodeField()
+    type = TypeField()
+    original = CreationSequence(min_len=1, max_len=1)
     title = ""
-    preparer = [
-        oid_required_conditionally,
-    ]
+    preparer = [oid_required_conditionally]
 
 
-class LabelSequence(DatatableSequence):
-    label_sequence = LabelSchema()
-    widget = label_sequence_widget
+class OriginalSequence(DatatableSequence):
+    original_sequence = OriginalSchema()
+    widget = original_sequence_widget
+    actions = ['create', 'edit']

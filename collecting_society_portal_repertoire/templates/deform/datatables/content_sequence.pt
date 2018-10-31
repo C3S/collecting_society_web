@@ -44,7 +44,7 @@
                     datatableSequence: {
                         position: "displayed",
                         widgetType: 'HiddenWidget',
-                        footerSearch: false,
+                        footerSearch: true,
                     }
                 },
             ],

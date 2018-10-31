@@ -64,6 +64,7 @@ class EditArtist(FormController):
                     email = member.party.email
                 _members.append({
                     'mode': mode,
+                    'oid': member.oid,
                     'name': member.name,
                     'code': member.code,
                     'description': member.description or '',
