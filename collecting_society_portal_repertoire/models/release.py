@@ -21,13 +21,27 @@ class Release(Tdb):
         Searches releases, which the current web user is allowed to view.
 
         Args:
-          party_id (int): party.party.id
+          request (pyramid.request.Request): Current request.
 
         Returns:
           list: viewable releases of current web_user
           None: if no match is found
         """
         return cls.search_viewable_by_web_user(request.web_user.id)
+
+    @classmethod
+    def current_editable(cls, request):
+        """
+        Searches releases, which the current web user is allowed to edit.
+
+        Args:
+          request (pyramid.request.Request): Current request.
+
+        Returns:
+          list: editable releases of current web_user
+          None: if no match is found
+        """
+        return cls.search_editable_by_web_user(request.web_user.id)
 
     @classmethod
     def search_all(cls, active=True):
@@ -146,6 +160,31 @@ class Release(Tdb):
                     ('artists.artist.acl.web_user', '=', web_user_id),
                     ('artists.artist.acl.roles.permissions.code',
                         '=', 'view_artist_releases'),
+                ]
+            ]
+        ])
+
+    @classmethod
+    def search_editable_by_web_user(cls, web_user_id, active=True):
+        """
+        Searches releases, which the web_user is allowed to edit.
+
+        Args:
+          web_user_id (int): web.user.id
+
+        Returns:
+          list: editable releases of web_user, empty if none were found
+        """
+        return cls.get().search([
+            [
+                'OR',
+                [
+                    ('acl.web_user', '=', web_user_id),
+                    ('acl.roles.permissions.code', '=', 'edit_release')
+                ], [
+                    ('artists.artist.acl.web_user', '=', web_user_id),
+                    ('artists.artist.acl.roles.permissions.code',
+                        '=', 'edit_artist_releases'),
                 ]
             ]
         ])

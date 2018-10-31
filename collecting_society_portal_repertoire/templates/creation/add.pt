@@ -20,12 +20,6 @@
 
         <div tal:content="structure AddCreation"/>
 
-        <script type="text/javascript">
-            $(document).ready(function(){
-                $("#cs-navform-item-menu-originals a").click();
-            });
-        </script>
-
     </tal:block>
 
 </tal:block>

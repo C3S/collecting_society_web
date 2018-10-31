@@ -9,7 +9,6 @@ from collecting_society_portal.views.forms import FormController
 
 from ...services import _
 from ...models import Label
-from ...resources import ReleaseResource
 from .add_release import AddReleaseSchema
 
 log = logging.getLogger(__name__)
@@ -42,7 +41,7 @@ class EditRelease(FormController):
 
         # set appstruct
         self.appstruct = {
-            'general': {
+            'metadata': {
                 'title':
                     r.title or '',
                 'number_mediums':
@@ -55,6 +54,8 @@ class EditRelease(FormController):
                     r.warning or '',
             },
             'production': {
+                'isrc_code':
+                    r.isrc_code or '',
                 'copyright_date':
                     r.copyright_date or '',
                 'production_date':
@@ -65,8 +66,6 @@ class EditRelease(FormController):
                     r.label_catalog_number or '',
                 'ean_upc_code':
                     r.ean_upc_code or '',
-                'isrc_code':
-                    r.isrc_code or '',
                 'release_date':
                     r.release_date or '',
                 'release_cancellation_date':
@@ -106,15 +105,17 @@ class EditRelease(FormController):
         # generate vlist
         _release = {
             'title':
-                a['general']['title'],
+                a['metadata']['title'],
             'number_mediums':
-                a['general']['number_mediums'],
+                a['metadata']['number_mediums'],
             'genres':
-                [('add', map(int, a['general']['genres']))],
+                [('add', map(int, a['metadata']['genres']))],
             'styles':
-                [('add', map(int, a['general']['styles']))],
+                [('add', map(int, a['metadata']['styles']))],
             'warning':
-                a['general']['warning'],
+                a['metadata']['warning'],
+            'isrc_code':
+                a['production']['isrc_code'],
             'copyright_date':
                 a['production']['copyright_date'],
             'production_date':
@@ -123,8 +124,6 @@ class EditRelease(FormController):
                 a['distribution']['label_catalog_number'],
             'ean_upc_code':
                 a['distribution']['ean_upc_code'],
-            'isrc_code':
-                a['distribution']['isrc_code'],
             'release_date':
                 a['distribution']['release_date'],
             'release_cancellation_date':
@@ -156,11 +155,11 @@ class EditRelease(FormController):
                 release.save()
 
         # picture
-        if a['general']['picture']:
-            with open(a['general']['picture']['fp'].name,
+        if a['metadata']['picture']:
+            with open(a['metadata']['picture']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
-            mimetype = a['general']['picture']['mimetype']
+            mimetype = a['metadata']['picture']['mimetype']
             _release['picture_data'] = picture_data
             _release['picture_data_mime_type'] = mimetype
 

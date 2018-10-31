@@ -20,6 +20,32 @@
 
         <div tal:content="structure AddRelease"/>
 
+        <script>
+            $(document).ready(function() {
+                var releaseTypeSelect = $('#type');
+                releaseTypeSelect.change(function() {
+                    var selected = releaseTypeSelect
+                        .children(":selected")
+                        .first();
+                    switch(selected.attr('value')) {
+                        case 'artist':
+                            $('#item-artist').show();
+                            $('.item-split_artists').first().hide();
+                            break;
+                        case 'split':
+                            $('#item-artist').hide();
+                            $('.item-split_artists').first().show();
+                            break;
+                        case 'compilation':
+                            $('#item-artist').hide();
+                            $('.item-split_artists').first().hide();
+                            break;
+                    }
+                });
+                releaseTypeSelect.trigger('change');
+            });
+        </script>
+
     </tal:block>
 
 </tal:block>

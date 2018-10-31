@@ -7,8 +7,7 @@ import deform
 
 from collecting_society_portal.models import (
     Tdb,
-    WebUser,
-    Party
+    WebUser
 )
 from collecting_society_portal.views.forms import (
     FormController,
@@ -16,13 +15,14 @@ from collecting_society_portal.views.forms import (
 )
 from ...services import _
 from ...models import (
+    Artist,
+    Release,
     Genre,
     Style,
-    Label,
-    Release
+    Label
 )
-from ...resources import ReleaseResource
 from .datatables import (
+    ArtistSequence,
     CreationSequence,
     LabelSequence
 )
@@ -68,15 +68,17 @@ class AddRelease(FormController):
             'tracks':
                 None,  # TODO: tracks (also in edit_release)
             'title':
-                a['general']['title'],
+                a['metadata']['title'],
             'number_mediums':
-                a['general']['number_mediums'],
+                a['metadata']['number_mediums'],
             'genres':
-                [('add', map(int, a['general']['genres']))],
+                [('add', map(int, a['metadata']['genres']))],
             'styles':
-                [('add', map(int, a['general']['styles']))],
+                [('add', map(int, a['metadata']['styles']))],
             'warning':
-                a['general']['warning'],
+                a['metadata']['warning'],
+            'isrc_code':
+                a['production']['isrc_code'],
             'copyright_date':
                 a['production']['copyright_date'],
             'production_date':
@@ -85,8 +87,6 @@ class AddRelease(FormController):
                 a['distribution']['label_catalog_number'],
             'ean_upc_code':
                 a['distribution']['ean_upc_code'],
-            'isrc_code':
-                a['distribution']['isrc_code'],
             'release_date':
                 a['distribution']['release_date'],
             'release_cancellation_date':
@@ -110,11 +110,11 @@ class AddRelease(FormController):
                 _release['label_name'] = _label['name']
 
         # picture
-        if a['general']['picture']:
-            with open(a['general']['picture']['fp'].name,
+        if a['metadata']['picture']:
+            with open(a['metadata']['picture']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
-            mimetype = a['general']['picture']['mimetype']
+            mimetype = a['metadata']['picture']['mimetype']
             _release['picture_data'] = picture_data
             _release['picture_data_mime_type'] = mimetype
 
@@ -150,20 +150,36 @@ class AddRelease(FormController):
 
 # --- Options -----------------------------------------------------------------
 
+release_type_options = (
+    ('artist', _('Artist Release')),
+    ('split', _('Split Release')),
+    ('compilation', _('Compilation')),
+)
+
+
 # --- Widgets -----------------------------------------------------------------
 
 @colander.deferred
-def party_select_widget(node, kw):
-    parties = Party.search_all()
-    label_options = [
-        (party.code, party.name) for party in parties
-    ]
-    widget = deform.widget.Select2Widget(values=label_options)
+def current_artists_select_widget(node, kw):
+    request = kw.get('request')
+    artists = Artist.current_editable(request)
+    artist_options = [('', '')] + [(artist.id, artist.name) for artist in artists]
+    widget = deform.widget.Select2Widget(values=artist_options)
     return widget
 
 
+# @colander.deferred
+# def party_select_widget(node, kw):
+#     parties = Party.search_all()
+#     label_options = [
+#         (party.code, party.name) for party in parties
+#     ]
+#     widget = deform.widget.Select2Widget(values=label_options)
+#     return widget
+
+
 @colander.deferred
-def deferred_checkbox_widget(node, kw):
+def deferred_checkbox_widget_genre(node, kw):
     genres = Genre.search_all()
     genre_options = [(genre.id, unicode(genre.name)) for genre in genres]
     widget = deform.widget.Select2Widget(values=genre_options, multiple=True)
@@ -180,26 +196,70 @@ def deferred_checkbox_widget_style(node, kw):
 
 # --- Fields ------------------------------------------------------------------
 
-# -- General tab --
+def artist_ignored(value):
+    return value if value else -1
+
+
+def split_artist_ignored(value):
+    return value if value else []  # ?
+
+
+def artist_required_conditionally(value):
+    log.debug(
+        (
+            "value: %s\n"
+        ) % (
+            value
+        )
+    )
+    if value['type'] == "artist" and value['artist'] == -1:
+        value['artist'] = colander.null
+    return value
+
+
+def split_artist_required_conditionally(value):
+    log.debug(
+        (
+            "value: %s\n"
+        ) % (
+            value
+        )
+    )
+    if value['type'] == "split" and value['split_artists'] == []:
+        value['split_artists'] = colander.null
+    return value
+
+
+# -- Metadata tab --
+
+class TypeField(colander.SchemaNode):
+    oid = "type"
+    schema_type = colander.String
+    widget = deform.widget.Select2Widget(values=release_type_options)
+
+
+class ArtistField(colander.SchemaNode):
+    oid = "artist"
+    schema_type = colander.Integer
+    widget = current_artists_select_widget
+    # preparer = [artist_ignored]
+
+
+class SplitArtistField(ArtistSequence):
+    # preparer = [split_artist_ignored]
+    min_len = 1
+
 
 class TitleField(colander.SchemaNode):
     oid = "title"
     schema_type = colander.String
 
 
-class NumberOfMediumsField(colander.SchemaNode):
-    oid = "number_mediums"
-    schema_type = colander.Int
-    validator = colander.Range(
-        min=1, min_err=_('Release has to include at least one medium.'))
-
-
 class GenreCheckboxField(colander.SchemaNode):
     oid = "genres"
     schema_type = colander.Set
-    widget = deferred_checkbox_widget
+    widget = deferred_checkbox_widget_genre
     validator = colander.Length(min=1)
-    #    , min_err=_(u'Please choose at least one genre for this release')
 
 
 class StyleCheckboxField(colander.SchemaNode):
@@ -207,7 +267,6 @@ class StyleCheckboxField(colander.SchemaNode):
     schema_type = colander.Set
     widget = deferred_checkbox_widget_style
     validator = colander.Length(min=1)
-    #    , min_err=_(u'Please choose at least one style for this release'))
 
 
 class WarningField(colander.SchemaNode):
@@ -316,14 +375,20 @@ class DistributionTerritoryField(colander.SchemaNode):
 
 # --- Schemas -----------------------------------------------------------------
 
-class GeneralSchema(colander.Schema):
+class MetadataSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
+    type = TypeField(title=_(u"Release Type"))
+    own_artist = ArtistField(title=_(u"Artist"))
+    split_artists = SplitArtistField(title=_(u"Split Artists"))
     title = TitleField(title=_(u"Title"))
-    number_mediums = NumberOfMediumsField(title=_(u"Number of Mediums"))
     genres = GenreCheckboxField(title=_(u"Genres"))
     styles = StyleCheckboxField(title=_(u"Styles"))
     warning = WarningField(title=_(u"Warning"))
     picture = PictureField(title=_(u"Picture"))
+    preparer = [
+        artist_required_conditionally,
+        split_artist_required_conditionally
+    ]
 
 
 class TracksSchema(colander.Schema):
@@ -333,6 +398,7 @@ class TracksSchema(colander.Schema):
 
 class ProductionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
+    isrc_code = IsrcCodeField(title=_(u"ISRC Code"))
     copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
     # copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
     production_date = ProductionDateField(title=_(u"Production Date"))
@@ -344,7 +410,6 @@ class DistributionSchema(colander.Schema):
     label_catalog_number = LabelCatalogNumberField(
         title=_(u"Label Catalog Number of Release"))
     ean_upc_code = EanUpcCodeField(title=_(u"EAN or UPC Code"))
-    isrc_code = IsrcCodeField(title=_(u"ISRC Code"))
     release_date = ReleaseDateField(title=_(u"Release Date"))
     release_cancellation_date = ReleaseCancellationDateField(
         title=_(u"Release Cancellation Date"))
@@ -359,7 +424,7 @@ class DistributionSchema(colander.Schema):
 class AddReleaseSchema(colander.Schema):
     title = _(u"Add Release")
     widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
-    general = GeneralSchema(title=_(u"General"))
+    metadata = MetadataSchema(title=_(u"Metadata"))
     tracks = TracksSchema(title=_(u"Tracks"))
     production = ProductionSchema(title=_(u"Production"))
     distribution = DistributionSchema(title=_(u"Distribution"))
