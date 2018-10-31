@@ -125,7 +125,7 @@ class EditArtist(FormController):
 
                 # add existing artists
                 if member['mode'] == "add":
-                    member_artist = Artist.search_by_code(member['code'])
+                    member_artist = Artist.search_by_oid(member['oid'])
                     # sanity checks
                     if not member_artist:
                         continue
@@ -154,11 +154,11 @@ class EditArtist(FormController):
                     member_party = member_party[0]
                     # create vlist
                     members_create.append({
-                        'group': False,
                         'description': "",
                         'party': member_party.id,
                         'entity_creator': party.id,
                         'entity_origin': 'indirect',
+                        'claim_state': 'unclaimed',
                         'name': member['name']
                     })
 
