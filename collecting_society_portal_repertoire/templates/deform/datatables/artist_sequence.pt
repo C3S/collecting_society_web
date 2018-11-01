@@ -20,7 +20,8 @@
                         if(type !== 'display' && type !== 'sort')
                             return data;
                         if(row.mode != 'add')
-                            return tmpl.encode(row.name + " (" + row.email + ")");
+                            return tmpl.encode(row.name) + "<br>" +
+                                   "<small>" + tmpl.encode(row.email) + "</small>";
                         return tmpl.encode(data);
                     },
                     datatableSequence: {

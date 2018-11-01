@@ -214,8 +214,7 @@ def validate_content(node, values, **kwargs):  # multifield validator
 @colander.deferred
 def current_artists_select_widget(node, kw):
     request = kw.get('request')
-    web_user = WebUser.current_web_user(request)
-    artists = Artist.search_by_party(web_user.party.id)
+    artists = Artist.current_editable(request)
     artist_options = [(artist.id, artist.name) for artist in artists]
     widget = deform.widget.Select2Widget(values=artist_options)
     return widget
@@ -224,9 +223,9 @@ def current_artists_select_widget(node, kw):
 @colander.deferred
 def releases_select_widget(node, kw):
     request = kw.get('request')
-    web_user = WebUser.current_web_user(request)
-    releases = Release.search_by_party(web_user.party.id)
-    releases_options = [(int(release.id), release.title) for release in releases]
+    releases = Release.current_editable(request)
+    releases_options = [
+        (int(release.id), release.title) for release in releases]
     widget = deform.widget.Select2Widget(
         values=releases_options, multiple=True
     )
@@ -236,8 +235,7 @@ def releases_select_widget(node, kw):
 @colander.deferred
 def content_select_widget(node, kw):
     request = kw.get('request')
-    web_user = WebUser.current_web_user(request)
-    contents = Content.search_orphans(web_user.party.id, 'audio')
+    contents = Content.search_orphans(request.party.id, 'audio')
     content_options = []
     if contents:
         content_options = [(content.id, content.name) for content in contents]
@@ -252,7 +250,7 @@ class TitleField(colander.SchemaNode):
     schema_type = colander.String
 
 
-class CurrentArtistField(colander.SchemaNode):
+class ArtistField(colander.SchemaNode):
     oid = "artist"
     schema_type = colander.Integer
     widget = current_artists_select_widget
@@ -283,7 +281,7 @@ class MetadataSchema(colander.Schema):
     title = _(u"Add metadata")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_(u"Working Title"))
-    artist = CurrentArtistField(title=_(u"Featured Artist"))
+    artist = ArtistField(title=_(u"Featured Artist"))
     releases = ReleasesField(title=_(u"Release"))
     collecting_society = CollectingSocietyField()
 

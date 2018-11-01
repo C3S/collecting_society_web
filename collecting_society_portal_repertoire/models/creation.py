@@ -21,7 +21,7 @@ class Creation(Tdb):
         Searches creations, which the current web_user is allowed to view.
 
         Args:
-          party_id (int): party.party.id
+          request (pyramid.request.Request): Current request.
 
         Returns:
           list: viewable creations of current web_user

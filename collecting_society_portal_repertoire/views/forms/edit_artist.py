@@ -154,6 +154,7 @@ class EditArtist(FormController):
                     member_party = member_party[0]
                     # create vlist
                     members_create.append({
+                        'group': False,
                         'description': "",
                         'party': member_party.id,
                         'entity_creator': party.id,

@@ -48,6 +48,7 @@ class AddArtist(FormController):
 
         # generate vlist
         _artist = {
+            'group': self.appstruct['metadata']['group'],
             'party': party,
             'entity_creator': party,
             'entity_origin': 'direct',
@@ -96,6 +97,7 @@ class AddArtist(FormController):
                     member_party = member_party[0]
                     # append member data
                     members_create.append({
+                        'group': False,
                         'description': "",
                         'party': member_party.id,
                         'entity_creator': party.id,
