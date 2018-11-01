@@ -49,8 +49,8 @@ class EditCreation(FormController):
                     c.title or '',
                 'artist':
                     c.artist.id,
-                'releases':
-                    [unicode(release.id) for release in c.releases]
+                #'releases':   -> relation maintained in Release form only
+                #    [unicode(release.id) for release in c.releases]
             },
             'contributions': {},
             'licenses': {},
@@ -71,6 +71,7 @@ class EditCreation(FormController):
             # 'content': {
             # }
         }
+
         if c.contributions:
             _contributions = []
             for contribution in c.contributions:
