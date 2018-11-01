@@ -76,6 +76,7 @@ class EditCreation(FormController):
             _contributions = []
             for contribution in c.contributions:
                 _contributions.append({
+                    'mode': 'add',
                     'type': contribution.type,
                     'artist': contribution.artist.id
                 })
