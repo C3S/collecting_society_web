@@ -212,23 +212,24 @@ class EditCreation(FormController):
         #                    [content.id]
         #                )
         #            )
-
+        
         contents_to_add = []
         for content_item in self.appstruct['content']['content']:
             # ???? oid funktioniert nicht, weil das nur nach 'oidignored' sucht
-            # content = Content.search_by_oid(content_item['oid'])
-            content = Content.search_by_code(content_item['code'])
-            # sanity checks
-            # TODO: maybe something like this:
-            # # is not the webusers content and wasn't there before?
-            # if web_user.party != content.entity_creator:  # skip it!
-            #     if content not in creation.content:
-            #         self.request.session.flash(
-            #             _(u"Content couldn't be added: ") + content.title,
-            #             'main-alert-warning'
-            #         )
-            #         continue
-            contents_to_add.append(content)
+            content = Content.search_by_oid(content_item['oid'])
+            if content:
+                # content = Content.search_by_code(content_item['code'])
+                # sanity checks
+                # TODO: maybe something like this:
+                # # is not the webusers content and wasn't there before?
+                # if web_user.party != content.entity_creator:  # skip it!
+                #     if content not in creation.content:
+                #         self.request.session.flash(
+                #             _(u"Content couldn't be added: ") + content.title,
+                #             'main-alert-warning'
+                #         )
+                #         continue
+                contents_to_add.append(content)
         creation.content = contents_to_add
 
         # # remove empty fields
