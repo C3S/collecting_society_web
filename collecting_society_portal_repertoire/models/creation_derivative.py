@@ -63,7 +63,7 @@ class CreationDerivative(Tdb):
         return cls.get().delete(creation)
 
     @classmethod
-    def search_originals_of_creation_by_id(cls, creation_id, active=True):
+    def search_originals_of_creation_by_id(cls, creation_id):
         """
         Searches all original creations of a creation by its id
 
@@ -78,3 +78,37 @@ class CreationDerivative(Tdb):
             [('derivative_creation.id', '=', creation_id)]
         )
         return result or None
+
+    @classmethod
+    def search_original_derivative_pair(cls, derivative_oid, original_oid):
+        """
+        Searches for certain derivative/original combinations
+
+        Args:
+          derivative_oid (string) a uuid formed string
+          original_oid (string): a uuid formed string
+
+        Returns:
+          obj: list of creations
+          None: if no match is found
+        """
+        result = cls.get().search(
+            [('original_creation.oid', '=', original_oid),
+             ('derivative_creation.oid', '=', derivative_oid)]
+        )
+        return result or None
+
+    @classmethod
+    def search_by_oid(cls, oid):
+        """
+        Searches for a CreationDerivative object by its oid
+
+        Args:
+          oid (string): a uuid formed string
+
+        Returns:
+          obj: CreationDerivative object
+          None: if no match is found
+        """
+        result = cls.get().search([('oid', '=', oid)])
+        return result[0] or None

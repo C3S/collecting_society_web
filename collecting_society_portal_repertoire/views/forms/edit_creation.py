@@ -90,7 +90,6 @@ class EditCreation(FormController):
             }
         
         # original works, this creation is derived from
-        # import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
         if c.original_relations:
             _originals = []
             for original in c.original_relations:
@@ -271,9 +270,9 @@ class EditCreation(FormController):
             creation.id)
         oids_to_preserve = []
         for a_original in a['originals']['originals']:
-                # already in list? then it must be a dupe: only add once
-            if a_original['original'][0]['oid'] not in oids_to_preserve:
-                oids_to_preserve.append(a_original['original'][0]['oid'])
+            # sanity: already in list? then it must be a dupe: only add once
+            if a_original['oid'] not in oids_to_preserve:
+                oids_to_preserve.append(a_original['oid'])
         if originals:
             for original in originals:  # loop through database
                 # original from db table no longer in appstruct?
@@ -317,8 +316,10 @@ class EditCreation(FormController):
                 if a_original['mode'] == 'create':
                     pass
                 if a_original['mode'] == 'edit':
-                    #
-                    pass
+                    relation = CreationDerivative.search_by_oid(
+                            a_original_relation['oid'])
+                    relation.allocation_type = a_original_relation['type']
+                    relation.save()
 
         # creation.original_relations = originals_to_add
         # creation.original_relations.save()

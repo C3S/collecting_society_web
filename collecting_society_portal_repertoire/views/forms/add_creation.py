@@ -5,7 +5,10 @@ import logging
 import colander
 import deform
 
-from collecting_society_portal.models import Tdb
+from collecting_society_portal.models import (
+    Tdb,
+    WebUser
+)
 from collecting_society_portal.views.forms import FormController
 from ...services import _
 from ...models import (
