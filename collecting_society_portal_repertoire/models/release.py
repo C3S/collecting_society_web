@@ -157,8 +157,8 @@ class Release(Tdb):
                     ('acl.web_user', '=', web_user_id),
                     ('acl.roles.permissions.code', '=', 'view_release')
                 ], [
-                    ('artists.artist.acl.web_user', '=', web_user_id),
-                    ('artists.artist.acl.roles.permissions.code',
+                    ('artists.acl.web_user', '=', web_user_id),
+                    ('artists.acl.roles.permissions.code',
                         '=', 'view_artist_releases'),
                 ]
             ]

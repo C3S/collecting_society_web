@@ -24,6 +24,9 @@
             $(document).ready(function() {
                 var releaseTypeSelect = $('#type');
                 releaseTypeSelect.change(function() {
+                    $('#item-artist')
+                        .children("label").first()
+                        .addClass("required");
                     var selected = releaseTypeSelect
                         .children(":selected")
                         .first();

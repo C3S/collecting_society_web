@@ -122,3 +122,34 @@ class Label(Tdb):
         result = cls.get().search(  # noqa
             [('name', 'like', name_starting_with + '\%')])
         return result[0] or None
+
+    @classmethod
+    def create(cls, vlist):
+        """
+        Creates labels
+
+        Args:
+          vlist (list): list of dicts with attributes to create creations::
+
+            [
+                {
+                    'name': str (required)
+                },
+                {
+                    ...
+                }
+            ]
+
+        Raises:
+          KeyError: if required field is missing
+
+        Returns:
+          list: created labels
+          None: if no object was created
+        """
+        log.debug('create label:\n{}'.format(vlist))
+        for values in vlist:
+            if 'name' not in values:
+                raise KeyError('name is missing')
+        result = cls.get().create(vlist)
+        return result or None

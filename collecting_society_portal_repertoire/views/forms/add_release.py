@@ -52,8 +52,8 @@ class AddRelease(FormController):
     @Tdb.transaction(readonly=False)
     def create_release(self):
         a = self.appstruct
-        email = self.request.unauthenticated_userid
-        party = WebUser.current_party(self.request)
+        web_user = self.request.web_user
+        party = self.request.party
 
         # generate vlist
         _release = {
@@ -61,16 +61,12 @@ class AddRelease(FormController):
                 "direct",
             'entity_creator':
                 party,
-            'artists':
-                [('add', [1])],  # TODO: artists (also in edit_release)
             'type':
-                'artist',  # TODO: types (also in edit_release)
+                a['metadata']['release_type'],
             'tracks':
                 None,  # TODO: tracks (also in edit_release)
             'title':
-                a['metadata']['title'],
-            'number_mediums':
-                a['metadata']['number_mediums'],
+                a['metadata']['release_title'],
             'genres':
                 [('add', map(int, a['metadata']['genres']))],
             'styles':
@@ -98,6 +94,22 @@ class AddRelease(FormController):
             'distribution_territory':
                 a['distribution']['distribution_territory'],
         }
+
+        # artist realease: artist
+        if a['metadata']['release_type'] == 'artist':
+            oid = a['metadata']['artist']
+            artist = Artist.search_by_oid(oid)
+            if artist and artist.permits(web_user, 'edit_artist'):
+                _release['artists'] = [('add', [artist.id])]
+
+        # split realease: split_artists
+        if a['metadata']['release_type'] == 'split_release':
+            _add_artists = []
+            for _artist in a['metadata']['artists']:
+                artist = Artist.search_by_oid(artist['oid'])
+                if artist:
+                    _add_artists.append(artist.id)
+            _release['artists'] = [('add', _add_artists)]
 
         # label
         _label = a['distribution']['label'] and a['distribution']['label'][0]
@@ -128,7 +140,7 @@ class AddRelease(FormController):
 
         # user feedback
         if not release:
-            log.info("release add failed for %s: %s" % (email, _release))
+            log.info("release add failed for %s: %s" % (web_user, _release))
             self.request.session.flash(
                 _(u"Release could not be added: ") + _release['title'],
                 'main-alert-danger'
@@ -136,7 +148,7 @@ class AddRelease(FormController):
             self.redirect()
             return
         release = release[0]
-        log.info("release add successful for %s: %s" % (email, release))
+        log.info("release add successful for %s: %s" % (web_user, release))
         self.request.session.flash(
             _(u"Release added: ") + release.title + " (" + release.code + ")",
             'main-alert-success'
@@ -163,7 +175,7 @@ release_type_options = (
 def current_artists_select_widget(node, kw):
     request = kw.get('request')
     artists = Artist.current_editable(request)
-    artist_options = [('', '')] + [(artist.id, artist.name) for artist in artists]
+    artist_options = [(artist.oid, artist.name) for artist in artists]
     widget = deform.widget.Select2Widget(values=artist_options)
     return widget
 
@@ -196,43 +208,27 @@ def deferred_checkbox_widget_style(node, kw):
 
 # --- Fields ------------------------------------------------------------------
 
-def artist_ignored(value):
-    return value if value else -1
+@colander.deferred
+def deferred_artist_missing(node, kw):
+    params = kw['request'].params
+    release_type = params.get("release_type")
+    if not release_type or release_type == 'artist':
+        return colander.required
+    return ""
 
 
-def split_artist_ignored(value):
-    return value if value else []  # ?
-
-
-def artist_required_conditionally(value):
-    log.debug(
-        (
-            "value: %s\n"
-        ) % (
-            value
-        )
-    )
-    if value['type'] == "artist" and value['artist'] == -1:
-        value['artist'] = colander.null
-    return value
-
-
-def split_artist_required_conditionally(value):
-    log.debug(
-        (
-            "value: %s\n"
-        ) % (
-            value
-        )
-    )
-    if value['type'] == "split" and value['split_artists'] == []:
-        value['split_artists'] = colander.null
-    return value
+@colander.deferred
+def deferred_split_artists_missing(node, kw):
+    params = kw['request'].params
+    release_type = params.get("release_type")
+    if not release_type or release_type == 'split':
+        return colander.required
+    return ""
 
 
 # -- Metadata tab --
 
-class TypeField(colander.SchemaNode):
+class ReleaseTypeField(colander.SchemaNode):
     oid = "type"
     schema_type = colander.String
     widget = deform.widget.Select2Widget(values=release_type_options)
@@ -240,17 +236,18 @@ class TypeField(colander.SchemaNode):
 
 class ArtistField(colander.SchemaNode):
     oid = "artist"
-    schema_type = colander.Integer
+    schema_type = colander.String
+    validator = colander.uuid
     widget = current_artists_select_widget
-    # preparer = [artist_ignored]
+    missing = deferred_artist_missing
 
 
-class SplitArtistField(ArtistSequence):
-    # preparer = [split_artist_ignored]
+class SplitArtistSequence(ArtistSequence):
     min_len = 1
+    missing = deferred_split_artists_missing
 
 
-class TitleField(colander.SchemaNode):
+class ReleaseTitleField(colander.SchemaNode):
     oid = "title"
     schema_type = colander.String
 
@@ -377,18 +374,15 @@ class DistributionTerritoryField(colander.SchemaNode):
 
 class MetadataSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    type = TypeField(title=_(u"Release Type"))
-    own_artist = ArtistField(title=_(u"Artist"))
-    split_artists = SplitArtistField(title=_(u"Split Artists"))
-    title = TitleField(title=_(u"Title"))
+    release_type = ReleaseTypeField(title=_(u"Release Type"))
+    artist = ArtistField(title=_(u"Artist"))
+    split_artists = SplitArtistSequence(
+        title=_(u"Split Artists"), actions=['add'])
+    release_title = ReleaseTitleField(title=_(u"Title"))
     genres = GenreCheckboxField(title=_(u"Genres"))
     styles = StyleCheckboxField(title=_(u"Styles"))
     warning = WarningField(title=_(u"Warning"))
     picture = PictureField(title=_(u"Picture"))
-    preparer = [
-        artist_required_conditionally,
-        split_artist_required_conditionally
-    ]
 
 
 class TracksSchema(colander.Schema):
