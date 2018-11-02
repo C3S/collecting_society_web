@@ -8,7 +8,10 @@ from collecting_society_portal.models import Tdb
 from collecting_society_portal.views.forms import FormController
 
 from ...services import _
-from ...models import Label
+from ...models import (
+    Artist,
+    Label
+)
 from .add_release import AddReleaseSchema
 
 log = logging.getLogger(__name__)
@@ -37,60 +40,74 @@ class EditRelease(FormController):
     # --- Actions -------------------------------------------------------------
 
     def edit_release(self):
-        r = self.context.release
+        release = self.context.release
 
         # set appstruct
         self.appstruct = {
             'metadata': {
-                'title':
-                    r.title or '',
-                'number_mediums':
-                    r.number_mediums or '',
+                'release_type':
+                    release.type,
+                'release_title':
+                    release.title or '',
                 'genres':
-                    [unicode(genre.id) for genre in r.genres],
+                    [unicode(genre.id) for genre in release.genres],
                 'styles':
-                    [unicode(style.id) for style in r.styles],
+                    [unicode(style.id) for style in release.styles],
                 'warning':
-                    r.warning or '',
+                    release.warning or '',
             },
             'production': {
                 'isrc_code':
-                    r.isrc_code or '',
+                    release.isrc_code or '',
                 'copyright_date':
-                    r.copyright_date or '',
+                    release.copyright_date or '',
                 'production_date':
-                    r.production_date or '',
+                    release.production_date or '',
             },
             'distribution': {
                 'label_catalog_number':
-                    r.label_catalog_number or '',
+                    release.label_catalog_number or '',
                 'ean_upc_code':
-                    r.ean_upc_code or '',
+                    release.ean_upc_code or '',
                 'release_date':
-                    r.release_date or '',
+                    release.release_date or '',
                 'release_cancellation_date':
-                    r.release_cancellation_date or '',
+                    release.release_cancellation_date or '',
                 'online_release_date':
-                    r.online_release_date or '',
+                    release.online_release_date or '',
                 'online_cancellation_date':
-                    r.online_cancellation_date or '',
+                    release.online_cancellation_date or '',
                 'distribution_territory':
-                    r.distribution_territory or '',
+                    release.distribution_territory or '',
             },
         }
 
+        # artist release: artist
+        if release.type == 'artist':
+            self.appstruct['metadata']['artist'] = release.artists[0].oid
+
+        # split release: split_artists
+        if release.type == 'split':
+            self.appstruct['metadata']['split_artists'] = []
+            for artist in release.artists:
+                self.appstruct['metadata']['split_artists'].append({
+                    'mode': "add",
+                    'oid': artist.oid,
+                    'name': artist.name,
+                    'code': artist.code or '',
+                    'description': artist.description or '',
+                })
+
         # set label
-        if r.label:
+        if release.label:
+            mode = 'add'
+            if self.request.party == release.label.entity_creator:
+                mode = 'edit'
             self.appstruct['distribution']['label'] = [{
-                'mode': 'add',
-                'name': r.label.name,
-                'gvl_code': r.label.gvl_code,
-            }]
-        elif r.label_name:
-            self.appstruct['distribution']['label'] = [{
-                'mode': 'edit',
-                'name': r.label_name,
-                'gvl_code': '',
+                'mode': mode,
+                'oid': release.label.oid,
+                'name': release.label.name,
+                'gvl_code': release.label.gvl_code or '',
             }]
 
         # render form with data
@@ -98,68 +115,106 @@ class EditRelease(FormController):
 
     @Tdb.transaction(readonly=False)
     def update_release(self):
-        a = self.appstruct
-        email = self.request.unauthenticated_userid
+        appstruct = self.appstruct
+        web_user = self.request.web_user
+        party = self.request.party
         release = self.context.release
 
         # generate vlist
         _release = {
+            'type':
+                appstruct['metadata']['release_type'],
+            'tracks':
+                None,  # TODO: tracks (also in edit_release)
             'title':
-                a['metadata']['title'],
-            'number_mediums':
-                a['metadata']['number_mediums'],
+                appstruct['metadata']['release_title'],
             'genres':
-                [('add', map(int, a['metadata']['genres']))],
+                [('add', map(int, appstruct['metadata']['genres']))],
             'styles':
-                [('add', map(int, a['metadata']['styles']))],
+                [('add', map(int, appstruct['metadata']['styles']))],
             'warning':
-                a['metadata']['warning'],
+                appstruct['metadata']['warning'],
             'isrc_code':
-                a['production']['isrc_code'],
+                appstruct['production']['isrc_code'],
             'copyright_date':
-                a['production']['copyright_date'],
+                appstruct['production']['copyright_date'],
             'production_date':
-                a['production']['production_date'],
+                appstruct['production']['production_date'],
             'label_catalog_number':
-                a['distribution']['label_catalog_number'],
+                appstruct['distribution']['label_catalog_number'],
             'ean_upc_code':
-                a['distribution']['ean_upc_code'],
+                appstruct['distribution']['ean_upc_code'],
             'release_date':
-                a['distribution']['release_date'],
+                appstruct['distribution']['release_date'],
             'release_cancellation_date':
-                a['distribution']['release_cancellation_date'],
+                appstruct['distribution']['release_cancellation_date'],
             'online_release_date':
-                a['distribution']['online_release_date'],
+                appstruct['distribution']['online_release_date'],
             'online_cancellation_date':
-                a['distribution']['online_cancellation_date'],
+                appstruct['distribution']['online_cancellation_date'],
             'distribution_territory':
-                a['distribution']['distribution_territory'],
+                appstruct['distribution']['distribution_territory'],
         }
 
+        # artist realease: artist
+        if appstruct['metadata']['release_type'] == 'artist':
+            artist = Artist.search_by_oid(appstruct['metadata']['artist'])
+            if artist and artist.permits(web_user, 'edit_artist'):
+                _add = [artist.id]
+                _remove = [ra.id for ra in release.artists]
+                if set(_add) != set(_remove):
+                    _release['artists'] = [
+                        ['add', [artist.id]],
+                        ['remove', _remove]]
+
+        # split realease: split_artists
+        if appstruct['metadata']['release_type'] == 'split':
+            _add = []
+            _remove = [ra.id for ra in release.artists]
+            for _artist in appstruct['metadata']['split_artists']:
+                artist = Artist.search_by_oid(_artist['oid'])
+                if artist:
+                    _add.append(artist.id)
+                    if artist.id in _remove:
+                        _remove.remove(artist.id)
+            _release['artists'] = [['add', _add], ['remove', _remove]]
+
+        # split realease: compilation
+        if appstruct['metadata']['release_type'] == 'compilation':
+            _remove = [ra.id for ra in release.artists]
+            _release['artists'] = [['remove', _remove]]
+
         # label
-        _label = a['distribution']['label'] and a['distribution']['label'][0]
+        _label = next(iter(appstruct['distribution']['label']), None)
         if not _label:
             release.label_name = None
             release.label = None
             release.save()
         else:
             if _label['mode'] == "add":
-                label = Label.search_by_gvl_code(_label['gvl_code'])
+                label = Label.search_by_oid(_label['oid'])
                 if label:
-                    release.label_name = None
                     release.label = label.id
                     release.save()
-            if _label['mode'] in ["create", "edit"]:
-                release.label_name = _label['name']
-                release.label = None
+            if _label['mode'] == "create":
+                label = Label.create([{
+                    'name': _label['name'],
+                    'entity_creator': party,
+                    'entity_origin': 'indirect'
+                    }])[0]
+                release.label = label.id
                 release.save()
+            if _label['mode'] == "edit":
+                if party == release.label.entity_creator:
+                    release.label.name = _label['name']
+                    release.label.save()
 
         # picture
-        if a['metadata']['picture']:
-            with open(a['metadata']['picture']['fp'].name,
+        if appstruct['metadata']['picture']:
+            with open(appstruct['metadata']['picture']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
-            mimetype = a['metadata']['picture']['mimetype']
+            mimetype = appstruct['metadata']['picture']['mimetype']
             _release['picture_data'] = picture_data
             _release['picture_data_mime_type'] = mimetype
 
@@ -172,14 +227,14 @@ class EditRelease(FormController):
         release.write([release], _release)
 
         # user feedback
-        log.info("edit release successful for %s: %s" % (email, release))
+        log.info("edit release successful for %s: %s" % (web_user, release))
         self.request.session.flash(
             _(u"Release edited: ") + release.title + " (" + release.code + ")",
             'main-alert-success'
         )
 
         # redirect
-        self.redirect('..')
+        self.redirect()
 
 
 # --- Validators --------------------------------------------------------------

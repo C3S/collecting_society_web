@@ -61,6 +61,7 @@ class NameField(colander.SchemaNode):
 
 class LabelSchema(colander.Schema):
     mode = ModeField()
+    oid = OidField()
     name = NameField()
     gvl_code = GvlCodeField()
     title = ""

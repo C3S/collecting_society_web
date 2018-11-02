@@ -16,6 +16,85 @@ class Creation(Tdb):
     __name__ = 'creation'
 
     @classmethod
+    def is_foreign_original(cls, request, derivative, original):
+        """
+        Checks if the original is a foreign object and still editable by the
+        current webuser.
+
+        Checks, if the original
+            1) is a foreign object
+            2) is still not claimed yet
+            3) is editable by the current web user
+            4) TODO: was not part of a distribution yet
+
+        Args:
+          request (pyramid.request.Request): Current request.
+          derivative (obj): Derived creation.
+          original (obj): Original creation.
+
+        Returns:
+          true: if orignal is foreign and editable.
+          false: otherwise.
+        """
+        # sanity checks
+        if original not in derivative.original_relations:
+            return False
+        # 1) is a foreign object
+        if original.entity_origin != 'indirect':
+            return False
+        # 2) is still not claimed yet
+        if original.claim_state != 'unclaimed':
+            return False
+        # 3) is editable by the current web user
+        if not derivative.permits(request.web_user, 'edit_creation'):
+            return False
+        # 4) TODO: was not part of a distribution yet
+        return True
+
+    @classmethod
+    def is_foreign_track(cls, request, release, track):
+        """
+        Checks if the track is a foreign object and still editable by the
+        current webuser.
+
+        Checks, if the original
+            1) is a foreign object
+            2) is still not claimed yet
+            3) is editable by the current web user
+            4) TODO: was not part of a distribution yet
+
+        Args:
+          request (pyramid.request.Request): Current request.
+          release (obj): Release of track.
+          track (obj): Track creation of release.
+
+        Returns:
+          true: if orignal is foreign and editable.
+          false: otherwise.
+        """
+        # sanity checks
+        included = False
+        for release_track in release.tracks:
+            if track == release_track.creation:
+                included = True
+        if not included:
+            return False
+        # 1) is a foreign object
+        if track.entity_origin != 'indirect':
+            log.debug("2")
+            return False
+        # 2) is still not claimed yet
+        if track.claim_state != 'unclaimed':
+            log.debug("3")
+            return False
+        # 3) is editable by the current web user
+        if not track.permits(request.web_user, 'edit_creation'):
+            log.debug("4")
+            return False
+        # 4) TODO: was not part of a distribution yet
+        return True
+
+    @classmethod
     def current_viewable(cls, request):
         """
         Searches creations, which the current web_user is allowed to view.
