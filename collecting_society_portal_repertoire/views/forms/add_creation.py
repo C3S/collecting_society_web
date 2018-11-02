@@ -77,6 +77,8 @@ class AddCreation(FormController):
         web_user = self.request.web_user
         party = self.request.party
 
+        log.debug(self.appstruct)
+
         # generate vlist
         _creation = {
             'title': self.appstruct['metadata']['title'],
@@ -85,24 +87,24 @@ class AddCreation(FormController):
             'releases': self.appstruct['metadata']['releases'],
         }
 
-        # releases
-        if self.appstruct['metadata']['releases']:
-            _creation['releases'] = []
-            for release_id in self.appstruct['metadata']['releases']:
-                _creation['releases'].append(
-                    (
-                        'create',
-                        [{
-                            'release': release_id,
-                            'title': self.appstruct['metadata']['title'],
-                            # TODO: manage different titles for releases
-                            #       using a datatables control
-                            # 'medium_number': TODO: medium_number
-                            # 'track_number': TODO: track_number
-                            # 'license ': TODO: license
-                        }]
-                    )
-                )
+        # # releases   -> relation maintained in Release form only
+        # if self.appstruct['metadata']['releases']:
+        #     _creation['releases'] = []
+        #     for release_id in self.appstruct['metadata']['releases']:
+        #         _creation['releases'].append(
+        #             (
+        #                 'create',
+        #                 [{
+        #                     'release': release_id,
+        #                     'title': self.appstruct['metadata']['title'],
+        #                     # TODO: manage different titles for releases
+        #                     #       using a datatables control
+        #                     # 'medium_number': TODO: medium_number
+        #                     # 'track_number': TODO: track_number
+        #                     # 'license ': TODO: license
+        #                 }]
+        #             )
+        #         )
 
         # contributions
         # if self.appstruct['contributions']['contributions']:
@@ -143,9 +145,7 @@ class AddCreation(FormController):
                     _creation['content'].append(
                         (
                             'add',
-                            [content.id],
-                            [content.name],
-                            [content.category]
+                            [content.id]
                         )
                     )
 
@@ -214,7 +214,8 @@ def validate_content(node, values, **kwargs):  # multifield validator
 @colander.deferred
 def current_artists_select_widget(node, kw):
     request = kw.get('request')
-    artists = Artist.current_editable(request)
+    web_user = WebUser.current_web_user(request)
+    artists = Artist.search_by_party(web_user.party.id)
     artist_options = [(artist.id, artist.name) for artist in artists]
     widget = deform.widget.Select2Widget(values=artist_options)
     return widget
@@ -223,9 +224,9 @@ def current_artists_select_widget(node, kw):
 @colander.deferred
 def releases_select_widget(node, kw):
     request = kw.get('request')
-    releases = Release.current_editable(request)
-    releases_options = [
-        (int(release.id), release.title) for release in releases]
+    web_user = WebUser.current_web_user(request)
+    releases = Release.search_by_party(web_user.party.id)
+    releases_options = [(int(release.id), release.title) for release in releases]
     widget = deform.widget.Select2Widget(
         values=releases_options, multiple=True
     )
@@ -235,7 +236,8 @@ def releases_select_widget(node, kw):
 @colander.deferred
 def content_select_widget(node, kw):
     request = kw.get('request')
-    contents = Content.search_orphans(request.party.id, 'audio')
+    web_user = WebUser.current_web_user(request)
+    contents = Content.search_orphans(web_user.party.id, 'audio')
     content_options = []
     if contents:
         content_options = [(content.id, content.name) for content in contents]
@@ -250,7 +252,7 @@ class TitleField(colander.SchemaNode):
     schema_type = colander.String
 
 
-class ArtistField(colander.SchemaNode):
+class CurrentArtistField(colander.SchemaNode):
     oid = "artist"
     schema_type = colander.Integer
     widget = current_artists_select_widget
@@ -281,7 +283,7 @@ class MetadataSchema(colander.Schema):
     title = _(u"Add metadata")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_(u"Working Title"))
-    artist = ArtistField(title=_(u"Featured Artist"))
+    artist = CurrentArtistField(title=_(u"Featured Artist"))
     releases = ReleasesField(title=_(u"Release"))
     collecting_society = CollectingSocietyField()
 
