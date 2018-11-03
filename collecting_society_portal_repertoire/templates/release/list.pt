@@ -26,6 +26,7 @@
         <table class="table cs-table cs-table-list">
 
             <tr tal:repeat="release releases">
+
                 <td class="cs-img-thumb">
                     <a href="${request.resource_path(
                                context, release.code)}">
@@ -40,6 +41,7 @@
                                     'static/img/element-icon-releases-green.png')}" />
                     </a>
                 </td>
+
                 <td>
                     <a href="${request.resource_path(
                                context, release.code)}"
@@ -57,6 +59,7 @@
                         </a>
                     </div>
                 </td>
+
                 <td class="text-right cs-table-codecolumn">
                     <a href="${request.resource_path(
                                context, release.code)}"
@@ -64,6 +67,7 @@
                         ${release.code}
                     </a>
                 </td>
+
             </tr>
 
         </table>

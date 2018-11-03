@@ -2,8 +2,7 @@
       Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
 <tal:block metal:use-macro="backend363"
            i18n:domain="collecting_society_portal_repertoire"
-           tal:define="creation context.creation;
-                       contributions creation.contributions">
+           tal:define="creation context.creation">
 
     <!-- content left -->
     <tal:block metal:fill-slot="content-left"></tal:block>
@@ -11,145 +10,193 @@
     <!-- content middle -->
     <tal:block metal:fill-slot="content-middle">
 
-        <div class="cs-symbolnavbar">
-            <a href="javascript: history.back(1);">
-                <span class="glyphicon glyphicon-arrow-left"></span>
-            </a>
-            <a href="${request.resource_path(context, '..')}">
-                <span class="glyphicon glyphicon-list"></span>
-            </a>
-        </div>
-
         <h1>${creation.title} <small>${creation.artist.name}</small></h1>
 
-        <div class="cs-symbolnavbar">
-            <a href="${request.resource_path(context, 'edit')}">
-                <span class="glyphicon glyphicon-pencil"></span>
-            </a>
-            <a href="${request.resource_path(context, 'delete')}">
-                <span class="glyphicon glyphicon-remove text-danger"></span>
-            </a>
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="javascript: history.back(1);"
+                   class="btn btn-default cs-green" role="button">
+                    <span class="glyphicon glyphicon-arrow-left"></span></a>
+                <a href="${request.resource_path(context, 'edit')}"
+                   class="btn btn-primary" role="button"
+                   i18n:translate="">Edit</a>
+            </div>
+            <div class="btn-group cs-form-controls pull-right" role="group">
+                <a href="${request.resource_path(context, 'delete')}"
+                   class="btn btn-danger" role="button"
+                   i18n:translate="">Delete</a>
+            </div>
         </div>
 
-        <div class="cs-musician-creation">
-            <table class="table table-hover">
+        <table class="table cs-table cs-table-show">
 
-                <tr>
-                    <th i18n:translate="">C3S ID</th>
-                    <td>${creation.code}</td>
-                </tr>
+            <tr>
+                <td colspan="2">
+                    <img class="img-responsive center-block cs-defaultpic"
+                         src="${request.static_path(
+                                'collecting_society_portal_repertoire:'
+                                'static/img/element-icon-songs-green.png')}" />
+                </td>
+            </tr>
 
-                <tr>
-                    <th i18n:translate="">Working Title</th>
-                    <td>${creation.title}</td>
-                </tr>
+            <tr>
+                <th i18n:translate="">Working Title</th>
+                <td>${creation.title}</td>
+            </tr>
 
-                <tr>
-                    <th i18n:translate="">Featured Artist</th>
-                    <td>
-                        <a href="${request.resource_path(
-                                   context, '..', '..', 'artists',
-                                   creation.artist.code)}">${creation.artist.name}</a>
-                    </td>
-                </tr>
+            <tr>
+                <th i18n:translate="">C3S ID</th>
+                <td>${creation.code}</td>
+            </tr>
 
-                <tr tal:condition="contributions">
-                    <th i18n:translate="">Contributions</th>
-                    <td>
-                        <div class="list-group">
-                            <a tal:repeat="contribution contributions"
-                               tal:attributes="href request.resource_path(
-                                               context, '..', '..', 'artists',
-                                               contribution.artist.code)"
-                               class="list-group-item">
-                                ${contribution.artist.name}
-                                <span tal:condition="contribution.type == 'performance'"
-                                      class="label label-primary label-as-badge"
-                                      i18n:translate="">Performance</span>
-                                <span tal:condition="contribution.type == 'composition'"
-                                      class="label label-primary label-as-badge"
-                                      i18n:translate="">Composition</span>
-                                <span tal:condition="contribution.type == 'text'"
-                                      class="label label-primary label-as-badge"
-                                      i18n:translate="">Text</span>
-                                <div tal:condition="contribution.roles"
-                                     class="text-right">
-                                    <span tal:repeat="role contribution.roles"
-                                          class="label label-info">${role.name}</span>
-                                </div>
+            <tr>
+                <th i18n:translate="">Featured Artist</th>
+                <td>
+                    <a href="${request.resource_path(
+                               context, '..', '..', 'artists',
+                               creation.artist.code)}"
+                       tal:omit-tag="not creation.artist.permits(
+                                         request.web_user, 'view_artist')">
+                        ${creation.artist.name}
+                    </a>
+                </td>
+            </tr>
+
+            <tr tal:condition="creation.contributions">
+                <th i18n:translate="">Contributions</th>
+                <td>
+                    <tal:block tal:repeat="contribution creation.contributions">
+                        <div tal:define="artist contribution.artist"
+                             class="cs-list-item">
+
+                            <a tal:attributes="href request.resource_path(
+                                                    context, '..', '..', 'artists',
+                                                    artist.code)"
+                               tal:omit-tag="not artist.permits(
+                                             request.web_user, 'view_artist')">
+                                <img tal:condition="artist.picture_data"
+                                     tal:define="pic h.b64encode(artist.picture_data) | None"
+                                     class="img-responsive cs-img-inline"
+                                     src="data:${artist.picture_data_mime_type};base64,${pic}"/>
+                                <img tal:condition="not artist.picture_data"
+                                     class="img-responsive cs-img-inline"
+                                     src="${request.static_path(
+                                            'collecting_society_portal_repertoire:'
+                                            'static/img/element-icon-soloartists-green.png')}"/></a>
+                            <a tal:attributes="href request.resource_path(
+                                                    context, '..', '..', 'artists',
+                                                    artist.code)"
+                               tal:omit-tag="not artist.permits(
+                                             request.web_user, 'view_artist')">
+                                ${artist.name}
                             </a>
+                            <small tal:condition="contribution.type == 'text'"
+                                  class="cs-contribution"
+                                  i18n:translate="">Text</small>
+                            <small tal:condition="contribution.type == 'performance'"
+                                  class="cs-contribution">
+                                <span i18n:translate="">Performance</span>:
+                                <tal:block tal:condition="contribution.performance == 'recording'"
+                                           i18n:translate="">Recording
+                                    <tal:block tal:condition="contribution.roles">
+                                        (${contribution.roles[0].name})
+                                    </tal:block>
+                                </tal:block>
+                                <tal:block tal:condition="contribution.performance == 'producing'"
+                                           i18n:translate="">Producing</tal:block>
+                                <tal:block tal:condition="contribution.performance == 'mastering'"
+                                           i18n:translate="">Mastering</tal:block>
+                                <tal:block tal:condition="contribution.performance == 'mixing'"
+                                           i18n:translate="">Mixing</tal:block>
+                            </small>
+                            <small tal:condition="contribution.type == 'composition'"
+                                  class="cs-contribution"
+                                  i18n:translate="">
+                                Composition
+                                <tal:block tal:condition="contribution.roles">
+                                    (${contribution.roles[0].name})
+                                </tal:block>
+                            </small>
                         </div>
-                    </td>
-                </tr>
+                    </tal:block>
+                </td>
+            </tr>
 
-                <!--tr tal:condition="creation.licenses">
-                    <th i18n:translate="">Licenses</th>
-                    <td>
-                        <div class="list-group">
-                            <a tal:repeat="creation_license creation.licenses"
-                               tal:attributes="href '#legalcode'"
-                               class="list-group-item">
-                                %%%%%%%%%%%%{creation_license.license.name}
-                                <div class="text-right">
-                                    <div class="label label-info">
-                                        %%%%%%%%%{creation_license.license.code}
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </td>
-                </tr-->
+            <tr tal:condition="creation.release">
+                <th i18n:translate="">Licenses</th>
+                <td>
+                    <div tal:repeat="license creation.licenses"
+                         class="cs-list-item">
+                        <a tal:attributes="href license.link">
+                           ${license.name} ${license.version}
+                           <small>(${license.code})</small>
+                        </a>
+                    </div>
+                </td>
+            </tr>
 
-                <tr tal:condition="creation.original_relations">
-                    <th i18n:translate="">Origins</th>
-                    <td>
-                        <div class="list-group">
-                            <a tal:repeat="original_relation creation.original_relations"
-                               tal:attributes="href request.resource_path(context, '..',
-                                               original_relation.original_creation.code)"
-                               class="list-group-item">
-                                ${original_relation.original_creation.title}
-                                (${original_relation.original_creation.artist.name})
-                                <span tal:condition="original_relation.allocation_type == 'adaption'"
-                                      class="label label-primary label-as-badge"
-                                      i18n:translate="">Adaption</span>
-                                <span tal:condition="original_relation.allocation_type == 'cover'"
-                                      class="label label-primary label-as-badge"
-                                      i18n:translate="">Cover</span>
-                                <span tal:condition="original_relation.allocation_type == 'remix'"
-                                      class="label label-primary label-as-badge"
-                                      i18n:translate="">Remix</span>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
+            <tr tal:condition="creation.licenses">
+                <th i18n:translate="">Licenses</th>
+                <td>
+                    <div tal:repeat="license creation.licenses"
+                         class="cs-list-item">
+                        <a tal:attributes="href license.link">
+                           ${license.name} ${license.version}
+                           <small>(${license.code})</small>
+                        </a>
+                    </div>
+                </td>
+            </tr>
 
-                <tr tal:condition="creation.derivative_relations">
-                    <th i18n:translate="">Derivatives</th>
-                    <td>
-                        <div class="list-group">
-                            <a tal:repeat="derivative_relation creation.derivative_relations"
-                               tal:attributes="href request.resource_path(context, '..',
-                                               derivative_relation.derivative_creation.code)"
-                               class="list-group-item">
-                                ${derivative_relation.derivative_creation.title}
-                                (${derivative_relation.derivative_creation.artist.name})
-                                <span tal:condition="derivative_relation.allocation_type == 'adaption'"
-                                      class="label label-primary label-as-badge"
-                                      i18n:translate="">Adaption</span>
-                                <span tal:condition="derivative_relation.allocation_type == 'cover'"
-                                      class="label label-primary label-as-badge"
-                                      i18n:translate="">Cover</span>
-                                <span tal:condition="derivative_relation.allocation_type == 'remix'"
-                                      class="label label-primary label-as-badge"
-                                      i18n:translate="">Remix</span>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
+            <tr tal:condition="creation.original_relations">
+                <th i18n:translate="">Origins</th>
+                <td>
+                    <div class="list-group">
+                        <a tal:repeat="original_relation creation.original_relations"
+                           tal:attributes="href request.resource_path(context, '..',
+                                           original_relation.original_creation.code)"
+                           class="list-group-item">
+                            ${original_relation.original_creation.title}
+                            (${original_relation.original_creation.artist.name})
+                            <span tal:condition="original_relation.allocation_type == 'adaption'"
+                                  class="label label-primary label-as-badge"
+                                  i18n:translate="">Adaption</span>
+                            <span tal:condition="original_relation.allocation_type == 'cover'"
+                                  class="label label-primary label-as-badge"
+                                  i18n:translate="">Cover</span>
+                            <span tal:condition="original_relation.allocation_type == 'remix'"
+                                  class="label label-primary label-as-badge"
+                                  i18n:translate="">Remix</span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
 
-            </table>
-        </div>
+            <tr tal:condition="creation.derivative_relations">
+                <th i18n:translate="">Derivatives</th>
+                <td>
+                    <div class="list-group">
+                        <a tal:repeat="derivative_relation creation.derivative_relations"
+                           tal:attributes="href request.resource_path(context, '..',
+                                           derivative_relation.derivative_creation.code)"
+                           class="list-group-item">
+                            ${derivative_relation.derivative_creation.title}
+                            (${derivative_relation.derivative_creation.artist.name})
+                            <span tal:condition="derivative_relation.allocation_type == 'adaption'"
+                                  class="label label-primary label-as-badge"
+                                  i18n:translate="">Adaption</span>
+                            <span tal:condition="derivative_relation.allocation_type == 'cover'"
+                                  class="label label-primary label-as-badge"
+                                  i18n:translate="">Cover</span>
+                            <span tal:condition="derivative_relation.allocation_type == 'remix'"
+                                  class="label label-primary label-as-badge"
+                                  i18n:translate="">Remix</span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
 
     </tal:block>
 

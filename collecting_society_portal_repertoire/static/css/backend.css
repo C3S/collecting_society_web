@@ -146,9 +146,12 @@ h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bott
 .cs-table a { color:#333; }
 .cs-table-list,
 .cs-table-show { border-top:1px solid rgb(221, 221, 221); margin-top:15px; }
+.cs-table-show td { width:100%; }
+.cs-table-show th { min-width:130px; text-align:right; }
 .cs-list { margin-top:20px; }
 .cs-list h1 { margin-bottom:5px; padding-left:15px; }
 .cs-list .cs-form-controls { margin:2px 0 7px 5px; padding:0; }
+.cs-table-show .cs-defaultpic { max-height:80px; }
 
 .cs-release-title { display:block; }
 .cs-release-artist,
@@ -156,6 +159,8 @@ h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bott
 
 .cs-artist-img { max-width: 200px; }
 .cs-table-artist-img { max-height: 50px; max-width: 50px; }
+
+.cs-contribution { font-style:italic; margin-left:5px; }
 
 .cs-content-middle .template-upload td { padding:10px 5px; }
 .cs-content-middle .template-upload .progress { margin-bottom:0; }
