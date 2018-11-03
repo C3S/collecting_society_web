@@ -8,24 +8,24 @@ from collecting_society_portal.models import Tdb
 log = logging.getLogger(__name__)
 
 
-class Label(Tdb):
+class Publisher(Tdb):
     """
-    Model wrapper for Tryton model object 'label'
+    Model wrapper for Tryton model object 'publisher'
     """
 
-    __name__ = 'label'
+    __name__ = 'publisher'
 
     @classmethod
     def search(cls, domain, offset=None, limit=None, order=None,
                escape=False):
         """
-        Searches labels by domain
+        Searches publisher by domain
 
         Args:
           domain (list): domain passed to tryton
 
         Returns:
-          obj: list of labels
+          obj: list of publisher
         """
         # prepare query
         if escape:
@@ -37,13 +37,13 @@ class Label(Tdb):
     @classmethod
     def search_count(cls, domain, escape=False, active=True):
         """
-        Counts labels by domain
+        Counts publisher by domain
 
         Args:
           domain (list): domain passed to tryton
 
         Returns:
-          int: number of labels
+          int: number of publisher
         """
         # prepare query
         if escape:
@@ -60,7 +60,7 @@ class Label(Tdb):
         Fetches all Labels
 
         Returns:
-          list: labels
+          list: publisher
           None: if no match is found
         """
         return cls.get().search([])
@@ -86,50 +86,12 @@ class Label(Tdb):
         return result[0]
 
     @classmethod
-    def search_by_gvl_code(cls, gvl_code):
-        """
-        Searches a label by gvl code
-
-        Args:
-          gvl_code (string): label.gvl_code
-
-        Returns:
-          obj: label
-          None: if no match is found
-        """
-        log.debug(
-            (
-                "gvl_code: %s\n"
-            ) % (
-                gvl_code
-            )
-        )
-        result = cls.get().search([('gvl_code', '=', gvl_code)])
-        return result[0] or None
-
-    @classmethod
-    def search_by_name_starting_with(cls, name_starting_with):
-        """
-        Searches a label for a name starting with certaion characters
-
-        Args:
-          name_starting_with (string): label.name
-
-        Returns:
-          obj: label
-          None: if no match is found
-        """
-        result = cls.get().search(  # noqa
-            [('name', 'like', name_starting_with + '\%')])
-        return result[0] or None
-
-    @classmethod
     def create(cls, vlist):
         """
-        Creates labels
+        Creates publisher
 
         Args:
-          vlist (list): list of dicts with attributes to create label::
+          vlist (list): list of dicts with attributes to create publisher::
 
             [
                 {
@@ -144,10 +106,10 @@ class Label(Tdb):
           KeyError: if required field is missing
 
         Returns:
-          list: created labels
+          list: created publisher
           None: if no object was created
         """
-        log.debug('create label:\n{}'.format(vlist))
+        log.debug('create publisher:\n{}'.format(vlist))
         for values in vlist:
             if 'name' not in values:
                 raise KeyError('name is missing')

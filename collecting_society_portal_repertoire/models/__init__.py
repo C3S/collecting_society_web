@@ -9,5 +9,6 @@ from .content import Content
 from .genre import Genre
 from .style import Style
 from .label import Label
+from .publisher import Publisher
 from .license import License
 from .track import Track
