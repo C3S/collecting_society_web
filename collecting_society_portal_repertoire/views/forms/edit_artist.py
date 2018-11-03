@@ -208,7 +208,7 @@ class EditArtist(FormController):
         )
 
         # redirect
-        self.redirect('..')
+        self.redirect()
 
 
 # --- Validators --------------------------------------------------------------
@@ -225,9 +225,7 @@ class EditArtist(FormController):
 
 def edit_artist_form(request):
     return deform.Form(
-        schema=AddArtistSchema(
-            title=_(u"Edit Artist")
-        ).bind(request=request),
+        schema=AddArtistSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]

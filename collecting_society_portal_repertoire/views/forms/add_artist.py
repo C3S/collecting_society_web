@@ -173,7 +173,7 @@ class PictureField(colander.SchemaNode):
 
 class AddArtistSchema(colander.Schema):
     group = GroupField(title=_(u"Group"))
-    title = _(u"Add Artist")
+    # title = _(u"Add Artist")
     name = NameField(title=_(u"Name"))
     description = DescriptionField(title=_(u"Description"))
     picture = PictureField(title=_(u"Picture"))

@@ -10,55 +10,59 @@
     <!-- content right -->
     <tal:block metal:fill-slot="content-right">
 
-        <div class="cs-musician-artists">
-            <table class="table table-hover">
+        <h1 class="cs-form-header" i18n:translate="">Artists</h1>
 
-                <tr>
-                    <td colspan="5">
-                        <span class="cs-symbolnavbar">
-                            <a href="${request.resource_path(context, 'add')}">
-                                <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Add</span>
-                            </a>
-                        </span>
-                    </td>
-                </tr>
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="javascript: history.back(1);"
+                   class="btn btn-default cs-green" role="button">
+                    <span class="glyphicon glyphicon-arrow-left"></span></a>
+                <a href="${request.resource_path(context, 'add')}"
+                   class="btn btn-primary" role="button"
+                   i18n:translate="">Add</a>
+            </div>
+        </div>
 
-                <tr>
-                    <th i18n:translate="">Name</th>
-                    <th colspan="3"></th>
-                    <th class="text-right" i18n:translate="">C3S ID</th>
-                </tr>
+        <table class="table cs-table cs-table-list">
 
-                <tr tal:repeat="artist artists">
-                    <td>
-                        <a href="${request.resource_path(
-                                   context, artist.code)}">${artist.name}</a>
-                    </td>
-                    <td class="text-right cs-table-iconcolumn">
+            <tr tal:repeat="artist artists">
+                <td class="cs-img-thumb">
+                    <a href="${request.resource_path(
+                               context, artist.code)}">
+                        <img tal:condition="artist.picture_data"
+                             tal:define="pic h.b64encode(artist.picture_data) | None"
+                             class="img-responsive center-block"
+                             src="data:${artist.picture_data_mime_type};base64,${pic}" />
+                        <img tal:condition="not artist.picture_data and not artist.group"
+                             class="img-responsive center-block"
+                             src="${request.static_path(
+                                    'collecting_society_portal_repertoire:'
+                                    'static/img/element-icon-soloartists-green.png')}" />
+                        <img tal:condition="not artist.picture_data and artist.group"
+                             class="img-responsive center-block"
+                             src="${request.static_path(
+                                    'collecting_society_portal_repertoire:'
+                                    'static/img/element-icon-groupartists-green.png')}" />
+                    </a>
+                </td>
+                <td>
+                    <div class="cs-artist-name">
                         <a href="${request.resource_path(
                                    context, artist.code)}">
-                            <span class="glyphicon glyphicon-eye-open"></span>
+                            ${artist.name}
                         </a>
-                    </td>
-                    <td class="text-right cs-table-iconcolumn">
-                        <a href="${request.resource_path(
-                                   context, artist.code, 'edit')}">
-                            <span class="glyphicon glyphicon-pencil"></span>
-                        </a>
-                    </td>
-                    <td class="text-right cs-table-iconcolumn">
-                        <a href="${request.resource_path(
-                                   context, artist.code, 'delete')}">
-                            <span class="glyphicon glyphicon-remove text-danger"></span>
-                        </a>
-                    </td>
-                    <td class="text-right cs-table-codecolumn">
+                    </div>
+                </td>
+                <td class="text-right cs-table-codecolumn">
+                    <a href="${request.resource_path(
+                               context, artist.code)}"
+                       class="cs-artist-title">
                         ${artist.code}
-                    </td>
-                </tr>
+                    </a>
+                </td>
+            </tr>
 
-            </table>
-        </div>
+        </table>
 
     </tal:block>
 
