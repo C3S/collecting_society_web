@@ -5,6 +5,7 @@
 from .artist import Artist
 from .release import Release
 from .creation import Creation
+from .creation_derivative import CreationDerivative
 from .content import Content
 from .genre import Genre
 from .style import Style
