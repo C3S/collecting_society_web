@@ -10,6 +10,9 @@ from collecting_society_portal.views.forms import FormController
 from ...services import _
 from ...models import (
     Artist,
+    Creation,
+    Track,
+    License,
     Label
 )
 from .add_release import AddReleaseSchema
@@ -56,6 +59,9 @@ class EditRelease(FormController):
                 'warning':
                     release.warning or '',
             },
+            'tracks': {
+                'tracks': []
+            },
             'production': {
                 'isrc_code':
                     release.isrc_code or '',
@@ -97,6 +103,30 @@ class EditRelease(FormController):
                     'code': artist.code or '',
                     'description': artist.description or '',
                 })
+
+        # tracks
+        tracks = sorted(release.tracks, key=lambda t: t.track_number)
+        log.debug(tracks)
+        for track in tracks:
+            creation_mode = "add"
+            if Creation.is_foreign_track(
+                    self.request, release, track.creation):
+                creation_mode = "edit"
+            self.appstruct['tracks']['tracks'].append({
+                'mode': "edit",
+                'oid': track.oid,
+                'track_title': track.title,
+                'license': track.license.oid,
+                # 'medium_number': track.medium_number,
+                # 'track_number': track.track_number,
+                'track': [{
+                    'mode': creation_mode,
+                    'oid': track.creation.oid,
+                    'code': track.creation.code,
+                    'titlefield': track.creation.title,
+                    'artist': track.creation.artist.name
+                }]
+            })
 
         # set label
         if release.label:
@@ -183,6 +213,100 @@ class EditRelease(FormController):
         if appstruct['metadata']['release_type'] == 'compilation':
             _remove = [ra.id for ra in release.artists]
             _release['artists'] = [['remove', _remove]]
+
+        # tracks
+        _tracks = appstruct['tracks']['tracks']
+        if _tracks:
+            tracks_create = []
+            tracks_delete = list(release.tracks)
+            for track_number, _track in enumerate(_tracks):
+                _creation = _track['track'][0]
+                license = License.search_by_oid(_track['license'])
+                if not license:
+                    continue
+
+                # create track
+                if _track['mode'] == "create":
+                    # create creation
+                    if _creation['mode'] == "create":
+                        artist = Artist.create([{
+                            'name': _creation['artist'],
+                            'entity_origin': 'indirect',
+                            'entity_creator': party.id
+                            }])[0]
+                        if not artist:
+                            continue
+                        creation = Creation.create([{
+                            'title': _creation['titlefield'],
+                            'artist': artist.id,
+                            'entity_origin': 'indirect',
+                            'entity_creator': party.id
+                            }])[0]
+                        if not creation:
+                            continue
+                    # add creation
+                    else:
+                        creation = Creation.search_by_oid(_creation['oid'])
+                        if not creation:
+                            continue
+                    # append track
+                    tracks_create.append({
+                        'creation': creation.id,
+                        'title': _track['track_title'],
+                        'medium_number': 0,  # TODO
+                        'track_number': track_number + 1,
+                        'license': license.id
+                        })
+
+                # edit track
+                if _track['mode'] == "edit":
+                    track = Track.search_by_oid(_track['oid'])
+                    if not track:
+                        continue
+                    if track in tracks_delete:
+                        tracks_delete.remove(track)
+                    # create creation
+                    if _creation['mode'] == "create":
+                        artist = Artist.create([{
+                            'name': _creation['artist'],
+                            'entity_origin': 'indirect',
+                            'entity_creator': party.id
+                            }])[0]
+                        if not artist:
+                            continue
+                        creation = Creation.create([{
+                            'title': _creation['titlefield'],
+                            'artist': artist.id,
+                            'entity_origin': 'indirect',
+                            'entity_creator': party.id
+                            }])[0]
+                        if not creation:
+                            continue
+                    # add creation
+                    else:
+                        creation = Creation.search_by_oid(_creation['oid'])
+                        if not creation:
+                            continue
+                        # edit creation
+                        if _creation['mode'] == "edit":
+                            creation.artist.name = _creation['artist']
+                            creation.artist.save()
+                            creation.title = _creation['titlefield']
+                            creation.save()
+                    # update track
+                    track.creation = creation.id
+                    track.license = license.id
+                    track.title = _track['track_title']
+                    track.medium_number = 0  # TODO
+                    track.track_number = track_number + 1
+                    track.save()
+
+            # append actions
+            _release['tracks'] = []
+            if tracks_create:
+                _release['tracks'].append(('create', tracks_create))
+            if tracks_delete:
+                _release['tracks'].append(('delete', tracks_delete))
 
         # label
         _label = next(iter(appstruct['distribution']['label']), None)

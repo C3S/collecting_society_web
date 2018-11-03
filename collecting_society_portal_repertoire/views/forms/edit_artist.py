@@ -2,7 +2,6 @@
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
 import logging
-import colander
 import deform
 
 from collecting_society_portal.models import (
@@ -10,13 +9,10 @@ from collecting_society_portal.models import (
     Party,
     WebUser
 )
-from collecting_society_portal.views.forms import (
-    FormController,
-    deferred_file_upload_widget
-)
+from collecting_society_portal.views.forms import FormController
 from ...services import _
 from ...models import Artist
-from .datatables import ArtistSequence
+from .add_artist import AddArtistSchema
 
 log = logging.getLogger(__name__)
 
@@ -48,12 +44,12 @@ class EditArtist(FormController):
 
         # set appstruct
         self.appstruct = {
-            'metadata': {
-                'group': artist.group,
-                'name': artist.name,
-                'description': artist.description or ''
-            }
+            'group': artist.group,
+            'name': artist.name,
+            'description': artist.description or ''
         }
+
+        # members
         if artist.group:
             _members = []
             for member in artist.solo_artists:
@@ -70,21 +66,20 @@ class EditArtist(FormController):
                     'description': member.description or '',
                     'email': email
                 })
-            self.appstruct['members'] = {
-                'members': _members
-            }
+            self.appstruct['members'] = _members
 
         # render form with data
         self.render(self.appstruct)
 
     @Tdb.transaction(readonly=False)
     def update_artist(self):
+        appstruct = self.appstruct
         artist = self.context.artist
         email = self.request.unauthenticated_userid
         party = WebUser.current_party(self.request)
 
         # group
-        if artist.group != self.appstruct['metadata']['group']:
+        if artist.group != appstruct['group']:
             # if group status has changed
             if artist.group:
                 # remove solo artists from current group artist
@@ -92,25 +87,22 @@ class EditArtist(FormController):
             else:
                 # remove current solo artist from group artists
                 artist.group_artists = []
-            artist.group = self.appstruct['metadata']['group']
+            artist.group = appstruct['group']
 
         # name
-        if artist.name != self.appstruct['metadata']['name']:
-            artist.name = self.appstruct['metadata']['name']
+        if artist.name != appstruct['name']:
+            artist.name = appstruct['name']
 
         # description
-        if artist.description != self.appstruct['metadata']['description']:
-            artist.description = self.appstruct['metadata']['description']
+        if artist.description != appstruct['description']:
+            artist.description = appstruct['description']
 
         # picture
-        if self.appstruct['metadata']['picture_delete']:
-            artist.picture_data = None
-            artist.picture_data_mime_type = None
-        elif self.appstruct['metadata']['picture_change']:
-            with open(self.appstruct['metadata']['picture_change']['fp'].name,
+        if self.appstruct['picture']:
+            with open(self.appstruct['picture']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
-            mimetype = self.appstruct['metadata']['picture_change']['mimetype']
+            mimetype = self.appstruct['picture']['mimetype']
             artist.picture_data = picture_data
             artist.picture_data_mime_type = mimetype
 
@@ -121,7 +113,7 @@ class EditArtist(FormController):
             members_remove = members_current
             members_add = []
             members_create = []
-            for member in self.appstruct['members']['members']:
+            for member in appstruct['members']:
 
                 # add existing artists
                 if member['mode'] == "add":
@@ -227,66 +219,15 @@ class EditArtist(FormController):
 
 # --- Fields ------------------------------------------------------------------
 
-class GroupField(colander.SchemaNode):
-    oid = "group"
-    schema_type = colander.Boolean
-    widget = deform.widget.CheckboxWidget()
-
-
-class NameField(colander.SchemaNode):
-    oid = "name"
-    schema_type = colander.String
-
-
-class DescriptionField(colander.SchemaNode):
-    oid = "description"
-    schema_type = colander.String
-    widget = deform.widget.TextAreaWidget()
-    missing = ""
-
-
-class PictureChangeField(colander.SchemaNode):
-    oid = "picture-change"
-    schema_type = deform.FileData
-    widget = deferred_file_upload_widget
-    missing = ""
-
-
-class PictureDeleteField(colander.SchemaNode):
-    oid = "picture-delete"
-    schema_type = colander.Boolean
-    widget = deform.widget.CheckboxWidget()
-    missing = ""
-
-
 # --- Schemas -----------------------------------------------------------------
-
-class MetadataSchema(colander.Schema):
-    widget = deform.widget.MappingWidget(template='navs/mapping')
-    group = GroupField(title=_(u"Group"))
-    name = NameField(title=_(u"Name"))
-    description = DescriptionField(title=_(u"Description"))
-    picture_delete = PictureDeleteField(title=_(u"Delete Picture"))
-    picture_change = PictureChangeField(title=_(u"Change Picture"))
-
-
-class MembersSchema(colander.Schema):
-    widget = deform.widget.MappingWidget(template='navs/mapping')
-    members = ArtistSequence(title="")
-
-
-class EditArtistSchema(colander.Schema):
-    title = _(u"Edit Artist")
-    widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
-    metadata = MetadataSchema(title=_(u"Metadata"))
-    members = MembersSchema(title=_(u"Members"))
-
 
 # --- Forms -------------------------------------------------------------------
 
 def edit_artist_form(request):
     return deform.Form(
-        schema=EditArtistSchema().bind(request=request),
+        schema=AddArtistSchema(
+            title=_(u"Edit Artist")
+        ).bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]

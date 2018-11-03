@@ -5,10 +5,7 @@ import logging
 import colander
 import deform
 
-from collecting_society_portal.models import (
-    Tdb,
-    WebUser
-)
+from collecting_society_portal.models import Tdb
 from collecting_society_portal.views.forms import (
     FormController,
     deferred_file_upload_widget
@@ -16,14 +13,16 @@ from collecting_society_portal.views.forms import (
 from ...services import _
 from ...models import (
     Artist,
+    Creation,
     Release,
+    License,
     Genre,
     Style,
     Label
 )
 from .datatables import (
     ArtistSequence,
-    CreationSequence,
+    TrackSequence,
     LabelSequence
 )
 
@@ -51,7 +50,7 @@ class AddRelease(FormController):
 
     @Tdb.transaction(readonly=False)
     def create_release(self):
-        a = self.appstruct
+        appstruct = self.appstruct
         web_user = self.request.web_user
         party = self.request.party
 
@@ -62,71 +61,117 @@ class AddRelease(FormController):
             'entity_creator':
                 party,
             'type':
-                a['metadata']['release_type'],
-            'tracks':
-                None,  # TODO: tracks (also in edit_release)
+                appstruct['metadata']['release_type'],
             'title':
-                a['metadata']['release_title'],
+                appstruct['metadata']['release_title'],
             'genres':
-                [('add', map(int, a['metadata']['genres']))],
+                [('add', map(int, appstruct['metadata']['genres']))],
             'styles':
-                [('add', map(int, a['metadata']['styles']))],
+                [('add', map(int, appstruct['metadata']['styles']))],
             'warning':
-                a['metadata']['warning'],
+                appstruct['metadata']['warning'],
             'isrc_code':
-                a['production']['isrc_code'],
+                appstruct['production']['isrc_code'],
             'copyright_date':
-                a['production']['copyright_date'],
+                appstruct['production']['copyright_date'],
             'production_date':
-                a['production']['production_date'],
+                appstruct['production']['production_date'],
             'label_catalog_number':
-                a['distribution']['label_catalog_number'],
+                appstruct['distribution']['label_catalog_number'],
             'ean_upc_code':
-                a['distribution']['ean_upc_code'],
+                appstruct['distribution']['ean_upc_code'],
             'release_date':
-                a['distribution']['release_date'],
+                appstruct['distribution']['release_date'],
             'release_cancellation_date':
-                a['distribution']['release_cancellation_date'],
+                appstruct['distribution']['release_cancellation_date'],
             'online_release_date':
-                a['distribution']['online_release_date'],
+                appstruct['distribution']['online_release_date'],
             'online_cancellation_date':
-                a['distribution']['online_cancellation_date'],
+                appstruct['distribution']['online_cancellation_date'],
             'distribution_territory':
-                a['distribution']['distribution_territory'],
+                appstruct['distribution']['distribution_territory'],
         }
 
         # artist realease: artist
-        if a['metadata']['release_type'] == 'artist':
-            oid = a['metadata']['artist']
+        if appstruct['metadata']['release_type'] == 'artist':
+            oid = appstruct['metadata']['artist']
             artist = Artist.search_by_oid(oid)
             if artist and artist.permits(web_user, 'edit_artist'):
                 _release['artists'] = [('add', [artist.id])]
 
         # split realease: split_artists
-        if a['metadata']['release_type'] == 'split_release':
+        if appstruct['metadata']['release_type'] == 'split_release':
             _add_artists = []
-            for _artist in a['metadata']['artists']:
+            for _artist in appstruct['metadata']['artists']:
                 artist = Artist.search_by_oid(artist['oid'])
                 if artist:
                     _add_artists.append(artist.id)
             _release['artists'] = [('add', _add_artists)]
 
+        # tracks
+        _tracks = appstruct['tracks']['tracks']
+        if _tracks:
+            tracks_create = []
+            for track_number, _track in enumerate(_tracks):
+                _creation = _track['track'][0]
+                license = License.search_by_oid(_track['license'])
+                if not license:
+                    continue
+
+                # create track
+                if _track['mode'] == "create":
+                    # create creation
+                    if _creation['mode'] == "create":
+                        artist = Artist.create([{
+                            'name': _creation['artist'],
+                            'entity_origin': 'indirect',
+                            'entity_creator': party.id
+                            }])[0]
+                        if not artist:
+                            continue
+                        creation = Creation.create([{
+                            'title': _creation['titlefield'],
+                            'artist': artist.id,
+                            'entity_origin': 'indirect',
+                            'entity_creator': party.id
+                            }])[0]
+                        if not creation:
+                            continue
+                    # add creation
+                    else:
+                        creation = Creation.search_by_oid(_creation['oid'])
+                        if not creation:
+                            continue
+                    # append track
+                    tracks_create.append({
+                        'creation': creation.id,
+                        'title': _track['track_title'],
+                        'medium_number': 0,  # TODO
+                        'track_number': track_number + 1,
+                        'license': license.id
+                        })
+
+            # append actions
+            _release['tracks'] = []
+            if tracks_create:
+                _release['tracks'].append(('create', tracks_create))
+
         # label
-        _label = a['distribution']['label'] and a['distribution']['label'][0]
+        _label = next(iter(appstruct['distribution']['label']), None)
         if _label:
             if _label['mode'] == "add":
-                label = Label.search_by_gvl_code(_label['gvl_code'])
+                label = Label.search_by_oid(_label['oid'])
                 if label:
                     _release['label'] = label.id
             if _label['mode'] == "create":
                 _release['label_name'] = _label['name']
 
         # picture
-        if a['metadata']['picture']:
-            with open(a['metadata']['picture']['fp'].name,
+        if appstruct['metadata']['picture']:
+            with open(appstruct['metadata']['picture']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
-            mimetype = a['metadata']['picture']['mimetype']
+            mimetype = appstruct['metadata']['picture']['mimetype']
             _release['picture_data'] = picture_data
             _release['picture_data_mime_type'] = mimetype
 
@@ -191,7 +236,7 @@ def current_artists_select_widget(node, kw):
 
 
 @colander.deferred
-def deferred_checkbox_widget_genre(node, kw):
+def deferred_genre_widget(node, kw):
     genres = Genre.search_all()
     genre_options = [(genre.id, unicode(genre.name)) for genre in genres]
     widget = deform.widget.Select2Widget(values=genre_options, multiple=True)
@@ -199,7 +244,7 @@ def deferred_checkbox_widget_genre(node, kw):
 
 
 @colander.deferred
-def deferred_checkbox_widget_style(node, kw):
+def deferred_style_widget(node, kw):
     styles = Style.search_all()
     style_options = [(style.id, unicode(style.name)) for style in styles]
     widget = deform.widget.Select2Widget(values=style_options, multiple=True)
@@ -255,14 +300,14 @@ class ReleaseTitleField(colander.SchemaNode):
 class GenreCheckboxField(colander.SchemaNode):
     oid = "genres"
     schema_type = colander.Set
-    widget = deferred_checkbox_widget_genre
+    widget = deferred_genre_widget
     validator = colander.Length(min=1)
 
 
 class StyleCheckboxField(colander.SchemaNode):
     oid = "styles"
     schema_type = colander.Set
-    widget = deferred_checkbox_widget_style
+    widget = deferred_style_widget
     validator = colander.Length(min=1)
 
 
@@ -387,7 +432,7 @@ class MetadataSchema(colander.Schema):
 
 class TracksSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    tracks = CreationSequence(title="", actions=['add'])
+    tracks = TrackSequence(title="", actions=['create', 'edit'])
 
 
 class ProductionSchema(colander.Schema):

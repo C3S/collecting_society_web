@@ -48,27 +48,29 @@ class AddArtist(FormController):
 
         # generate vlist
         _artist = {
-            'group': self.appstruct['metadata']['group'],
+            'group': self.appstruct['group'],
             'party': party,
             'entity_creator': party,
             'entity_origin': 'direct',
             'claim_state': 'claimed',
-            'name': self.appstruct['metadata']['name'],
-            'description': self.appstruct['metadata']['description'] or '',
+            'name': self.appstruct['name'],
+            'description': self.appstruct['description'] or '',
         }
-        if self.appstruct['metadata']['picture']:
-            with open(self.appstruct['metadata']['picture']['fp'].name,
+
+        # picture
+        if self.appstruct['picture']:
+            with open(self.appstruct['picture']['fp'].name,
                       mode='rb') as picfile:
                 picture_data = picfile.read()
-            mimetype = self.appstruct['metadata']['picture']['mimetype']
+            mimetype = self.appstruct['picture']['mimetype']
             _artist['picture_data'] = picture_data
             _artist['picture_data_mime_type'] = mimetype
 
-        # set members
-        if self.appstruct['metadata']['group']:
+        # members
+        if self.appstruct['group']:
             members_add = []
             members_create = []
-            for member in self.appstruct['members']['members']:
+            for member in self.appstruct['members']:
 
                 # add existing artists
                 if member['mode'] == "add":
@@ -106,7 +108,7 @@ class AddArtist(FormController):
                         'name': member['name']
                     })
 
-            # append directives
+            # append actions
             _artist['solo_artists'] = []
             if members_create:
                 _artist['solo_artists'].append(('create', members_create))
@@ -169,24 +171,13 @@ class PictureField(colander.SchemaNode):
 
 # --- Schemas -----------------------------------------------------------------
 
-class MetadataSchema(colander.Schema):
-    widget = deform.widget.MappingWidget(template='navs/mapping')
+class AddArtistSchema(colander.Schema):
     group = GroupField(title=_(u"Group"))
+    title = _(u"Add Artist")
     name = NameField(title=_(u"Name"))
     description = DescriptionField(title=_(u"Description"))
     picture = PictureField(title=_(u"Picture"))
-
-
-class MembersSchema(colander.Schema):
-    widget = deform.widget.MappingWidget(template='navs/mapping')
-    members = ArtistSequence(title="")
-
-
-class AddArtistSchema(colander.Schema):
-    title = _(u"Add Artist")
-    widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
-    metadata = MetadataSchema(title=_(u"Metadata"))
-    members = MembersSchema(title=_(u"Members"))
+    members = ArtistSequence(title=_(u"Members"))
 
 
 # --- Forms -------------------------------------------------------------------
