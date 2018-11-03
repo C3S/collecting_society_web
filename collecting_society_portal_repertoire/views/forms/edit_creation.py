@@ -266,8 +266,9 @@ class EditCreation(FormController):
         # ...
 
         # look for removed originals
-        originals = CreationDerivative.search_originals_of_creation_by_id(
-            creation.id)
+        # originals = CreationDerivative.search_originals_of_creation_by_id(
+        #    creation.id)        
+        originals = creation.original_relations
         oids_to_preserve = []
         for a_original in a['originals']['originals']:
             # sanity: already in list? then it must be a dupe: only add once
@@ -282,7 +283,6 @@ class EditCreation(FormController):
         # add new derivative-original relations or perform edits there
         # (objects starting with a_ relate to form data provided by appstruct)
         for a_original_relation in a['originals']['originals']:
-            # original = Creation.search_by_oid(original_item['oid'])
             a_original = a_original_relation['original'][0]
             if a_original_relation['mode'] == 'create':
                 # sanity checks
@@ -301,29 +301,20 @@ class EditCreation(FormController):
                     new_originals = CreationDerivative.create([_original])
                     if new_originals:
                         new_original = new_originals[0]
-                    # creation.original_relations = [('create', {
-                    #     'original_creation': original,
-                    #     'derivative_creation': creation,
-                    #     'allocation_type': orignal_relation['type']
-                    # })
                 if a_original['mode'] == 'create':
                     pass
-
             if a_original_relation['mode'] == 'edit':
+                #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
+
+                # change the allocation_type, e.g. from 'remix' to 'cover'
+                self.newmethod656(a_original_relation)
 
                 if a_original['mode'] == 'add':
                     pass
                 if a_original['mode'] == 'create':
                     pass
                 if a_original['mode'] == 'edit':
-                    relation = CreationDerivative.search_by_oid(
-                            a_original_relation['oid'])
-                    relation.allocation_type = a_original_relation['type']
-                    relation.save()
-
-        # creation.original_relations = originals_to_add
-        # creation.original_relations.save()
-
+                    pass
         
         # content
         contents_to_add = []
@@ -361,6 +352,12 @@ class EditCreation(FormController):
 
         # redirect
         self.redirect()
+
+    def newmethod656(self, a_original_relation):
+        relation = CreationDerivative.search_by_oid(
+                a_original_relation['oid'])
+        relation.allocation_type = a_original_relation['type']
+        relation.save()
 
 
 # --- Validators --------------------------------------------------------------
