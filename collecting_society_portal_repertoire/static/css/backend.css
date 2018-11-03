@@ -37,32 +37,37 @@ body {
 
 a { outline:none!important; }
 
-h1, .h1 { color:#317a19 }
+h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bottom:15px; padding-left:15px; padding-bottom:5px; font-size:28px; }
 
+.cs-img-thumb { width:100px; }
+.cs-img-inline { max-width:30px; max-height:30px; display:inline; margin-right:5px; }
 .cs-thin { font-weight:normal; }
+.cs-list-item { margin-bottom:10px; }
+.cs-list-item:last-child { margin-bottom:0; }
+.cs-green,
+.cs-green:hover { color:#317a19; }
+
 .cs-datatables .nowrap { white-space:nowrap; }
 .form-inline .cs-datatables .form-group { display:block; margin-bottom:15px; }
 .form-inline .cs-datatables .form-control { display: inline-block; width: 100%; }
 .cs-datatables .child td { border-top:none; }
 .cs-datatables .child .cs-datatables-edit { margin-left: 15px; border-left: 1px dotted #31b0d5; padding-left: 25px; }
 
-.cs-navform .panel-heading { background-color:transparent; }
-.cs-navform .panel-default { border:none; }
-.cs-navform .cs-navform-controls { margin-top:30px; padding-top:40px; border-top:1px solid #ddd; }
-.cs-navform .cs-navform-item-content { margin-top:20px; }
-.cs-navform .cs-nav-tabs a { color:#666; }
-.cs-navform .cs-nav-tabs a:hover { color:#333; }
-.cs-navform .cs-nav-tabs .active a,
-.cs-navform .cs-nav-tabs .active a:hover,
-.cs-navform .cs-nav-tabs .active a:focus { color:#317a19; }
-.cs-navform .cs-nav-pills a { color:#317a19; }
-.cs-navform .cs-nav-pills a:hover { background-color:#d9f0c8;  color:#222; }
-.cs-navform .cs-nav-pills .active a,
-.cs-navform .cs-nav-pills .active a:hover { background: url('../img/element-menue-bg.png'); opacity:0.9; }
-.cs-navform .cs-nav-pills .cs-error,
-.cs-navform .cs-nav-pills .cs-error:hover { background-color:#f2dede; color:#a94442; }
-.cs-navform .cs-nav-pills .active .cs-error { background-image: none; background-color:#d9534f; color:#fff; }
-.cs-navform .cs-nav-pills .active .cs-error:hover { background-image: none; background-color:#c9302c; color:#fff; }
+.cs-table .btn-primary,
+.btn-primary { background: url('../img/element-menue-bg.png'); opacity:0.9; border-color:#317a19; color:#fff; }
+.cs-table .btn-primary:hover,
+.cs-table .btn-primary:active,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus { background: url('../img/element-menue-bg.png'); opacity:1; border-color:#317a19; }
+
+.cs-table .btn-info,
+.btn-info { opacity:0.9; background-color:#d9f0c8; border-color:#ccc; color:#333; }
+.cs-table .btn-info:hover,
+.cs-table .btn-info:active,
+.btn-info:hover,
+.btn-info:active,
+.btn-info:focus { opacity:1; background-color:#d9f0c8; border-color:#ccc; color:#000; }
 
 .dataTables_wrapper .dataTables_processing { background: url('../img/element-menue-bg.png'); opacity:0.9; color:#fff; }
 .cs-modal-header { background: url('../img/element-menue-bg.png'); opacity:0.9; color:#fff; }
@@ -106,6 +111,48 @@ h1, .h1 { color:#317a19 }
 
 .cs-content-middle .fileupload-progress .progress { margin-bottom:5px; }
 .cs-content-middle .cs-audio-properties > span:after { color:#ddd; content: " | "; }
+
+.cs-form-header { border-bottom:1px solid rgb(221, 221, 221); padding-left:15px; padding-bottom:5px; margin-bottom:15px; }
+.cs-form-controls { padding:0 15px; }
+.deformFormFieldset { border-top:1px solid rgb(221, 221, 221); margin-top:15px; padding-top:20px; }
+.cs-form-controls-bottom { margin-top:40px; padding-top:20px; border-top:1px solid rgb(221, 221, 221); }
+.cs-navform { margin-top:10px; }
+.cs-navform .deformFormFieldset  { border:none; margin:0; padding:0; }
+.cs-navform .cs-form-header { padding-bottom:0; margin-bottom:0; }
+.cs-navform .panel-heading { background-color:transparent; }
+.cs-navform .panel-default { border:none; }
+.cs-navform .cs-navform-controls { padding-top:15px; border-top:1px solid #ddd; }
+.cs-navform .cs-navform-item-content { margin-top:20px; }
+.cs-navform .cs-nav-form-tabcontent { margin-bottom:20px; }
+.cs-navform .cs-nav-tabs a { color:#666; }
+.cs-navform .cs-nav-tabs a:hover { color:#333; }
+.cs-navform .cs-nav-tabs .active a,
+.cs-navform .cs-nav-tabs .active a:hover,
+.cs-navform .cs-nav-tabs .active a:focus { color:#317a19; }
+.cs-navform .cs-nav-pills .cs-navform-item-menu { border: 1px solid transparent; }
+.cs-navform .cs-nav-pills .active .cs-navform-item-menu { border: 1px solid #ccc; }
+.cs-navform .cs-nav-pills a { color:#317a19; }
+.cs-navform .cs-nav-pills a:hover { background-color:#d9f0c8;  color:#222; }
+.cs-navform .cs-nav-pills .active a,
+.cs-navform .cs-nav-pills .active a:hover,
+.cs-navform .cs-nav-pills .active a:focus { background-color:#d9f0c8;  color:#222; }
+.cs-navform .cs-nav-pills .cs-error { color: #d9534f; }
+.cs-navform .cs-nav-pills .active .cs-error { color: #fff; }
+
+.table .cs-table-controls { opacity:0.4; margin-top:4px; }
+.table tr:hover .cs-table-controls { opacity:1 }
+.cs-table-codecolumn { opacity:0.5; }
+.cs-table > tbody > tr > td { vertical-align:middle; }
+.cs-table a { color:#333; }
+.cs-table-list,
+.cs-table-show { border-top:1px solid rgb(221, 221, 221); margin-top:15px; }
+.cs-list { margin-top:20px; }
+.cs-list h1 { margin-bottom:5px; padding-left:15px; }
+.cs-list .cs-form-controls { margin:2px 0 7px 5px; padding:0; }
+
+.cs-release-title { display:block; }
+.cs-release-artist,
+.cs-release-artist a { color:#666; }
 
 .cs-artist-img { max-width: 200px; }
 .cs-table-artist-img { max-height: 50px; max-width: 50px; }
