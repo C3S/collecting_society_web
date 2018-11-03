@@ -30,8 +30,8 @@
                             return data;
                         if(data.datatableSequence === true)
                             data = data.target.table.rows().data();
-                        return "[" + data[0].artist + "] " +
-                               data[0].titlefield;
+                        return "[" + tmpl.encode(data[0].artist) + "]<br>" +
+                               tmpl.encode(data[0].titlefield);
                     },
                     defaultContent: "",
                     datatableSequence: {
