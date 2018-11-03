@@ -18,12 +18,14 @@ from ...models import (
     License,
     Genre,
     Style,
-    Label
+    Label,
+    Publisher
 )
 from .datatables import (
     ArtistSequence,
     TrackSequence,
-    LabelSequence
+    LabelSequence,
+    PublisherSequence
 )
 
 log = logging.getLogger(__name__)
@@ -155,6 +157,16 @@ class AddRelease(FormController):
             _release['tracks'] = []
             if tracks_create:
                 _release['tracks'].append(('create', tracks_create))
+
+        # publisher
+        _publisher = next(iter(appstruct['production']['publisher']), None)
+        if _publisher:
+            if _publisher['mode'] == "add":
+                publisher = Publisher.search_by_oid(_publisher['oid'])
+                if publisher:
+                    _release['publisher'] = publisher.id
+            if _publisher['mode'] == "create":
+                _release['label_name'] = _publisher['name']
 
         # label
         _label = next(iter(appstruct['distribution']['label']), None)
@@ -437,6 +449,7 @@ class TracksSchema(colander.Schema):
 
 class ProductionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
+    publisher = PublisherSequence(title=_(u"Publisher"), max_len=1)
     isrc_code = IsrcCodeField(title=_(u"ISRC Code"))
     copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
     # copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
@@ -445,7 +458,7 @@ class ProductionSchema(colander.Schema):
 
 class DistributionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    label = LabelSequence(title=_(u"Label"), min_len=1, max_len=1)
+    label = LabelSequence(title=_(u"Label"), max_len=1)
     label_catalog_number = LabelCatalogNumberField(
         title=_(u"Label Catalog Number of Release"))
     ean_upc_code = EanUpcCodeField(title=_(u"EAN or UPC Code"))
@@ -461,8 +474,7 @@ class DistributionSchema(colander.Schema):
 
 
 class AddReleaseSchema(colander.Schema):
-    title = _(u"Add Release")
-    widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
+    widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
     metadata = MetadataSchema(title=_(u"Metadata"))
     tracks = TracksSchema(title=_(u"Tracks"))
     production = ProductionSchema(title=_(u"Production"))

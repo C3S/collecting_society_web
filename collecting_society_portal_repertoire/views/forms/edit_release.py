@@ -13,7 +13,8 @@ from ...models import (
     Creation,
     Track,
     License,
-    Label
+    Label,
+    Publisher
 )
 from .add_release import AddReleaseSchema
 
@@ -128,7 +129,18 @@ class EditRelease(FormController):
                 }]
             })
 
-        # set label
+        # publisher
+        if release.publisher:
+            mode = 'add'
+            if self.request.party == release.publisher.entity_creator:
+                mode = 'edit'
+            self.appstruct['production']['publisher'] = [{
+                'mode': mode,
+                'oid': release.publisher.oid,
+                'name': release.publisher.name,
+            }]
+
+        # label
         if release.label:
             mode = 'add'
             if self.request.party == release.label.entity_creator:
@@ -311,7 +323,6 @@ class EditRelease(FormController):
         # label
         _label = next(iter(appstruct['distribution']['label']), None)
         if not _label:
-            release.label_name = None
             release.label = None
             release.save()
         else:
@@ -332,6 +343,30 @@ class EditRelease(FormController):
                 if party == release.label.entity_creator:
                     release.label.name = _label['name']
                     release.label.save()
+
+        # publisher
+        _publisher = next(iter(appstruct['production']['publisher']), None)
+        if not _publisher:
+            release.publisher = None
+            release.save()
+        else:
+            if _publisher['mode'] == "add":
+                publisher = Publisher.search_by_oid(_publisher['oid'])
+                if publisher:
+                    release.publisher = publisher.id
+                    release.save()
+            if _publisher['mode'] == "create":
+                publisher = Publisher.create([{
+                    'name': _publisher['name'],
+                    'entity_creator': party,
+                    'entity_origin': 'indirect'
+                    }])[0]
+                release.publisher = publisher.id
+                release.save()
+            if _publisher['mode'] == "edit":
+                if party == release.publisher.entity_creator:
+                    release.publisher.name = _publisher['name']
+                    release.publisher.save()
 
         # picture
         if appstruct['metadata']['picture']:
@@ -375,9 +410,7 @@ class EditRelease(FormController):
 
 def edit_release_form(request):
     return deform.Form(
-        schema=AddReleaseSchema(
-            title=_(u"Edit Release")
-        ).bind(request=request),
+        schema=AddReleaseSchema().bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))
         ]

@@ -9,47 +9,53 @@
     <!-- content right -->
     <tal:block metal:fill-slot="content-right">
 
-        <div class="cs-symbolnavbar">
-            <a href="javascript: history.back(1);">
-                <span class="glyphicon glyphicon-arrow-left"></span>
-            </a>
-            <a href="${request.resource_path(context, '..')}">
-                <span class="glyphicon glyphicon-list"></span>
-            </a>
-        </div>
+        <div class="cs-form-container">
 
-        <img tal:condition="context.release and context.release.picture_data"
-             tal:define="pic h.b64encode(context.release.picture_data) | None"
-             class="img-responsive cs-release-img clearfix center-block"
-             src="data:${context.release.picture_data_mime_type};base64,${pic}" />
+            <h1 class="cs-form-header" i18n:translate="">Edit Release</h1>
 
-        <div tal:content="structure EditRelease"/>
+            <div class="btn-toolbar cs-form-controls" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a href="javascript: history.back(1);"
+                       class="btn btn-default cs-green" role="button">
+                        <span class="glyphicon glyphicon-arrow-left"></span></a>
+                    <a class="btn btn-primary" role="button"
+                       onclick="$('#EditReleasesubmit').click();"
+                       i18n:translate="">Submit</a>
+                </div>
+            </div>
 
-        <script>
-            $(document).ready(function() {
-                var releaseTypeSelect = $('#type');
-                releaseTypeSelect.change(function() {
-                    var selected = releaseTypeSelect
-                        .children(":selected")
-                        .first();
-                    switch(selected.attr('value')) {
-                        case 'artist':
-                            $('#item-artist').show();
-                            $('.item-split_artists').first().hide();
-                            break;
-                        case 'split':
-                            $('#item-artist').hide();
-                            $('.item-split_artists').first().show();
-                            break;
-                        case 'compilation':
-                            $('#item-artist').hide();
-                            $('.item-split_artists').first().hide();
-                            break;
-                    }
+            <div tal:content="structure EditRelease"/>
+
+            <script>
+                $(document).ready(function() {
+                    var releaseTypeSelect = $('#type');
+                    releaseTypeSelect.change(function() {
+                        $('#item-artist')
+                            .children("label").first()
+                            .addClass("required");
+                        var selected = releaseTypeSelect
+                            .children(":selected")
+                            .first();
+                        switch(selected.attr('value')) {
+                            case 'artist':
+                                $('#item-artist').show();
+                                $('.item-split_artists').first().hide();
+                                break;
+                            case 'split':
+                                $('#item-artist').hide();
+                                $('.item-split_artists').first().show();
+                                break;
+                            case 'compilation':
+                                $('#item-artist').hide();
+                                $('.item-split_artists').first().hide();
+                                break;
+                        }
+                    });
+                    releaseTypeSelect.trigger('change');
                 });
-                releaseTypeSelect.trigger('change');
-            });
-        </script>
+            </script>
+
+        </div>
 
     </tal:block>
 
