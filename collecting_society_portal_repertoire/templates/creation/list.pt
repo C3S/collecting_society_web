@@ -10,61 +10,59 @@
     <!-- content right -->
     <tal:block metal:fill-slot="content-right">
 
-        <div class="cs-musician-creations">
+        <h1 class="cs-form-header" i18n:translate="">Creations</h1>
 
-            <table class="table table-hover">
-
-                <tr>
-                    <td colspan="6">
-                        <div class="cs-symbolnavbar">
-                            <a href="${request.resource_path(context, 'add')}">
-                                <span class="glyphicon glyphicon-plus"></span> <span i18n:translate="">Add</span>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <th i18n:translate="">Working Title</th>
-                    <th i18n:translate="">Artist</th>
-                    <th colspan="3"></th>
-                    <th class="text-right" i18n:translate="">C3S ID</th>
-                </tr>
-
-                <tr tal:repeat="creation creations">
-                    <td>
-                        <a href="${request.resource_path(
-                                   context, creation.code)}">${creation.title}</a>
-                    </td>
-                    <td>
-                        <a href="${request.resource_path(
-                                   context, '..', 'artists', creation.artist.code)}">${creation.artist.name}</a>
-                    </td>
-                    <td class="text-right cs-table-iconcolumn">
-                        <a href="${request.resource_path(
-                                   context, creation.code)}">
-                            <span class="glyphicon glyphicon-eye-open"></span>
-                        </a>
-                    </td>
-                    <td class="text-right cs-table-iconcolumn">
-                        <a href="${request.resource_path(
-                                   context, creation.code, 'edit')}">
-                            <span class="glyphicon glyphicon-pencil"></span>
-                        </a>
-                    </td>
-                    <td class="text-right cs-table-iconcolumn">
-                        <a href="${request.resource_path(
-                                   context, creation.code, 'delete')}">
-                            <span class="glyphicon glyphicon-remove text-danger"></span>
-                        </a>
-                    </td>
-                    <td class="text-right cs-table-codecolumn">
-                        ${creation.code}
-                    </td>
-                </tr>
-
-            </table>
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="javascript: history.back(1);"
+                   class="btn btn-default cs-green" role="button">
+                    <span class="glyphicon glyphicon-arrow-left"></span></a>
+                <a href="${request.resource_path(context, 'add')}"
+                   class="btn btn-primary" role="button"
+                   i18n:translate="">Add</a>
+            </div>
         </div>
+
+        <table class="table cs-table cs-table-list">
+
+            <tr tal:repeat="creation creations">
+
+                <td class="minwidth">
+                    <a href="${request.resource_path(
+                               context, creation.code)}">
+                        <img class="img-responsive center-block cs-img-inline"
+                             src="${request.static_path(
+                                    'collecting_society_portal_repertoire:'
+                                    'static/img/element-icon-songs-green.png')}" />
+                    </a>
+                </td>
+
+                <td>
+                    <a href="${request.resource_path(
+                               context, creation.code)}">
+                        ${creation.title}</a>
+                    <div class="cs-release-artist">
+                        <a tal:omit-tag="not creation.artist.permits(
+                                         request.web_user, 'view_artist')"
+                           tal:attributes="href request.resource_path(
+                                                context, '..', 'artists',
+                                                creation.artist.code)">
+                            <small>${creation.artist.name}</small>
+                        </a>
+                    </div>
+                </td>
+
+                <td class="text-right cs-table-codecolumn">
+                    <a href="${request.resource_path(
+                               context, creation.code)}"
+                       class="cs-release-title">
+                        ${creation.code}
+                    </a>
+                </td>
+
+            </tr>
+
+        </table>
 
     </tal:block>
 

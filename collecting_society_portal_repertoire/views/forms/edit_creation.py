@@ -375,7 +375,6 @@ class EditCreation(FormController):
 def edit_creation_form(request):
     return deform.Form(
         schema=AddCreationSchema(
-            title=_(u"Edit Creation"),
             validator=validate_content).bind(request=request),
         buttons=[
             deform.Button('submit', _(u"Submit"))

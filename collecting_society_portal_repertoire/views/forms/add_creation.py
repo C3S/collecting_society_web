@@ -299,8 +299,7 @@ class ContentSchema(colander.Schema):
 
 
 class AddCreationSchema(colander.Schema):
-    title = _(u"Add Creation")
-    widget = deform.widget.FormWidget(template='navs/form', navstyle='pills')
+    widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
     metadata = MetadataSchema(title=_(u"Metadata"))
     originals = OriginalsSchema(title=_(u"Derivation"))
     content = ContentSchema(title=_(u"Content"))
