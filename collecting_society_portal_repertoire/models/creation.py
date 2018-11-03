@@ -81,15 +81,12 @@ class Creation(Tdb):
             return False
         # 1) is a foreign object
         if track.entity_origin != 'indirect':
-            log.debug("2")
             return False
         # 2) is still not claimed yet
         if track.claim_state != 'unclaimed':
-            log.debug("3")
             return False
         # 3) is editable by the current web user
         if not track.permits(request.web_user, 'edit_creation'):
-            log.debug("4")
             return False
         # 4) TODO: was not part of a distribution yet
         return True
