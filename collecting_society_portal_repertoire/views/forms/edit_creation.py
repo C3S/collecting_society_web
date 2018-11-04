@@ -239,8 +239,8 @@ class EditCreation(FormController):
                     # edit foreign creation
                     if a_original['mode'] == "edit":
                         # form data of foreign original changed?
-                        #if (original.artist.name != a_original['artist'] or
-                        #        original.title != a_original['titlefield']):
+                        # if (original.artist.name != a_original['artist'] or
+                        #         original.title != a_original['titlefield']):
                         if not original.permits(web_user, 'edit_creation'):
                             self.request.session.flash(
                                 _(
@@ -320,8 +320,8 @@ class EditCreation(FormController):
         # user feedback
         log.info("creation edit successful for %s: %s" % (web_user, creation))
         self.request.session.flash(
-            _(u"Creation edited: ") + creation.title
-            + " ("+creation.code+")", 'main-alert-success'
+            _(u"Creation edited: ") + creation.title +
+            " ("+creation.code+")", 'main-alert-success'
         )
 
         # redirect
