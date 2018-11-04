@@ -118,8 +118,8 @@ class EditRelease(FormController):
                 'oid': track.oid,
                 'track_title': track.title,
                 'license': track.license.oid,
-                # 'medium_number': track.medium_number,
-                # 'track_number': track.track_number,
+                # TODO: 'medium_number': track.medium_number,
+                # TODO: 'track_number': track.track_number,
                 'track': [{
                     'mode': creation_mode,
                     'oid': track.creation.oid,
@@ -152,7 +152,7 @@ class EditRelease(FormController):
                 'gvl_code': release.label.gvl_code or '',
             }]
 
-        # render form with data
+        # render
         self.render(self.appstruct)
 
     @Tdb.transaction(readonly=False)
@@ -166,8 +166,6 @@ class EditRelease(FormController):
         _release = {
             'type':
                 appstruct['metadata']['release_type'],
-            'tracks':
-                None,  # TODO: tracks (also in edit_release)
             'title':
                 appstruct['metadata']['release_title'],
             'genres':
@@ -241,7 +239,7 @@ class EditRelease(FormController):
                 if _track['mode'] == "create":
                     # create foreign creation
                     if _creation['mode'] == "create":
-                        creation = create_foreign(
+                        creation = Creation.create_foreign(
                             party,
                             _creation['artist'],
                             _creation['titlefield']

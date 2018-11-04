@@ -86,12 +86,11 @@ class AddCreation(FormController):
             'entity_creator': party,
         }
 
-        # creation tarif categories
+        # creation tariff categories
         _ctcs = self.appstruct['metadata']['tariff_categories']
         if _ctcs:
             ctc_create = []
-
-            # create creation tarif categories
+            # create creation tariff categories
             for _ctc in _ctcs:
                 if _ctc['mode'] != "create":
                     continue
@@ -107,7 +106,6 @@ class AddCreation(FormController):
                     'category': tariff_category.id,
                     'collecting_society': collecting_society.id
                     })
-
             # append actions
             _creation['tariff_categories'] = []
             if ctc_create:
@@ -119,12 +117,7 @@ class AddCreation(FormController):
             for content_listenty in self.appstruct['content']['content']:
                 content = Content.search_by_code(content_listenty['code'])
                 if content:
-                    _creation['content'].append(
-                        (
-                            'add',
-                            [content.id]
-                        )
-                    )
+                    _creation['content'].append(('add', [content.id]))
 
         # create creation
         creations = Creation.create([_creation])
@@ -198,30 +191,6 @@ def current_artists_select_widget(node, kw):
     return widget
 
 
-@colander.deferred
-def releases_select_widget(node, kw):
-    request = kw.get('request')
-    web_user = WebUser.current_web_user(request)
-    releases = Release.search_by_party(web_user.party.id)
-    releases_options = [(int(release.id), release.title) for release in releases]
-    widget = deform.widget.Select2Widget(
-        values=releases_options, multiple=True
-    )
-    return widget
-
-
-@colander.deferred
-def content_select_widget(node, kw):
-    request = kw.get('request')
-    web_user = WebUser.current_web_user(request)
-    contents = Content.search_orphans(web_user.party.id, 'audio')
-    content_options = []
-    if contents:
-        content_options = [(content.id, content.name) for content in contents]
-    widget = deform.widget.Select2Widget(values=content_options)
-    return widget
-
-
 # --- Fields ------------------------------------------------------------------
 
 class TitleField(colander.SchemaNode):
@@ -229,17 +198,10 @@ class TitleField(colander.SchemaNode):
     schema_type = colander.String
 
 
-class CurrentArtistField(colander.SchemaNode):
+class FeaturedArtistField(colander.SchemaNode):
     oid = "artist"
     schema_type = colander.Integer
     widget = current_artists_select_widget
-
-
-class ContentField(colander.SchemaNode):
-    oid = "content"
-    schema_type = colander.String
-    widget = content_select_widget
-    missing = ""
 
 
 # --- Schemas -----------------------------------------------------------------
@@ -248,7 +210,7 @@ class MetadataSchema(colander.Schema):
     title = _(u"Add metadata")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_(u"Working Title"))
-    artist = CurrentArtistField(title=_(u"Featured Artist"))
+    artist = FeaturedArtistField(title=_(u"Featured Artist"))
     tariff_categories = CreationTariffCategorySequence()
 
 
