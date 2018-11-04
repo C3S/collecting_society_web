@@ -241,7 +241,7 @@ class EditRelease(FormController):
                 if _track['mode'] == "create":
                     # create foreign creation
                     if _creation['mode'] == "create":
-                        creation = create_foreign_artist_and_creation(
+                        creation = create_foreign(
                             party,
                             _creation['artist'],
                             _creation['titlefield']

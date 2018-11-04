@@ -249,13 +249,6 @@ class EditCreation(FormController):
                     if not original:
                         # TODO: Userfeedback
                         continue
-                    if not original.permits(web_user, 'edit_creation'):
-                        self.request.session.flash(
-                            _(u"Warning: You don't have permissions to edit "
-                              "the original. Changes won't take effekt."),
-                            'main-alert-warning'
-                        )
-                        continue
                 _original = {
                     'original_creation': original.id,
                     'derivative_creation': creation.id,
@@ -294,20 +287,23 @@ class EditCreation(FormController):
                         continue
                     # edit foreign creation
                     if a_original['mode'] == "edit":
-                        if not original.permits(web_user, 'edit_creation'):
-                            self.request.session.flash(
-                                _(
-                                    u"Warning: You don't have permissions to "
-                                    "edit the original. Changes won't take "
-                                    "effekt."
-                                ),
-                                'main-alert-warning'
-                            )
-                            continue
-                        original.artist.name = a_original['artist']
-                        original.artist.save()
-                        original.title = a_original['titlefield']
-                        original.save()
+                        # form data of foreign original changed?
+                        if (original.artist.name != a_original['artist'] or
+                                original.title != a_original['titlefield']):
+                            if not original.permits(web_user, 'edit_creation'):
+                                self.request.session.flash(
+                                    _(
+                                        u"Warning: You don't have permissions "
+                                        "to edit the original. Changes won't "
+                                        "take effekt."
+                                    ),
+                                    'main-alert-warning'
+                                )
+                                continue
+                            original.artist.name = a_original['artist']
+                            original.artist.save()
+                            original.title = a_original['titlefield']
+                            original.save()
 
                 # save derivative-original relation
                 existing_original_relation.original_creation = original
