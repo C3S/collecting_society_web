@@ -239,21 +239,13 @@ class EditRelease(FormController):
 
                 # create track
                 if _track['mode'] == "create":
-                    # create creation
+                    # create foreign creation
                     if _creation['mode'] == "create":
-                        artist = Artist.create([{
-                            'name': _creation['artist'],
-                            'entity_origin': 'indirect',
-                            'entity_creator': party.id
-                            }])[0]
-                        if not artist:
-                            continue
-                        creation = Creation.create([{
-                            'title': _creation['titlefield'],
-                            'artist': artist.id,
-                            'entity_origin': 'indirect',
-                            'entity_creator': party.id
-                            }])[0]
+                        creation = create_foreign_artist_and_creation(
+                            party,
+                            _creation['artist'],
+                            _creation['titlefield']
+                        )
                         if not creation:
                             continue
                     # add creation
@@ -277,30 +269,29 @@ class EditRelease(FormController):
                         continue
                     if track in tracks_delete:
                         tracks_delete.remove(track)
-                    # create creation
+                    # create foreign creation
                     if _creation['mode'] == "create":
-                        artist = Artist.create([{
-                            'name': _creation['artist'],
-                            'entity_origin': 'indirect',
-                            'entity_creator': party.id
-                            }])[0]
-                        if not artist:
-                            continue
-                        creation = Creation.create([{
-                            'title': _creation['titlefield'],
-                            'artist': artist.id,
-                            'entity_origin': 'indirect',
-                            'entity_creator': party.id
-                            }])[0]
+                        creation = Creation.create_foreign(
+                            party,
+                            _creation['artist'],
+                            _creation['titlefield']
+                        )
                         if not creation:
                             continue
-                    # add creation
-                    else:
+                    else:  # add (including edit) foreign creation
                         creation = Creation.search_by_oid(_creation['oid'])
                         if not creation:
                             continue
-                        # edit creation
+                        # edit foreign creation
                         if _creation['mode'] == "edit":
+                            if not creation.permits(web_user, 'edit_creation'):
+                                self.request.session.flash(
+                                    _(u"Warning: You don't have permissions "
+                                      "to edit the track. Changes won't take "
+                                      "effekt."),
+                                    'main-alert-warning'
+                                )
+                                continue
                             creation.artist.name = _creation['artist']
                             creation.artist.save()
                             creation.title = _creation['titlefield']

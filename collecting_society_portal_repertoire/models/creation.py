@@ -1,6 +1,8 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
+from . import Artist
+
 import logging
 
 from collecting_society_portal.models import Tdb
@@ -358,3 +360,36 @@ class Creation(Tdb):
                 raise KeyError('artist is missing')
         result = cls.get().create(vlist)
         return result or None
+
+
+    @classmethod
+    def create_foreign(cls, party, artist_name, title):
+        """
+        Creates foreign Artist(!) and Creaion
+
+        Args:
+            party: the Party that wants to create the foreign objects
+            artist_name: the artist name of the foreign artist object
+            title: the working title of the foreign creation object
+
+        Returns:
+            Creation object: the creation that has been creation
+            None: if no object was created
+        """
+
+        artist = Artist.create([{
+            'name': artist_name,
+            'entity_origin': 'indirect',
+            'entity_creator': party.id
+            }])[0]
+        if not artist:
+            return None
+        creation = Creation.create([{
+            'title': title,
+            'artist': artist.id,
+            'entity_origin': 'indirect',
+            'entity_creator': party.id
+            }])[0]
+        if not creation:
+            return None
+        return creation

@@ -11,7 +11,7 @@
 
         <div class="cs-form-container">
 
-            <h1 class="cs-form-header" i18n:translate="">Edit Artist</h1>
+            <h1 class="cs-form-header" i18n:translate="">Edit Creation</h1>
 
             <div class="btn-toolbar cs-form-controls" role="toolbar">
                 <div class="btn-group" role="group">
