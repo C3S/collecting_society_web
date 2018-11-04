@@ -56,6 +56,9 @@ class EditCreation(FormController):
                 'artist': creation.artist.id,
                 'tariff_categories': []
             },
+            'lyrics': {
+                'lyrics': creation.lyrics
+            }
         }
 
         # tariff categories
@@ -130,13 +133,17 @@ class EditCreation(FormController):
         party = self.request.party
         creation = self.context.creation
 
-        # (working)title
-        if creation.title != a['metadata']['title']:
+        # (working) title
+        if a['metadata']['title']:
             creation.title = a['metadata']['title']
 
         # artist
-        if creation.artist != a['metadata']['artist']:
+        if a['metadata']['artist']:
             creation.artist = a['metadata']['artist']
+
+        # lyrics
+        if a['lyrics']['lyrics']:
+            creation.lyrics = a['lyrics']['lyrics']
 
         # look for removed originals
         # originals = CreationDerivative.search_originals_of_creation_by_id(
