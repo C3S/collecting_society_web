@@ -10,7 +10,10 @@
     <!-- content middle -->
     <tal:block metal:fill-slot="content-middle">
 
-        <h1>${creation.title} <small>${creation.artist.name}</small></h1>
+        <h1>
+            <small>${creation.artist.name}</small><br>
+            ${creation.title}
+        </h1>
 
         <div class="btn-toolbar cs-form-controls" role="toolbar">
             <div class="btn-group" role="group">
@@ -86,54 +89,60 @@
                     <tal:block tal:repeat="contribution creation.contributions">
                         <div tal:define="artist contribution.artist"
                              class="cs-list-item">
-                            <a tal:attributes="href request.resource_path(
-                                                    context, '..', '..', 'artists',
-                                                    artist.code)"
-                               tal:omit-tag="not artist.permits(
-                                             request.web_user, 'view_artist')">
-                                <img tal:condition="artist.picture_data"
-                                     tal:define="pic h.b64encode(artist.picture_data) | None"
-                                     class="img-responsive cs-img-inline"
-                                     src="data:${artist.picture_data_mime_type};base64,${pic}"/>
-                                <img tal:condition="not artist.picture_data"
-                                     class="img-responsive cs-img-inline"
-                                     src="${request.static_path(
-                                            'collecting_society_portal_repertoire:'
-                                            'static/img/element-icon-soloartists-green.png')}"/></a>
-                            <a tal:attributes="href request.resource_path(
-                                                    context, '..', '..', 'artists',
-                                                    artist.code)"
-                               tal:omit-tag="not artist.permits(
-                                             request.web_user, 'view_artist')">
-                                ${artist.name}
-                            </a>
-                            <small tal:condition="contribution.type == 'text'"
-                                   class="cs-contribution"
-                                   i18n:translate="">Text</small>
-                            <small tal:condition="contribution.type == 'performance'"
-                                   class="cs-contribution">
-                                <span i18n:translate="">Performance</span>:
-                                <tal:block tal:condition="contribution.performance == 'recording'"
-                                           i18n:translate="">Recording
-                                    <tal:block tal:condition="contribution.roles">
-                                        (${contribution.roles[0].name})
-                                    </tal:block>
-                                </tal:block>
-                                <tal:block tal:condition="contribution.performance == 'producing'"
-                                           i18n:translate="">Producing</tal:block>
-                                <tal:block tal:condition="contribution.performance == 'mastering'"
-                                           i18n:translate="">Mastering</tal:block>
-                                <tal:block tal:condition="contribution.performance == 'mixing'"
-                                           i18n:translate="">Mixing</tal:block>
-                            </small>
-                            <small tal:condition="contribution.type == 'composition'"
-                                   class="cs-contribution"
-                                   i18n:translate="">
-                                Composition
-                                <tal:block tal:condition="contribution.roles">
-                                    (${contribution.roles[0].name})
-                                </tal:block>
-                            </small>
+                            <div class="pull-left">
+                                <a tal:attributes="href request.resource_path(
+                                                        context, '..', '..', 'artists',
+                                                        artist.code)"
+                                   tal:omit-tag="not artist.permits(
+                                                 request.web_user, 'view_artist')">
+                                    <img tal:condition="artist.picture_data"
+                                         tal:define="pic h.b64encode(artist.picture_data) | None"
+                                         class="img-responsive cs-img-inline"
+                                         src="data:${artist.picture_data_mime_type};base64,${pic}"/>
+                                    <img tal:condition="not artist.picture_data"
+                                         class="img-responsive cs-img-inline"
+                                         src="${request.static_path(
+                                                'collecting_society_portal_repertoire:'
+                                                'static/img/element-icon-soloartists-green.png')}"/></a>
+                            </div>
+                            <div>
+                                <a tal:attributes="href request.resource_path(
+                                                        context, '..', '..', 'artists',
+                                                        artist.code)"
+                                   tal:omit-tag="not artist.permits(
+                                                 request.web_user, 'view_artist')">
+                                    ${artist.name}
+                                </a>
+                                <div>
+                                    <small tal:condition="contribution.type == 'text'"
+                                           class="cs-contribution"
+                                           i18n:translate="">Text</small>
+                                    <small tal:condition="contribution.type == 'performance'"
+                                           class="cs-contribution">
+                                        <span i18n:translate="">Performance</span>:
+                                        <tal:block tal:condition="contribution.performance == 'recording'"
+                                                   i18n:translate="">Recording
+                                            <tal:block tal:condition="contribution.roles">
+                                                (${contribution.roles[0].name})
+                                            </tal:block>
+                                        </tal:block>
+                                        <tal:block tal:condition="contribution.performance == 'producing'"
+                                                   i18n:translate="">Producing</tal:block>
+                                        <tal:block tal:condition="contribution.performance == 'mastering'"
+                                                   i18n:translate="">Mastering</tal:block>
+                                        <tal:block tal:condition="contribution.performance == 'mixing'"
+                                                   i18n:translate="">Mixing</tal:block>
+                                    </small>
+                                    <small tal:condition="contribution.type == 'composition'"
+                                           class="cs-contribution"
+                                           i18n:translate="">
+                                        Composition
+                                        <tal:block tal:condition="contribution.roles">
+                                            (${contribution.roles[0].name})
+                                        </tal:block>
+                                    </small>
+                                </div>
+                            </div>
                         </div>
                     </tal:block>
                 </td>
@@ -170,7 +179,7 @@
                                     <a tal:attributes="href request.resource_path(
                                                             context, '..', '..',
                                                             'artists', artist.code)"
-                                       tal:omit-tag="not creation.permits(
+                                       tal:omit-tag="not artist.permits(
                                                          request.web_user, 'view_artist')">
                                         <small class="cs-original-artist">${artist.name}</small>
                                     </a>
@@ -212,8 +221,8 @@
                                     <a tal:attributes="href request.resource_path(
                                                             context, '..', '..',
                                                             'artists', artist.code)"
-                                       tal:omit-tag="not creation.permits(
-                                                         request.web_user, 'view_creation')">
+                                       tal:omit-tag="not artist.permits(
+                                                         request.web_user, 'view_artist')">
                                         <small class="cs-original-artist">${artist.name}</small>
                                     </a>
                                 </div>
@@ -267,7 +276,7 @@
                         <a tal:attributes="href request.resource_path(
                                                 context, '..', '..', 'releases',
                                                 release.release.code)"
-                           tal:omit-tag="not release.creation.permits(
+                           tal:omit-tag="not release.release.permits(
                                              request.web_user, 'view_release')">
                            ${release.release.title}
                         </a>
