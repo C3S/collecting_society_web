@@ -246,19 +246,19 @@ def web_registry(config):
                             'collecting_society_portal_repertoire:'
                             'static/img/element-icon-soloartists.png')},
             {
+                'name': _(u'Creations'),
+                'url':  self.request.resource_path(
+                            CreationsResource(self.request), ''),
+                'icon': self.request.static_path(
+                            'collecting_society_portal_repertoire:'
+                            'static/img/element-icon-songs.png')},
+            {
                 'name': _(u'Releases'),
                 'url':  self.request.resource_path(
                             ReleasesResource(self.request), ''),
                 'icon': self.request.static_path(
                             'collecting_society_portal_repertoire:'
                             'static/img/element-icon-releases.png')},
-            {
-                'name': _(u'Creations'),
-                'url':  self.request.resource_path(
-                            CreationsResource(self.request), ''),
-                'icon': self.request.static_path(
-                            'collecting_society_portal_repertoire:'
-                            'static/img/element-icon-songs.png')}
         ]
         # widgets content-right
         reg['widgets']['content-right'] = [
