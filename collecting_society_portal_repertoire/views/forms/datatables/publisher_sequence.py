@@ -10,12 +10,15 @@ from collecting_society_portal.views.forms.datatables import (
 )
 
 
-def oid_ignored(value):
-    return value if value else "OIDIGNORED"
+def prepare_ignored(value):
+    # workaround for conditinally required fields, as form validators are not
+    # processed, if a normal required field is missing
+    return value if value else "IGNORED"
 
 
-def oid_required_conditionally(value):
-    if value['mode'] != "add" and value['oid'] == "OIDIGNORED":
+def prepare_required(value):
+    # oid required for add/edit
+    if value['mode'] != "create" and value['oid'] == "IGNORED":
         value['oid'] = ""
     return value
 
@@ -34,14 +37,19 @@ class ModeField(colander.SchemaNode):
     oid = "mode"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    validator = colander.OneOf(['add', 'create', 'edit'])
+    validator = colander.OneOf(
+        ['add', 'create', 'edit'])
 
 
 class OidField(colander.SchemaNode):
     oid = "oid"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    preparer = [oid_ignored]
+    preparer = [prepare_ignored]
+    validator = colander.Any(
+        colander.uuid,
+        colander.Regex(r'^IGNORED\Z', '')
+    )
 
 
 class NameField(colander.SchemaNode):
@@ -56,10 +64,8 @@ class PublisherSchema(colander.Schema):
     mode = ModeField()
     oid = OidField()
     name = NameField()
+    preparer = [prepare_required]
     title = ""
-    preparer = [
-        oid_required_conditionally,
-    ]
 
 
 class PublisherSequence(DatatableSequence):

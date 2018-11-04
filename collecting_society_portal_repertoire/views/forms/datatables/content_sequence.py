@@ -14,22 +14,18 @@ from collecting_society_portal.views.forms.datatables import (
 log = logging.getLogger(__name__)
 
 
-def oid_ignored(value):
-    return value if value else "OIDIGNORED"
+def prepare_ignored(value):
+    # workaround for conditinally required fields, as form validators are not
+    # processed, if a normal required field is missing
+    return value if value else "IGNORED"
 
 
-def code_ignored(value):
-    return value if value else "CODEIGNORED"
-
-
-def oid_required_conditionally(value):
-    if value['mode'] != "add" and value['oid'] == "OIDIGNORED":
+def prepare_required(value):
+    # oid required for add/edit
+    if value['mode'] != "create" and value['oid'] == "IGNORED":
         value['oid'] = ""
-    return value
-
-
-def code_required_conditionally(value):
-    if value['mode'] == "add" and value['code'] == "CODEIGNORED":
+    # code required for add/edit
+    if value['mode'] != "create" and value['code'] == "IGNORED":
         value['code'] = ""
     return value
 
@@ -48,14 +44,19 @@ class ModeField(colander.SchemaNode):
     oid = "mode"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    validator = colander.OneOf(['add', 'create', 'edit'])
+    validator = colander.OneOf(
+        ['add', 'create', 'edit'])
 
 
 class OidField(colander.SchemaNode):
     oid = "oid"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    preparer = [oid_ignored]
+    preparer = [prepare_ignored]
+    validator = colander.Any(
+        colander.uuid,
+        colander.Regex(r'^IGNORED\Z', '')
+    )
 
 
 class NameField(colander.SchemaNode):
@@ -68,7 +69,11 @@ class CodeField(colander.SchemaNode):
     oid = "code"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    preparer = [code_ignored]
+    preparer = [prepare_ignored]
+    validator = colander.Any(
+        colander.Regex(r'^D\d{10}\Z'),
+        colander.Regex(r'^IGNORED\Z', '')
+    )
 
 
 class CategoryField(colander.SchemaNode):
@@ -85,11 +90,8 @@ class ContentSchema(colander.Schema):
     name = NameField()
     code = CodeField()
     category = CategoryField()
+    preparer = [prepare_required]
     title = ""
-    preparer = [
-        oid_required_conditionally,
-        code_required_conditionally,
-    ]
 
 
 class ContentSequence(DatatableSequence):

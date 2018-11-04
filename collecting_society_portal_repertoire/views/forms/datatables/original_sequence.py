@@ -17,12 +17,15 @@ from . import CreationSequence
 log = logging.getLogger(__name__)
 
 
-def oid_ignored(value):
-    return value if value else "OIDIGNORED"
+def prepare_ignored(value):
+    # workaround for conditinally required fields, as form validators are not
+    # processed, if a normal required field is missing
+    return value if value else "IGNORED"
 
 
-def oid_required_conditionally(value):
-    if value['mode'] != "add" and value['oid'] == "OIDIGNORED":
+def prepare_required(value):
+    # oid required for add/edit
+    if value['mode'] != "create" and value['oid'] == "IGNORED":
         value['oid'] = ""
     return value
 
@@ -37,18 +40,23 @@ def original_sequence_widget(node, kw):
     )
 
 
-class OidField(colander.SchemaNode):
-    oid = "oid"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-    preparer = [oid_ignored]
-
-
 class ModeField(colander.SchemaNode):
     oid = "mode"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    validator = colander.OneOf(['add', 'create', 'edit'])
+    validator = colander.OneOf(
+        ['add', 'create', 'edit'])
+
+
+class OidField(colander.SchemaNode):
+    oid = "oid"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    preparer = [prepare_ignored]
+    validator = colander.Any(
+        colander.uuid,
+        colander.Regex(r'^IGNORED\Z', '')
+    )
 
 
 class TypeField(colander.SchemaNode):
@@ -59,6 +67,8 @@ class TypeField(colander.SchemaNode):
         ('cover', _('Cover')),
         ('remix', _('Remix')),
     ))
+    validator = colander.OneOf(
+        ['adaption', 'cover', 'remix'])
 
 
 # --- Schemas -----------------------------------------------------------------
@@ -69,7 +79,7 @@ class OriginalSchema(colander.Schema):
     type = TypeField()
     original = CreationSequence(min_len=1, max_len=1)
     title = ""
-    preparer = [oid_required_conditionally]
+    preparer = [prepare_required]
 
 
 class OriginalSequence(DatatableSequence):

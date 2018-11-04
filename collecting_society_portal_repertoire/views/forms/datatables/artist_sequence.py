@@ -14,33 +14,22 @@ from collecting_society_portal.views.forms.datatables import (
 log = logging.getLogger(__name__)
 
 
-def oid_ignored(value):
-    return value if value else "OIDIGNORED"
+def prepare_ignored(value):
+    # workaround for conditinally required fields, as form validators are not
+    # processed, if a normal required field is missing
+    return value if value else "IGNORED"
 
 
-def code_ignored(value):
-    return value if value else "CODEIGNORED"
-
-
-def email_ignored(value):
-    return value if value else "DUMMY@EMAIL.IGNORED"
-
-
-def oid_required_conditionally(value):
-    if value['mode'] != "add" and value['oid'] == "OIDIGNORED":
+def prepare_required(value):
+    # oid required for add/edit
+    if value['mode'] != "create" and value['oid'] == "IGNORED":
         value['oid'] = ""
-    return value
-
-
-def email_required_conditionally(value):
-    if value['mode'] != "add" and value['email'] == "DUMMY@EMAIL.IGNORED":
-        value['email'] = ""
-    return value
-
-
-def code_required_conditionally(value):
-    if value['mode'] == "add" and value['code'] == "CODEIGNORED":
+    # code required for add/edit
+    if value['mode'] != "create" and value['code'] == "IGNORED":
         value['code'] = ""
+    # email required for create/edit
+    if value['mode'] != "add" and value['email'] == "IGNORED":
+        value['email'] = ""
     return value
 
 
@@ -58,14 +47,19 @@ class ModeField(colander.SchemaNode):
     oid = "mode"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    validator = colander.OneOf(['add', 'create', 'edit'])
+    validator = colander.OneOf(
+        ['add', 'create', 'edit'])
 
 
 class OidField(colander.SchemaNode):
     oid = "oid"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    preparer = [oid_ignored]
+    preparer = [prepare_ignored]
+    validator = colander.Any(
+        colander.uuid,
+        colander.Regex(r'^IGNORED\Z', '')
+    )
 
 
 class NameField(colander.SchemaNode):
@@ -78,7 +72,11 @@ class CodeField(colander.SchemaNode):
     oid = "code"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    preparer = [code_ignored]
+    preparer = [prepare_ignored]
+    validator = colander.Any(
+        colander.Regex(r'^A\d{10}\Z'),
+        colander.Regex(r'^IGNORED\Z', '')
+    )
 
 
 class DescriptionField(colander.SchemaNode):
@@ -92,8 +90,11 @@ class EmailField(colander.SchemaNode):
     oid = "email"
     schema_type = colander.String
     widget = deform.widget.TextInputWidget()
-    validator = colander.Email()
-    preparer = [email_ignored]
+    preparer = [prepare_ignored]
+    validator = colander.Any(
+        colander.Email(),
+        colander.Regex(r'^IGNORED\Z', '')
+    )
 
 
 # --- Schemas -----------------------------------------------------------------
@@ -105,12 +106,8 @@ class ArtistSchema(colander.Schema):
     description = DescriptionField()
     code = CodeField()
     email = EmailField()
+    preparer = [prepare_required]
     title = ""
-    preparer = [
-        oid_required_conditionally,
-        code_required_conditionally,
-        email_required_conditionally,
-    ]
 
 
 class ArtistSequence(DatatableSequence):

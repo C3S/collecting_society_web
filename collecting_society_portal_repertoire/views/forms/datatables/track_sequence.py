@@ -11,22 +11,25 @@ from collecting_society_portal.views.forms.datatables import (
     DatatableSequenceWidget
 )
 
-from ....services import _
 from ....models import License
 from . import CreationSequence
 
 log = logging.getLogger(__name__)
 
-dummy_uuid = "4bbac9bf-5006-4c63-8f09-20b1c3303395"
+
+def prepare_ignored(value):
+    # workaround for conditinally required fields, as form validators are not
+    # processed, if a normal required field is missing
+    return value if value else "IGNORED"
 
 
-def oid_ignored(value):
-    return value if value else dummy_uuid
-
-
-def oid_required_conditionally(value):
-    if value['mode'] == "edit" and value['oid'] == dummy_uuid:
+def prepare_required(value):
+    # oid required for add/edit
+    if value['mode'] != "create" and value['oid'] == "IGNORED":
         value['oid'] = ""
+    # code required for add/edit
+    if value['mode'] != "create" and value['code'] == "IGNORED":
+        value['code'] = ""
     return value
 
 
@@ -47,19 +50,23 @@ def deferred_license_widget(node, kw):
     return deform.widget.Select2Widget(values=values)
 
 
-class OidField(colander.SchemaNode):
-    oid = "oid"
-    schema_type = colander.String
-    validator = colander.uuid
-    widget = deform.widget.HiddenWidget()
-    preparer = [oid_ignored]
-
-
 class ModeField(colander.SchemaNode):
     oid = "mode"
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
-    validator = colander.OneOf(['add', 'create', 'edit'])
+    validator = colander.OneOf(
+        ['add', 'create', 'edit'])
+
+
+class OidField(colander.SchemaNode):
+    oid = "oid"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    preparer = [prepare_ignored]
+    validator = colander.Any(
+        colander.uuid,
+        colander.Regex(r'^IGNORED\Z', '')
+    )
 
 
 class TrackTitleField(colander.SchemaNode):
@@ -68,16 +75,16 @@ class TrackTitleField(colander.SchemaNode):
     widget = deform.widget.TextInputWidget()
 
 
-class MediumNumberField(colander.SchemaNode):
-    oid = "medium_number"
-    schema_type = colander.Integer
-    widget = deform.widget.TextInputWidget()
+# class MediumNumberField(colander.SchemaNode):
+#     oid = "medium_number"
+#     schema_type = colander.Integer
+#     widget = deform.widget.TextInputWidget()
 
 
-class TrackNumberField(colander.SchemaNode):
-    oid = "track_number"
-    schema_type = colander.Integer
-    widget = deform.widget.TextInputWidget()
+# class TrackNumberField(colander.SchemaNode):
+#     oid = "track_number"
+#     schema_type = colander.Integer
+#     widget = deform.widget.TextInputWidget()
 
 
 class LicenseField(colander.SchemaNode):
@@ -97,8 +104,8 @@ class TrackSchema(colander.Schema):
     license = LicenseField()
     # medium_number = MediumNumberField()
     # track_number = TrackNumberField()
+    preparer = [prepare_required]
     title = ""
-    preparer = [oid_required_conditionally]
 
 
 class TrackSequence(DatatableSequence):
