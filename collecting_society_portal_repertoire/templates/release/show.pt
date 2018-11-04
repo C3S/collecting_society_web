@@ -149,7 +149,7 @@
                                            context, '..', '..', 'creations',
                                            track.creation.code)"
                            tal:omit-tag="not track.creation.permits(
-                                         request.web_user, 'view_artist')">
+                                         request.web_user, 'view_creation')">
                             ${track.title}
                         </a>
                     </div>
