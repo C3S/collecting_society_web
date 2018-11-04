@@ -19,7 +19,7 @@
                        class="btn btn-default cs-green" role="button">
                         <span class="glyphicon glyphicon-arrow-left"></span></a>
                     <a class="btn btn-primary" role="button"
-                       onclick="$('#AddArtistsubmit').click();"
+                       onclick="$('#AddCreationsubmit').click();"
                        i18n:translate="">Submit</a>
                 </div>                
             </div>

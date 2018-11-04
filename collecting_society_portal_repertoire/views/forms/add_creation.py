@@ -12,6 +12,8 @@ from collecting_society_portal.models import (
 from collecting_society_portal.views.forms import FormController
 from ...services import _
 from ...models import (
+    CollectingSociety,
+    TariffCategory,
     Artist,
     Creation,
     Content,
@@ -20,6 +22,7 @@ from ...models import (
 from .datatables import (
     ContentSequence,
     OriginalSequence,
+    CreationTariffCategorySequence
 )
 
 log = logging.getLogger(__name__)
@@ -54,9 +57,6 @@ class AddCreation(FormController):
 
         self.appstruct = {
             'metadata': {},
-            'contributions': {},
-            'licenses': {},
-            'relations': {},
             'content': {}
         }
         # add metadata from content uuid, provided by upload form
@@ -84,57 +84,34 @@ class AddCreation(FormController):
             'title': self.appstruct['metadata']['title'],
             'artist': self.appstruct['metadata']['artist'],
             'entity_creator': party,
-            'releases': self.appstruct['metadata']['releases'],
         }
 
-        # # releases   -> relation maintained in Release form only
-        # if self.appstruct['metadata']['releases']:
-        #     _creation['releases'] = []
-        #     for release_id in self.appstruct['metadata']['releases']:
-        #         _creation['releases'].append(
-        #             (
-        #                 'create',
-        #                 [{
-        #                     'release': release_id,
-        #                     'title': self.appstruct['metadata']['title'],
-        #                     # TODO: manage different titles for releases
-        #                     #       using a datatables control
-        #                     # 'medium_number': TODO: medium_number
-        #                     # 'track_number': TODO: track_number
-        #                     # 'license ': TODO: license
-        #                 }]
-        #             )
-        #         )
+        # creation tarif categories
+        _ctcs = self.appstruct['metadata']['tariff_categories']
+        if _ctcs:
+            ctc_create = []
 
-        # contributions
-        # if self.appstruct['contributions']['contributions']:
-        #     _creation['contributions'] = []
-        #     for contribution in self.appstruct[
-        #             'contributions']['contributions']:
-        #         _creation['contributions'].append(
-        #             (
-        #                 'create',
-        #                 [{
-        #                     'type': contribution['type'],
-        #                     'artist': contribution['artist']
-        #                 }]
-        #             )
-        #         )
+            # create creation tarif categories
+            for _ctc in _ctcs:
+                if _ctc['mode'] != "create":
+                    continue
+                tariff_category = TariffCategory.search_by_oid(
+                    _ctc['category'])
+                if not tariff_category:
+                    continue
+                collecting_society = CollectingSociety.search_by_oid(
+                    _ctc['collecting_society'])
+                if not collecting_society:
+                    continue
+                ctc_create.append({
+                    'category': tariff_category.id,
+                    'collecting_society': collecting_society.id
+                    })
 
-        # derivation
-        # if self.appstruct['relations']['original_creations']:
-        #     _creation['original_relations'] = []
-        #     for original_creation in self.appstruct[
-        #             'relations']['original_creations']:
-        #         _creation['original_relations'].append(
-        #             (
-        #                 'create',
-        #                 [{
-        #                     'original_creation': original_creation['creation'],
-        #                     'allocation_type': original_creation['type']
-        #                 }]
-        #             )
-        #         )
+            # append actions
+            _creation['tariff_categories'] = []
+            if ctc_create:
+                _creation['tariff_categories'].append(('create', ctc_create))
 
         # content
         if self.appstruct['content']['content']:
@@ -258,18 +235,6 @@ class CurrentArtistField(colander.SchemaNode):
     widget = current_artists_select_widget
 
 
-class ReleasesField(colander.SchemaNode):
-    oid = "releases"
-    schema_type = colander.List
-    widget = releases_select_widget
-
-
-class CollectingSocietyField(colander.SchemaNode):
-    oid = "collecting-society"
-    schema_type = colander.String
-    missing = ""
-
-
 class ContentField(colander.SchemaNode):
     oid = "content"
     schema_type = colander.String
@@ -284,8 +249,7 @@ class MetadataSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_(u"Working Title"))
     artist = CurrentArtistField(title=_(u"Featured Artist"))
-    releases = ReleasesField(title=_(u"Release"))
-    collecting_society = CollectingSocietyField()
+    tariff_categories = CreationTariffCategorySequence()
 
 
 class OriginalsSchema(colander.Schema):

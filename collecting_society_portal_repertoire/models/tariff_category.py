@@ -8,37 +8,37 @@ from collecting_society_portal.models import Tdb
 log = logging.getLogger(__name__)
 
 
-class License(Tdb):
+class TariffCategory(Tdb):
     """
-    Model wrapper for Tryton model object 'license'
+    Model wrapper for Tryton model object 'tariff_system.category'
     """
 
-    __name__ = 'license'
+    __name__ = 'tariff_system.category'
 
     @classmethod
     def search_all(cls):
         """
-        Fetches all Licenses
+        Fetches all tariff categories
 
         Returns:
-          list: licenses
+          list: tariff categories
           None: if no match is found
         """
         return cls.get().search([])
 
     @classmethod
-    def search_by_id(cls, license_id):
+    def search_by_id(cls, category_id):
         """
-        Searches an license by license id
+        Searches a tariff category by id
 
         Args:
-          license_id (int): license.id
+          category_id (int): tariff_category.id
 
         Returns:
-          obj: license
+          obj: tariff category
           None: if no match is found
         """
-        result = cls.get().search([('id', '=', license_id)])
+        result = cls.get().search([('id', '=', category_id)])
         if not result:
             return None
         return result[0]
@@ -46,13 +46,13 @@ class License(Tdb):
     @classmethod
     def search_by_oid(cls, oid, active=True):
         """
-        Searches a license by oid (public api id)
+        Searches a tariff category by oid (public api id)
 
         Args:
-          oid (int): license.oid
+          oid (int): tariff_category.oid
 
         Returns:
-          obj: license
+          obj: tariff category
           None: if no match is found
         """
         result = cls.get().search([

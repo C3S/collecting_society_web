@@ -9,6 +9,9 @@ from collecting_society_portal.views.forms import FormController
 
 from ...services import _
 from ...models import (
+    CollectingSociety,
+    TariffCategory,
+    CreationTariffCategory,
     Creation,
     Content,
     CreationDerivative
@@ -44,42 +47,31 @@ class EditCreation(FormController):
     # --- Actions -------------------------------------------------------------
 
     def edit_creation(self):
-        c = self.context.creation
+        creation = self.context.creation
 
         # set appstruct
         self.appstruct = {
             'metadata': {
-                'title':
-                    c.title or '',
-                'artist':
-                    c.artist.id,
-                #'releases':   -> relation maintained in Release form only
-                #    [unicode(release.id) for release in c.releases]
+                'title':  creation.title or '',
+                'artist': creation.artist.id,
+                'tariff_categories': []
             },
-            'contributions': {},
-            'originals': {},
-            'licenses': {},
-            'relations': {},
-            'content': {}
-            # 'contributions': {
-            #     'contributions':
-            #         [
-            #             {
-            #                 'type': contribution.type,
-            #                 'artist': contribution.artist
-            #             }
-            #             for contribution in c.contributions
-            #         ]
-            # },
-            # 'relations': {
-            # },
-            # 'content': {
-            # }
         }
 
-        if c.contributions:
+        # tariff categories
+        if creation.tariff_categories:
+            for ctc in creation.tariff_categories:
+                self.appstruct['metadata']['tariff_categories'].append({
+                    'mode': 'edit',
+                    'oid': ctc.oid,
+                    'category': ctc.category.oid,
+                    'collecting_society': ctc.collecting_society.oid
+                    })
+
+        # contributions
+        if creation.contributions:
             _contributions = []
-            for contribution in c.contributions:
+            for contribution in creation.contributions:
                 _contributions.append({
                     'mode': 'add',
                     'type': contribution.type,
@@ -88,11 +80,11 @@ class EditCreation(FormController):
             self.appstruct['contributions'] = {
                 'contributions': _contributions
             }
-        
+
         # original works, this creation is derived from
-        if c.original_relations:
+        if creation.original_relations:
             _originals = []
-            for original in c.original_relations:
+            for original in creation.original_relations:
                 _originals.append(
                     {
                         'mode': 'edit',
@@ -112,9 +104,9 @@ class EditCreation(FormController):
             }
 
         # content files that are assigned to the creation
-        if c.content:
+        if creation.content:
             _contentfiles = []
-            for contentfile in c.content:
+            for contentfile in creation.content:
                 _contentfiles.append(
                     {
                         'mode': 'add',
@@ -324,7 +316,40 @@ class EditCreation(FormController):
         # creation.original_relations = originals_to_add
         # creation.original_relations.save()
 
-        
+        # creation tarif categories
+        _ctcs = a['metadata']['tariff_categories']
+        if _ctcs:
+            for _ctc in _ctcs:
+                if _ctc['mode'] == "add":
+                    continue
+                tariff_category = TariffCategory.search_by_oid(
+                    _ctc['category'])
+                if not tariff_category:
+                    continue
+                collecting_society = CollectingSociety.search_by_oid(
+                    _ctc['collecting_society'])
+                if not collecting_society:
+                    continue
+
+                # create creation tarif categories
+                if _ctc['mode'] == "create":
+                    # TODO: check, if category is already assigned
+                    # (function in model)
+                    CreationTariffCategory.create([{
+                        'creation': creation.id,
+                        'category': tariff_category.id,
+                        'collecting_society': collecting_society.id
+                    }])
+
+                # edit creation tarif categories
+                if _ctc['mode'] == "edit":
+                    ctc = CreationTariffCategory.search_by_oid(_ctc['oid'])
+                    if not ctc:
+                        continue
+                    ctc.category = tariff_category.id
+                    ctc.collecting_society = collecting_society.id
+                    ctc.save()
+
         # content
         contents_to_add = []
         for content_item in self.appstruct['content']['content']:

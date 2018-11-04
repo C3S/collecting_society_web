@@ -2,6 +2,10 @@
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 # flake8: noqa
 
+from .collecting_society import CollectingSociety
+from .tariff_category import TariffCategory
+from .creation_tariff_category import CreationTariffCategory
+
 from .artist import Artist
 from .release import Release
 from .creation import Creation

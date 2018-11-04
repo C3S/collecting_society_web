@@ -2,6 +2,8 @@
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 # flake8: noqa
 
+from creation_tariff_category_sequence import CreationTariffCategorySequence
+
 from .artist_sequence import ArtistSequence
 from .creation_sequence import CreationSequence
 from .track_sequence import TrackSequence
