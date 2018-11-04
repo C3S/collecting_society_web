@@ -204,10 +204,17 @@ class FeaturedArtistField(colander.SchemaNode):
     widget = current_artists_select_widget
 
 
+class LyricsField(colander.SchemaNode):
+    oid = "lyrics"
+    schema_type = colander.String
+    widget = deform.widget.TextAreaWidget()
+    missing = ""
+
+
 # --- Schemas -----------------------------------------------------------------
 
 class MetadataSchema(colander.Schema):
-    title = _(u"Add metadata")
+    title = _(u"Metadata")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_(u"Working Title"))
     artist = FeaturedArtistField(title=_(u"Featured Artist"))
@@ -215,20 +222,29 @@ class MetadataSchema(colander.Schema):
 
 
 class OriginalsSchema(colander.Schema):
+    title = _(u"Derivation")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     originals = OriginalSequence(title="")
 
 
 class ContentSchema(colander.Schema):
+    title = _(u"Content")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     content = ContentSequence(actions=['add'])
 
 
+class LyricsSchema(colander.Schema):
+    title = _(u"Lyrics")
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    lyrics = LyricsField()
+
+
 class AddCreationSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
-    metadata = MetadataSchema(title=_(u"Metadata"))
-    originals = OriginalsSchema(title=_(u"Derivation"))
-    content = ContentSchema(title=_(u"Content"))
+    metadata = MetadataSchema()
+    originals = OriginalsSchema()
+    content = ContentSchema()
+    lyrics = LyricsSchema()
 
 
 # --- Forms -------------------------------------------------------------------
