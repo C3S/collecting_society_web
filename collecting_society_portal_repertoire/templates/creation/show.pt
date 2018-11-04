@@ -213,7 +213,7 @@
                                                             context, '..', '..',
                                                             'artists', artist.code)"
                                        tal:omit-tag="not creation.permits(
-                                                         request.web_user, 'view_artist')">
+                                                         request.web_user, 'view_creation')">
                                         <small class="cs-original-artist">${artist.name}</small>
                                     </a>
                                 </div>
