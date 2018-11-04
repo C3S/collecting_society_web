@@ -248,9 +248,12 @@
             <tr tal:condition="creation.tariff_categories">
                 <th i18n:translate="">Tariff Categories</th>
                 <td>
-                    <div tal:repeat="tariff creation.tariff_categories"
+                    <div tal:repeat="ctc creation.tariff_categories"
                          class="cs-list-item">
-                        ${tariff.name}
+                        ${ctc.category.name}<br>
+                        <small class="cs-collecting-society">
+                            ${ctc.collecting_society.name}
+                        </small>
                     </div>
                 </td>
             </tr>

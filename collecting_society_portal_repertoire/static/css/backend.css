@@ -164,6 +164,7 @@ h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bott
 .cs-artist-img { max-width: 200px; }
 .cs-table-artist-img { max-height: 50px; max-width: 50px; }
 
+.cs-collecting-society { font-style:italic; color:#777; }
 .cs-original { font-style:italic; margin-left:5px; color:#777; }
 .cs-contribution { font-style:italic; color:#777; }
 .cs-original-artist { color:#777; }
