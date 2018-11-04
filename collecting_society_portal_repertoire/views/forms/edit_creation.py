@@ -138,69 +138,6 @@ class EditCreation(FormController):
         if creation.artist != a['metadata']['artist']:
             creation.artist = a['metadata']['artist']
 
-        # # generate vlist
-        # _creation = {
-        #     'title': a['metadata']['title'],
-        #     'artist': a['metadata']['artist'],
-        #     'releases': a['metadata']['releases'],
-        # }
-        #
-        # # releases
-        # if a['metadata']['releases']:
-        #     _creation['releases'] = []
-        #     for release_id in a['metadata']['releases']:
-        #         _creation['releases'].append(
-        #             (
-        #                 'create',
-        #                 [{
-        #                     'release': release_id,
-        #                     'title': a['metadata']['title'],
-        #                     # TODO: manage different titles for releases
-        #                     #       using a datatables control
-        #                     # 'medium_number': TODO: medium_number
-        #                     # 'track_number': TODO: track_number
-        #                     # 'license ': TODO: license
-        #                 }]
-        #             )
-        #         )
-
-        # contributions
-        # if a['contributions']['contributions']:
-        #     _creation['contributions'] = []
-        #     for contribution in a[
-        #             'contributions']['contributions']:
-        #         _creation['contributions'].append(
-        #             (
-        #                 'create',
-        #                 [{
-        #                     'type': contribution['type'],
-        #                     'artist': contribution['artist']
-        #                 }]
-        #             )
-        #         )
-
-        # the form data as in self.appstract (alias a) looks like this:
-        #
-        # 'metadata': { ... },
-        # 'originals': {
-        #   'originals': [
-        #       {
-        #           'oid': '',
-        #           'type': u'cover',
-        #           'mode': u'create',
-        #           'original': [
-        #               {
-        #                   'code': u'C0000000003',
-        #                   'oid': u'af69a047-6b77-4d04-ab54-ef4fae94cc08',
-        #                   'titlefield': u'Working Title of Song 003',
-        #                    'mode': u'add',
-        #                   'artist': u'Solo Artist 001'
-        #               }]
-        #           }]
-        #       },
-        # 'content': { ... },
-        # ...
-
         # look for removed originals
         # originals = CreationDerivative.search_originals_of_creation_by_id(
         #    creation.id)
@@ -261,11 +198,7 @@ class EditCreation(FormController):
                     'derivative_creation': creation.id,
                     'allocation_type': a_original_relation['type']
                 }
-                new_original_realtions = CreationDerivative.create(
-                    [_original])
-                if not new_original_realtions:
-                    continue
-                new_original_realtion = new_original_realtions[0]
+                CreationDerivative.create([_original])
 
             # allocation_type of derivative-original relation has been changed?
             if a_original_relation['mode'] == 'edit':
@@ -313,7 +246,7 @@ class EditCreation(FormController):
                 existing_original_relation.original_creation = original
                 existing_original_relation.save()
 
-        # creation tarif categories
+        # creation tariff categories
         _ctcs = a['metadata']['tariff_categories']
         if _ctcs:
             for _ctc in _ctcs:
@@ -328,7 +261,7 @@ class EditCreation(FormController):
                 if not collecting_society:
                     continue
 
-                # create creation tarif categories
+                # create creation tariff categories
                 if _ctc['mode'] == "create":
                     # TODO: check, if category is already assigned
                     # (function in model)
@@ -338,7 +271,7 @@ class EditCreation(FormController):
                         'collecting_society': collecting_society.id
                     }])
 
-                # edit creation tarif categories
+                # edit creation tariff categories
                 if _ctc['mode'] == "edit":
                     ctc = CreationTariffCategory.search_by_oid(_ctc['oid'])
                     if not ctc:
