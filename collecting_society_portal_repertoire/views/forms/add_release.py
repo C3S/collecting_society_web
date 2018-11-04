@@ -124,19 +124,11 @@ class AddRelease(FormController):
                 if _track['mode'] == "create":
                     # create creation
                     if _creation['mode'] == "create":
-                        artist = Artist.create([{
-                            'name': _creation['artist'],
-                            'entity_origin': 'indirect',
-                            'entity_creator': party.id
-                            }])[0]
-                        if not artist:
-                            continue
-                        creation = Creation.create([{
-                            'title': _creation['titlefield'],
-                            'artist': artist.id,
-                            'entity_origin': 'indirect',
-                            'entity_creator': party.id
-                            }])[0]
+                        creation = Creation.create_foreign(
+                            party,
+                            _creation['artist'],
+                            _creation['titlefield']
+                        )
                         if not creation:
                             continue
                     # add creation

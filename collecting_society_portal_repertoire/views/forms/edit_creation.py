@@ -100,10 +100,10 @@ class EditCreation(FormController):
                         'type': original.allocation_type,
                         'original': [{
                             'mode': 'edit', 
-                            'code': original.derivative_creation.code,
-                            'oid': original.derivative_creation.oid,
-                            'titlefield': original.derivative_creation.title,
-                            'artist': original.derivative_creation.artist.name
+                            'code': original.original_creation.code,
+                            'oid': original.original_creation.oid,
+                            'titlefield': original.original_creation.title,
+                            'artist': original.original_creation.artist.name
                         }]
                     }
                 )
@@ -135,6 +135,7 @@ class EditCreation(FormController):
     def update_creation(self):
         a = self.appstruct
         web_user = self.request.web_user
+        party = self.request.party
         creation = self.context.creation
 
         # (working)title
@@ -186,63 +187,6 @@ class EditCreation(FormController):
         #             )
         #         )
 
-        # derivation
-        # if a['relations']['original_creations']:
-        #     _creation['original_relations'] = []
-        #     for original_creation in a[
-        #             'relations']['original_creations']:
-        #         _creation['original_relations'].append(
-        #             (
-        #                 'create',
-        #                 [{
-        #                     'original_creation': original_creation['creation'],
-        #                     'allocation_type': original_creation['type']
-        #                 }]
-        #             )
-        #         )
-        
-        # older version, merge rubbish? maybe can be deleted:
-        # if a['relations']['original_creations']:
-        #    _creation['original_relations'] = []
-        #    for original_creation in a[
-        #            'relations']['original_creations']:
-        #        _creation['original_relations'].append(
-        #            (
-        #                'create',
-        #                [{
-        #                    'original_creation': original_creation['creation'],
-        #                    'allocation_type': original_creation['type']
-        #                }]
-        #            )
-        #        )
-        # if a['relations']['derivative_creations']:
-        #    _creation['derivative_relations'] = []
-        #    for derivative_creation in a[
-        #            'relations']['derivative_creations']:
-        #        _creation['derivative_relations'].append(
-        #            (
-        #                'create',
-        #                [{
-        #                    'derivative_creation': derivative_creation[
-        #                        'creation'
-        #                    ],
-        #                    'allocation_type': derivative_creation['type']
-        #                }]
-        #            )
-        #        )
-
-        #if a['content']['content']:
-        #    _creation['content'] = []
-        #    for contentlistenty in a['content']['content']:
-        #        content = Content.search_by_oid(contentlistenty['oid'])
-        #        if content:
-        #            _creation['content'].append(
-        #                (
-        #                    'add',
-        #                    [content.id]
-        #                )
-        #            )
-
         # the form data as in self.appstract (alias a) looks like this: 
         #
         # 'metadata': { ... },
@@ -281,41 +225,102 @@ class EditCreation(FormController):
                     CreationDerivative.delete([original])  # remove it from db
 
         # add new derivative-original relations or perform edits there
+        # relations can be of allocation type 'adaption', 'cover', or 'remix'
         # (objects starting with a_ relate to form data provided by appstruct)
         for a_original_relation in a['originals']['originals']:
             a_original = a_original_relation['original'][0]
+
+            # sanity checks
+            if a_original['code'] == creation.code:  # original of self?
+                self.request.session.flash(
+                    _(u"Warning: A Creation cannot be the original of it self."
+                      " If you do an adaption of a creation, you need to "
+                      "create a new creation in order to be able to refer to "
+                      "it as an original."),
+                    'main-alert-warning'
+                )
+
+            # new derivative-original relation to create?
             if a_original_relation['mode'] == 'create':
-                # sanity checks
-                if a_original['code'] == creation.code:  # original of self?
-                    continue
-                if a_original['mode'] == 'add':
+
+                # create foreign creation
+                if a_original['mode'] == 'create':
+                    original = Creation.create_foreign(
+                        party,
+                        a_original['artist'],
+                        a_original['titlefield']
+                    )
+                    if not original:
+                        continue
+                else:  # add foreign creation
                     original = Creation.search_by_oid(a_original['oid'])
                     if not original:
                         # TODO: Userfeedback
                         continue
-                    _original = {
-                        'original_creation': original.id,
-                        'derivative_creation': creation.id,
-                        'allocation_type': a_original_relation['type']
-                    }
-                    new_originals = CreationDerivative.create([_original])
-                    if new_originals:
-                        new_original = new_originals[0]
-                if a_original['mode'] == 'create':
-                    pass
+                    if not original.permits(web_user, 'edit_creation'):
+                        self.request.session.flash(
+                            _(u"Warning: You don't have permissions to edit "
+                              "the original. Changes won't take effekt."),
+                            'main-alert-warning'
+                        )
+                        continue
+                _original = {
+                    'original_creation': original.id,
+                    'derivative_creation': creation.id,
+                    'allocation_type': a_original_relation['type']
+                }
+                new_original_realtions = CreationDerivative.create(
+                    [_original])
+                if not new_original_realtions:
+                    continue
+                new_original_realtion = new_original_realtions[0]
+  
+            # allocation_type of derivative-original relation has been changed?
             if a_original_relation['mode'] == 'edit':
-                #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
-
+                
+                # find the derivative-original relation in the database and
                 # change the allocation_type, e.g. from 'remix' to 'cover'
-                self.newmethod656(a_original_relation)
+                existing_original_relation = CreationDerivative.search_by_oid(
+                        a_original_relation['oid'])
+                if not existing_original_relation:
+                    continue
+                existing_original_relation.allocation_type = (
+                    a_original_relation['type'])
 
-                if a_original['mode'] == 'add':
-                    pass
-                if a_original['mode'] == 'create':
-                    pass
-                if a_original['mode'] == 'edit':
-                    pass
-        
+                # create foreign creation
+                if a_original['mode'] == "create":
+                    original = Creation.create_foreign(
+                        party,
+                        a_original['artist'],
+                        a_original['titlefield']
+                    )
+                    if not original:
+                        continue
+                else:  # add (including edit) foreign creation
+                    original = Creation.search_by_oid(a_original['oid'])
+                    if not original:
+                        continue
+                    # edit foreign creation
+                    if a_original['mode'] == "edit":
+                        if not original.permits(web_user, 'edit_creation'):
+                            self.request.session.flash(
+                                _(
+                                    u"Warning: You don't have permissions to "
+                                    "edit the original. Changes won't take "
+                                    "effekt."
+                                ),
+                                'main-alert-warning'
+                            )
+                            continue
+                        original.artist.name = a_original['artist']
+                        original.artist.save()
+                        original.title = a_original['titlefield']
+                        original.save()
+
+                # save derivative-original relation
+                existing_original_relation.original_creation = original
+                existing_original_relation.save()
+
         # content
         contents_to_add = []
         for content_item in self.appstruct['content']['content']:
@@ -352,12 +357,6 @@ class EditCreation(FormController):
 
         # redirect
         self.redirect()
-
-    def newmethod656(self, a_original_relation):
-        relation = CreationDerivative.search_by_oid(
-                a_original_relation['oid'])
-        relation.allocation_type = a_original_relation['type']
-        relation.save()
 
 
 # --- Validators --------------------------------------------------------------
