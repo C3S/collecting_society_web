@@ -139,7 +139,9 @@ class Content(Tdb):
             ('active', '=', True),
             ('id', '=', uid)
         ])
-        return result[0] if result else None
+        if not result:
+            return None
+        return result[0]
 
     @classmethod
     def search_by_oid(cls, oid, active=True):
@@ -218,7 +220,9 @@ class Content(Tdb):
             ('active', '=', True),
             ('uuid', '=', uuid)
         ])
-        return result[0] if result else None
+        if not result:
+            return None
+        return result[0]
 
     @classmethod
     def search_by_archive(cls, archive):
@@ -298,7 +302,9 @@ class Content(Tdb):
             ('active', '=', True),
             ('creation', '=', creation_id)
         ])
-        return result[0] if result else None
+        if not result:
+            return None
+        return result[0]
 
     @classmethod
     def search_by_extension(cls, extension):

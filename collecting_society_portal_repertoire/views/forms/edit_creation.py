@@ -11,10 +11,13 @@ from ...services import _
 from ...models import (
     CollectingSociety,
     TariffCategory,
-    CreationTariffCategory,
+    Artist,
     Creation,
-    Content,
-    CreationDerivative
+    CreationContribution,
+    CreationDerivative,
+    CreationTariffCategory,
+    CreationRole,
+    Content
 )
 from .add_creation import (
     AddCreationSchema,
@@ -75,10 +78,37 @@ class EditCreation(FormController):
         if creation.contributions:
             _contributions = []
             for contribution in creation.contributions:
+                artist_mode = 'add'
+                artist_email = ''
+                if Artist.is_foreign_contributor(
+                        self.request, contribution, contribution.artist):
+                    artist_mode = 'edit'
+                    artist_email = contribution.artist.party.email
+                role_oid = ''
+                if contribution.roles:
+                    role_oid = contribution.roles[0].oid
+                cs_name = ''
+                if contribution.collecting_society:
+                    cs_name = contribution.collecting_society.name
+                nrs_name = ''
+                if contribution.neighbouring_rights_society:
+                    nrs_name = contribution.neighbouring_rights_society.oid
                 _contributions.append({
-                    'mode': 'add',
-                    'type': contribution.type,
-                    'artist': contribution.artist.id
+                    'mode': 'edit',
+                    'oid': contribution.oid,
+                    'contribution_type': contribution.type,
+                    'performance': contribution.performance or '',
+                    'role': role_oid,
+                    'collecting_society': cs_name,
+                    'neighbouring_rights_society': nrs_name,
+                    'artist': [{
+                        'mode': artist_mode,
+                        'oid': contribution.artist.oid,
+                        'name': contribution.artist.name,
+                        'code': contribution.artist.code,
+                        'description': contribution.artist.description or '',
+                        'email': artist_email
+                    }]
                 })
             self.appstruct['contributions'] = {
                 'contributions': _contributions
@@ -144,6 +174,141 @@ class EditCreation(FormController):
         # lyrics
         if a['lyrics']['lyrics']:
             creation.lyrics = a['lyrics']['lyrics']
+
+        # contributions
+        _contributions = self.appstruct['contributions']['contributions']
+        if _contributions:
+            for _contribution in _contributions:
+                _artist = _contribution['artist'][0]
+                _cs = _contribution['collecting_society']
+                _nrs = _contribution['neighbouring_rights_society']
+                _type = _contribution['contribution_type']
+                _role = _contribution['role']
+
+                # create contribution
+                if _contribution['mode'] == "create":
+
+                    # create artist
+                    if _artist['mode'] == "create":
+                        artist = Artist.create_foreign(
+                            party, _artist['name'], _artist['email'],
+                            group=False)
+                        if not artist:
+                            continue
+
+                    # add artist
+                    else:
+                        artist = Artist.search_by_oid(_artist['oid'])
+                        if not artist:
+                            continue
+
+                    # prepare contribution
+                    create = {
+                        'creation': creation.id,
+                        'artist': artist.id,
+                        'type': _contribution['contribution_type']
+                    }
+                    # type: text
+                    if _type == 'text' and _cs:
+                        cs = CollectingSociety.search_by_oid(_cs)
+                        if not cs:
+                            continue
+                        create['collecting_society'] = cs.id
+                    # type: composition
+                    if _type == 'composition' and _role:
+                        role = CreationRole.search_by_oid(_role)
+                        if not role:
+                            continue
+                        create['roles'] = [('add', [role.id])]
+                    # type: performance
+                    if _type == 'performance':
+                        create['performance'] = _contribution['performance']
+                        if _role:
+                            role = CreationRole.search_by_oid(_role)
+                            if not role:
+                                continue
+                            create['roles'] = [('add', [role.id])]
+                        if _nrs:
+                            nrs = CollectingSociety.search_by_oid(_nrs)
+                            if not nrs:
+                                continue
+                            create['neighbouring_rights_society'] = nrs.id
+                    # append contribution
+                    CreationContribution.create([create])
+
+                # create contribution
+                if _contribution['mode'] == "edit":
+                    contribution = CreationContribution.search_by_oid(
+                        _contribution['oid'])
+                    if not contribution or not contribution.creation.permits(
+                            web_user, 'edit_creation'):
+                        continue
+
+                    # create artist
+                    if _artist['mode'] == "create":
+                        artist = Artist.create_foreign(
+                            party, _artist['name'], _artist['email'],
+                            group=False)
+                        if not artist:
+                            continue
+
+                    # add artist
+                    else:
+                        artist = Artist.search_by_oid(_artist['oid'])
+                        if not artist:
+                            continue
+
+                        # edit artist
+                        if _artist['mode'] == "edit":
+                            if not Artist.is_foreign_contributor(
+                                    self.request, contribution,
+                                    contribution.artist):
+                                continue
+                            artist.name = _artist['name']
+                            has_email = False
+                            if artist.party.contact_mechanisms:
+                                for contact in artist.party.contact_mechanisms:
+                                    if contact.type == 'email':
+                                        has_email = True
+                                        contact.email = _artist['email']
+                                        contact.save()
+                            if not has_email:
+                                # TODO: find out, how to create a new contact
+                                # mechanism without user validation error
+                                log.debug("warning: email not created (TODO)")
+                            artist.save()
+
+                    contribution.roles = []
+                    contribution.performance = None
+                    contribution.collecting_society = None
+                    contribution.neighbouring_rights_society = None
+                    contribution.type = _contribution['contribution_type']
+                    # type: text
+                    if _type == 'text' and _cs:
+                        cs = CollectingSociety.search_by_oid(_cs)
+                        if not cs:
+                            continue
+                        contribution.collecting_society = cs.id
+                    # type: composition
+                    if _type == 'composition' and _role:
+                        role = CreationRole.search_by_oid(_role)
+                        if not role:
+                            continue
+                        contribution.roles = [role.id]
+                    # type: performance
+                    if _type == 'performance':
+                        contribution.performance = _contribution['performance']
+                        if _role:
+                            role = CreationRole.search_by_oid(_role)
+                            if not role:
+                                continue
+                            contribution.roles = [role.id]
+                        if _nrs:
+                            nrs = CollectingSociety.search_by_oid(_nrs)
+                            if not nrs:
+                                continue
+                            contribution.neighbouring_rights_society = nrs.id
+                    contribution.save()
 
         # look for removed originals
         # originals = CreationDerivative.search_originals_of_creation_by_id(

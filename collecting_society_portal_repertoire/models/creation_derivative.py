@@ -111,4 +111,6 @@ class CreationDerivative(Tdb):
           None: if no match is found
         """
         result = cls.get().search([('oid', '=', oid)])
-        return result[0] or None
+        if not result:
+            return None
+        return result[0]

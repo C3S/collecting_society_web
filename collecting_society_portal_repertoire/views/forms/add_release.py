@@ -229,16 +229,6 @@ def current_artists_select_widget(node, kw):
     return widget
 
 
-# @colander.deferred
-# def party_select_widget(node, kw):
-#     parties = Party.search_all()
-#     label_options = [
-#         (party.code, party.name) for party in parties
-#     ]
-#     widget = deform.widget.Select2Widget(values=label_options)
-#     return widget
-
-
 @colander.deferred
 def deferred_genre_widget(node, kw):
     genres = Genre.search_all()

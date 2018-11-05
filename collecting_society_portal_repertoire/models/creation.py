@@ -361,7 +361,6 @@ class Creation(Tdb):
         result = cls.get().create(vlist)
         return result or None
 
-
     @classmethod
     def create_foreign(cls, party, artist_name, title):
         """
@@ -376,20 +375,19 @@ class Creation(Tdb):
             Creation object: the creation that has been creation
             None: if no object was created
         """
-
         artist = Artist.create([{
             'name': artist_name,
             'entity_origin': 'indirect',
             'entity_creator': party.id
-            }])[0]
+            }])
         if not artist:
             return None
         creation = Creation.create([{
             'title': title,
-            'artist': artist.id,
+            'artist': artist[0].id,
             'entity_origin': 'indirect',
             'entity_creator': party.id
-            }])[0]
+            }])
         if not creation:
             return None
-        return creation
+        return creation[0]
