@@ -39,7 +39,9 @@ class Genre(Tdb):
           None: if no match is found
         """
         result = cls.get().search([('name', '=', name)])
-        return result[0] or None
+        if not result:
+            return None
+        return result[0]
 
     @classmethod
     def search_by_id(cls, id):
@@ -54,7 +56,9 @@ class Genre(Tdb):
           None: if no match is found
         """
         result = cls.get().search([('id', '=', int(id))])
-        return result[0] or None
+        if not result:
+            return None
+        return result[0]
 
     @classmethod
     def search_by_oid(cls, oid, active=True):

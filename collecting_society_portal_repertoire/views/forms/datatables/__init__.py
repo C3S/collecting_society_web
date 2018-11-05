@@ -6,6 +6,7 @@ from creation_tariff_category_sequence import CreationTariffCategorySequence
 
 from .artist_sequence import ArtistSequence
 from .creation_sequence import CreationSequence
+from .contribution_sequence import ContributionSequence
 from .track_sequence import TrackSequence
 from .original_sequence import OriginalSequence
 from .content_sequence import ContentSequence

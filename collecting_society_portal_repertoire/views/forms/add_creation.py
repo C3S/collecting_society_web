@@ -16,12 +16,13 @@ from ...models import (
     TariffCategory,
     Artist,
     Creation,
-    Content,
+    CreationRole,
     CreationDerivative,
-    Release
+    Content
 )
 from .datatables import (
     ContentSequence,
+    ContributionSequence,
     OriginalSequence,
     CreationTariffCategorySequence
 )
@@ -113,6 +114,72 @@ class AddCreation(FormController):
             _creation['tariff_categories'] = []
             if ctc_create:
                 _creation['tariff_categories'].append(('create', ctc_create))
+
+        # contributions
+        _contributions = self.appstruct['contributions']['contributions']
+        if _contributions:
+            contributions_create = []
+            for _contribution in _contributions:
+                if _contribution['mode'] != "create":
+                    continue
+                _artist = _contribution['artist'][0]
+                _cs = _contribution['collecting_society']
+                _nrs = _contribution['neighbouring_rights_society']
+                _type = _contribution['contribution_type']
+                _role = _contribution['role']
+
+                # create artist
+                if _artist['mode'] == "create":
+                    artist = Artist.create_foreign(
+                        party, _artist['name'], _artist['email'],
+                        group=False)
+                    if not artist:
+                        continue
+
+                # add artist
+                else:
+                    artist = Artist.search_by_oid(_artist['oid'])
+                    if not artist:
+                        continue
+
+                # prepare contribution
+                create = {
+                    'artist': artist.id,
+                    'type': _contribution['contribution_type']
+                }
+                # type: text
+                if _type == 'text' and _cs:
+                    cs = CollectingSociety.search_by_oid(_cs)
+                    if not cs:
+                        continue
+                    create['collecting_society'] = cs.id
+                # type: composition
+                if _type == 'composition' and _role:
+                    role = CreationRole.search_by_oid(_role)
+                    if not role:
+                        continue
+                    create['roles'] = [('add', [role.id])]
+                # type: performance
+                if _type == 'performance':
+                    create['performance'] = _contribution['performance']
+                    if _role:
+                        role = CreationRole.search_by_oid(_role)
+                        if not role:
+                            continue
+                        create['roles'] = [('add', [role.id])]
+                    if _nrs:
+                        nrs = CollectingSociety.search_by_oid(_nrs)
+                        if not nrs:
+                            continue
+                        create['neighbouring_rights_society'] = nrs.id
+                # append contribution
+                contributions_create.append(create)
+
+            # append actions
+            _creation['contributions'] = []
+            if contributions_create:
+                _creation['contributions'].append(
+                    ('create', contributions_create))
 
         # content
         if a['content']['content']:
@@ -255,6 +322,12 @@ class MetadataSchema(colander.Schema):
     tariff_categories = CreationTariffCategorySequence()
 
 
+class ContributionsSchema(colander.Schema):
+    title = _(u"Contributions")
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    contributions = ContributionSequence(title="", min_len=1)
+
+
 class OriginalsSchema(colander.Schema):
     title = _(u"Derivation")
     widget = deform.widget.MappingWidget(template='navs/mapping')
@@ -264,7 +337,7 @@ class OriginalsSchema(colander.Schema):
 class ContentSchema(colander.Schema):
     title = _(u"Content")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    content = ContentSequence(actions=['add'])
+    content = ContentSequence(title="", actions=['add'])
 
 
 class LyricsSchema(colander.Schema):
@@ -276,6 +349,7 @@ class LyricsSchema(colander.Schema):
 class AddCreationSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
     metadata = MetadataSchema()
+    contributions = ContributionsSchema()
     originals = OriginalsSchema()
     content = ContentSchema()
     lyrics = LyricsSchema()

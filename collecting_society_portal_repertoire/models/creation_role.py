@@ -1,4 +1,4 @@
-# For copyright and style terms, see COPYRIGHT.rst (top level of repository)
+# For copyright and genre terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
 import logging
@@ -8,20 +8,20 @@ from collecting_society_portal.models import Tdb
 log = logging.getLogger(__name__)
 
 
-class Style(Tdb):
+class CreationRole(Tdb):
     """
-    Model wrapper for Tryton model object 'style'
+    Model wrapper for Tryton model object 'creation.role'
     """
 
-    __name__ = 'style'
+    __name__ = 'creation.role'
 
     @classmethod
     def search_all(cls):
         """
-        Fetches all Styles
+        Fetches all creation roles
 
         Returns:
-          list: styles
+          list: creation roles
           None: if no match is found
         """
         return cls.get().search([])
@@ -29,13 +29,13 @@ class Style(Tdb):
     @classmethod
     def search_by_name(cls, name):
         """
-        Searches a style by name
+        Searches a creation role by name
 
         Args:
-          name (string): style.name
+          name (string): creation.role
 
         Returns:
-          obj: style
+          obj: creation role
           None: if no match is found
         """
         result = cls.get().search([('name', '=', name)])
@@ -46,13 +46,13 @@ class Style(Tdb):
     @classmethod
     def search_by_id(cls, id):
         """
-        Searches a style by id
+        Searches a creation role by id
 
         Args:
-          id (int): style.id
+          id (int): creation.role.id
 
         Returns:
-          obj: style
+          obj: creation role
           None: if no match is found
         """
         result = cls.get().search([('id', '=', int(id))])
@@ -61,20 +61,19 @@ class Style(Tdb):
         return result[0]
 
     @classmethod
-    def search_by_oid(cls, oid, active=True):
+    def search_by_oid(cls, oid):
         """
-        Searches a style by oid (public api id)
+        Searches an creation role by oid (public api id)
 
         Args:
-          oid (int): style.oid
+          oid (int): creation.role.oid
 
         Returns:
-          obj: style
+          obj: creation role
           None: if no match is found
         """
         result = cls.get().search([
-            ('oid', '=', oid),
-            ('active', 'in', (True, active))
+            ('oid', '=', oid)
         ])
         if not result:
             return None

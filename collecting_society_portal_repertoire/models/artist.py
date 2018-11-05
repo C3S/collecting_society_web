@@ -3,7 +3,10 @@
 
 import logging
 
-from collecting_society_portal.models import Tdb
+from collecting_society_portal.models import (
+    Tdb,
+    Party
+)
 
 log = logging.getLogger(__name__)
 
@@ -39,16 +42,53 @@ class Artist(Tdb):
         # sanity checks
         if member not in group.solo_artists:
             return False
-        # 1) member is a foreign object
+        # 1) is a foreign object
         if member.entity_origin != 'indirect':
             return False
-        # 2) member is still not claimed yet
+        # 2) is still not claimed yet
         if member.claim_state != 'unclaimed':
             return False
-        # 3) member is editable by the current web user
+        # 3) is editable by the current web user
         if not group.permits(request.web_user, 'edit_artist'):
             return False
-        # 4) TODO: member was not part of a distribution yet
+        # 4) TODO: was not part of a distribution yet
+        return True
+
+    @classmethod
+    def is_foreign_contributor(cls, request, contribution, artist):
+        """
+        Checks if the artist is a foreign object and still editable by the
+        current webuser.
+
+        Checks, if the member
+            1) is a foreign object
+            2) is still not claimed yet
+            3) is editable by the current web user
+            4) TODO: was not part of a distribution yet
+
+        Args:
+          request (pyramid.request.Request): Current request.
+          contribution (obj): Contribution of the artist
+          artist (obj): Artist to check.
+
+        Returns:
+          true: if member is editable.
+          false: otherwise.
+        """
+        # sanity checks
+        if artist != contribution.artist:
+            return False
+        # 1) is a foreign object
+        if artist.entity_origin != 'indirect':
+            return False
+        # 2) is still not claimed yet
+        if artist.claim_state != 'unclaimed':
+            return False
+        # 3) is editable by the current web user
+        if not contribution.creation.permits(
+                request.web_user, 'edit_creation'):
+            return False
+        # 4) TODO: was not part of a distribution yet
         return True
 
     @classmethod
@@ -164,7 +204,9 @@ class Artist(Tdb):
             ('id', '=', artist_id),
             ('active', 'in', (True, active))
         ])
-        return result[0] or None
+        if not result:
+            return None
+        return result[0]
 
     @classmethod
     def search_by_oid(cls, oid, active=True):
@@ -391,3 +433,40 @@ class Artist(Tdb):
                 raise KeyError('name is missing')
         result = cls.get().create(vlist)
         return result or None
+
+    @classmethod
+    def create_foreign(cls, party, name, email, group=False):
+        """
+        Creates foreign Artist
+
+        Args:
+            party: the Party that wants to create the foreign objects
+            name: the artist name of the foreign artist object
+            email: the artist email of the foreign artist object
+
+        Returns:
+            Artist object: the artist that has been created
+            None: if no object was created
+        """
+        assert(name)
+        assert(email)
+        artist_party = Party.create([{
+            'name': name,
+            'contact_mechanisms': [(
+                'create', [{
+                    'type': 'email',
+                    'value': email
+                    }]
+                )]
+            }])
+        artist = Artist.create([{
+            'group': group,
+            'name': name,
+            'party': artist_party.id,
+            'entity_creator': party.id,
+            'entity_origin': 'indirect',
+            'claim_state': 'unclaimed',
+            }])
+        if not artist:
+            return None
+        return artist[0]

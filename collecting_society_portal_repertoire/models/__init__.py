@@ -4,12 +4,14 @@
 
 from .collecting_society import CollectingSociety
 from .tariff_category import TariffCategory
-from .creation_tariff_category import CreationTariffCategory
 
 from .artist import Artist
 from .release import Release
 from .creation import Creation
+from .creation_contribution import CreationContribution
 from .creation_derivative import CreationDerivative
+from .creation_role import CreationRole
+from .creation_tariff_category import CreationTariffCategory
 from .content import Content
 from .genre import Genre
 from .style import Style

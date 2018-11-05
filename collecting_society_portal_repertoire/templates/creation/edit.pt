@@ -26,6 +26,65 @@
 
             <div tal:content="structure EditCreation"/>
 
+            <script class="datatable_sequence_item_script">
+                $(document).ready(function() {
+                    $.each($(".deform-sequence-item"), function(_, item) {
+                        console.log($(item));
+                        var contribution = $(item)
+                            .find('.item-contribution_type').first();
+                        var performance = $(item)
+                            .find('.item-performance').first();
+                        var role = $(item)
+                            .find('.item-role').first();
+                        var cs = $(item)
+                            .find('.item-collecting_society').first();
+                        var nrs = $(item)
+                            .find('.item-neighbouring_rights_society').first();
+                        contribution.change(function() {
+                            var selected = contribution
+                                .find("select")
+                                .children(":selected")
+                                .first();
+                            switch(selected.attr('value')) {
+                                case 'performance':
+                                    performance.show();
+                                    cs.hide();
+                                    nrs.show();
+                                    performance.trigger('change');
+                                    break;
+                                case 'composition':
+                                    performance.hide();
+                                    cs.hide();
+                                    nrs.hide();
+                                    role.show();
+                                    break;
+                                case 'text':
+                                    performance.hide();
+                                    cs.show();
+                                    nrs.hide();
+                                    role.hide();
+                                    break;
+                            }
+                        });
+                        performance.change(function() {
+                            var selected = performance
+                                .find("select")
+                                .children(":selected")
+                                .first();
+                            switch(selected.attr('value')) {
+                                case 'recording':
+                                    role.show();
+                                    break;
+                                default:
+                                    role.hide();
+                            }
+                        });
+                        performance.trigger('change');
+                        contribution.trigger('change');
+                    });
+                });
+            </script>
+
         </div>
 
     </tal:block>
