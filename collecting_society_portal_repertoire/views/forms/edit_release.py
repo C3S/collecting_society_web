@@ -111,7 +111,7 @@ class EditRelease(FormController):
         for track in tracks:
             creation_mode = "add"
             if Creation.is_foreign_track(
-                    self.request, release, track.creation):
+                    self.request, track.creation):
                 creation_mode = "edit"
             self.appstruct['tracks']['tracks'].append({
                 'mode': "edit",
