@@ -54,7 +54,7 @@ class Creation(Tdb):
         return True
 
     @classmethod
-    def is_foreign_track(cls, request, release, track):
+    def is_foreign_track(cls, web_user, original):
         """
         Checks if the track is a foreign object and still editable by the
         current webuser.
@@ -75,20 +75,15 @@ class Creation(Tdb):
           false: otherwise.
         """
         # sanity checks
-        included = False
-        for release_track in release.tracks:
-            if track == release_track.creation:
-                included = True
-        if not included:
-            return False
+        # TODO
         # 1) is a foreign object
-        if track.entity_origin != 'indirect':
+        if original.entity_origin != 'indirect':
             return False
         # 2) is still not claimed yet
-        if track.claim_state != 'unclaimed':
+        if original.claim_state != 'unclaimed':
             return False
         # 3) is editable by the current web user
-        if not track.permits(request.web_user, 'edit_creation'):
+        if not original.permits(web_user, 'edit_creation'):
             return False
         # 4) TODO: was not part of a distribution yet
         return True

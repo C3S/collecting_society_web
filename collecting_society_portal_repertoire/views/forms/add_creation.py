@@ -17,6 +17,7 @@ from ...models import (
     Artist,
     Creation,
     CreationRole,
+    CreationDerivative,
     Content
 )
 from .datatables import (
@@ -75,20 +76,22 @@ class AddCreation(FormController):
 
     @Tdb.transaction(readonly=False)
     def create_creation(self):
+        a = self.appstruct
         web_user = self.request.web_user
         party = self.request.party
 
-        log.debug(self.appstruct)
+        log.debug(a)
 
         # generate vlist
         _creation = {
-            'title': self.appstruct['metadata']['title'],
-            'artist': self.appstruct['metadata']['artist'],
+            'title': a['metadata']['title'],
+            'artist': a['metadata']['artist'],
+            'lyrics': a['lyrics']['lyrics'],
             'entity_creator': party,
         }
 
         # creation tariff categories
-        _ctcs = self.appstruct['metadata']['tariff_categories']
+        _ctcs = a['metadata']['tariff_categories']
         if _ctcs:
             ctc_create = []
             # create creation tariff categories
@@ -179,9 +182,9 @@ class AddCreation(FormController):
                     ('create', contributions_create))
 
         # content
-        if self.appstruct['content']['content']:
+        if a['content']['content']:
             _creation['content'] = []
-            for content_listenty in self.appstruct['content']['content']:
+            for content_listenty in a['content']['content']:
                 content = Content.search_by_code(content_listenty['code'])
                 if content:
                     _creation['content'].append(('add', [content.id]))
@@ -199,10 +202,41 @@ class AddCreation(FormController):
             self.redirect()
             return
         creation = creations[0]
+
+        # add derivative-original relations
+        # relations can be of allocation type 'adaption', 'cover', or 'remix'
+        # (objects starting with a_ relate to form data provided by appstruct)
+        for a_original_relation in a['originals']['originals']:
+            a_original = a_original_relation['original'][0]
+
+            # new derivative-original relation to create?
+            if a_original_relation['mode'] == 'create':
+
+                # create foreign creation
+                if a_original['mode'] == 'create':
+                    original = Creation.create_foreign(
+                        party,
+                        a_original['artist'],
+                        a_original['titlefield']
+                    )
+                    if not original:
+                        continue
+                else:  # add creation
+                    original = Creation.search_by_oid(a_original['oid'])
+                    if not original:
+                        # TODO: Userfeedback
+                        continue
+                _original = {
+                    'original_creation': original.id,
+                    'derivative_creation': creation.id,
+                    'allocation_type': a_original_relation['type']
+                }
+                CreationDerivative.create([_original])
+
         log.info("creation add successful for %s: %s" % (web_user, creation))
         self.request.session.flash(
-            _(u"Creation added: ") + creation.title
-            + " (" + creation.code + ")", 'main-alert-success'
+            _(u"Creation added: ") + creation.title +
+            " (" + creation.code + ")", 'main-alert-success'
         )
 
         # redirect

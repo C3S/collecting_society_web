@@ -51,6 +51,7 @@ class EditCreation(FormController):
 
     def edit_creation(self):
         creation = self.context.creation
+        web_user = self.request.web_user
 
         # set appstruct
         self.appstruct = {
@@ -117,21 +118,31 @@ class EditCreation(FormController):
         # original works, this creation is derived from
         if creation.original_relations:
             _originals = []
-            for original in creation.original_relations:
-                _originals.append(
-                    {
+            for original_relation in creation.original_relations:
+                original_mode = "add"
+                if (
+                    Creation.is_foreign_track(
+                        web_user,
+                        original_relation.original_creation
+                    )
+                ):
+                    original_mode = "edit"
+                _originals.append({
                         'mode': 'edit',
-                        'oid': original.oid,
-                        'type': original.allocation_type,
+                        'oid': original_relation.oid,
+                        'type': original_relation.allocation_type,
                         'original': [{
-                            'mode': 'edit',
-                            'code': original.original_creation.code,
-                            'oid': original.original_creation.oid,
-                            'titlefield': original.original_creation.title,
-                            'artist': original.original_creation.artist.name
+                            'mode': original_mode,
+                            'code': original_relation.original_creation.
+                                code,
+                            'oid': original_relation.original_creation.
+                                oid,
+                            'titlefield': original_relation.
+                                original_creation.title,
+                            'artist': original_relation.original_creation.
+                                artist.name
                         }]
-                    }
-                )
+                    })
             self.appstruct['originals'] = {
                 'originals': _originals
             }
@@ -353,7 +364,7 @@ class EditCreation(FormController):
                     )
                     if not original:
                         continue
-                else:  # add foreign creation
+                else:  # add creation
                     original = Creation.search_by_oid(a_original['oid'])
                     if not original:
                         # TODO: Userfeedback
@@ -393,22 +404,22 @@ class EditCreation(FormController):
                     # edit foreign creation
                     if a_original['mode'] == "edit":
                         # form data of foreign original changed?
-                        if (original.artist.name != a_original['artist'] or
-                                original.title != a_original['titlefield']):
-                            if not original.permits(web_user, 'edit_creation'):
-                                self.request.session.flash(
-                                    _(
-                                        u"Warning: You don't have permissions "
-                                        "to edit the original. Changes won't "
-                                        "take effekt."
-                                    ),
-                                    'main-alert-warning'
-                                )
-                                continue
-                            original.artist.name = a_original['artist']
-                            original.artist.save()
-                            original.title = a_original['titlefield']
-                            original.save()
+                        # if (original.artist.name != a_original['artist'] or
+                        #         original.title != a_original['titlefield']):
+                        if not original.permits(web_user, 'edit_creation'):
+                            self.request.session.flash(
+                                _(
+                                    u"Warning: You don't have permissions "
+                                    "to edit the original. Changes won't "
+                                    "take effekt."
+                                ),
+                                'main-alert-warning'
+                            )
+                            continue
+                        original.artist.name = a_original['artist']
+                        original.artist.save()
+                        original.title = a_original['titlefield']
+                        original.save()
 
                 # save derivative-original relation
                 existing_original_relation.original_creation = original
@@ -474,8 +485,8 @@ class EditCreation(FormController):
         # user feedback
         log.info("creation edit successful for %s: %s" % (web_user, creation))
         self.request.session.flash(
-            _(u"Creation edited: ") + creation.title
-            + " ("+creation.code+")", 'main-alert-success'
+            _(u"Creation edited: ") + creation.title +
+            " ("+creation.code+")", 'main-alert-success'
         )
 
         # redirect
