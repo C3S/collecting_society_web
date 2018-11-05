@@ -69,7 +69,9 @@ def post_content(request):
             'OR',
             ('code', 'ilike', search),
             ('name', 'ilike', search)
-        ]
+        ],
+        ('entity_creator', '=', request.web_user.party.id),  # only own
+        ('creation', '=', None)                              # only orphaned
     ]
     for column in data['columns']:
         if not column['searchable'] or not column['search']['value']:
