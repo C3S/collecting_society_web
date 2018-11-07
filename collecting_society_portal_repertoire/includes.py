@@ -102,12 +102,12 @@ def web_registry(config):
                     'icon': request.static_path(
                                 'collecting_society_portal:'
                                 'static/img/de.png')},
-                {
-                    'id': 'es',
-                    'name': _(u'español'),
-                    'icon': request.static_path(
-                                'collecting_society_portal:'
-                                'static/img/es.gif')}
+                # {
+                #     'id': 'es',
+                #     'name': _(u'español'),
+                #     'icon': request.static_path(
+                #                 'collecting_society_portal:'
+                #                 'static/img/es.gif')}
             ]
         }
 

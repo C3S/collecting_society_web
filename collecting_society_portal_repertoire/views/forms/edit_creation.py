@@ -119,10 +119,18 @@ class EditCreation(FormController):
         if creation.original_relations:
             _originals = []
             for original_relation in creation.original_relations:
+                #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
+                log.debug("=======> original_relation")
+                log.debug(original_relation)
+                log.debug("=======> derivative creation")
+                log.debug(creation)
+                log.debug("=======> original_relation.original_creation")
+                log.debug(original_relation.original_creation)
                 original_mode = "add"
                 if (
-                    Creation.is_foreign_creation(
-                        web_user,
+                    Creation.is_foreign_original(
+                        self.request,
+                        creation,
                         original_relation.original_creation
                     )
                 ):
@@ -406,7 +414,13 @@ class EditCreation(FormController):
                         # form data of foreign original changed?
                         # if (original.artist.name != a_original['artist'] or
                         #         original.title != a_original['titlefield']):
-                        if not original.permits(web_user, 'edit_creation'):
+                        if (
+                            not Creation.is_foreign_original(
+                                web_user,
+                                creation,
+                                creation.original_creation
+                            )
+                        ):
                             self.request.session.flash(
                                 _(
                                     u"Warning: You don't have permissions "
