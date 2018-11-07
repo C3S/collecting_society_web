@@ -27,9 +27,6 @@ def prepare_required(value):
     # oid required for add/edit
     if value['mode'] != "create" and value['oid'] == "IGNORED":
         value['oid'] = ""
-    # code required for add/edit
-    if value['mode'] != "create" and value['code'] == "IGNORED":
-        value['code'] = ""
     return value
 
 
