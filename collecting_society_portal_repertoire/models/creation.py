@@ -54,12 +54,43 @@ class Creation(Tdb):
         return True
 
     @classmethod
-    def is_foreign_track(cls, web_user, original):
+    def is_foreign_track(cls, web_user, release, creation):
         """
         Checks if the track is a foreign object and still editable by the
         current webuser.
 
-        Checks, if the original
+        Checks, if the creation
+            1) is a foreign object
+            2) is still not claimed yet
+            3) is editable by the current web user
+            4) TODO: was not part of a distribution yet
+
+        Args:
+          request (pyramid.request.Request): Current request.
+          release (obj): Release of track.
+          creation (obj): Track creation of release.
+
+        Returns:
+          true: if orignal is foreign and editable.
+          false: otherwise.
+        """
+        # sanity check: is it part of the release?
+        included = False
+        for release_track in release.tracks:
+            if creation == release_track.creation:
+                included = True
+        if not included:
+            return False
+
+        return Creation.is_foreign_creation(web_user, creation)
+
+    @classmethod
+    def is_foreign_creation(cls, web_user, creation):
+        """
+        Checks if the creation is a foreign object and still editable by the
+        current webuser.
+
+        Checks, if the creation
             1) is a foreign object
             2) is still not claimed yet
             3) is editable by the current web user
@@ -77,13 +108,13 @@ class Creation(Tdb):
         # sanity checks
         # TODO
         # 1) is a foreign object
-        if original.entity_origin != 'indirect':
+        if creation.entity_origin != 'indirect':
             return False
         # 2) is still not claimed yet
-        if original.claim_state != 'unclaimed':
+        if creation.claim_state != 'unclaimed':
             return False
         # 3) is editable by the current web user
-        if not original.permits(web_user, 'edit_creation'):
+        if not creation.permits(web_user, 'edit_creation'):
             return False
         # 4) TODO: was not part of a distribution yet
         return True

@@ -121,7 +121,7 @@ class EditCreation(FormController):
             for original_relation in creation.original_relations:
                 original_mode = "add"
                 if (
-                    Creation.is_foreign_track(
+                    Creation.is_foreign_creation(
                         web_user,
                         original_relation.original_creation
                     )
