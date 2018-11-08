@@ -33,8 +33,13 @@
                 </tr>
 
                 <tr>
-                    <th i18n:translate="">EMail</th>
+                    <th i18n:translate="">Email</th>
                     <td>${request.web_user.email or ""}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Birthdate</th>
+                    <td>${request.party.birthdate.strftime("%d.%m.%Y") or ""}</td>
                 </tr>
 
                 <tr>
