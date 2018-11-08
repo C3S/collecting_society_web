@@ -272,7 +272,7 @@ def web_registry(config):
         reg['widgets']['dashboard-central-widgets'] = [
             RejectedContentWidget(self.request),
             OrphanedContentWidget(self.request),
-            UncommitedContentWidget(self.request)
+            # UncommitedContentWidget(self.request),
         ]
         return reg
 
