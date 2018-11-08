@@ -167,7 +167,7 @@
             </tr>
 
             <tr tal:condition="release.neighbouring_rights_societies">
-                <th i18n:translate="">Neighbouring Right Societies</th>
+                <th i18n:translate="">Neighbouring Rights Societies</th>
                 <td>
                     <div tal:repeat="neighbouring_rights_society
                                      release.neighbouring_rights_societies"
