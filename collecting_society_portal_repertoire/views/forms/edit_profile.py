@@ -52,7 +52,7 @@ class EditProfile(FormController):
 
     @Tdb.transaction(readonly=False)
     def change_profile(self):
-        web_user = WebUser.current_web_user(self.request)
+        web_user = self.request.web_user
         web_user.party.firstname = self.appstruct['firstname']  # save separate
         web_user.party.lastname = self.appstruct['lastname']  # for clarity
         web_user.party.name = (web_user.party.firstname + ' '
@@ -95,7 +95,7 @@ class EditProfile(FormController):
                 'main-alert-success'
             )
 
-        self.redirect(ProfileResource, 'show')
+        self.redirect()
 
 
 # --- Validators --------------------------------------------------------------
