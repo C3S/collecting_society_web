@@ -6,7 +6,7 @@
     <tal:block metal:fill-slot="content-right">
 	    <div class="introtext">
             <span i18n:translate="">Welcome</span>
-		    ${request.party.name.split(None, 1)[0] or ""},<br/><br/>
+		    <span tal:condition="request.party.firstname">${request.party.firstname}</span>,<br/><br/>
 		    <span i18n:translate="">you can find the latest news and todos for your next steps here on this dashboard.</span><br/><br/>
 	    </div>
         <br>
