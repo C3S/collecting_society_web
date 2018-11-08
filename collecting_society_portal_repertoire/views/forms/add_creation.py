@@ -196,7 +196,8 @@ class AddCreation(FormController):
         if not creations:
             log.info("creation add failed for %s: %s" % (web_user, _creation))
             self.request.session.flash(
-                _(u"Creation could not be added: ") + _creation['title'],
+                _(u"Creation could not be added:  ${crct}",
+                  mapping={'crct': _creation['title']}),
                 'main-alert-danger'
             )
             self.redirect()
@@ -235,8 +236,10 @@ class AddCreation(FormController):
 
         log.info("creation add successful for %s: %s" % (web_user, creation))
         self.request.session.flash(
-            _(u"Creation added: ") + creation.title +
-            " (" + creation.code + ")", 'main-alert-success'
+            _(u"Creation added:  ${crct} (${crco})",
+              mapping={'crct': creation.title,
+                       'crco': creation.code}),
+            'main-alert-success'
         )
 
         # redirect

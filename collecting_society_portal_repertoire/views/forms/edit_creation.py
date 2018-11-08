@@ -119,13 +119,6 @@ class EditCreation(FormController):
         if creation.original_relations:
             _originals = []
             for original_relation in creation.original_relations:
-                #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
-                log.debug("=======> original_relation")
-                log.debug(original_relation)
-                log.debug("=======> derivative creation")
-                log.debug(creation)
-                log.debug("=======> original_relation.original_creation")
-                log.debug(original_relation.original_creation)
                 original_mode = "add"
                 if (
                     Creation.is_foreign_original(
@@ -416,9 +409,9 @@ class EditCreation(FormController):
                         #         original.title != a_original['titlefield']):
                         if (
                             not Creation.is_foreign_original(
-                                web_user,
+                                self.request,
                                 creation,
-                                creation.original_creation
+                                original
                             )
                         ):
                             self.request.session.flash(
@@ -499,8 +492,10 @@ class EditCreation(FormController):
         # user feedback
         log.info("creation edit successful for %s: %s" % (web_user, creation))
         self.request.session.flash(
-            _(u"Creation edited: ") + creation.title +
-            " ("+creation.code+")", 'main-alert-success'
+            _(u"Creation edited: ${crct} (${crco})",
+              mapping={'crct': creation.title,
+                       'crco': creation.code}),
+            'main-alert-success'
         )
 
         # redirect

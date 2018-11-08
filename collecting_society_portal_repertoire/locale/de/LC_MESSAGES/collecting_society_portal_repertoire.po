@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-11-08 02:04+0100\n"
-"PO-Revision-Date: 2018-11-08 02:47+0100\n"
+"POT-Creation-Date: 2018-11-08 05:23+0100\n"
+"PO-Revision-Date: 2018-11-08 05:29+0100\n"
 "Last-Translator: thomas <thomas.mielke@c3s.cc>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -184,13 +184,13 @@ msgstr "Künstler hinzufügen"
 #: collecting_society_portal_repertoire/templates/creation/edit.pt:23
 #: collecting_society_portal_repertoire/templates/release/add.pt:23
 #: collecting_society_portal_repertoire/templates/release/edit.pt:23
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:365
-#: collecting_society_portal_repertoire/views/forms/edit_artist.py:230
-#: collecting_society_portal_repertoire/views/forms/edit_release.py:404
-#: collecting_society_portal_repertoire/views/forms/add_release.py:472
-#: collecting_society_portal_repertoire/views/forms/add_artist.py:189
-#: collecting_society_portal_repertoire/views/forms/edit_profile.py:185
-#: collecting_society_portal_repertoire/views/forms/edit_creation.py:527
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:368
+#: collecting_society_portal_repertoire/views/forms/edit_artist.py:231
+#: collecting_society_portal_repertoire/views/forms/edit_release.py:406
+#: collecting_society_portal_repertoire/views/forms/add_release.py:475
+#: collecting_society_portal_repertoire/views/forms/add_artist.py:191
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:187
+#: collecting_society_portal_repertoire/views/forms/edit_creation.py:522
 msgid "Submit"
 msgstr "Übernehmen"
 
@@ -211,7 +211,7 @@ msgstr "Löschen"
 #: collecting_society_portal_repertoire/templates/deform/datatables/content_sequence.pt:9
 #: collecting_society_portal_repertoire/templates/deform/datatables/label_sequence.pt:9
 #: collecting_society_portal_repertoire/templates/deform/datatables/publisher_sequence.pt:9
-#: collecting_society_portal_repertoire/views/forms/add_artist.py:177
+#: collecting_society_portal_repertoire/views/forms/add_artist.py:179
 msgid "Name"
 msgstr "Name"
 
@@ -223,12 +223,12 @@ msgstr "C3S ID"
 
 #: collecting_society_portal_repertoire/templates/artist/show.pt:64
 #: collecting_society_portal_repertoire/templates/deform/datatables/artist_sequence.pt:49
-#: collecting_society_portal_repertoire/views/forms/add_artist.py:178
+#: collecting_society_portal_repertoire/views/forms/add_artist.py:180
 msgid "Description"
 msgstr "Beschreibung"
 
 #: collecting_society_portal_repertoire/templates/artist/show.pt:77
-#: collecting_society_portal_repertoire/views/forms/add_artist.py:180
+#: collecting_society_portal_repertoire/views/forms/add_artist.py:182
 msgid "Members"
 msgstr "Mitglieder"
 
@@ -248,29 +248,29 @@ msgstr "Hinzufügen"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:46
 #: collecting_society_portal_repertoire/templates/deform/datatables/creation_sequence.pt:9
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:320
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:323
 msgid "Working Title"
 msgstr "Arbeitstitel"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:56
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:321
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:324
 msgid "Featured Artist"
 msgstr "Featured Artist"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:69
 #: collecting_society_portal_repertoire/templates/release/show.pt:112
-#: collecting_society_portal_repertoire/views/forms/add_release.py:421
+#: collecting_society_portal_repertoire/views/forms/add_release.py:424
 msgid "Genres"
 msgstr "Genres"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:78
 #: collecting_society_portal_repertoire/templates/release/show.pt:121
-#: collecting_society_portal_repertoire/views/forms/add_release.py:422
+#: collecting_society_portal_repertoire/views/forms/add_release.py:425
 msgid "Styles"
 msgstr "Stile"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:87
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:326
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:329
 msgid "Contributions"
 msgstr "Beiträge"
 
@@ -346,12 +346,12 @@ msgid "First Release"
 msgstr "Erstveröffentlichung"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:291
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:338
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:341
 msgid "Content"
 msgstr "Content"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:305
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:344
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:347
 #: collecting_society_portal_repertoire/views/api/datatables/content.py:30
 msgid "Lyrics"
 msgstr "Liedtext"
@@ -403,7 +403,7 @@ msgstr "Deutschland"
 #: collecting_society_portal_repertoire/templates/deform/datatables/artist_sequence.pt:49
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:341
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:357
-#: collecting_society_portal_repertoire/views/forms/edit_profile.py:172
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:174
 msgid "Email"
 msgstr "Email"
 
@@ -515,7 +515,7 @@ msgstr "Original"
 #: collecting_society_portal_repertoire/templates/deform/datatables/creation_sequence.pt:9
 #: collecting_society_portal_repertoire/templates/release/show.pt:77
 #: collecting_society_portal_repertoire/templates/file/upload.pt:168
-#: collecting_society_portal_repertoire/views/forms/add_release.py:417
+#: collecting_society_portal_repertoire/views/forms/add_release.py:420
 msgid "Artist"
 msgstr "Künstler"
 
@@ -562,7 +562,7 @@ msgstr "Werk"
 #: collecting_society_portal_repertoire/templates/deform/datatables/track_sequence.pt:45
 #: collecting_society_portal_repertoire/templates/release/show.pt:53
 #: collecting_society_portal_repertoire/templates/file/upload.pt:171
-#: collecting_society_portal_repertoire/views/forms/add_release.py:420
+#: collecting_society_portal_repertoire/views/forms/add_release.py:423
 #: collecting_society_portal_repertoire/views/forms/datatables/creation_sequence.py:92
 msgid "Title"
 msgstr "Titel"
@@ -587,22 +587,22 @@ msgid "Back"
 msgstr "Zurück"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:63
-#: collecting_society_portal_repertoire/views/forms/add_release.py:416
+#: collecting_society_portal_repertoire/views/forms/add_release.py:419
 msgid "Release Type"
 msgstr "Veröffentlichungstyp"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:66
-#: collecting_society_portal_repertoire/views/forms/add_release.py:216
+#: collecting_society_portal_repertoire/views/forms/add_release.py:219
 msgid "Split Release"
 msgstr "Split-Veröffentlichung"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:68
-#: collecting_society_portal_repertoire/views/forms/add_release.py:215
+#: collecting_society_portal_repertoire/views/forms/add_release.py:218
 msgid "Artist Release"
 msgstr "Künstler-Veröffentlichung"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:70
-#: collecting_society_portal_repertoire/views/forms/add_release.py:217
+#: collecting_society_portal_repertoire/views/forms/add_release.py:220
 msgid "Compilation"
 msgstr "Zusammenstellung"
 
@@ -611,7 +611,7 @@ msgid "<dynamic element> <dynamic element>"
 msgstr "<dynamisches Element> <dynamisches Element>"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:130
-#: collecting_society_portal_repertoire/views/forms/add_release.py:423
+#: collecting_society_portal_repertoire/views/forms/add_release.py:426
 msgid "Warning"
 msgstr "Warnung"
 
@@ -624,32 +624,32 @@ msgid "Producers"
 msgstr "Produzenten"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:170
-msgid "Neighbouring Right Societies"
+msgid "Neighbouring Rights Societies"
 msgstr "Verwertungsgesellschaft für Leistungsschutzrechte"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:181
-#: collecting_society_portal_repertoire/views/forms/add_release.py:434
+#: collecting_society_portal_repertoire/views/forms/add_release.py:437
 msgid "Publisher"
 msgstr "Verlag"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:186
-#: collecting_society_portal_repertoire/views/forms/add_release.py:435
+#: collecting_society_portal_repertoire/views/forms/add_release.py:438
 msgid "ISRC Code"
 msgstr "ISRC Code"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:191
-#: collecting_society_portal_repertoire/views/forms/add_release.py:436
+#: collecting_society_portal_repertoire/views/forms/add_release.py:439
 msgid "Copyright Date"
 msgstr "Copyright-Datum"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:196
-#: collecting_society_portal_repertoire/views/forms/add_release.py:438
+#: collecting_society_portal_repertoire/views/forms/add_release.py:441
 msgid "Production Date"
 msgstr "Produktionsdatum"
 
 # Kontext klären!
 #: collecting_society_portal_repertoire/templates/release/show.pt:201
-#: collecting_society_portal_repertoire/views/forms/add_release.py:443
+#: collecting_society_portal_repertoire/views/forms/add_release.py:446
 msgid "Label"
 msgstr "Label"
 
@@ -658,33 +658,33 @@ msgid "Label Catalog Number"
 msgstr "Label-Katalognummer"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:211
-#: collecting_society_portal_repertoire/views/forms/add_release.py:446
+#: collecting_society_portal_repertoire/views/forms/add_release.py:449
 msgid "EAN or UPC Code"
 msgstr "EAN oder UPC Code"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:216
 #: collecting_society_portal_repertoire/templates/file/upload.pt:177
-#: collecting_society_portal_repertoire/views/forms/add_release.py:447
+#: collecting_society_portal_repertoire/views/forms/add_release.py:450
 msgid "Release Date"
 msgstr "Veröffentlichungsdatum"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:221
-#: collecting_society_portal_repertoire/views/forms/add_release.py:449
+#: collecting_society_portal_repertoire/views/forms/add_release.py:452
 msgid "Release Cancellation Date"
 msgstr "Veröffentlichungs-Widerrufsdatum"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:226
-#: collecting_society_portal_repertoire/views/forms/add_release.py:451
+#: collecting_society_portal_repertoire/views/forms/add_release.py:454
 msgid "Online Release Date"
 msgstr "Online-Veröffentlichungsdatum"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:231
-#: collecting_society_portal_repertoire/views/forms/add_release.py:453
+#: collecting_society_portal_repertoire/views/forms/add_release.py:456
 msgid "Online Release Cancellation Date"
 msgstr "Online-Veröffentlichung-Widerrufsdatum"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:236
-#: collecting_society_portal_repertoire/views/forms/add_release.py:455
+#: collecting_society_portal_repertoire/views/forms/add_release.py:458
 msgid "Distribution Territory"
 msgstr "Vertriebsgebiet"
 
@@ -785,13 +785,13 @@ msgstr "Fehler"
 
 #: collecting_society_portal_repertoire/templates/profile/show.pt:29
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:354
-#: collecting_society_portal_repertoire/views/forms/edit_profile.py:170
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:172
 msgid "Firstname"
 msgstr "Vorname"
 
 #: collecting_society_portal_repertoire/templates/profile/show.pt:34
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:355
-#: collecting_society_portal_repertoire/views/forms/edit_profile.py:171
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:173
 msgid "Lastname"
 msgstr "Nachname"
 
@@ -807,13 +807,20 @@ msgstr "Erzeugungsdatum"
 msgid "Artist deleted: "
 msgstr "Künstler gelöscht: "
 
+#: collecting_society_portal_repertoire/views/artist.py:75
+#, python-format
+msgid "Artist deleted: ${arna} (${arco})"
+msgstr "Künstler gelöscht: ${arna} (${arco})"
+
 #: collecting_society_portal_repertoire/views/release.py:74
-msgid "Release deleted: "
-msgstr "Veröffentlichung gelöscht:"
+#, python-format
+msgid "Release deleted:  ${reti} (${reco}"
+msgstr "Veröffentlichung gelöscht: ${reti} (${reco}"
 
 #: collecting_society_portal_repertoire/views/creation.py:81
-msgid "Creation deleted: "
-msgstr "Werk geöscht: "
+#, python-format
+msgid "Creation deleted: ${crct} (${crco})"
+msgstr "Werk gelöscht: ${crct} (${crco})"
 
 #: collecting_society_portal_repertoire/views/frontend.py:70
 msgid "Your email verification was successful."
@@ -852,36 +859,39 @@ msgid "Orphaned Content"
 msgstr "Verwaister Inhalt"
 
 #: collecting_society_portal_repertoire/views/forms/add_creation.py:199
-msgid "Creation could not be added: "
-msgstr "Werk konnte nicht hinzugefügt werden."
+#, python-format
+msgid "Creation could not be added:  ${crct}"
+msgstr "Werk konnte nicht hinzugefügt werden.  ${crct}"
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:238
-msgid "Creation added: "
-msgstr "Werk hinzugefügt: "
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:239
+#, python-format
+msgid "Creation added:  ${crct} (${crco})"
+msgstr "Werk hinzugefügt: ${crct} (${crco})"
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:268
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:271
 #, python-format
 msgid "Content file ${coco} is already assigned to creation ${crco}."
 msgstr "Hochgeladene Datei ${coco} ist bereits dem Werk ${crco} zugewiesen."
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:276
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:279
 msgid ""
 "Only one uploaded content file for each file type (audio and sheet music)."
 msgstr ""
 "Nur ein hochgeladener Inhalt für jeden Dateityp (Audio und Musiknoten)."
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:318
-#: collecting_society_portal_repertoire/views/forms/add_release.py:460
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:321
+#: collecting_society_portal_repertoire/views/forms/add_release.py:463
 msgid "Metadata"
 msgstr "Metadaten"
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:332
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:335
 msgid "Derivation"
 msgstr "Abwandlung"
 
 #: collecting_society_portal_repertoire/views/forms/edit_artist.py:206
-msgid "Artist edited: "
-msgstr "Künstler wurde bearbeitet: "
+#, python-format
+msgid "Artist edited: ${arna} (${arco})"
+msgstr "Künstler bearbeitet: ${arna} (${arco})"
 
 #: collecting_society_portal_repertoire/views/forms/edit_release.py:287
 msgid ""
@@ -892,22 +902,25 @@ msgstr ""
 "werden nicht übernommen."
 
 #: collecting_society_portal_repertoire/views/forms/edit_release.py:380
-msgid "Release edited: "
-msgstr "Veröffentlichung bearbeitet: "
+#, python-format
+msgid "Release edited:  ${reti} (${reco}"
+msgstr "Veröffentlichung bearbeitet: ${reti} (${reco}"
 
 #: collecting_society_portal_repertoire/views/forms/add_release.py:194
-msgid "Release could not be added: "
-msgstr "Werk konnte nicht hinzugefügt werden:"
+#, python-format
+msgid "Release could not be added: ${reti}"
+msgstr "Veröffentlichung konnte nicht hinzugefügt werden: ${reti}"
 
-#: collecting_society_portal_repertoire/views/forms/add_release.py:202
-msgid "Release added: "
-msgstr "Veröffentlichung hinzugefügt: "
+#: collecting_society_portal_repertoire/views/forms/add_release.py:203
+#, python-format
+msgid "Release added:  ${reti} (${reco}"
+msgstr "Veröffentlichung hinzugefügt: ${reti} (${reco}"
 
-#: collecting_society_portal_repertoire/views/forms/add_release.py:366
+#: collecting_society_portal_repertoire/views/forms/add_release.py:369
 msgid "May only contain digits"
 msgstr "Darf nur Ziffern enthalten"
 
-#: collecting_society_portal_repertoire/views/forms/add_release.py:376
+#: collecting_society_portal_repertoire/views/forms/add_release.py:379
 msgid ""
 "Please enter a valid international standard recording code, for example: "
 "DEA123456789"
@@ -915,40 +928,42 @@ msgstr ""
 "Bitte gib einen gültigen 'International Atandard Recording Code' ein: "
 "DEA123456789"
 
-#: collecting_society_portal_repertoire/views/forms/add_release.py:419
+#: collecting_society_portal_repertoire/views/forms/add_release.py:422
 msgid "Split Artists"
 msgstr "Beteiligte Künstler"
 
-#: collecting_society_portal_repertoire/views/forms/add_release.py:424
-#: collecting_society_portal_repertoire/views/forms/add_artist.py:179
+#: collecting_society_portal_repertoire/views/forms/add_release.py:427
+#: collecting_society_portal_repertoire/views/forms/add_artist.py:181
 msgid "Picture"
 msgstr "Bild"
 
-#: collecting_society_portal_repertoire/views/forms/add_release.py:445
+#: collecting_society_portal_repertoire/views/forms/add_release.py:448
 msgid "Label Catalog Number of Release"
 msgstr "Label Katalognummer der Veröffentlichung"
 
-#: collecting_society_portal_repertoire/views/forms/add_release.py:461
+#: collecting_society_portal_repertoire/views/forms/add_release.py:464
 msgid "Tracks"
 msgstr "Tracks"
 
-#: collecting_society_portal_repertoire/views/forms/add_release.py:462
+#: collecting_society_portal_repertoire/views/forms/add_release.py:465
 msgid "Production"
 msgstr "Produktion"
 
-#: collecting_society_portal_repertoire/views/forms/add_release.py:463
+#: collecting_society_portal_repertoire/views/forms/add_release.py:466
 msgid "Distribution"
 msgstr "Vertrieb"
 
 #: collecting_society_portal_repertoire/views/forms/add_artist.py:125
-msgid "Artist could not be added: "
-msgstr "Künstler konnte nicht hinzugefügt werden: "
+#, python-format
+msgid "Artist could not be added: ${arna}"
+msgstr "Künstler konnte nicht hinzugefügt werden: ${arna}"
 
-#: collecting_society_portal_repertoire/views/forms/add_artist.py:133
-msgid "Artist added: "
-msgstr "Künstler hinzugefügt: "
+#: collecting_society_portal_repertoire/views/forms/add_artist.py:134
+#, python-format
+msgid "Artist added:  ${arna} (${arco})"
+msgstr "Künstler hinzugefügt: ${arna} (${arco})"
 
-#: collecting_society_portal_repertoire/views/forms/add_artist.py:175
+#: collecting_society_portal_repertoire/views/forms/add_artist.py:177
 msgid "Group"
 msgstr "Gruppe"
 
@@ -982,7 +997,7 @@ msgstr ""
 "Dir eine Email mit weiteren Instruktionen senden."
 
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:272
-#: collecting_society_portal_repertoire/views/forms/edit_profile.py:104
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:106
 msgid "Please enter your name."
 msgstr "Bitte gib Deinen Namen ein."
 
@@ -1039,27 +1054,28 @@ msgid "Do you want to apply for C3S membership?"
 msgstr "Möchtest Du einen Mitgliedschaftsantrag für die C3S stellen?"
 
 #: collecting_society_portal_repertoire/views/forms/edit_profile.py:82
-#: collecting_society_portal_repertoire/views/forms/edit_profile.py:90
-msgid "Profile changed for: "
-msgstr "Profil geändert für: "
+#, python-format
+msgid "Profile changed for: ${name}"
+msgstr "Profil geändert für: ${name}"
 
 #: collecting_society_portal_repertoire/views/forms/edit_profile.py:91
-msgid " -- activation email for new email address sent."
-msgstr " -- Aktivierungs-Email für neue Email-Adresse gesendet."
+#, python-format
+msgid ""
+"Profile changed for: ${name} -- activation email for new email address sent. "
+"Please check your (new) email inbox."
+msgstr ""
+"Profil geändert für: ${name} -- Aktivierungs-EMail für neue EMail-Adresse "
+"wurde gesendet. Bitte schaue in Dein (neues) EMail-Postfach."
 
-#: collecting_society_portal_repertoire/views/forms/edit_profile.py:92
-msgid " Please check your (new) email inbox."
-msgstr "Bitte schaue in Dein (neues) Email-Postfach."
-
-#: collecting_society_portal_repertoire/views/forms/edit_profile.py:118
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:120
 msgid "Email address already taken"
 msgstr "Email-Adresse bereits vergeben."
 
-#: collecting_society_portal_repertoire/views/forms/edit_profile.py:174
+#: collecting_society_portal_repertoire/views/forms/edit_profile.py:176
 msgid "Password (leave empty if you don't want to change it)"
 msgstr "Passwort (frei lassen, wenn nicht geändert werden soll)"
 
-#: collecting_society_portal_repertoire/views/forms/edit_creation.py:356
+#: collecting_society_portal_repertoire/views/forms/edit_creation.py:349
 msgid ""
 "Warning: A Creation cannot be the original of it self. If you do an adaption "
 "of a creation, you need to create a new creation in order to be able to "
@@ -1069,7 +1085,7 @@ msgstr ""
 "Adaption eines Werks machst, musst Du ein neues Werk anlegen, um es als "
 "Original angeben zu können."
 
-#: collecting_society_portal_repertoire/views/forms/edit_creation.py:425
+#: collecting_society_portal_repertoire/views/forms/edit_creation.py:418
 msgid ""
 "Warning: You don't have permissions to edit the original. Changes won't take "
 "effekt."
@@ -1077,9 +1093,10 @@ msgstr ""
 "Warnung: Du hast keine Zugriffsrechte, um das Original zu bearbeiten. "
 "Änderungen werden nicht übernommen."
 
-#: collecting_society_portal_repertoire/views/forms/edit_creation.py:502
-msgid "Creation edited: "
-msgstr "Werk bearbeitet: "
+#: collecting_society_portal_repertoire/views/forms/edit_creation.py:495
+#, python-format
+msgid "Creation edited: ${crct} (${crco})"
+msgstr "Werk bearbeitet: ${crct} (${crco})"
 
 #: collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:53
 #: collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:61
@@ -1117,6 +1134,30 @@ msgstr "Audio"
 #: collecting_society_portal_repertoire/views/api/datatables/content.py:29
 msgid "Sheet Music"
 msgstr "Musiknoten"
+
+#~ msgid "Release deleted: "
+#~ msgstr "Veröffentlichung gelöscht:"
+
+#~ msgid "Release edited: "
+#~ msgstr "Veröffentlichung bearbeitet: "
+
+#~ msgid "Creation deleted: "
+#~ msgstr "Werk geöscht: "
+
+#~ msgid "Creation added: "
+#~ msgstr "Werk hinzugefügt: "
+
+#~ msgid "Artist edited: "
+#~ msgstr "Künstler wurde bearbeitet: "
+
+#~ msgid "Artist added: "
+#~ msgstr "Künstler hinzugefügt: "
+
+#~ msgid " -- activation email for new email address sent."
+#~ msgstr " -- Aktivierungs-Email für neue Email-Adresse gesendet."
+
+#~ msgid " Please check your (new) email inbox."
+#~ msgstr "Bitte schaue in Dein (neues) Email-Postfach."
 
 #~ msgid "español"
 #~ msgstr "spanisch"

@@ -191,7 +191,8 @@ class AddRelease(FormController):
         if not release:
             log.info("release add failed for %s: %s" % (web_user, _release))
             self.request.session.flash(
-                _(u"Release could not be added: ") + _release['title'],
+                _(u"Release could not be added: ${reti}",
+                  mapping={'reti': _release['title']}),
                 'main-alert-danger'
             )
             self.redirect()
@@ -199,7 +200,9 @@ class AddRelease(FormController):
         release = release[0]
         log.info("release add successful for %s: %s" % (web_user, release))
         self.request.session.flash(
-            _(u"Release added: ") + release.title + " (" + release.code + ")",
+            _(u"Release added:  ${reti} (${reco}",
+              mapping={'reti': release.title,
+                       'reco': release.code}),
             'main-alert-success'
         )
 

@@ -79,7 +79,8 @@ class EditProfile(FormController):
             log.info(
                 "edit profile add successful for %s" % (web_user.party.name))
             self.request.session.flash(
-                _(u"Profile changed for: ") + web_user.party.name,
+                _(u"Profile changed for: ${name}",
+                  mapping={'name': web_user.party.name}),
                 'main-alert-success'
             )
         else:
@@ -87,9 +88,10 @@ class EditProfile(FormController):
                 "edit profile add successful for %s, activation email sent."
                 % (web_user.party.name))
             self.request.session.flash(
-                _(u"Profile changed for: ") + web_user.party.name +
-                _(u" -- activation email for new email address sent.") +
-                _(u" Please check your (new) email inbox."),
+                _(u"Profile changed for: ${name}"
+                  " -- activation email for new email address sent."
+                  " Please check your (new) email inbox.",
+                  mapping={'name': web_user.party.name}),
                 'main-alert-success'
             )
 

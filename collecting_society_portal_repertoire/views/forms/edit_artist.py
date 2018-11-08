@@ -203,7 +203,8 @@ class EditArtist(FormController):
         # user feedback
         log.info("edit artist successful for %s: %s" % (email, artist))
         self.request.session.flash(
-            _(u"Artist edited: ") + artist.name + " (" + artist.code + ")",
+            _(u"Artist edited: ${arna} (${arco})",
+              mapping={'arna': artist.name, 'arco': artist.code}),
             'main-alert-success'
         )
 

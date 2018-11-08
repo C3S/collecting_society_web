@@ -122,7 +122,8 @@ class AddArtist(FormController):
         if not artists:
             log.info("artist add failed for %s: %s" % (email, _artist))
             self.request.session.flash(
-                _(u"Artist could not be added: ") + _artist['name'],
+                _(u"Artist could not be added: ${arna}",
+                  mapping={'arna':  _artist['name']}),
                 'main-alert-danger'
             )
             self.redirect()
@@ -130,7 +131,8 @@ class AddArtist(FormController):
         artist = artists[0]
         log.info("artist add successful for %s: %s" % (email, artist))
         self.request.session.flash(
-            _(u"Artist added: ") + artist.name + " (" + artist.code + ")",
+            _(u"Artist added:  ${arna} (${arco})",
+              mapping={'arna': artist.name, 'arco': artist.code}),
             'main-alert-success'
         )
 
