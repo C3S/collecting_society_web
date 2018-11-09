@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-11-08 05:23+0100\n"
+"POT-Creation-Date: 2018-11-09 03:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,6 +61,8 @@ msgid "Repertoire"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/includes.py:205
+#: ./collecting_society_portal_repertoire/templates/profile/show.pt:9
+#: ./collecting_society_portal_repertoire/templates/profile/edit.pt:11
 msgid "Profile"
 msgstr ""
 
@@ -87,12 +89,18 @@ msgid "Dashboard"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/includes.py:235
-msgid "Upload"
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:16
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:22
+#: ./collecting_society_portal_repertoire/templates/file/list.pt:13
+msgid "Files"
 msgstr ""
 
 #. 
 #. Used in sentence: "<dynamic element> <dynamic element>"
 #: ./collecting_society_portal_repertoire/includes.py:242
+#: ./collecting_society_portal_repertoire/templates/artist/add.pt:20
+#: ./collecting_society_portal_repertoire/templates/artist/show.pt:20
+#: ./collecting_society_portal_repertoire/templates/artist/edit.pt:20
 #: ./collecting_society_portal_repertoire/templates/artist/list.pt:13
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:79
 msgid "Artists"
@@ -100,6 +108,9 @@ msgstr ""
 
 #: ./collecting_society_portal_repertoire/includes.py:249
 #: ./collecting_society_portal_repertoire/templates/artist/show.pt:160
+#: ./collecting_society_portal_repertoire/templates/creation/add.pt:20
+#: ./collecting_society_portal_repertoire/templates/creation/show.pt:22
+#: ./collecting_society_portal_repertoire/templates/creation/edit.pt:20
 #: ./collecting_society_portal_repertoire/templates/creation/list.pt:13
 msgid "Creations"
 msgstr ""
@@ -107,6 +118,9 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/includes.py:256
 #: ./collecting_society_portal_repertoire/templates/artist/show.pt:133
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:275
+#: ./collecting_society_portal_repertoire/templates/release/add.pt:20
+#: ./collecting_society_portal_repertoire/templates/release/show.pt:24
+#: ./collecting_society_portal_repertoire/templates/release/edit.pt:20
 #: ./collecting_society_portal_repertoire/templates/release/list.pt:13
 msgid "Releases"
 msgstr ""
@@ -167,7 +181,6 @@ msgid "Uncommited"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/artist/add.pt:14
-#: ./collecting_society_portal_repertoire/templates/creation/add.pt:14
 msgid "Add Artist"
 msgstr ""
 
@@ -177,6 +190,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/creation/edit.pt:23
 #: ./collecting_society_portal_repertoire/templates/release/add.pt:23
 #: ./collecting_society_portal_repertoire/templates/release/edit.pt:23
+#: ./collecting_society_portal_repertoire/templates/profile/edit.pt:20
 #: ./collecting_society_portal_repertoire/views/forms/add_creation.py:368
 #: ./collecting_society_portal_repertoire/views/forms/edit_artist.py:231
 #: ./collecting_society_portal_repertoire/views/forms/edit_release.py:406
@@ -190,12 +204,14 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/artist/show.pt:23
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:25
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:27
+#: ./collecting_society_portal_repertoire/templates/profile/show.pt:18
 msgid "Edit"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/artist/show.pt:28
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:30
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:32
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:27
 msgid "Delete"
 msgstr ""
 
@@ -211,6 +227,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/artist/show.pt:59
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:51
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:58
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:48
 msgid "C3S ID"
 msgstr ""
 
@@ -233,10 +250,16 @@ msgstr ""
 msgid "Edit Artist"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/artist/list.pt:22
-#: ./collecting_society_portal_repertoire/templates/creation/list.pt:22
-#: ./collecting_society_portal_repertoire/templates/release/list.pt:22
+#: ./collecting_society_portal_repertoire/templates/artist/list.pt:19
+#: ./collecting_society_portal_repertoire/templates/creation/list.pt:19
+#: ./collecting_society_portal_repertoire/templates/release/list.pt:19
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:18
 msgid "Add"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/creation/add.pt:14
+#: ./collecting_society_portal_repertoire/templates/file/list.pt:63
+msgid "Add Creation"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:46
@@ -391,6 +414,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/frontend/contact.pt:22
 #: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:24
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/artist_sequence.pt:49
+#: ./collecting_society_portal_repertoire/templates/profile/show.pt:36
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:341
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:357
 #: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:174
@@ -498,7 +522,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/contribution_sequence.pt:9
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/creation_sequence.pt:9
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:77
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:168
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:174
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:420
 msgid "Artist"
 msgstr ""
@@ -545,7 +569,7 @@ msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/track_sequence.pt:45
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:53
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:171
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:181
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:423
 #: ./collecting_society_portal_repertoire/views/forms/datatables/creation_sequence.py:92
 msgid "Title"
@@ -562,13 +586,6 @@ msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/release/add.pt:14
 msgid "Add Release"
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/templates/release/add.pt:20
-#: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:389
-#: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:402
-#: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:415
-msgid "Back"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:63
@@ -647,7 +664,7 @@ msgid "EAN or UPC Code"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:216
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:177
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:195
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:450
 msgid "Release Date"
 msgstr ""
@@ -676,107 +693,180 @@ msgstr ""
 msgid "Edit Release"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:37
-msgid "Add files..."
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:9
+#: ./collecting_society_portal_repertoire/templates/file/list.pt:19
+msgid "Upload"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:42
-msgid "Start upload"
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:46
-msgid "Cancel upload"
-msgstr ""
-
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:24
 #: ./collecting_society_portal_repertoire/templates/file/upload.pt:82
+msgid "Start"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:27
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:86
+msgid "Cancel"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:75
 msgid "Processing..."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:111
-msgid ""
-"{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
-"<dynamic element>&nbsp;&nbsp;There has been a problem with '{%=file.name%}'."
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:103
+msgid "No preview"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/file/upload.pt:118
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:142
-msgid "<dynamic element>"
+msgid "Upload failed."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:122
-msgid ""
-"{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
-"<dynamic element>&nbsp;&nbsp;'{%=file.name%}' has been processed succesfully."
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:123
+msgid "Upload was succesfull."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:135
-msgid ""
-"{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
-"<dynamic element>&nbsp;&nbsp;'{%=file.name%}' is currently being processed. "
-"Please come back again later."
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:139
+msgid "{%=o.formatFileSize(file.size)%}"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:150
-msgid "Duration"
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:43
+msgid "Filename"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:153
-msgid "Channels"
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:55
+msgid "Preview"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:156
-msgid "Bitwidth"
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:68
+msgid "Size"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:159
-msgid "Samplingrate"
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:73
+msgid "Mime Type"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:162
-msgid "File Size"
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:174
-msgid "Release"
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:180
-msgid "Track Number"
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:186
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:78
 msgid "Processing State"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:189
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:81
+msgid "Upload finished"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:83
+msgid "Preview created"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:85
+msgid "Checksum created"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:87
+msgid "Fingerprint created"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:89
+msgid "Dropped"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:91
+msgid "Archived"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:93
+msgid "Deleted"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:95
+#: ./collecting_society_portal_repertoire/templates/file/list.pt:71
+msgid "Rejected"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:97
+msgid "Unknown"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:102
 msgid "Rejection Reason"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:192
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:105
+msgid "Duplicate Checksum"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:107
+msgid "Duplicate Fingerprint"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:109
+msgid "Format Error"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:111
+msgid "No Fingerprint"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:113
+msgid "Lossy Compression"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:115
+msgid "Missing Database Record"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:121
 msgid "Rejection Reason Details"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:197
-msgid "Error"
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:131
+msgid "Audiofile Features"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/profile/show.pt:29
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:135
+msgid "Length"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:142
+msgid "Channels"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:149
+msgid "Sample Rate"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:156
+msgid "Sample Width"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:170
+msgid "Audiofile Metadata"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:188
+msgid "Release"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:202
+msgid "Track Number"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/profile/show.pt:26
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:354
 #: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:172
 msgid "Firstname"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/profile/show.pt:34
+#: ./collecting_society_portal_repertoire/templates/profile/show.pt:31
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:355
 #: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:173
 msgid "Lastname"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/profile/show.pt:39
-msgid "EMail"
+#: ./collecting_society_portal_repertoire/templates/profile/show.pt:41
+#: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:356
+msgid "Birthdate"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/profile/show.pt:44
+#: ./collecting_society_portal_repertoire/templates/profile/show.pt:46
 msgid "Create date"
 msgstr ""
 
@@ -816,6 +906,15 @@ msgstr ""
 msgid ""
 "Your email verification was successful. Now login with your new email "
 "address!"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/views/file.py:94
+msgid "Content deleted: "
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/views/file.py:95
+#, python-format
+msgid "Content deleted: ${cona} (${coco})"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/widgets/rejected_content.py:22
@@ -989,10 +1088,6 @@ msgstr ""
 msgid "I accept the terms of service."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:356
-msgid "Birthdate"
-msgstr ""
-
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:370
 msgid "Are you a C3S member?"
 msgstr ""
@@ -1009,6 +1104,12 @@ msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:384
 msgid "Do you want to apply for C3S membership?"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:389
+#: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:402
+#: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:415
+msgid "Back"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:82
@@ -1063,15 +1164,15 @@ msgstr ""
 msgid "Recording"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/api/repertoire_upload.py:393
+#: ./collecting_society_portal_repertoire/views/api/repertoire_upload.py:389
 msgid "Filetype not allowed."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/api/repertoire_upload.py:399
+#: ./collecting_society_portal_repertoire/views/api/repertoire_upload.py:395
 msgid "Mimetype not allowed."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/api/repertoire_upload.py:653
+#: ./collecting_society_portal_repertoire/views/api/repertoire_upload.py:649
 #, python-format
 msgid "Abuse detected. Wait for {number} seconds before trying another upload."
 msgstr ""

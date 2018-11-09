@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-11-08 05:23+0100\n"
-"PO-Revision-Date: 2018-11-08 05:29+0100\n"
+"POT-Creation-Date: 2018-11-09 03:00+0100\n"
+"PO-Revision-Date: 2018-11-09 03:09+0100\n"
 "Last-Translator: thomas <thomas.mielke@c3s.cc>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -62,6 +62,8 @@ msgid "Repertoire"
 msgstr "Repertoire"
 
 #: collecting_society_portal_repertoire/includes.py:205
+#: collecting_society_portal_repertoire/templates/profile/show.pt:9
+#: collecting_society_portal_repertoire/templates/profile/edit.pt:11
 msgid "Profile"
 msgstr "Profil"
 
@@ -88,12 +90,18 @@ msgid "Dashboard"
 msgstr "Dashboard"
 
 #: collecting_society_portal_repertoire/includes.py:235
-msgid "Upload"
-msgstr "Hochladen"
+#: collecting_society_portal_repertoire/templates/file/upload.pt:16
+#: collecting_society_portal_repertoire/templates/file/show.pt:22
+#: collecting_society_portal_repertoire/templates/file/list.pt:13
+msgid "Files"
+msgstr "Dateien"
 
 #.
 #. Used in sentence: "<dynamic element> <dynamic element>"
 #: collecting_society_portal_repertoire/includes.py:242
+#: collecting_society_portal_repertoire/templates/artist/add.pt:20
+#: collecting_society_portal_repertoire/templates/artist/show.pt:20
+#: collecting_society_portal_repertoire/templates/artist/edit.pt:20
 #: collecting_society_portal_repertoire/templates/artist/list.pt:13
 #: collecting_society_portal_repertoire/templates/release/show.pt:79
 msgid "Artists"
@@ -101,6 +109,9 @@ msgstr "Künstler"
 
 #: collecting_society_portal_repertoire/includes.py:249
 #: collecting_society_portal_repertoire/templates/artist/show.pt:160
+#: collecting_society_portal_repertoire/templates/creation/add.pt:20
+#: collecting_society_portal_repertoire/templates/creation/show.pt:22
+#: collecting_society_portal_repertoire/templates/creation/edit.pt:20
 #: collecting_society_portal_repertoire/templates/creation/list.pt:13
 msgid "Creations"
 msgstr "Werke"
@@ -108,6 +119,9 @@ msgstr "Werke"
 #: collecting_society_portal_repertoire/includes.py:256
 #: collecting_society_portal_repertoire/templates/artist/show.pt:133
 #: collecting_society_portal_repertoire/templates/creation/show.pt:275
+#: collecting_society_portal_repertoire/templates/release/add.pt:20
+#: collecting_society_portal_repertoire/templates/release/show.pt:24
+#: collecting_society_portal_repertoire/templates/release/edit.pt:20
 #: collecting_society_portal_repertoire/templates/release/list.pt:13
 msgid "Releases"
 msgstr "Veröffentlichungen"
@@ -174,7 +188,6 @@ msgid "Uncommited"
 msgstr "Nicht freigeschaltet"
 
 #: collecting_society_portal_repertoire/templates/artist/add.pt:14
-#: collecting_society_portal_repertoire/templates/creation/add.pt:14
 msgid "Add Artist"
 msgstr "Künstler hinzufügen"
 
@@ -184,6 +197,7 @@ msgstr "Künstler hinzufügen"
 #: collecting_society_portal_repertoire/templates/creation/edit.pt:23
 #: collecting_society_portal_repertoire/templates/release/add.pt:23
 #: collecting_society_portal_repertoire/templates/release/edit.pt:23
+#: collecting_society_portal_repertoire/templates/profile/edit.pt:20
 #: collecting_society_portal_repertoire/views/forms/add_creation.py:368
 #: collecting_society_portal_repertoire/views/forms/edit_artist.py:231
 #: collecting_society_portal_repertoire/views/forms/edit_release.py:406
@@ -197,12 +211,14 @@ msgstr "Übernehmen"
 #: collecting_society_portal_repertoire/templates/artist/show.pt:23
 #: collecting_society_portal_repertoire/templates/creation/show.pt:25
 #: collecting_society_portal_repertoire/templates/release/show.pt:27
+#: collecting_society_portal_repertoire/templates/profile/show.pt:18
 msgid "Edit"
 msgstr "Bearbeien"
 
 #: collecting_society_portal_repertoire/templates/artist/show.pt:28
 #: collecting_society_portal_repertoire/templates/creation/show.pt:30
 #: collecting_society_portal_repertoire/templates/release/show.pt:32
+#: collecting_society_portal_repertoire/templates/file/show.pt:27
 msgid "Delete"
 msgstr "Löschen"
 
@@ -218,6 +234,7 @@ msgstr "Name"
 #: collecting_society_portal_repertoire/templates/artist/show.pt:59
 #: collecting_society_portal_repertoire/templates/creation/show.pt:51
 #: collecting_society_portal_repertoire/templates/release/show.pt:58
+#: collecting_society_portal_repertoire/templates/file/show.pt:48
 msgid "C3S ID"
 msgstr "C3S ID"
 
@@ -240,11 +257,17 @@ msgstr "Gruppen"
 msgid "Edit Artist"
 msgstr "Künstlerünstler bearbeiten"
 
-#: collecting_society_portal_repertoire/templates/artist/list.pt:22
-#: collecting_society_portal_repertoire/templates/creation/list.pt:22
-#: collecting_society_portal_repertoire/templates/release/list.pt:22
+#: collecting_society_portal_repertoire/templates/artist/list.pt:19
+#: collecting_society_portal_repertoire/templates/creation/list.pt:19
+#: collecting_society_portal_repertoire/templates/release/list.pt:19
+#: collecting_society_portal_repertoire/templates/file/upload.pt:18
 msgid "Add"
 msgstr "Hinzufügen"
+
+#: collecting_society_portal_repertoire/templates/creation/add.pt:14
+#: collecting_society_portal_repertoire/templates/file/list.pt:63
+msgid "Add Creation"
+msgstr "Werk hinzufügen"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:46
 #: collecting_society_portal_repertoire/templates/deform/datatables/creation_sequence.pt:9
@@ -401,6 +424,7 @@ msgstr "Deutschland"
 #: collecting_society_portal_repertoire/templates/frontend/contact.pt:22
 #: collecting_society_portal_repertoire/templates/frontend/terms.pt:24
 #: collecting_society_portal_repertoire/templates/deform/datatables/artist_sequence.pt:49
+#: collecting_society_portal_repertoire/templates/profile/show.pt:36
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:341
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:357
 #: collecting_society_portal_repertoire/views/forms/edit_profile.py:174
@@ -514,7 +538,7 @@ msgstr "Original"
 #: collecting_society_portal_repertoire/templates/deform/datatables/contribution_sequence.pt:9
 #: collecting_society_portal_repertoire/templates/deform/datatables/creation_sequence.pt:9
 #: collecting_society_portal_repertoire/templates/release/show.pt:77
-#: collecting_society_portal_repertoire/templates/file/upload.pt:168
+#: collecting_society_portal_repertoire/templates/file/show.pt:174
 #: collecting_society_portal_repertoire/views/forms/add_release.py:420
 msgid "Artist"
 msgstr "Künstler"
@@ -561,7 +585,7 @@ msgstr "Werk"
 
 #: collecting_society_portal_repertoire/templates/deform/datatables/track_sequence.pt:45
 #: collecting_society_portal_repertoire/templates/release/show.pt:53
-#: collecting_society_portal_repertoire/templates/file/upload.pt:171
+#: collecting_society_portal_repertoire/templates/file/show.pt:181
 #: collecting_society_portal_repertoire/views/forms/add_release.py:423
 #: collecting_society_portal_repertoire/views/forms/datatables/creation_sequence.py:92
 msgid "Title"
@@ -578,13 +602,6 @@ msgstr "Mediennummer"
 #: collecting_society_portal_repertoire/templates/release/add.pt:14
 msgid "Add Release"
 msgstr "Veröffentlichung hinzufügen"
-
-#: collecting_society_portal_repertoire/templates/release/add.pt:20
-#: collecting_society_portal_repertoire/views/forms/register_webuser.py:389
-#: collecting_society_portal_repertoire/views/forms/register_webuser.py:402
-#: collecting_society_portal_repertoire/views/forms/register_webuser.py:415
-msgid "Back"
-msgstr "Zurück"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:63
 #: collecting_society_portal_repertoire/views/forms/add_release.py:419
@@ -663,7 +680,7 @@ msgid "EAN or UPC Code"
 msgstr "EAN oder UPC Code"
 
 #: collecting_society_portal_repertoire/templates/release/show.pt:216
-#: collecting_society_portal_repertoire/templates/file/upload.pt:177
+#: collecting_society_portal_repertoire/templates/file/show.pt:195
 #: collecting_society_portal_repertoire/views/forms/add_release.py:450
 msgid "Release Date"
 msgstr "Veröffentlichungsdatum"
@@ -692,114 +709,180 @@ msgstr "Vertriebsgebiet"
 msgid "Edit Release"
 msgstr "Veröffentlichung bearbeiten"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:37
-msgid "Add files..."
-msgstr "Dateien hinzufügen..."
+#: collecting_society_portal_repertoire/templates/file/upload.pt:9
+#: collecting_society_portal_repertoire/templates/file/list.pt:19
+msgid "Upload"
+msgstr "Hochladen"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:42
-msgid "Start upload"
-msgstr "Starte Upload"
-
-#: collecting_society_portal_repertoire/templates/file/upload.pt:46
-msgid "Cancel upload"
-msgstr "Upload abbrechen"
-
+#: collecting_society_portal_repertoire/templates/file/upload.pt:24
 #: collecting_society_portal_repertoire/templates/file/upload.pt:82
+msgid "Start"
+msgstr "Start"
+
+#: collecting_society_portal_repertoire/templates/file/upload.pt:27
+#: collecting_society_portal_repertoire/templates/file/upload.pt:86
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: collecting_society_portal_repertoire/templates/file/upload.pt:75
 msgid "Processing..."
 msgstr "Verarbeite..."
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:111
-msgid ""
-"{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
-"<dynamic element>&nbsp;&nbsp;There has been a problem with '{%=file.name%}'."
-msgstr ""
-"{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
-"<dynamic element>&nbsp;&nbsp;Es gab ein Problem mit '{%=file.name%}'."
+#: collecting_society_portal_repertoire/templates/file/upload.pt:103
+msgid "No preview"
+msgstr "Keine Vorschau"
 
 #: collecting_society_portal_repertoire/templates/file/upload.pt:118
-#: collecting_society_portal_repertoire/templates/file/upload.pt:142
-msgid "<dynamic element>"
-msgstr "<dynamisches Element>"
+msgid "Upload failed."
+msgstr "Hochladen fehlgeschlagen."
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:122
-msgid ""
-"{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
-"<dynamic element>&nbsp;&nbsp;'{%=file.name%}' has been processed succesfully."
-msgstr ""
-"{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
-"<dynamic element>&nbsp;&nbsp;'{%=file.name%}' wurde erfolgreich verarbeitet."
+#: collecting_society_portal_repertoire/templates/file/upload.pt:123
+msgid "Upload was succesfull."
+msgstr "Hochladen war erfolgreich."
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:135
-msgid ""
-"{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
-"<dynamic element>&nbsp;&nbsp;'{%=file.name%}' is currently being processed. "
-"Please come back again later."
-msgstr ""
-"{% if (file.category == 'sheet') { %} <dynamisches Element> {% } else { %} "
-"<dynamisches Element>&nbsp;&nbsp;'{%=file.name%}'  wird gerade verarbeitet. "
-"Bitte komme später wieder."
+#: collecting_society_portal_repertoire/templates/file/upload.pt:139
+msgid "{%=o.formatFileSize(file.size)%}"
+msgstr "{%=o.formatFileSize(file.size)%}"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:150
-msgid "Duration"
-msgstr "Länge"
+#: collecting_society_portal_repertoire/templates/file/show.pt:43
+msgid "Filename"
+msgstr "Dateiname"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:153
-msgid "Channels"
-msgstr "Kanäle"
+#: collecting_society_portal_repertoire/templates/file/show.pt:55
+msgid "Preview"
+msgstr "Vorschau"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:156
-msgid "Bitwidth"
-msgstr "Bitbreite"
+#: collecting_society_portal_repertoire/templates/file/show.pt:68
+msgid "Size"
+msgstr "Größe"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:159
-msgid "Samplingrate"
-msgstr "Samplingrate"
+#: collecting_society_portal_repertoire/templates/file/show.pt:73
+msgid "Mime Type"
+msgstr "Mime Typ"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:162
-msgid "File Size"
-msgstr "Dateigröße"
-
-#: collecting_society_portal_repertoire/templates/file/upload.pt:174
-msgid "Release"
-msgstr "Veröffentlichung"
-
-#: collecting_society_portal_repertoire/templates/file/upload.pt:180
-msgid "Track Number"
-msgstr "Tracknummer"
-
-#: collecting_society_portal_repertoire/templates/file/upload.pt:186
+#: collecting_society_portal_repertoire/templates/file/show.pt:78
 msgid "Processing State"
 msgstr "Verarbeitungsstatus"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:189
+#: collecting_society_portal_repertoire/templates/file/show.pt:81
+msgid "Upload finished"
+msgstr "Hochladen beendet"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:83
+msgid "Preview created"
+msgstr "Vorschau erzeugt"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:85
+msgid "Checksum created"
+msgstr "Checksumme erzeugt"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:87
+msgid "Fingerprint created"
+msgstr "Fingerprint erzeugt"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:89
+msgid "Dropped"
+msgstr "Abgelegt"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:91
+msgid "Archived"
+msgstr "Archiviert"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:93
+msgid "Deleted"
+msgstr "Gelöscht"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:95
+#: collecting_society_portal_repertoire/templates/file/list.pt:71
+msgid "Rejected"
+msgstr "Zurückgewiesen"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:97
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:102
 msgid "Rejection Reason"
 msgstr "Ablehnungsgrund"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:192
+#: collecting_society_portal_repertoire/templates/file/show.pt:105
+msgid "Duplicate Checksum"
+msgstr "Doppelte Checksumme"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:107
+msgid "Duplicate Fingerprint"
+msgstr "Doppelter Fingerprint"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:109
+msgid "Format Error"
+msgstr "Formatfehler"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:111
+msgid "No Fingerprint"
+msgstr "Kein Fingerprint"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:113
+msgid "Lossy Compression"
+msgstr "Verlustbehaftete Kompression"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:115
+msgid "Missing Database Record"
+msgstr "Fehlender Datensatz"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:121
 msgid "Rejection Reason Details"
 msgstr "Details zum Abweisungsgrund"
 
-#: collecting_society_portal_repertoire/templates/file/upload.pt:197
-msgid "Error"
-msgstr "Fehler"
+#: collecting_society_portal_repertoire/templates/file/show.pt:131
+msgid "Audiofile Features"
+msgstr "Audiodatei-Eigenschaften"
 
-#: collecting_society_portal_repertoire/templates/profile/show.pt:29
+#: collecting_society_portal_repertoire/templates/file/show.pt:135
+msgid "Length"
+msgstr "Länge"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:142
+msgid "Channels"
+msgstr "Kanäle"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:149
+msgid "Sample Rate"
+msgstr "Samplingrate"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:156
+msgid "Sample Width"
+msgstr "Bittiefe"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:170
+msgid "Audiofile Metadata"
+msgstr "Metadaten der Audiodatei"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:188
+msgid "Release"
+msgstr "Veröffentlichung"
+
+#: collecting_society_portal_repertoire/templates/file/show.pt:202
+msgid "Track Number"
+msgstr "Tracknummer"
+
+#: collecting_society_portal_repertoire/templates/profile/show.pt:26
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:354
 #: collecting_society_portal_repertoire/views/forms/edit_profile.py:172
 msgid "Firstname"
 msgstr "Vorname"
 
-#: collecting_society_portal_repertoire/templates/profile/show.pt:34
+#: collecting_society_portal_repertoire/templates/profile/show.pt:31
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:355
 #: collecting_society_portal_repertoire/views/forms/edit_profile.py:173
 msgid "Lastname"
 msgstr "Nachname"
 
-#: collecting_society_portal_repertoire/templates/profile/show.pt:39
-msgid "EMail"
-msgstr "EMail"
+#: collecting_society_portal_repertoire/templates/profile/show.pt:41
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:356
+msgid "Birthdate"
+msgstr "Geburtsdatum"
 
-#: collecting_society_portal_repertoire/templates/profile/show.pt:44
+#: collecting_society_portal_repertoire/templates/profile/show.pt:46
 msgid "Create date"
 msgstr "Erzeugungsdatum"
 
@@ -846,17 +929,26 @@ msgstr ""
 "Deine Email-Überprüfung war erfolgreich. Bitte jetzt mit der Email-Adresse "
 "einloggen."
 
+#: collecting_society_portal_repertoire/views/file.py:94
+msgid "Content deleted: "
+msgstr "Datei geöscht: "
+
+#: collecting_society_portal_repertoire/views/file.py:95
+#, python-format
+msgid "Content deleted: ${cona} (${coco})"
+msgstr "Datei gelöscht: ${cona} (${coco})"
+
 #: collecting_society_portal_repertoire/views/widgets/rejected_content.py:22
 msgid "Rejected Content"
-msgstr "Abgelehnter Inhalt"
+msgstr "Abgelehnte Datei"
 
 #: collecting_society_portal_repertoire/views/widgets/uncommited_content.py:22
 msgid "Uncommitted Content"
-msgstr "Nicht freigeschalteter Inhalt"
+msgstr "Nicht freigeschaltete Datei"
 
 #: collecting_society_portal_repertoire/views/widgets/orphaned_content.py:22
 msgid "Orphaned Content"
-msgstr "Verwaister Inhalt"
+msgstr "Verwaiste Datei"
 
 #: collecting_society_portal_repertoire/views/forms/add_creation.py:199
 #, python-format
@@ -876,8 +968,7 @@ msgstr "Hochgeladene Datei ${coco} ist bereits dem Werk ${crco} zugewiesen."
 #: collecting_society_portal_repertoire/views/forms/add_creation.py:279
 msgid ""
 "Only one uploaded content file for each file type (audio and sheet music)."
-msgstr ""
-"Nur ein hochgeladener Inhalt für jeden Dateityp (Audio und Musiknoten)."
+msgstr "Nur ein hochgeladene Datei für jeden Dateityp (Audio und Musiknoten)."
 
 #: collecting_society_portal_repertoire/views/forms/add_creation.py:321
 #: collecting_society_portal_repertoire/views/forms/add_release.py:463
@@ -1031,10 +1122,6 @@ msgstr "Nutzungsbedingungen"
 msgid "I accept the terms of service."
 msgstr "Ich akzeptiere die Nutzungsbedingungen."
 
-#: collecting_society_portal_repertoire/views/forms/register_webuser.py:356
-msgid "Birthdate"
-msgstr "Geburtsdatum"
-
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:370
 msgid "Are you a C3S member?"
 msgstr "Bist Du C3S-Mitglied?"
@@ -1052,6 +1139,12 @@ msgstr "Nein"
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:384
 msgid "Do you want to apply for C3S membership?"
 msgstr "Möchtest Du einen Mitgliedschaftsantrag für die C3S stellen?"
+
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:389
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:402
+#: collecting_society_portal_repertoire/views/forms/register_webuser.py:415
+msgid "Back"
+msgstr "Zurück"
 
 #: collecting_society_portal_repertoire/views/forms/edit_profile.py:82
 #, python-format
@@ -1112,15 +1205,15 @@ msgstr "Komposition"
 msgid "Recording"
 msgstr "Aufnahme"
 
-#: collecting_society_portal_repertoire/views/api/repertoire_upload.py:393
+#: collecting_society_portal_repertoire/views/api/repertoire_upload.py:389
 msgid "Filetype not allowed."
 msgstr "Dateityp nicht erlaubt."
 
-#: collecting_society_portal_repertoire/views/api/repertoire_upload.py:399
+#: collecting_society_portal_repertoire/views/api/repertoire_upload.py:395
 msgid "Mimetype not allowed."
 msgstr "Mimetype nicht erlaubt."
 
-#: collecting_society_portal_repertoire/views/api/repertoire_upload.py:653
+#: collecting_society_portal_repertoire/views/api/repertoire_upload.py:649
 #, python-format
 msgid "Abuse detected. Wait for {number} seconds before trying another upload."
 msgstr ""
@@ -1135,14 +1228,58 @@ msgstr "Audio"
 msgid "Sheet Music"
 msgstr "Musiknoten"
 
+#~ msgid "Add files..."
+#~ msgstr "Dateien hinzufügen..."
+
+#~ msgid "Start upload"
+#~ msgstr "Starte Upload"
+
+#~ msgid ""
+#~ "{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
+#~ "<dynamic element>&nbsp;&nbsp;There has been a problem with '{%=file.name"
+#~ "%}'."
+#~ msgstr ""
+#~ "{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
+#~ "<dynamic element>&nbsp;&nbsp;Es gab ein Problem mit '{%=file.name%}'."
+
+#~ msgid "<dynamic element>"
+#~ msgstr "<dynamisches Element>"
+
+#~ msgid ""
+#~ "{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
+#~ "<dynamic element>&nbsp;&nbsp;'{%=file.name%}' has been processed "
+#~ "succesfully."
+#~ msgstr ""
+#~ "{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
+#~ "<dynamic element>&nbsp;&nbsp;'{%=file.name%}' wurde erfolgreich "
+#~ "verarbeitet."
+
+#~ msgid ""
+#~ "{% if (file.category == 'sheet') { %} <dynamic element> {% } else { %} "
+#~ "<dynamic element>&nbsp;&nbsp;'{%=file.name%}' is currently being "
+#~ "processed. Please come back again later."
+#~ msgstr ""
+#~ "{% if (file.category == 'sheet') { %} <dynamisches Element> {% } else "
+#~ "{ %} <dynamisches Element>&nbsp;&nbsp;'{%=file.name%}'  wird gerade "
+#~ "verarbeitet. Bitte komme später wieder."
+
+#~ msgid "Duration"
+#~ msgstr "Länge"
+
+#~ msgid "Bitwidth"
+#~ msgstr "Bitbreite"
+
+#~ msgid "Error"
+#~ msgstr "Fehler"
+
+#~ msgid "EMail"
+#~ msgstr "EMail"
+
 #~ msgid "Release deleted: "
 #~ msgstr "Veröffentlichung gelöscht:"
 
 #~ msgid "Release edited: "
 #~ msgstr "Veröffentlichung bearbeitet: "
-
-#~ msgid "Creation deleted: "
-#~ msgstr "Werk geöscht: "
 
 #~ msgid "Creation added: "
 #~ msgstr "Werk hinzugefügt: "
@@ -1204,14 +1341,8 @@ msgstr "Musiknoten"
 #~ msgid "- Select -"
 #~ msgstr "- Auswahl -"
 
-#~ msgid "Upload audiofile"
-#~ msgstr "Audiodatei hochladen"
-
 #~ msgid "Upload Audiofile"
 #~ msgstr "Audiodatei hochladen"
-
-#~ msgid "Add metadata"
-#~ msgstr "Metadaten hinzufügen"
 
 #~ msgid "Solo artist"
 #~ msgstr "Solokünstler"
