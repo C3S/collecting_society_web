@@ -481,6 +481,21 @@ class Content(Tdb):
         return result or None
 
     @classmethod
+    def delete(cls, content):
+        """
+        Deletes content
+
+        Args:
+          content (list): contents::
+
+            [content1, content2, ...]
+
+        Returns:
+          ?
+        """
+        return cls.get().delete(content)
+
+    @classmethod
     def create(cls, vlist):
         """
         Creates content.
