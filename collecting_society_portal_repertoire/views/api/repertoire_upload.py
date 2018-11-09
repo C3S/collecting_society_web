@@ -14,16 +14,12 @@ import time
 from cgi import FieldStorage
 
 from webob.byterange import ContentRange
-from pyramid.response import FileResponse
 from pyramid.security import (
     Allow,
     DENY_ALL,
     NO_PERMISSION_REQUIRED
 )
-from pyramid.httpexceptions import (
-    HTTPInternalServerError,
-    HTTPNotFound
-)
+from pyramid.httpexceptions import HTTPInternalServerError
 from cornice import Service
 
 from collecting_society_portal.services import (
@@ -820,12 +816,7 @@ def options_repertoire_list(request):
 @repertoire_list.get(
     permission='read')
 def get_repertoire_list(request):
-    files = []
-    contents = Content.current_orphans(request)
-    if contents:
-        for content in contents:
-            files.append(get_content_info(request, content))
-    return {'files': files}
+    return {'files': []}
 
 
 # --- service: show -----------------------------------------------------------
@@ -881,17 +872,7 @@ def options_repertoire_preview(request):
 @repertoire_preview.get(
     permission='read')
 def get_repertoire_preview(request):
-    content = Content.search_by_id(request.matchdict['id'])
-    preview_path = content.preview_path
-    if not preview_path or not os.path.isfile(preview_path):
-        raise HTTPNotFound()
-    # if content.entity_creator != request.party: <-make serious acl here!
-    #    raise HTTPForbidden()
-    return FileResponse(
-        preview_path,
-        request=request,
-        content_type=str(content.mime_type)
-    )
+    return
 
 
 # --- service: delete ---------------------------------------------------------
@@ -915,12 +896,4 @@ def options_repertoire_delete(request):
     permission='delete')
 @Tdb.transaction(readonly=False)
 def get_repertoire_delete(request):
-    content_id = request.matchdict['id']
-    content = Content.search_by_id(content_id)
-    info = get_content_info(request, content)
-    # admin feedback
-    log.info("{} deleted content {}\n".format(request.web_user, info))
-    name = content.name
-    content.active = False
-    content.save()
-    return {'files': [{name: True}]}
+    return

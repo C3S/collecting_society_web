@@ -73,7 +73,7 @@ class ArtistViews(ViewBase):
         self.request.session.flash(
             _(u"Artist deleted: ") + name + ' (' + self.context.code + ')',
             _(u"Artist deleted: ${arna} (${arco})",
-              mapping={'arna': name, 'arco': self.context.code}),            
+              mapping={'arna': name, 'arco': self.context.code}),
             'main-alert-success'
         )
         return self.redirect('..')

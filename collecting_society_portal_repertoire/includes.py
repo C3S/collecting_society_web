@@ -232,30 +232,30 @@ def web_registry(config):
                             'collecting_society_portal_repertoire:'
                             'static/img/element-icon-dashboard.png')},
             {
-                'name': _(u'Upload'),
+                'name': _(u'Files'),
                 'url':  self.request.resource_path(
-                            FilesResource(self.request), 'upload'),
+                            FilesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_portal_repertoire:'
                             'static/img/element-icon-upload.png')},
             {
                 'name': _(u'Artists'),
                 'url':  self.request.resource_path(
-                            ArtistsResource(self.request), ''),
+                            ArtistsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_portal_repertoire:'
                             'static/img/element-icon-soloartists.png')},
             {
                 'name': _(u'Creations'),
                 'url':  self.request.resource_path(
-                            CreationsResource(self.request), ''),
+                            CreationsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_portal_repertoire:'
                             'static/img/element-icon-songs.png')},
             {
                 'name': _(u'Releases'),
                 'url':  self.request.resource_path(
-                            ReleasesResource(self.request), ''),
+                            ReleasesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_portal_repertoire:'
                             'static/img/element-icon-releases.png')},

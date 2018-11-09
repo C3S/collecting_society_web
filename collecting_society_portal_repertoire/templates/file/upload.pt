@@ -4,225 +4,150 @@
 
     <tal:block metal:fill-slot="content-right">
 
-        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Uploads</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Assigned to Creation</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Failed</a>
-            </li>
-        </ul>
-        <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade show in active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-            <!-- Data container -->
-            <div id="data"
-                data-url="${url}"
-                data-extensions="${'\|'.join(extensions)}"
-                style="display:none;"></div>
+        <form id="fileupload" action="${url}/upload" method="POST" enctype="multipart/form-data">
 
-            <!-- The file upload form used as target for the file upload widget -->
-            <form id="fileupload" action="${url}/upload" method="POST" enctype="multipart/form-data">
-                <!-- Redirect browsers with JavaScript disabled to the origin page -->
-                <noscript><input type="hidden" name="redirect" value="${url}/upload"></noscript>
-                <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-                <div class="fileupload-buttonbar">
-                    <p>
-                    <div>
-                        <!-- The fileinput-button span is used to style the file input field as button -->
-                        <span class="btn btn-success fileinput-button">
-                            <i class="glyphicon glyphicon-plus"></i>
-                            <span i18n:translate="">Add files...</span>
-                            <input type="file" name="files[]" multiple>
-                        </span>
-                        <button type="submit" class="btn btn-primary start">
-                            <i class="glyphicon glyphicon-upload"></i>
-                            <span i18n:translate="">Start upload</span>
-                        </button>
-                        <button type="reset" class="btn btn-warning cancel">
-                            <i class="glyphicon glyphicon-ban-circle"></i>
-                            <span i18n:translate="">Cancel upload</span>
-                        </button>
-                        <!-- The global file processing state -->
-                        <span class="fileupload-process"></span>
-                    </div>
-                    </p><p>
-                        <span tal:repeat="extension extensions" class="label label-default">${extension}</span>
-                    </p>
+            <h1 class="cs-form-header" i18n:translate="">Upload</h1>
+
+            <!-- navigation -->
+            <div class="btn-toolbar cs-form-controls" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a href="javascript: history.back(1);"
+                       class="btn btn-default cs-green" role="button">
+                        <span class="glyphicon glyphicon-arrow-left"></span></a>
+                    <span class="btn btn-primary fileinput-button">
+                        <span i18n:translate="">Add</span>
+                        <input type="file" name="files[]" multiple>
+                    </span>
                 </div>
-                <!-- The global progress state -->
-                <div class="fileupload-progress fade">
-                    <!-- The global progress bar -->
-                    <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                <div class="btn-group fileupload-buttonbar" role="group">
+                    <button type="submit" class="btn btn-default start">
+                        <span i18n:translate="">Start</span>
+                    </button>
+                    <button type="reset" class="btn btn-default cancel">
+                        <span i18n:translate="">Cancel</span>
+                    </button>
+                </div>
+                <div class="cs-allowed-filetypes pull-right">
+                    <span tal:repeat="extension extensions"
+                          class="label label-default">${extension}</span>
+                </div>
+            </div>
+
+            <!-- progress state -->
+            <div class="container-fluid">
+                <div class="fileupload-progress">
+                    <!-- progress bar -->
+                    <div class="progress progress-striped active" role="progressbar"
+                         aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar progress-bar-success"></div>
                     </div>
-                    <!-- The extended global progress state -->
+                    <!-- extended progress state -->
                     <div class="progress-extended">&nbsp;</div>
                 </div>
-                <br />
-                <!-- The table listing the files available for upload/download -->
-                <div class="table-responsiv">
-                    <table role="presentation" class="table table-condensed">
-                        <tbody class="files"></tbody>
-                    </table>
+            </div>
+
+            <!-- data container -->
+            <div id="data" class="hidden" data-url="${url}"
+                 data-extensions="${'\|'.join(extensions)}"></div>
+
+            <!-- content -->
+            <div class="cs-fileupload-content">
+                <!-- files -->
+                <div class="container-fluid">
+                    <div class="table-responsiv">
+                        <table role="presentation"
+                               class="table table-condensed cs-table-upload">
+                            <tbody class="files"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </form>
 
-            <!-- The template to display files available for upload -->
-            <script id="template-upload" type="text/x-tmpl">
-            {% for (var i=0, file; file=o.files[i]; i++) { %}
-                <tr class="template-upload fade">
-                    <td>
-                        <span class="preview"></span>
+            </div>
+        </form>
 
-                        <div class="name">{%=file.name%}</div>
-
-                        <p i18n:translate="" class="size" style="float:left;margin-right:10px;">Processing...</p>
-                        <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
-
-                        <strong class="error text-danger"></strong>
-                    </td>
-                    <td>
-                        {% if (!i && !o.options.autoUpload) { %}
-                            <button class="btn btn-primary start" disabled>
-                                <i class="glyphicon glyphicon-upload"></i>
-                            </button>
-                        {% } %}
-                        {% if (!i) { %}
-                            <button class="btn btn-warning cancel">
-                                <i class="glyphicon glyphicon-ban-circle"></i>
-                            </button>
-                        {% } %}
-                    </td>
-                </tr>
-            {% } %}
-            </script>
-
-            <!-- The template to display files available for download -->
-            <script id="template-download" type="text/x-tmpl">
-            {% for (var i=0, file; file=o.files[i]; i++) { %}
-                <tr class="template-download fade">
-                    <td>
-                        <span class="preview">
-                            {% if (file.error) { %}
-                                <div class="panel panel-danger">
-                                <div class="panel-heading"><span i18n:translate="">
-                                {% if (file.category == 'sheet') { %}
-                                <i class="glyphicon glyphicon-music">
-                                {% } else { %}
-                                <i class="glyphicon glyphicon-cd">
-                                {% } %}
-                                </i>&nbsp;&nbsp;There has been a problem with '{%=file.name%}'.</span></div>
-                                <span i18n:translate=""><b></b></span>  
-                            {% } else if (file.preview_processed || file.category == 'sheet') { %}                    
-                                {% if ((file.previewUrl || file.category == 'sheet') && !file.error) { %}
-                                    <div class="panel panel-success">
-                                    <div class="panel-heading"><span i18n:translate="">
-                                    {% if (file.category == 'sheet') { %}
-                                    <i class="glyphicon glyphicon-music">
-                                    {% } else { %}
-                                    <i class="glyphicon glyphicon-cd">
-                                    {% } %}
-                                    </i>&nbsp;&nbsp;'{%=file.name%}' has been processed succesfully.</span></div>
-                                    {% if (file.category != 'sheet') { %}    
-                                        <audio src="{%=file.previewUrl%}" controls=""></audio>
-                                    {% } %}
-                                {% } %}
-                            {% } else { %}
-                                <div class="panel panel-info">
-                                <div class="panel-heading"><span i18n:translate="">
-                                {% if (file.category == 'sheet') { %}
-                                <i class="glyphicon glyphicon-music">
-                                {% } else { %}
-                                <i class="glyphicon glyphicon-cd">
-                                {% } %}
-                                </i>&nbsp;&nbsp;'{%=file.name%}' is currently being processed. Please come back again later.</span></div>
-                                <span i18n:translate=""><b></b></span>                            
-                            {% } %}
-                        </span>
-
-                        <div class="panel-body">
-                        
-                            <div class="cs-audio-properties">
-                                {% if (file.duration) { %}
-                                    <span i18n:translate="" class="duration">Duration</span> <span class="badge">{%=file.duration%}</span>
-                                {% } %}
-                                {% if (file.channels) { %}
-                                    <span i18n:translate="" class="channels">Channels </span> <span class="badge">{%=file.channels%}</span>
-                                {% } %}
-                                {% if (file.sample_width) { %}
-                                    <span i18n:translate="" class="sample_width">Bitwidth </span> <span class="badge">{%=file.sample_width%}</span>
-                                {% } %}
-                                {% if (file.frame_rate) { %}
-                                    <span i18n:translate="" class="frame_rate">Samplingrate</span> <span class="badge">{%=file.frame_rate%}</span>
-                                {% } %}
-                                {% if (file.size) { %}
-                                    <span i18n:translate="" class="size">File Size</span> <span class="badge">{%=o.formatFileSize(file.size)%}</span>
-                                {% } %}
-                            <div>
-                        
-                            <div class="cs-audio-tag-metadata">
-                                {% if (file.metadata_artist) { %}
-                                    <span i18n:translate="" class="metadata_artist">Artist</span> <span class="badge">{%=file.metadata_artist%}</span>
-                                {% } %}
-                                {% if (file.metadata_title) { %}
-                                    <span i18n:translate="" class="metadata_title">Title </span> <span class="badge">{%=file.metadata_title%}</span>
-                                {% } %}
-                                {% if (file.metadata_release) { %}
-                                    <span i18n:translate="" class="metadata_release">Release </span> <span class="badge">{%=file.metadata_release%}</span>
-                                {% } %}
-                                {% if (file.metadata_release_date) { %}
-                                    <span i18n:translate="" class="metadata_release_date">Release Date </span> <span class="badge">{%=file.metadata_release_date%}</span>
-                                {% } %}
-                                {% if (file.metadata_track_number) { %}
-                                    <span i18n:translate="" class="metadata_track_number">Track Number </span> <span class="badge">{%=file.metadata_track_number%}</span>
-                                {% } %}
-                            <div>
-                        
-                            <div class="cs-audio-processing-details">
-                                {% if (file.processing_state) { %}
-                                    <span i18n:translate="" class="processing_state">Processing State </span> <span class="badge">{%=file.processing_state%}</span>
-                                {% } %}
-                                {% if (file.rejection_reason) { %}
-                                    <span i18n:translate="" class="rejection_reason">Rejection Reason </span> <span class="badge">{%=file.rejection_reason%}</span>
-                                {% } %}
-                                {% if (file.rejection_reason_details) { %}
-                                    <span i18n:translate="" class="rejection_reason_details">Rejection Reason Details </span> <span class="badge">{%=file.rejection_reason_details%}</span>
-                                {% } %}
-                            <div>
-
-                            {% if (file.error) { %}
-                                <div><span i18n:translate="" class="label label-danger">Error</span> {%=file.error%}</div>
-                            {% } %}
-
+        <!-- template: upload -->
+        <script id="template-upload" type="text/x-tmpl">
+        {% for (var i=0, file; file=o.files[i]; i++) { %}
+            <tr class="template-upload cs-upload-item">
+                <td>
+                    <div class="name h4">
+                        {%=file.name%}
+                        <div i18n:translate="" class="size badge">
+                            Processing...
                         </div>
-                    </td>
-                    <td>
-                        {% if (!file.error) { %}
-                            {% if (file.category == 'audio' && file.processing_state != 'uploaded') { %}
-                                <a class="btn btn-success assign"
-                                        href="${request.resource_path(request.root['repertoire']['creations'], 'add')}?uuid={%=file.uuid%}"
-                                                >
-                                    <i class="glyphicon glyphicon-cd"></i>
-                                </a>
-                            {% } %}
-                            <button class="btn btn-danger delete"
-                                    data-type="{%=file.deleteType%}"
-                                    data-url="{%=file.deleteUrl%}"
-                                    data-xhr-fields='{"withCredentials":true}'>
-                                <i class="glyphicon glyphicon-trash"></i>
-                            </button>
+                        <div class="btn-toolbar pull-right cs-upload-item-controls"
+                             role="toolbar">
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-default start" disabled>
+                                    <span i18n:translate="">Start</span>
+                                </button>
+                                {% if (!i) { %}
+                                    <button class="btn btn-sm btn-default cancel">
+                                        <span i18n:translate="">Cancel</span>
+                                    </button>
+                                {% } %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="toolbar">
+                        <div class="progress progress-striped active"
+                             role="progressbar" aria-valuemin="0"
+                             aria-valuemax="100" aria-valuenow="0">
+                            <div class="progress-bar progress-bar-success"
+                                 style="width:0%;">
+                            </div>
+                        </div>
+                        <strong class="error text-danger"></strong>
+                    </div>
+                    {% if(file.type === "application/pdf") { %}
+                        <div class="nopreview" i18n:translate="">No preview</div>
+                    {% } else { %}
+                        <div class="preview"></div>
+                    {% } %}
+                </td>
+            </tr>
+        {% } %}
+        </script>
+
+        <!-- template: panel -->
+        <script id="template-alert" type="text/x-tmpl">
+            <div class="alert alert-{%=o.class%}" role="alert">
+                <div class="cs-alert-content">
+                    <span class="cs-upload-text">
+                        {% if (o.file.error) { %}
+                            <span i18n:translate="">
+                                Upload failed.
+                            </span>
                         {% } %}
-                    </td>
-                </tr>
-            {% } %}
-            </script>
-        </div>
-        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">...</div>
-        <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
-        </div>
+                        {% if (!o.file.error) { %}
+                            <span i18n:translate="">
+                                Upload was succesfull.
+                            </span>
+                        {% } %}
+                    </span>
+                </div>
+            </div>
+        </script>
+
+        <!-- template: download -->
+        <script id="template-download" type="text/x-tmpl">
+        {% for (var i=0, file; file=o.files[i]; i++) { %}
+            <tr class="template-download cs-download-item fade">
+                <td>
+                    <div class="name h4">
+                        {%=file.name%}
+                        <span i18n:translate="" class="size badge">
+                            {%=o.formatFileSize(file.size)%}
+                        </span>
+                    </div>
+                    {% include('template-alert', {
+                        file: file,
+                        class: file.error ? 'danger' : 'success',
+                    }); %}
+                </td>
+            </tr>
+        {% } %}
+        </script>
 
     </tal:block>
 

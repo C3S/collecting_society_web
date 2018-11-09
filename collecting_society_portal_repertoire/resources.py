@@ -29,11 +29,11 @@ log = logging.getLogger(__name__)
 # --- Regex -------------------------------------------------------------------
 
 valid = {
-    'artist':   r'^A\d{10}\Z',
-    'release':  r'^R\d{10}\Z',
+    'artist': r'^A\d{10}\Z',
+    'release': r'^R\d{10}\Z',
     'creation': r'^C\d{10}\Z',
-    'content':  r'^D\d{10}\Z',
-    'uuid':     r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z'
+    'content': r'^D\d{10}\Z',
+    'uuid': r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z'
 }
 
 
@@ -54,7 +54,6 @@ class RepertoireResource(ResourceBase):
             'add_creation',
             'add_release',
             'add_content',
-            'upload_files'
         )),
         # prevent inheritance from backend resource
         DENY_ALL
@@ -189,6 +188,41 @@ class CreationResource(ModelResource):
 class FilesResource(ResourceBase):
     __parent__ = RepertoireResource
     __name__ = "files"
+    _write = ['add']
+
+    # traversal
+    def __getitem__(self, key):
+        # validate code
+        if re.match(valid['content'], key):
+            return FileResource(self.request, key)
+        # views needing writable transactions
+        if key in self._write:
+            self.readonly = False
+        raise KeyError(key)
+
+    # load resources
+    def context_found(self):
+        if self.request.view_name == '':
+            self.files = Content.current_viewable(self.request)
+
+
+class FileResource(ModelResource):
+    __parent__ = FilesResource
+    _write = ['delete']
+    _permit = ['view_content', 'delete_content']
+
+    # load resources
+    def context_found(self):
+        self.file = Content.search_by_code(self.code)
+
+    # add instance level permissions
+    def __acl__(self):
+        if not hasattr(self.file, 'permissions'):
+            return []
+        return [
+            (Allow, self.request.authenticated_userid,
+                self.file.permissions(self.request.web_user, self._permit))
+        ]
 
 
 class DebugC3sMembershipApiResource(ResourceBase):

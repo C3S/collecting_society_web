@@ -1,0 +1,219 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
+<tal:block metal:use-macro="backend363"
+           i18n:domain="collecting_society_portal_repertoire"
+           tal:define="file context.file">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <h1>
+            <small tal:condition="file.creation">${file.creation.title}</small><br>
+            ${file.name}
+        </h1>
+
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="javascript: history.back(1);"
+                   class="btn btn-default cs-green" role="button">
+                    <span class="glyphicon glyphicon-arrow-left"></span></a>
+            </div>
+            <div class="btn-group cs-form-controls pull-right" role="group">
+                <a href="${request.resource_path(context, 'delete')}"
+                   class="btn btn-danger" role="button"
+                   i18n:translate="">Delete</a>
+            </div>
+        </div>
+
+        <table class="table cs-table cs-table-show">
+
+            <tr class="cs-file-icon-row">
+                <td colspan="2">
+                    <span tal:condition="file.category == 'sheet'"
+                          class="glyphicon glyphicon-file cs-file-icon"></span>
+                    <span tal:condition="file.category == 'audio'"
+                          class="glyphicon glyphicon-cd cs-file-icon"></span>
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Filename</th>
+                <td>${file.name}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">C3S ID</th>
+                <td>${file.code}</td>
+            </tr>
+
+            <tr tal:condition="file.category == 'audio'
+                               and file.preview_path
+                               and file.preview_path != '/some/preview/path'">
+                <th i18n:translate="">Preview</th>
+                <td>
+                    <div class="cs-file-preview">
+                        <audio controls>
+                            <source type="audio/ogg"
+                                    tal:attributes="src request.resource_path(
+                                                        context, 'preview')">
+                        </audio>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Size</th>
+                <td>${file.size} Byte</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Mime Type</th>
+                <td>${file.mime_type}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Processing State</th>
+                <td>
+                    <span tal:condition="file.processing_state == 'uploaded'"
+                          i18n:translate="">Upload finished</span>
+                    <span tal:condition="file.processing_state == 'previewed'"
+                          i18n:translate="">Preview created</span>
+                    <span tal:condition="file.processing_state == 'checksummed'"
+                          i18n:translate="">Checksum created</span>
+                    <span tal:condition="file.processing_state == 'fingerprinted'"
+                          i18n:translate="">Fingerprint created</span>
+                    <span tal:condition="file.processing_state == 'dropped'"
+                          i18n:translate="">Dropped</span>
+                    <span tal:condition="file.processing_state == 'archived'"
+                          i18n:translate="">Archived</span>
+                    <span tal:condition="file.processing_state == 'deleted'"
+                          i18n:translate="">Deleted</span>
+                    <span tal:condition="file.processing_state == 'rejected'"
+                          i18n:translate="">Rejected</span>
+                    <span tal:condition="file.processing_state == 'unknown'"
+                          i18n:translate="">Unknown</span>
+                </td>
+            </tr>
+
+            <tr tal:condition="file.processing_state == 'rejected'">
+                <th i18n:translate="">Rejection Reason</th>
+                <td>
+                    <span tal:condition="file.rejection_reason == 'checksum_collision'"
+                          i18n:translate="">Duplicate Checksum</span>
+                    <span tal:condition="file.rejection_reason == 'fingerprint_collision'"
+                          i18n:translate="">Duplicate Fingerprint</span>
+                    <span tal:condition="file.rejection_reason == 'format_error'"
+                          i18n:translate="">Format Error</span>
+                    <span tal:condition="file.rejection_reason == 'no_fingerprint'"
+                          i18n:translate="">No Fingerprint</span>
+                    <span tal:condition="file.rejection_reason == 'lossy_compression'"
+                          i18n:translate="">Lossy Compression</span>
+                    <span tal:condition="file.rejection_reason == 'missing_database_record'"
+                          i18n:translate="">Missing Database Record</span>
+                </td>
+            </tr>
+
+            <tr tal:condition="file.processing_state == 'rejected'
+                               and file.rejection_reason_details">
+                <th i18n:translate="">Rejection Reason Details</th>
+                <td>
+                    ${file.rejection_reason_details}
+                </td>
+            </tr>
+
+            <tal:block tal:condition="file.category == 'audio'">
+
+                <tr class="cs-table-section">
+                    <th></th>
+                    <td i18n:translate="">Audiofile Features</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Length</th>
+                    <td>
+                        ${file.length} s
+                    </td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Channels</th>
+                    <td>
+                        ${file.channels}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Sample Rate</th>
+                    <td>
+                        ${file.sample_rate}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Sample Width</th>
+                    <td>
+                        ${file.sample_width}
+                    </td>
+                </tr>
+
+                <tal:block tal:condition="file.metadata_artist
+                                          or file.metadata_title
+                                          or file.metadata_release
+                                          or file.metadata_release_date
+                                          or file.metadata_track_number">
+
+                    <tr class="cs-table-section">
+                        <th></th>
+                        <td i18n:translate="">Audiofile Metadata</td>
+                    </tr>
+
+                    <tr tal:condition="file.metadata_artist">
+                        <th i18n:translate="">Artist</th>
+                        <td>
+                            ${file.metadata_artist}
+                        </td>
+                    </tr>
+
+                    <tr tal:condition="file.metadata_title">
+                        <th i18n:translate="">Title</th>
+                        <td>
+                            ${file.metadata_title}
+                        </td>
+                    </tr>
+
+                    <tr tal:condition="file.metadata_release">
+                        <th i18n:translate="">Release</th>
+                        <td>
+                            ${file.metadata_release}
+                        </td>
+                    </tr>
+
+                    <tr tal:condition="file.metadata_release_date">
+                        <th i18n:translate="">Release Date</th>
+                        <td>
+                            ${file.metadata_release_date}
+                        </td>
+                    </tr>
+
+                    <tr tal:condition="file.metadata_track_number">
+                        <th i18n:translate="">Track Number</th>
+                        <td>
+                            ${file.metadata_track_number}
+                        </td>
+                    </tr>
+
+                </tal:block>
+
+            </tal:block>
+
+        </table>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right"></tal:block>
+
+</tal:block>

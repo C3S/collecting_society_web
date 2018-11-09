@@ -145,8 +145,8 @@ h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bott
 
 .table .cs-table-controls { opacity:0.4; margin-top:4px; }
 .table tr:hover .cs-table-controls { opacity:1 }
-.cs-table-codecolumn { opacity:0.5; }
 .cs-table > tbody > tr > td { vertical-align:middle; }
+.cs-table .cs-table-codecolumn a { color:#aaa; }
 .cs-table a { color:#333; }
 .cs-table-list,
 .cs-table-show { border-top:1px solid rgb(221, 221, 221); margin-top:15px; }
@@ -156,6 +156,7 @@ h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bott
 .cs-list h1 { margin-bottom:5px; padding-left:15px; }
 .cs-list .cs-form-controls { margin:2px 0 7px 5px; padding:0; }
 .cs-table-show .cs-defaultpic { max-height:80px; }
+.cs-table > tbody > .cs-table-section > td { padding-top:25px; }
 
 .cs-release-title { display:block; }
 .cs-release-artist,
@@ -169,6 +170,31 @@ h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bott
 .cs-contribution { font-style:italic; color:#777; }
 .cs-original-artist { color:#777; }
 
+.cs-file-icon { color:#d9f0c8; font-size:35px; margin-top:5px; }
+.cs-file-rejected { color:#c9302c; }
+.cs-table-show .cs-file-icon-row td { text-align:center; }
+.cs-table-show .cs-file-icon-row .cs-file-icon { font-size:80px; }
+.cs-table-show .cs-file-preview audio { width:100%; }
+
+.cs-fileupload-content { border-top:1px solid rgb(221, 221, 221); margin-top:15px; padding-top:15px; }
+.cs-allowed-filetypes { margin-top:5px; }
+.cs-allowed-filetypes .label { opacity:0.5; }
+.cs-upload-icon { margin-right:10px; }
+.cs-table-upload > tbody > tr > td { border:0; }
+.cs-table-upload .panel-body .badge { margin-left:3px; margin-right:10px; opacity:0.5; }
+.cs-table-upload tr { height:103px; }
+.cs-table-upload .alert { margin-bottom:0; text-align:center; }
+.fileupload-progress .progress { margin-top:5px; margin-bottom:5px; height:30px; }
+.cs-upload-item .progress { margin-top:2px; margin-bottom:0; height:5px; }
+.cs-download-item .size,
+.cs-upload-item .size { margin-left:10px; color:#fff; opacity:0.5; }
+.cs-download-item .name,
+.cs-upload-item .name { color:#317a19; margin-bottom:3px; }
+.cs-upload-item .toolbar { margin-bottom:7px; }
+.cs-upload-item-controls { margin-left:3px; }
+.cs-upload-item .preview audio { max-width:none; width:100%; }
+.cs-upload-item .nopreview { text-align:center; border:1px solid rgb(221, 221, 221); border-radius: 5px; padding:10px; background:#eee; color:#888; }
+
 .cs-content-middle .template-upload td { padding:10px 5px; }
 .cs-content-middle .template-upload .progress { margin-bottom:0; }
 .cs-content-middle .template-upload .size { margin-bottom:0; }
@@ -177,7 +203,6 @@ h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bott
 /* Content Right */
 
 .cs-content-right { background-color:#fff; }
-.cs-content-right .preview audio { width:100%; max-width:none; }
 .cs-backend-363 .cs-content-right { background-color:transparent; }
 
 .cs-widget-plugins .cs-widget-plugin-img { width:120px; }

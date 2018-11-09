@@ -19,6 +19,20 @@ class Content(Tdb):
     __name__ = 'content'
 
     @classmethod
+    def current_viewable(cls, request):
+        """
+        Searches content, which the current web_user is allowed to view.
+
+        Args:
+          request (pyramid.request.Request): Current request.
+
+        Returns:
+          list: viewable content of web_user
+          None: if no match is found
+        """
+        return cls.search_viewable_by_web_user(request.web_user.id)
+
+    @classmethod
     def current_orphans(cls, request, category='all'):
         """
         Searches orphan content in category of current web user.
@@ -343,6 +357,31 @@ class Content(Tdb):
             ('mime_type', '=', mime_type)
         ])
         return result
+
+    @classmethod
+    def search_viewable_by_web_user(cls, web_user_id, active=True):
+        """
+        Searches artists, which the web_user is allowed to view.
+
+        Args:
+          web_user_id (int): web.user.id
+
+        Returns:
+          list: viewable artists of web_user, empty if none were found
+        """
+        return cls.get().search([
+            [
+                'OR',
+                [
+                    ('acl.web_user', '=', web_user_id),
+                    ('acl.roles.permissions.code', '=', 'view_content')
+                ], [
+                    ('creation.artist.acl.web_user', '=', web_user_id),
+                    ('creation.artist.acl.roles.permissions.code',
+                        '=', 'view_artist_content'),
+                ]
+            ]
+        ])
 
     @classmethod
     def search_orphans(cls, party_id, category):
