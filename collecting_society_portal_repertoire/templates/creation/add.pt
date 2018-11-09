@@ -11,13 +11,13 @@
 
         <div class="cs-form-container">
 
-            <h1 class="cs-form-header" i18n:translate="">Add Artist</h1>
+            <h1 class="cs-form-header" i18n:translate="">Add Creation</h1>
 
             <div class="btn-toolbar cs-form-controls" role="toolbar">
                 <div class="btn-group" role="group">
-                    <a href="javascript: history.back(1);"
-                       class="btn btn-default cs-green" role="button">
-                        <span class="glyphicon glyphicon-arrow-left"></span></a>
+                    <a href="${request.resource_path(context)}"
+                       class="btn btn-default" role="button"
+                       i18n:translate="">Creations</a>
                     <a class="btn btn-primary" role="button"
                        onclick="$('#AddCreationsubmit').click();"
                        i18n:translate="">Submit</a>

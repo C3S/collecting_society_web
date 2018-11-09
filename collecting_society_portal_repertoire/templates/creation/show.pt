@@ -11,15 +11,15 @@
     <tal:block metal:fill-slot="content-middle">
 
         <h1>
-            <small>${creation.artist.name}</small><br>
             ${creation.title}
+            <small>${creation.artist.name}</small>
         </h1>
 
         <div class="btn-toolbar cs-form-controls" role="toolbar">
             <div class="btn-group" role="group">
-                <a href="javascript: history.back(1);"
-                   class="btn btn-default cs-green" role="button">
-                    <span class="glyphicon glyphicon-arrow-left"></span></a>
+                <a href="${request.resource_path(context, '..')}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Creations</a>
                 <a href="${request.resource_path(context, 'edit')}"
                    class="btn btn-primary" role="button"
                    i18n:translate="">Edit</a>

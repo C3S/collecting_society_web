@@ -11,15 +11,15 @@
     <tal:block metal:fill-slot="content-middle">
 
         <h1>
-            <small tal:condition="file.creation">${file.creation.title}</small><br>
             ${file.name}
+            <small tal:condition="file.creation">${file.creation.title}</small>
         </h1>
 
         <div class="btn-toolbar cs-form-controls" role="toolbar">
             <div class="btn-group" role="group">
-                <a href="javascript: history.back(1);"
-                   class="btn btn-default cs-green" role="button">
-                    <span class="glyphicon glyphicon-arrow-left"></span></a>
+                <a href="${request.resource_path(context, '..')}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Files</a>
             </div>
             <div class="btn-group cs-form-controls pull-right" role="group">
                 <a href="${request.resource_path(context, 'delete')}"

@@ -15,9 +15,9 @@
 
             <div class="btn-toolbar cs-form-controls" role="toolbar">
                 <div class="btn-group" role="group">
-                    <a href="${request.resource_path(context, '..')}"
+                    <a href="${request.resource_path(context)}"
                        class="btn btn-default" role="button"
-                       i18n:translate="">Back</a>
+                       i18n:translate="">Releases</a>
                     <a href="#" class="btn btn-primary" role="button"
                        onclick="$('#AddReleasesubmit').click();"
                        i18n:translate="">Submit</a>
