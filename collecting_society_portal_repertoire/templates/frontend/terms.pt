@@ -10,13 +10,13 @@
 
         <p>
             <span i18n:translate="">Representatives</span>:<br />
-            Max Gössler<br />
+            Julian Tillmann<br />
             Meik Michalke
         </p>
 
         <p>
-            <span i18n:translate="">Heyestr. 194</span><br />
-            <span i18n:translate="">40625 Düsseldorf</span><br />
+            <span i18n:translate="">Rochusstr. 44</span><br />
+            <span i18n:translate="">40479 Düsseldorf</span><br />
             <span i18n:translate="">Germany</span>
         </p>
 
@@ -34,8 +34,7 @@
         <p>
             <span i18n:translate="">Cultural Commons Collecting Society SCE mit beschränkter Haftung (C3S SCE)</span><br />
             <span i18n:translate="">registered in Dusseldorf, Germany, reg.no.: GnR 506 (Genossenschaftsregister Düsseldorf)</span><br />
-            <span i18n:translate="">registered office</span>: <span i18n:translate="">Heyestr. 194, 40625 Düsseldorf</span>.<br />
-            <span i18n:translate="">Minimum share capital</span>: <span>30,000 €</span><br />
+            <span i18n:translate="">registered office</span>: <span i18n:translate="">Heyestr. 194, 40625 Düsseldorf</span>.<br />            
             <span i18n:translate="">European Cooperative Society founded in Hamburg on Sept. 25, 2013 under the law of the Federal Republic of Germany.</span>
         </p>
 
