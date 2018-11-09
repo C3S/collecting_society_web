@@ -72,13 +72,6 @@ class FileViews(ViewBase):
     def preview(self):
         file = self.context.file
         preview_path = file.preview_path
-        log.debug(
-            (
-                "preview_path: %s\n"
-            ) % (
-                preview_path
-            )
-        )
         if not preview_path or not os.path.isfile(preview_path):
             raise HTTPNotFound()
         return FileResponse(
@@ -90,7 +83,7 @@ class FileViews(ViewBase):
     @view_config(
         name='delete',
         decorator=Tdb.transaction(readonly=False),
-        permission='delete_artist')
+        permission='delete_content')
     def delete(self):
         name = self.context.file.name
         Content.delete([self.context.file])
