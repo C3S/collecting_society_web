@@ -377,7 +377,7 @@ class EditRelease(FormController):
         # user feedback
         log.info("edit release successful for %s: %s" % (web_user, release))
         self.request.session.flash(
-            _(u"Release edited:  ${reti} (${reco}",
+            _(u"Release edited:  ${reti} (${reco})",
               mapping={'reti': release.title,
                        'reco': release.code}),
             'main-alert-success'

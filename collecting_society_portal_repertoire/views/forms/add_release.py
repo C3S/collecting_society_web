@@ -200,7 +200,7 @@ class AddRelease(FormController):
         release = release[0]
         log.info("release add successful for %s: %s" % (web_user, release))
         self.request.session.flash(
-            _(u"Release added:  ${reti} (${reco}",
+            _(u"Release added:  ${reti} (${reco})",
               mapping={'reti': release.title,
                        'reco': release.code}),
             'main-alert-success'
