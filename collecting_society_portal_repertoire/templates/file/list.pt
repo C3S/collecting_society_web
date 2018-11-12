@@ -53,16 +53,20 @@
                             <small>${file.creation.title}</small>
                         </a>
                     </div>
-                    <div class="cs-file-creation"
-                         tal:condition="not file.creation">
-                        <div class="btn-group" role="group">
-                            <a href="${request.resource_path(
-                                           context, '..', 'creations', 'add'
-                                       )}?uuid=${file.uuid}"
-                               class="btn btn-primary btn-sm" role="button"
-                               i18n:translate="">Add Creation</a>
+                        <div class="cs-file-creation"
+                         tal:condition="not file.creation 
+                                    and file.processing_state != 'uploaded' 
+                                    and file.processing_state != 'rejected'
+                                    and file.processing_state != 'deleted'
+                                    and file.processing_state != 'unknown'">
+                                <div class="btn-group" role="group">
+                                    <a href="${request.resource_path(
+                                                context, '..', 'creations', 'add'
+                                            )}?uuid=${file.uuid}"
+                                    class="btn btn-primary btn-sm" role="button"
+                                    i18n:translate="">Add Creation</a>
+                                </div>
                         </div>
-                    </div>
                 </td>
 
                 <td class="text-right cs-table-preview">
