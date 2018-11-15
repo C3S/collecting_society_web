@@ -21,15 +21,11 @@
         <div class="cs-widget">
             <div class="h1 cs-widget-title">
                 Repertoire
+                <small>Testversion 1</small>
             </div>
             <div class="cs-widget-body">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat.
-                <br>
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat.
+                Willkommen auf der Werkeverwaltung der C3S. Lizenzgeber können
+                hier ihre Künstler, Werke und Veröffentlichungen anmelden.
             </div>
         </div>
 

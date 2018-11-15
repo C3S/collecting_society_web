@@ -143,14 +143,14 @@ def web_registry(config):
             ]
         reg['menues']['top'] += [
             {
-                'name': _(u'about'),
-                'page': 'about'},
+                'name': _(u'survey'),
+                'page': 'survey'},
             {
-                'name': _(u'howto'),
-                'page': 'howto'},
+                'name': _(u'buggers'),
+                'page': 'buggers'},
             {
-                'name': _(u'contact'),
-                'page': 'contact'},
+                'name': _(u'caution'),
+                'page': 'caution'},
             {
                 'name': _(u'terms'),
                 'page': 'terms'}

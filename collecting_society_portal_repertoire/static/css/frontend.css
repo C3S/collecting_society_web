@@ -58,6 +58,7 @@ nav > .cs-anchor { top:-50px; }
 
 .cs-content-left .cs-logo { margin-bottom: 0; }
 .cs-content-left .cs-widget { color:#fff; padding:10px; background-color:#4dae33; border:10px solid #4dae33; } 
+.cs-content-left .cs-widget small { color:#317a19; }
 .cs-content-left .cs-widget-title { color:#fff; }
 
 /* Content Middle */
@@ -70,6 +71,7 @@ nav > .cs-anchor { top:-50px; }
 .cs-menue-top .container > div a { color: #fff; }
 .cs-menue-top .container > div a:hover { color: #fff; text-decoration:underline; }
 .cs-menue-page .container > div { background-color:#f1f1f1; }
+.cs-menue-top a { text-transform:lowercase; }
 
 .cs-form-header { border:0; color:#333; font-size:24px; }
 
