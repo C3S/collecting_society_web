@@ -149,7 +149,13 @@
         {% } %}
         </script>
 
-    </tal:block>
+        <!-- prevent user from accidentally leaving the page while upload is in progress -->
+        <script>
+        window.onbeforeunload = function() {
+            if ($('#fileupload').fileupload('progress').loaded < $('#fileupload').fileupload('progress').total)
+                return 'There is an ongoing file upload, are you sure that you want to leave this page?';}
+        </script>
 
+    </tal:block>
 
 </tal:block>
