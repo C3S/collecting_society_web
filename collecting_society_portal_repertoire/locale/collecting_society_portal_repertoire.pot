@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-11-09 03:00+0100\n"
+"POT-Creation-Date: 2018-11-16 21:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,15 +41,15 @@ msgid "register"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/includes.py:146
-msgid "about"
+msgid "survey"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/includes.py:149
-msgid "howto"
+msgid "buggers"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/includes.py:152
-msgid "contact"
+msgid "caution"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/includes.py:155
@@ -191,7 +191,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/release/add.pt:23
 #: ./collecting_society_portal_repertoire/templates/release/edit.pt:23
 #: ./collecting_society_portal_repertoire/templates/profile/edit.pt:20
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:368
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:371
 #: ./collecting_society_portal_repertoire/views/forms/edit_artist.py:231
 #: ./collecting_society_portal_repertoire/views/forms/edit_release.py:406
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:475
@@ -258,18 +258,18 @@ msgid "Add"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/add.pt:14
-#: ./collecting_society_portal_repertoire/templates/file/list.pt:63
+#: ./collecting_society_portal_repertoire/templates/file/list.pt:67
 msgid "Add Creation"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:46
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/creation_sequence.pt:9
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:323
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:326
 msgid "Working Title"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:56
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:324
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:327
 msgid "Featured Artist"
 msgstr ""
 
@@ -286,7 +286,7 @@ msgid "Styles"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:87
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:329
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:332
 msgid "Contributions"
 msgstr ""
 
@@ -362,12 +362,12 @@ msgid "First Release"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:291
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:341
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:344
 msgid "Content"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:305
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:347
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:350
 #: ./collecting_society_portal_repertoire/views/api/datatables/content.py:30
 msgid "Lyrics"
 msgstr ""
@@ -399,10 +399,12 @@ msgid "Representatives"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/frontend/contact.pt:16
+#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:18
 msgid "Rochusstr. 44"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/frontend/contact.pt:17
+#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:19
 msgid "40479 Düsseldorf"
 msgstr ""
 
@@ -444,18 +446,14 @@ msgstr ""
 msgid "Howto"
 msgstr ""
 
+#: ./collecting_society_portal_repertoire/templates/frontend/caution.pt:5
+msgid "Caution"
+msgstr ""
+
 #: ./collecting_society_portal_repertoire/templates/frontend/register.pt:5
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:400
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:413
 msgid "Register"
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:18
-msgid "Heyestr. 194"
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:19
-msgid "40625 Düsseldorf"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:36
@@ -473,40 +471,44 @@ msgid "Heyestr. 194, 40625 Düsseldorf"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:38
-msgid "Minimum share capital"
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:39
 msgid ""
 "European Cooperative Society founded in Hamburg on Sept. 25, 2013 under the "
 "law of the Federal Republic of Germany."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:42
+#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:41
 msgid "Statute"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:47
+#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:46
 msgid ""
 "Zuständige Aufsichtsbehörde bei Aufnahme der Tätigkeit als "
 "Verwertungsgesellschaft wird sein"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:48
+#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:47
 msgid "DPMA Deutsches Patent- und Markenamt"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:49
+#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:48
 msgid "Zweibrückenstraße 12"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:50
+#: ./collecting_society_portal_repertoire/templates/frontend/terms.pt:49
 msgid "80331 München"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/frontend/home.pt:42
-#: ./collecting_society_portal_repertoire/templates/frontend/home.pt:72
+#: ./collecting_society_portal_repertoire/templates/frontend/survey.pt:5
+msgid "Survey"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/frontend/home.pt:38
+#: ./collecting_society_portal_repertoire/templates/frontend/home.pt:68
 msgid "Login"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/frontend/buggers.pt:5
+msgid "Buggers"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/original_sequence.pt:9
@@ -777,7 +779,7 @@ msgid "Deleted"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/file/show.pt:95
-#: ./collecting_society_portal_repertoire/templates/file/list.pt:71
+#: ./collecting_society_portal_repertoire/templates/file/list.pt:75
 msgid "Rejected"
 msgstr ""
 
@@ -871,17 +873,13 @@ msgid "Create date"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/artist.py:74
-msgid "Artist deleted: "
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/views/artist.py:75
 #, python-format
 msgid "Artist deleted: ${arna} (${arco})"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/release.py:74
 #, python-format
-msgid "Release deleted:  ${reti} (${reco}"
+msgid "Release deleted:  ${reti} (${reco})"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/creation.py:81
@@ -929,32 +927,32 @@ msgstr ""
 msgid "Orphaned Content"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:199
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:202
 #, python-format
 msgid "Creation could not be added:  ${crct}"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:239
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:242
 #, python-format
 msgid "Creation added:  ${crct} (${crco})"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:271
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:274
 #, python-format
 msgid "Content file ${coco} is already assigned to creation ${crco}."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:279
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:282
 msgid ""
 "Only one uploaded content file for each file type (audio and sheet music)."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:321
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:324
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:463
 msgid "Metadata"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:335
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:338
 msgid "Derivation"
 msgstr ""
 
@@ -971,7 +969,7 @@ msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/forms/edit_release.py:380
 #, python-format
-msgid "Release edited:  ${reti} (${reco}"
+msgid "Release edited:  ${reti} (${reco})"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:194
@@ -981,7 +979,7 @@ msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:203
 #, python-format
-msgid "Release added:  ${reti} (${reco}"
+msgid "Release added:  ${reti} (${reco})"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:369

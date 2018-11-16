@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-11-09 03:00+0100\n"
-"PO-Revision-Date: 2018-11-09 03:09+0100\n"
+"POT-Creation-Date: 2018-11-16 21:36+0100\n"
+"PO-Revision-Date: 2018-11-16 21:41+0100\n"
 "Last-Translator: thomas <thomas.mielke@c3s.cc>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -42,16 +42,16 @@ msgid "register"
 msgstr "Registrieren"
 
 #: collecting_society_portal_repertoire/includes.py:146
-msgid "about"
-msgstr "Über"
+msgid "survey"
+msgstr "Umfrage"
 
 #: collecting_society_portal_repertoire/includes.py:149
-msgid "howto"
-msgstr "Howto"
+msgid "buggers"
+msgstr "Käferer"
 
 #: collecting_society_portal_repertoire/includes.py:152
-msgid "contact"
-msgstr "Kontakt"
+msgid "caution"
+msgstr "Achtung"
 
 #: collecting_society_portal_repertoire/includes.py:155
 msgid "terms"
@@ -198,7 +198,7 @@ msgstr "Künstler hinzufügen"
 #: collecting_society_portal_repertoire/templates/release/add.pt:23
 #: collecting_society_portal_repertoire/templates/release/edit.pt:23
 #: collecting_society_portal_repertoire/templates/profile/edit.pt:20
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:368
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:371
 #: collecting_society_portal_repertoire/views/forms/edit_artist.py:231
 #: collecting_society_portal_repertoire/views/forms/edit_release.py:406
 #: collecting_society_portal_repertoire/views/forms/add_release.py:475
@@ -255,7 +255,7 @@ msgstr "Gruppen"
 
 #: collecting_society_portal_repertoire/templates/artist/edit.pt:14
 msgid "Edit Artist"
-msgstr "Künstlerünstler bearbeiten"
+msgstr "Künstler bearbeiten"
 
 #: collecting_society_portal_repertoire/templates/artist/list.pt:19
 #: collecting_society_portal_repertoire/templates/creation/list.pt:19
@@ -265,18 +265,18 @@ msgid "Add"
 msgstr "Hinzufügen"
 
 #: collecting_society_portal_repertoire/templates/creation/add.pt:14
-#: collecting_society_portal_repertoire/templates/file/list.pt:63
+#: collecting_society_portal_repertoire/templates/file/list.pt:67
 msgid "Add Creation"
 msgstr "Werk hinzufügen"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:46
 #: collecting_society_portal_repertoire/templates/deform/datatables/creation_sequence.pt:9
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:323
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:326
 msgid "Working Title"
 msgstr "Arbeitstitel"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:56
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:324
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:327
 msgid "Featured Artist"
 msgstr "Featured Artist"
 
@@ -293,7 +293,7 @@ msgid "Styles"
 msgstr "Stile"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:87
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:329
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:332
 msgid "Contributions"
 msgstr "Beiträge"
 
@@ -369,12 +369,12 @@ msgid "First Release"
 msgstr "Erstveröffentlichung"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:291
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:341
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:344
 msgid "Content"
 msgstr "Content"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:305
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:347
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:350
 #: collecting_society_portal_repertoire/views/api/datatables/content.py:30
 msgid "Lyrics"
 msgstr "Liedtext"
@@ -409,10 +409,12 @@ msgid "Representatives"
 msgstr "Repräsentanten"
 
 #: collecting_society_portal_repertoire/templates/frontend/contact.pt:16
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:18
 msgid "Rochusstr. 44"
 msgstr "Rochusstr. 44"
 
 #: collecting_society_portal_repertoire/templates/frontend/contact.pt:17
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:19
 msgid "40479 Düsseldorf"
 msgstr "40479 Düsseldorf"
 
@@ -454,19 +456,15 @@ msgstr "Über"
 msgid "Howto"
 msgstr "Howto"
 
+#: collecting_society_portal_repertoire/templates/frontend/caution.pt:5
+msgid "Caution"
+msgstr "Achtung"
+
 #: collecting_society_portal_repertoire/templates/frontend/register.pt:5
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:400
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:413
 msgid "Register"
 msgstr "Registrieren"
-
-#: collecting_society_portal_repertoire/templates/frontend/terms.pt:18
-msgid "Heyestr. 194"
-msgstr "Heyestr. 194"
-
-#: collecting_society_portal_repertoire/templates/frontend/terms.pt:19
-msgid "40625 Düsseldorf"
-msgstr "40625 Düsseldorf"
 
 #: collecting_society_portal_repertoire/templates/frontend/terms.pt:36
 msgid ""
@@ -485,10 +483,6 @@ msgid "Heyestr. 194, 40625 Düsseldorf"
 msgstr "Heyestr. 194, 40625 Düsseldorf"
 
 #: collecting_society_portal_repertoire/templates/frontend/terms.pt:38
-msgid "Minimum share capital"
-msgstr "Mindestanteile"
-
-#: collecting_society_portal_repertoire/templates/frontend/terms.pt:39
 msgid ""
 "European Cooperative Society founded in Hamburg on Sept. 25, 2013 under the "
 "law of the Federal Republic of Germany."
@@ -496,11 +490,11 @@ msgstr ""
 "Europäische Genossenschaft gegründet in Hamburg am 25. September 2013 gemäß "
 "den Gesetzen der Bundesrepublik Deutschand."
 
-#: collecting_society_portal_repertoire/templates/frontend/terms.pt:42
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:41
 msgid "Statute"
 msgstr "Satzung"
 
-#: collecting_society_portal_repertoire/templates/frontend/terms.pt:47
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:46
 msgid ""
 "Zuständige Aufsichtsbehörde bei Aufnahme der Tätigkeit als "
 "Verwertungsgesellschaft wird sein"
@@ -508,22 +502,30 @@ msgstr ""
 "Zuständige Aufsichtsbehörde bei Aufnahme der Tätigkeit als "
 "Verwertungsgesellschaft wird sein"
 
-#: collecting_society_portal_repertoire/templates/frontend/terms.pt:48
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:47
 msgid "DPMA Deutsches Patent- und Markenamt"
 msgstr "DPMA Deutsches Patent- und Markenamt"
 
-#: collecting_society_portal_repertoire/templates/frontend/terms.pt:49
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:48
 msgid "Zweibrückenstraße 12"
 msgstr "Zweibrückenstraße 12"
 
-#: collecting_society_portal_repertoire/templates/frontend/terms.pt:50
+#: collecting_society_portal_repertoire/templates/frontend/terms.pt:49
 msgid "80331 München"
 msgstr "80331 München"
 
-#: collecting_society_portal_repertoire/templates/frontend/home.pt:42
-#: collecting_society_portal_repertoire/templates/frontend/home.pt:72
+#: collecting_society_portal_repertoire/templates/frontend/survey.pt:5
+msgid "Survey"
+msgstr "Umfrage"
+
+#: collecting_society_portal_repertoire/templates/frontend/home.pt:38
+#: collecting_society_portal_repertoire/templates/frontend/home.pt:68
 msgid "Login"
 msgstr "Login"
+
+#: collecting_society_portal_repertoire/templates/frontend/buggers.pt:5
+msgid "Buggers"
+msgstr "Käferer"
 
 #: collecting_society_portal_repertoire/templates/deform/datatables/original_sequence.pt:9
 msgid "Type"
@@ -793,7 +795,7 @@ msgid "Deleted"
 msgstr "Gelöscht"
 
 #: collecting_society_portal_repertoire/templates/file/show.pt:95
-#: collecting_society_portal_repertoire/templates/file/list.pt:71
+#: collecting_society_portal_repertoire/templates/file/list.pt:75
 msgid "Rejected"
 msgstr "Zurückgewiesen"
 
@@ -887,17 +889,13 @@ msgid "Create date"
 msgstr "Erzeugungsdatum"
 
 #: collecting_society_portal_repertoire/views/artist.py:74
-msgid "Artist deleted: "
-msgstr "Künstler gelöscht: "
-
-#: collecting_society_portal_repertoire/views/artist.py:75
 #, python-format
 msgid "Artist deleted: ${arna} (${arco})"
 msgstr "Künstler gelöscht: ${arna} (${arco})"
 
 #: collecting_society_portal_repertoire/views/release.py:74
 #, python-format
-msgid "Release deleted:  ${reti} (${reco}"
+msgid "Release deleted:  ${reti} (${reco})"
 msgstr "Veröffentlichung gelöscht: ${reti} (${reco}"
 
 #: collecting_society_portal_repertoire/views/creation.py:81
@@ -950,32 +948,32 @@ msgstr "Nicht freigeschaltete Datei"
 msgid "Orphaned Content"
 msgstr "Verwaiste Datei"
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:199
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:202
 #, python-format
 msgid "Creation could not be added:  ${crct}"
 msgstr "Werk konnte nicht hinzugefügt werden.  ${crct}"
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:239
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:242
 #, python-format
 msgid "Creation added:  ${crct} (${crco})"
 msgstr "Werk hinzugefügt: ${crct} (${crco})"
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:271
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:274
 #, python-format
 msgid "Content file ${coco} is already assigned to creation ${crco}."
 msgstr "Hochgeladene Datei ${coco} ist bereits dem Werk ${crco} zugewiesen."
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:279
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:282
 msgid ""
 "Only one uploaded content file for each file type (audio and sheet music)."
 msgstr "Nur ein hochgeladene Datei für jeden Dateityp (Audio und Musiknoten)."
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:321
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:324
 #: collecting_society_portal_repertoire/views/forms/add_release.py:463
 msgid "Metadata"
 msgstr "Metadaten"
 
-#: collecting_society_portal_repertoire/views/forms/add_creation.py:335
+#: collecting_society_portal_repertoire/views/forms/add_creation.py:338
 msgid "Derivation"
 msgstr "Abwandlung"
 
@@ -994,8 +992,8 @@ msgstr ""
 
 #: collecting_society_portal_repertoire/views/forms/edit_release.py:380
 #, python-format
-msgid "Release edited:  ${reti} (${reco}"
-msgstr "Veröffentlichung bearbeitet: ${reti} (${reco}"
+msgid "Release edited:  ${reti} (${reco})"
+msgstr "Veröffentlichung bearbeitet: ${reti} (${reco})"
 
 #: collecting_society_portal_repertoire/views/forms/add_release.py:194
 #, python-format
@@ -1004,8 +1002,8 @@ msgstr "Veröffentlichung konnte nicht hinzugefügt werden: ${reti}"
 
 #: collecting_society_portal_repertoire/views/forms/add_release.py:203
 #, python-format
-msgid "Release added:  ${reti} (${reco}"
-msgstr "Veröffentlichung hinzugefügt: ${reti} (${reco}"
+msgid "Release added:  ${reti} (${reco})"
+msgstr "Veröffentlichung hinzugefügt: ${reti} (${reco})"
 
 #: collecting_society_portal_repertoire/views/forms/add_release.py:369
 msgid "May only contain digits"
@@ -1227,6 +1225,27 @@ msgstr "Audio"
 #: collecting_society_portal_repertoire/views/api/datatables/content.py:29
 msgid "Sheet Music"
 msgstr "Musiknoten"
+
+#~ msgid "about"
+#~ msgstr "Über"
+
+#~ msgid "howto"
+#~ msgstr "Howto"
+
+#~ msgid "contact"
+#~ msgstr "Kontakt"
+
+#~ msgid "Heyestr. 194"
+#~ msgstr "Heyestr. 194"
+
+#~ msgid "40625 Düsseldorf"
+#~ msgstr "40625 Düsseldorf"
+
+#~ msgid "Minimum share capital"
+#~ msgstr "Mindestanteile"
+
+#~ msgid "Artist deleted: "
+#~ msgstr "Künstler gelöscht: "
 
 #~ msgid "Add files..."
 #~ msgstr "Dateien hinzufügen..."
