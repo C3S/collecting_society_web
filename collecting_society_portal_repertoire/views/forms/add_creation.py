@@ -64,12 +64,17 @@ class AddCreation(FormController):
         # add metadata from content uuid, provided by upload form
         content = getattr(self.context, 'content', False)
         if content:
-            # self.appstruct['content']['content'] = [(content.id,
-            #                                          content.name)]
             self.appstruct['metadata']['title'] = content.metadata_title
             meta_artist = Artist.search_by_name(content.metadata_artist)
             if meta_artist:
                 self.appstruct['metadata']['artist'] = meta_artist[0].id
+            self.appstruct['content']['content'] = [{
+                'code': content.code,
+                'category': content.category,
+                'mode': "add",
+                'name': content.name,
+                'oid': content.oid
+            }]
 
         # render form with init data
         self.render(self.appstruct)
@@ -79,8 +84,6 @@ class AddCreation(FormController):
         a = self.appstruct
         web_user = self.request.web_user
         party = self.request.party
-
-        log.debug(a)
 
         # generate vlist
         _creation = {
