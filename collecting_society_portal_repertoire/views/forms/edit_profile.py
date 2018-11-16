@@ -73,6 +73,9 @@ class EditProfile(FormController):
                 variables=template_variables,
                 recipients=[web_user.new_email]
             )
+        if self.appstruct['password']:
+            web_user.password = self.appstruct['password']
+            web_user.save()
         web_user.party.save()
 
         if self.appstruct['email'] == web_user.email:
