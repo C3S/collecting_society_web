@@ -342,7 +342,7 @@ class OriginalsSchema(colander.Schema):
 
 
 class ContentSchema(colander.Schema):
-    title = _(u"Content")
+    title = _(u"Files")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     content = ContentSequence(title="", actions=['add'])
 
