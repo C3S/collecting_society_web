@@ -325,7 +325,8 @@ class MetadataSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_(u"Working Title"))
     artist = FeaturedArtistField(title=_(u"Featured Artist"))
-    tariff_categories = CreationTariffCategorySequence()
+    tariff_categories = CreationTariffCategorySequence(
+        title=_(u"Tariff Category"))
 
 
 class ContributionsSchema(colander.Schema):
@@ -349,7 +350,7 @@ class ContentSchema(colander.Schema):
 class LyricsSchema(colander.Schema):
     title = _(u"Lyrics")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    lyrics = LyricsField()
+    lyrics = LyricsField(title=_(u"Lyrics"))
 
 
 class AddCreationSchema(colander.Schema):

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
 "POT-Creation-Date: 2018-11-16 21:36+0100\n"
-"PO-Revision-Date: 2018-11-16 21:41+0100\n"
+"PO-Revision-Date: 2018-11-16 22:21+0100\n"
 "Last-Translator: thomas <thomas.mielke@c3s.cc>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -278,7 +278,7 @@ msgstr "Arbeitstitel"
 #: collecting_society_portal_repertoire/templates/creation/show.pt:56
 #: collecting_society_portal_repertoire/views/forms/add_creation.py:327
 msgid "Featured Artist"
-msgstr "Featured Artist"
+msgstr "Gastkünstler"
 
 #: collecting_society_portal_repertoire/templates/creation/show.pt:69
 #: collecting_society_portal_repertoire/templates/release/show.pt:112

@@ -20,10 +20,10 @@
                             <div class="${structure: widget.icon()} cs-dashboard-task-icon"></div>
                         </div>
                         <div class="cs-dashboard-task-middle">
-                            <h4 class="list-group-item-heading">${structure: widget.header()}</h4>
-                            ${structure: widget.description()}
+                            <h4 class="list-group-item-heading">${widget.header()}</h4>
+                            ${widget.description()}
                         </div>
-                        <div class="cs-dashboard-task-right badge">${structure: widget.badge()}</div>
+                        <div class="cs-dashboard-task-right badge">${widget.badge()}</div>
                         <div class="clear"></div>
                     </li> 
                 </tal:block>
