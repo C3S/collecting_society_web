@@ -11,6 +11,7 @@ from collecting_society_portal.models import Tdb
 
 from ....models import Content
 from ....services import _
+from pyramid.i18n import get_localizer, TranslationString
 from . import (
     _prefix,
     get_cors_policy,
@@ -23,12 +24,6 @@ log = logging.getLogger(__name__)
 
 
 # --- options -----------------------------------------------------------------
-
-content_category = {
-    'audio': _("Audio"),
-    'sheet': _("Sheet Music"),
-    'lyrics': _("Lyrics"),
-}
 
 
 # --- schemas -----------------------------------------------------------------
@@ -99,6 +94,14 @@ def post_content(request):
     total_domain = []
     total = Content.search_count(total_domain)
     filtered = Content.search_count(domain)
+    # localization
+    locale = get_localizer(request)
+    locale_domain = 'collecting_society_portal_repertoire'
+    content_category = {
+        'audio': locale.translate(_(u'Audio', locale_domain)),
+        'sheet': locale.translate(_(u'Sheet Music', locale_domain)),
+        'lyrics': locale.translate(_(u'Lyrics', locale_domain)),
+    }
     # records
     records = []
     for content in Content.search(
