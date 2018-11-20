@@ -59,8 +59,10 @@ class EditProfile(FormController):
                                + web_user.party.lastname)
         # self.appstruct['name'] TODO: generate name using a tryton trigger
         if self.appstruct['email'] != web_user.email:
-            web_user.new_email = self.appstruct['email']  # email verification!
+            # always save email lowercase, so tryton uniqueness is ensured
+            web_user.new_email = self.appstruct['email'].lower()
             web_user.save()
+            # email verification
             template_variables = {
                 'link': self.request.resource_url(
                     self.request.root, 'verify_email',

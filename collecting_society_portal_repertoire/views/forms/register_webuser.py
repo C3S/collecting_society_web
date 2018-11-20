@@ -127,8 +127,9 @@ class RegisterWebuser(LoginWebuser):
     @Tdb.transaction(readonly=False)
     def register(self):
         _create = False
+        # always save email lowercase, so tryton uniqueness is ensured
         _web_user = {
-            'email': self.data['email'],
+            'email': self.data['email'].lower(),
             'password': self.data['password'],
             'roles': [('add', [WebUserRole.search_by_code('licenser').id])]
         }
