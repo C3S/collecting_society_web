@@ -126,8 +126,8 @@ def validate_unique_user_email(node, values, **kwargs):  # multifield validator
 
     # finally, check email format
     if len(email_value) > 7:
-        if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+' +  # noqa: W605
-                    '(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email_value) is not None:
+        if re.match('^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+' +  # noqa: W605
+                    '(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$', email_value) is not None:
             return
     raise colander.Invalid(node, "Invalid email address")
 
