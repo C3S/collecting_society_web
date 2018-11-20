@@ -58,7 +58,7 @@ class EditProfile(FormController):
         web_user.party.name = (web_user.party.firstname + ' '
                                + web_user.party.lastname)
         # self.appstruct['name'] TODO: generate name using a tryton trigger
-        if self.appstruct['email'] != web_user.email:
+        if self.appstruct['email'].lower() != web_user.email.lower():
             # always save email lowercase, so tryton uniqueness is ensured
             web_user.new_email = self.appstruct['email'].lower()
             web_user.save()
@@ -80,7 +80,7 @@ class EditProfile(FormController):
             web_user.save()
         web_user.party.save()
 
-        if self.appstruct['email'] == web_user.email:
+        if self.appstruct['email'].lower() == web_user.email.lower():
             log.info(
                 "edit profile add successful for %s" % (web_user.party.name))
             self.request.session.flash(
