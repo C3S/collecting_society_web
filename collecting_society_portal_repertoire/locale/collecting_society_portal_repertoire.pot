@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-11-16 21:36+0100\n"
+"POT-Creation-Date: 2018-11-20 11:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,6 +92,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/file/upload.pt:16
 #: ./collecting_society_portal_repertoire/templates/file/show.pt:22
 #: ./collecting_society_portal_repertoire/templates/file/list.pt:13
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:345
 msgid "Files"
 msgstr ""
 
@@ -160,12 +161,12 @@ msgstr ""
 msgid "Rejected (sum)"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:2
+#: ./collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:6
 #: ./collecting_society_portal_repertoire/views/widgets/orphaned_content.py:25
 msgid "Number of files you uploaded but didn't assign to a creation yet"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:4
+#: ./collecting_society_portal_repertoire/templates/widgets/orphaned_content.pt:8
 msgid "Orphaned"
 msgstr ""
 
@@ -191,12 +192,12 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/release/add.pt:23
 #: ./collecting_society_portal_repertoire/templates/release/edit.pt:23
 #: ./collecting_society_portal_repertoire/templates/profile/edit.pt:20
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:371
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:372
 #: ./collecting_society_portal_repertoire/views/forms/edit_artist.py:231
 #: ./collecting_society_portal_repertoire/views/forms/edit_release.py:406
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:475
 #: ./collecting_society_portal_repertoire/views/forms/add_artist.py:191
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:187
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:190
 #: ./collecting_society_portal_repertoire/views/forms/edit_creation.py:522
 msgid "Submit"
 msgstr ""
@@ -286,17 +287,17 @@ msgid "Styles"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:87
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:332
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:333
 msgid "Contributions"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:119
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:95
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:101
 msgid "Text"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:122
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:94
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:100
 msgid "Performance"
 msgstr ""
 
@@ -305,17 +306,17 @@ msgid "Recording <dynamic element>"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:130
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:106
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:112
 msgid "Producing"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:132
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:107
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:113
 msgid "Mastering"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:134
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:108
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:114
 msgid "Mixing"
 msgstr ""
 
@@ -362,13 +363,13 @@ msgid "First Release"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:291
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:344
 msgid "Content"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:305
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:350
-#: ./collecting_society_portal_repertoire/views/api/datatables/content.py:30
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:351
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:353
+#: ./collecting_society_portal_repertoire/views/api/datatables/content.py:103
 msgid "Lyrics"
 msgstr ""
 
@@ -419,7 +420,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/profile/show.pt:36
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:341
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:357
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:174
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:177
 msgid "Email"
 msgstr ""
 
@@ -526,10 +527,12 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:77
 #: ./collecting_society_portal_repertoire/templates/file/show.pt:174
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:420
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:47
 msgid "Artist"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/contribution_sequence.pt:9
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:48
 msgid "Contribution Type"
 msgstr ""
 
@@ -551,6 +554,7 @@ msgid "Neighbouring Rights Society"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/creation_tariff_category_sequence.pt:9
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:329
 msgid "Tariff Category"
 msgstr ""
 
@@ -562,6 +566,7 @@ msgid "Code"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/content_sequence.pt:9
+#: ./collecting_society_portal_repertoire/views/forms/datatables/content_sequence.py:92
 msgid "Category"
 msgstr ""
 
@@ -853,13 +858,13 @@ msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/profile/show.pt:26
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:354
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:172
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:175
 msgid "Firstname"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/profile/show.pt:31
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:355
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:173
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:176
 msgid "Lastname"
 msgstr ""
 
@@ -952,7 +957,7 @@ msgstr ""
 msgid "Metadata"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:338
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:339
 msgid "Derivation"
 msgstr ""
 
@@ -1054,7 +1059,7 @@ msgid ""
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:272
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:106
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:109
 msgid "Please enter your name."
 msgstr ""
 
@@ -1110,23 +1115,23 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:82
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:85
 #, python-format
 msgid "Profile changed for: ${name}"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:91
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:94
 #, python-format
 msgid ""
 "Profile changed for: ${name} -- activation email for new email address sent. "
 "Please check your (new) email inbox."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:120
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:123
 msgid "Email address already taken"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:176
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:179
 msgid "Password (leave empty if you don't want to change it)"
 msgstr ""
 
@@ -1148,17 +1153,17 @@ msgstr ""
 msgid "Creation edited: ${crct} (${crco})"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:53
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:61
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:59
 #: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:67
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:73
 msgid "None"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:93
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:99
 msgid "Composition"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:105
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:111
 msgid "Recording"
 msgstr ""
 
@@ -1175,10 +1180,10 @@ msgstr ""
 msgid "Abuse detected. Wait for {number} seconds before trying another upload."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/api/datatables/content.py:28
+#: ./collecting_society_portal_repertoire/views/api/datatables/content.py:101
 msgid "Audio"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/api/datatables/content.py:29
+#: ./collecting_society_portal_repertoire/views/api/datatables/content.py:102
 msgid "Sheet Music"
 msgstr ""

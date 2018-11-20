@@ -36,7 +36,7 @@
                 },
                 {
                     name: "category",
-                    title: "${_('Category')}",
+                    title: "${request.category_translation}",
                     data: "category",
                     orderable: true,
                     searchable: true,

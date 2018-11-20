@@ -10,6 +10,8 @@ from collecting_society_portal.views.forms.datatables import (
     DatatableSequence,
     DatatableSequenceWidget
 )
+from ....services import _
+from pyramid.i18n import get_localizer, TranslationString
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +36,12 @@ def prepare_required(value):
 
 @colander.deferred
 def content_sequence_widget(node, kw):
+    kw.get('request').name_translation = get_localizer(kw.get('request')).translate(
+        _(u'Name', 'collecting_society_portal_repertoire'))
+    kw.get('code').category_translation = get_localizer(kw.get('request')).translate(
+        _(u'Code', 'collecting_society_portal_repertoire'))
+    kw.get('request').category_translation = get_localizer(kw.get('request')).translate(
+        _(u'Category', 'collecting_society_portal_repertoire'))
     return DatatableSequenceWidget(
         request=kw.get('request'),
         template='datatables/content_sequence'
@@ -83,6 +91,7 @@ class CategoryField(colander.SchemaNode):
 
 
 # --- Schemas -----------------------------------------------------------------
+
 
 class ContentSchema(colander.Schema):
     mode = ModeField()
