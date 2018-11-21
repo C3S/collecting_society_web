@@ -38,7 +38,7 @@ def prepare_required(value):
 def content_sequence_widget(node, kw):
     kw.get('request').name_translation = get_localizer(kw.get('request')).translate(
         _(u'Name', 'collecting_society_portal_repertoire'))
-    kw.get('code').category_translation = get_localizer(kw.get('request')).translate(
+    kw.get('request').code_translation = get_localizer(kw.get('request')).translate(
         _(u'Code', 'collecting_society_portal_repertoire'))
     kw.get('request').category_translation = get_localizer(kw.get('request')).translate(
         _(u'Category', 'collecting_society_portal_repertoire'))
