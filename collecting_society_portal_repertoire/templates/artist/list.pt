@@ -26,16 +26,16 @@
                 <td class="cs-img-thumb">
                     <a href="${request.resource_path(
                                context, artist.code)}">
-                        <img tal:condition="artist.picture_data"
-                             tal:define="pic h.b64encode(artist.picture_data) | None"
+                        <img tal:condition="artist.picture_thumbnail_data"
+                             tal:define="pic h.b64encode(artist.picture_thumbnail_data) | None"
                              class="img-responsive center-block"
                              src="data:${artist.picture_data_mime_type};base64,${pic}" />
-                        <img tal:condition="not artist.picture_data and not artist.group"
+                        <img tal:condition="not artist.picture_thumbnail_data and not artist.group"
                              class="img-responsive center-block"
                              src="${request.static_path(
                                     'collecting_society_portal_repertoire:'
                                     'static/img/element-icon-soloartists-green.png')}" />
-                        <img tal:condition="not artist.picture_data and artist.group"
+                        <img tal:condition="not artist.picture_thumbnail_data and artist.group"
                              class="img-responsive center-block"
                              src="${request.static_path(
                                     'collecting_society_portal_repertoire:'
