@@ -5,7 +5,6 @@ import logging
 import deform
 
 from PIL import Image
-from PIL import ImageFile
 import io
 
 from collecting_society_portal.models import (
@@ -107,9 +106,8 @@ class EditArtist(FormController):
             #           mode='rb') as picfile:
             #     picture_data = picfile.read()
 
-            #import rpdb2; rpdb2.start_embedded_debugger("supersecret", fAllowRemote = True)
-            #ImageFile.LOAD_TRUNCATED_IMAGES = True
             try:
+                self.appstruct['picture']['fp'].flush()  # last bytes also
                 image = Image.open(self.appstruct['picture']['fp'].name)
                 thumb = image.copy()
                 thumb.thumbnail((84, 84), Image.ANTIALIAS)
@@ -117,13 +115,14 @@ class EditArtist(FormController):
                 with io.BytesIO() as picture_thumbnail_data:
                     thumb.save(picture_thumbnail_data, "JPEG")
                     picture_thumbnail_data.seek(0)
-                    artist.picture_thumbnail_data = picture_thumbnail_data.read()
+                    artist.picture_thumbnail_data = (
+                        picture_thumbnail_data.read())
                 with io.BytesIO() as picture_data:
                     image.save(picture_data, "JPEG")
                     picture_data.seek(0)
                     artist.picture_data = picture_data.read()
                     # mimetype = self.appstruct['picture']['mimetype']
-                    artist.picture_data_mime_type = 'image/jpeg'  # mimetype
+                    artist.picture_data_mime_type = 'image/jpeg'  # = mimetype
             except IOError as e:
                 log.debug('Error while processing picture data: %s', e)
 
