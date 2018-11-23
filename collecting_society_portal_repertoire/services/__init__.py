@@ -4,3 +4,4 @@
 
 from .translator import translator as _
 from .c3s_membership_api_client import C3SMembershipApiClient
+from .picture_processing import picture_processing

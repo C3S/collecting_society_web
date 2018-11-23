@@ -4,16 +4,13 @@
 import logging
 import deform
 
-from PIL import Image
-import io
-
 from collecting_society_portal.models import (
     Tdb,
     Party,
     WebUser
 )
 from collecting_society_portal.views.forms import FormController
-from ...services import _
+from ...services import (_, picture_processing)
 from ...models import Artist
 from .add_artist import AddArtistSchema
 
@@ -102,29 +99,13 @@ class EditArtist(FormController):
 
         # picture
         if self.appstruct['picture']:
-            # with open(self.appstruct['picture']['fp'].name,
-            #           mode='rb') as picfile:
-            #     picture_data = picfile.read()
-
-            try:
-                self.appstruct['picture']['fp'].flush()  # last bytes also
-                image = Image.open(self.appstruct['picture']['fp'].name)
-                thumb = image.copy()
-                thumb.thumbnail((84, 84), Image.ANTIALIAS)
-                image.thumbnail((509, 509), Image.ANTIALIAS)
-                with io.BytesIO() as picture_thumbnail_data:
-                    thumb.save(picture_thumbnail_data, "JPEG")
-                    picture_thumbnail_data.seek(0)
-                    artist.picture_thumbnail_data = (
-                        picture_thumbnail_data.read())
-                with io.BytesIO() as picture_data:
-                    image.save(picture_data, "JPEG")
-                    picture_data.seek(0)
-                    artist.picture_data = picture_data.read()
-                    # mimetype = self.appstruct['picture']['mimetype']
-                    artist.picture_data_mime_type = 'image/jpeg'  # = mimetype
-            except IOError as e:
-                log.debug('Error while processing picture data: %s', e)
+            err, p, t, m = picture_processing(self.appstruct['picture']['fp'])
+            if not err:
+                artist.picture_data = p
+                artist.picture_thumbnail_data = t
+                artist.picture_data_mime_type = m
+            else:
+                self.request.session.flash(err, 'main-alert-warning')
 
         # members
         if artist.group:

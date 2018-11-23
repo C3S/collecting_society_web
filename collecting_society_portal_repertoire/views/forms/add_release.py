@@ -10,7 +10,7 @@ from collecting_society_portal.views.forms import (
     FormController,
     deferred_file_upload_widget
 )
-from ...services import _
+from ...services import (_, picture_processing)
 from ...models import (
     Artist,
     Creation,
@@ -171,13 +171,15 @@ class AddRelease(FormController):
                 _release['label_name'] = _label['name']
 
         # picture
-        if appstruct['metadata']['picture']:
-            with open(appstruct['metadata']['picture']['fp'].name,
-                      mode='rb') as picfile:
-                picture_data = picfile.read()
-            mimetype = appstruct['metadata']['picture']['mimetype']
-            _release['picture_data'] = picture_data
-            _release['picture_data_mime_type'] = mimetype
+        if self.appstruct['metadata']['picture']:
+            err, p, t, m = picture_processing(
+                self.appstruct['metadata']['picture']['fp'])
+            if not err:
+                _release['picture_data'] = p
+                _release['picture_thumbnail_data'] = t
+                _release['picture_data_mime_type'] = m
+            else:
+                self.request.session.flash(err, 'main-alert-warning')
 
         # remove empty fields
         for index, value in _release.items():

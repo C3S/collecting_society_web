@@ -15,7 +15,7 @@ from collecting_society_portal.views.forms import (
     deferred_file_upload_widget
 )
 
-from ...services import _
+from ...services import (_, picture_processing)
 from ...models import Artist
 from .datatables import ArtistSequence
 
@@ -59,12 +59,13 @@ class AddArtist(FormController):
 
         # picture
         if self.appstruct['picture']:
-            with open(self.appstruct['picture']['fp'].name,
-                      mode='rb') as picfile:
-                picture_data = picfile.read()
-            mimetype = self.appstruct['picture']['mimetype']
-            _artist['picture_data'] = picture_data
-            _artist['picture_data_mime_type'] = mimetype
+            err, p, t, m = picture_processing(self.appstruct['picture']['fp'])
+            if not err:
+                _artist['picture_data'] = p
+                _artist['picture_thumbnail_data'] = t
+                _artist['picture_data_mime_type'] = m
+            else:
+                self.request.session.flash(err, 'main-alert-warning')
 
         # members
         if self.appstruct['group']:

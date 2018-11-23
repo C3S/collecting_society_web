@@ -27,11 +27,11 @@
                 <td class="cs-img-thumb">
                     <a href="${request.resource_path(
                                context, release.code)}">
-                        <img tal:condition="release.picture_data"
-                             tal:define="pic h.b64encode(release.picture_data) | None"
+                        <img tal:condition="release.picture_thumbnail_data"
+                             tal:define="pic h.b64encode(release.picture_thumbnail_data) | None"
                              class="img-responsive center-block"
                              src="data:${release.picture_data_mime_type};base64,${pic}" />
-                        <img tal:condition="not release.picture_data"
+                        <img tal:condition="not release.picture_thumbnail_data"
                              class="img-responsive center-block"
                              src="${request.static_path(
                                     'collecting_society_portal_repertoire:'
