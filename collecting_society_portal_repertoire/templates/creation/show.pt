@@ -43,7 +43,7 @@
             </tr>
 
             <tr>
-                <th i18n:translate="">Working Title</th>
+                <th i18n:translate="">Title</th>
                 <td>${creation.title}</td>
             </tr>
 

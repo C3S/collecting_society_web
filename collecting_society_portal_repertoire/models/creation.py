@@ -396,7 +396,7 @@ class Creation(Tdb):
         Args:
             party: the Party that wants to create the foreign objects
             artist_name: the artist name of the foreign artist object
-            title: the working title of the foreign creation object
+            title: the original title of the foreign creation object
 
         Returns:
             Creation object: the creation that has been creation

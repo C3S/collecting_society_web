@@ -8,7 +8,7 @@
             columns: [
                 {
                     name: "titlefield",
-                    title: "${_('Working Title')}",
+                    title: "${_('Title')}",
                     data: "titlefield",
                     className: "all",
                     orderable: true,

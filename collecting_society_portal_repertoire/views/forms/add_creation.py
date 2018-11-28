@@ -323,7 +323,7 @@ class LyricsField(colander.SchemaNode):
 class MetadataSchema(colander.Schema):
     title = _(u"Metadata")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    working_title = TitleField(name='title', title=_(u"Working Title"))
+    working_title = TitleField(name='title', title=_(u"Title"))
     artist = FeaturedArtistField(title=_(u"Featured Artist"))
     tariff_categories = CreationTariffCategorySequence(
         title=_(u"Tariff Category"))
