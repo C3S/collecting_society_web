@@ -20,6 +20,9 @@ from ...services import _
 log = logging.getLogger(__name__)
 
 
+AGE_ADULT = 16  # don't allow kids to register
+
+
 # --- Controller --------------------------------------------------------------
 
 class RegisterWebuser(LoginWebuser):
@@ -280,14 +283,34 @@ def terms_accepted(value):
     return True
 
 
+def right_age(value):
+    if not value:
+        return _(u"You need to provide your birthdate.")
+    if value < datetime.date(1900, 1, 1):
+        return _(u'Sorry, I don\'t believe you are that old.')
+    if value > datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364):
+        return _(u"Sorry, you are too young to register here.")
+        #return _(
+        #    u"Sorry, you have to be ${age} years or older to register here.",
+        #
+        #    # TODO: mapping doesn't work here
+        #    # also see line 580 in repertoire_upload.py
+        #    mapping={'age': AGE_ADULT}
+        #)
+    #colander.Range(
+    #    min=datetime.date(1900, 1, 1),
+    #    min_err=TOO_OLD_MESSAGE,
+    #    max=datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364),
+    #    max_err=TOO_YOUNG_MESSAGE
+    #)
+    return True
+
+
 # --- Options -----------------------------------------------------------------
 
 # --- Widgets -----------------------------------------------------------------
 
 # --- Fields ------------------------------------------------------------------
-
-
-AGE_ADULT = 16  # don't allow kids
 
 
 class FirstnameField(colander.SchemaNode):
@@ -305,15 +328,7 @@ class LastnameField(colander.SchemaNode):
 class BirthdateField(colander.SchemaNode):
     oid = "birthdate"
     schema_type = colander.Date
-    validator = colander.Range(
-        max=datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364),
-        max_err=_(
-            'Sorry, you have to be ${age} years or older to register here.',
-            # TODO: mapping doesn't work here
-            # also see line 580 in repertoire_upload.py
-            mapping={'age': AGE_ADULT}
-        )
-    )
+    validator = colander.Function(right_age)
 
 
 class EmailField(colander.SchemaNode):
