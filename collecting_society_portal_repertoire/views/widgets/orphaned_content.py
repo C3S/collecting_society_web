@@ -15,6 +15,9 @@ class OrphanedContentWidget():
         self.template = '../../templates/widgets/orphaned_content.pt'
         self.category = category
 
+    def condition(self):
+        return self.badge() > 0
+
     def icon(self):
         return "glyphicon glyphicon-leaf"
 

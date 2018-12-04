@@ -15,6 +15,9 @@ class RejectedContentWidget():
         self.template = '../../templates/widgets/rejected_content.pt'
         self.category = category
 
+    def condition(self):
+        return self.badge() > 0
+
     def icon(self):
         return "glyphicon glyphicon-ban-circle"
 

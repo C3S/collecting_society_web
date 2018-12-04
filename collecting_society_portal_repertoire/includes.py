@@ -36,6 +36,7 @@ from .resources import (
     DebugC3sMembershipApiResource
 )
 from .views.widgets import (
+    ExistingArtistsWidget,
     RejectedContentWidget,
     OrphanedContentWidget,
     UncommitedContentWidget
@@ -270,6 +271,7 @@ def web_registry(config):
     def repertoire(self):
         reg = self.dict()
         reg['widgets']['dashboard-central-widgets'] = [
+            ExistingArtistsWidget(self.request),
             RejectedContentWidget(self.request),
             OrphanedContentWidget(self.request),
             # UncommitedContentWidget(self.request),

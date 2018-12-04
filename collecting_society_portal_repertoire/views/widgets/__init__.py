@@ -2,6 +2,7 @@
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 # flake8: noqa
 
+from .existing_artists import ExistingArtistsWidget
 from .rejected_content import RejectedContentWidget
 from .orphaned_content import OrphanedContentWidget
 from .uncommited_content import UncommitedContentWidget

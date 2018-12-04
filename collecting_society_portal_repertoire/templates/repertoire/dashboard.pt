@@ -9,12 +9,12 @@
 		    <span tal:condition="request.party.firstname">${request.party.firstname}</span>,<br/><br/>
 		    <span i18n:translate="">you can find the latest news and todos for your next steps here on this dashboard.</span><br/><br/>
 	    </div>
-        <br>
+        <br/>
 
         <ul class="cs-dashboard-tasks list-group">        
             <tal:block tal:condition="context.registry['widgets']['dashboard-central-widgets']|None"
                     tal:repeat="widget context.registry['widgets']['dashboard-central-widgets']">
-                <tal:block tal:condition="widget.badge() > 0">
+                <tal:block tal:condition="widget.condition() == True">
                     <li class="cs-dashboard-task list-group-item clear" aria-hidden="true">
                         <div class="cs-dashboard-task-left">
                             <div class="${structure: widget.icon()} cs-dashboard-task-icon"></div>
