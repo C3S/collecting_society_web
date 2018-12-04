@@ -15,7 +15,7 @@ class ExistingArtistsWidget():
         self.category = category
 
     def condition(self):
-        return self.badge() != 0
+        return self.badge() == 0
 
     def icon(self):
         return "glyphicon glyphicon-user"
