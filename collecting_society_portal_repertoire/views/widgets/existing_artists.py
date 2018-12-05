@@ -39,10 +39,10 @@ class ExistingArtistsWidget():
                  "solo artists as members, so it's a good idea to create "
                  "your own solo artist(s) first. 'Foreign' artists, for "
                  "example "
-                 "band members that refer to other persons, can be created "
+                 "band members, that refer to other persons, can be created "
                  "'on the fly' using the member create button in the group "
                  "artist creation form. To create a group artist, go to the "
-                 "create artist form and make a check below 'group'.")
+                 "create artist form and make a check below 'Group'.")
 
     def get_len(self, content_list):
         if content_list:

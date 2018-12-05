@@ -37,6 +37,7 @@ from .resources import (
 )
 from .views.widgets import (
     ExistingArtistsWidget,
+    ExistingContentWidget,
     RejectedContentWidget,
     OrphanedContentWidget,
     UncommitedContentWidget
@@ -272,6 +273,7 @@ def web_registry(config):
         reg = self.dict()
         reg['widgets']['dashboard-central-widgets'] = [
             ExistingArtistsWidget(self.request),
+            ExistingContentWidget(self.request),
             RejectedContentWidget(self.request),
             OrphanedContentWidget(self.request),
             # UncommitedContentWidget(self.request),

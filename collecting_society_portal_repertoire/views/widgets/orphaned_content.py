@@ -22,10 +22,19 @@ class OrphanedContentWidget():
         return "glyphicon glyphicon-leaf"
 
     def header(self):
-        return _(u"Orphaned Content")
+        return _(u"Orphaned Files")
 
     def description(self):
-        return _(u"Number of files you uploaded but didn't assign to a creation yet")
+        return _(u"This is the number of files you uploaded but didn't assign "
+                 "to a creation yet. The easiest way to assign a file to a "
+                 "creation is to go to the files list (by clicking on 'Files' "
+                 "in the left-hand menu) and then click the 'Add Creation' "
+                 "button of the respective list entry. Note that it can take "
+                 "some time (under a minute to some hours -- depending on our "
+                 "server load) to process uploaded files before files can be "
+                 "added this way. Audio files will benefit from proper "
+                 "metadata tags, for example, the title will be automatically "
+                 "filled in the resp. field of the creation form.")
 
     def get_len(self, content_list):
         if content_list:

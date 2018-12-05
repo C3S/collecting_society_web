@@ -131,11 +131,24 @@ class AddArtist(FormController):
             return
         artist = artists[0]
         log.info("artist add successful for %s: %s" % (email, artist))
-        self.request.session.flash(
-            _(u"Artist added:  ${arna} (${arco})",
-              mapping={'arna': artist.name, 'arco': artist.code}),
-            'main-alert-success'
-        )
+        artists = Artist.search_by_party(party)
+        is_first_artist = False
+        if artists and len(artists) == 1:
+            is_first_artist = True
+        if is_first_artist:
+            self.request.session.flash(
+                _(u"Congratulations! You created your first artist "
+                  "'${arna}' (${arco}). Now go back to the dashboard and "
+                  "see what's next.",
+                  mapping={'arna': artist.name, 'arco': artist.code}),
+                'main-alert-success'
+            )
+        else:
+            self.request.session.flash(
+                _(u"Artist added:  ${arna} (${arco})",
+                  mapping={'arna': artist.name, 'arco': artist.code}),
+                'main-alert-success'
+            )
 
         # redirect
         self.redirect(artist.code)
