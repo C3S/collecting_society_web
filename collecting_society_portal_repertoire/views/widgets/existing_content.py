@@ -11,16 +11,16 @@ from ...services import _
 class ExistingContentWidget():
 
     def __init__(self, request, category='all'):
-        self.request = request
-        self.party = request.party.id
+        content_count = Content.current_viewable(request)
+        artist_count = Artist.search_by_party(request.party.id)
+        self.artist_count = artist_count and len(artist_count) or 0
+        self.content_count = content_count and len(content_count) or 0
         self.category = category
 
     def condition(self):
         # only show if artists have already be created
-        number_of_artists = self.get_len(Artist.search_by_party(self.party))
         # artists there but nothing uploaded yet? show task
-        number_of_content_files = self.badge()
-        return number_of_artists > 0 and number_of_content_files == 0
+        return self.artist_count > 0 and self.content_count == 0
 
     def icon(self):
         return "glyphicon glyphicon-plus-sign"
@@ -44,12 +44,6 @@ class ExistingContentWidget():
                  "file types in order to associate it with a creation. You "
                  "may add a file of the other type later on.")
 
-    def get_len(self, content_list):
-        if content_list:
-            return len(content_list)
-        else:
-            return 0
-
     def output(self):
         """
         not needed ?
@@ -57,4 +51,4 @@ class ExistingContentWidget():
         return ""
 
     def badge(self):
-        return self.get_len(Content.current_viewable(self.request))
+        return self.content_count
