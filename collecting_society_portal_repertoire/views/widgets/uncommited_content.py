@@ -33,14 +33,14 @@ class UncommitedContentWidget():
         else:
             return 0
 
-    def output(self):
-        uncomm = self.get_len(
-            Content.search_uncommits(self.party, self.category))
-        output = render(
-            self.template,
-            {'uncomm': uncomm}
-        )
-        return output
+    # def output(self):
+    #     uncomm = self.get_len(
+    #         Content.search_uncommits(self.party, self.category))
+    #     output = render(
+    #         self.template,
+    #         {'uncomm': uncomm}
+    #     )
+    #     return output
 
     def badge(self):
         return self.get_len(

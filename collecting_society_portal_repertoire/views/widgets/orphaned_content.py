@@ -22,7 +22,7 @@ class OrphanedContentWidget():
         return "glyphicon glyphicon-leaf"
 
     def header(self):
-        return _(u"Orphaned Files")
+        return _(u"Unassigned Files")
 
     def description(self):
         return _(u"This is the number of files you uploaded but didn't assign "
@@ -34,7 +34,10 @@ class OrphanedContentWidget():
                  "server load) to process uploaded files before files can be "
                  "added this way. Audio files will benefit from proper "
                  "metadata tags, for example, the title will be automatically "
-                 "filled in the resp. field of the creation form.")
+                 "filled in the resp. field of the creation form. Another "
+                 "method to assign files to creations is to go to "
+                 "Creations Add or Edit function and assign the file on the "
+                 "files tab.")
 
     def get_len(self, content_list):
         if content_list:
@@ -42,13 +45,13 @@ class OrphanedContentWidget():
         else:
             return 0
 
-    def output(self):
-        orph = self.get_len(Content.search_orphans(self.party, self.category))
-        output = render(
-            self.template,
-            {'orph': orph}
-        )
-        return output
+    # def output(self):
+    #     orph = self.get_len(Content.search_orphans(self.party, self.category))
+    #     output = render(
+    #         self.template,
+    #         {'orph': orph}
+    #     )
+    #     return output
 
     def badge(self):
         return self.get_len(Content.search_orphans(self.party, self.category))

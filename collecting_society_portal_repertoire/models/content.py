@@ -384,6 +384,37 @@ class Content(Tdb):
         ])
 
     @classmethod
+    def search_unprocessed(cls, party_id, category):
+        """
+        Searches unprocessed content in category of web user.
+
+        Args:
+            cls (pyramid.request.Request): Current request.
+            party_id (int): Res user id.
+            category (str): Category of content.
+
+        Returns:
+            list (content): List of content.
+            None: If no match is found.
+        """
+        if party_id is None:
+            return None
+        search_clause = [
+            ('active', '=', True),
+            ('entity_creator', '=', party_id),
+            ('creation', '=', None),
+            ('processing_state', '!=', 'rejected'),
+            ('processing_state', '!=', 'dropped'),
+            ('processing_state', '!=', 'archived')
+        ]
+        if category is not 'all':
+            search_clause.append(
+                ('category', '=', category)
+            )
+        result = cls.get().search(search_clause)
+        return result or None
+
+    @classmethod
     def search_orphans(cls, party_id, category):
         """
         Searches orphan content in category of web user.
@@ -403,9 +434,11 @@ class Content(Tdb):
             ('active', '=', True),
             ('entity_creator', '=', party_id),
             ('creation', '=', None),
-            ('processing_state', '!=', 'rejected')
-            # TODO: for quick testing this is ok, in the future the
-            #       processing_state needs to be dropped (or higher)
+            [
+                'OR',
+                ('processing_state', '=', 'archived'),
+                ('processing_state', '=', 'dropped')
+            ]
         ]
         if category is not 'all':
             search_clause.append(

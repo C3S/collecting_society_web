@@ -8,7 +8,7 @@ from ...models import Artist
 from ...services import _
 
 
-class ExistingArtistsWidget():
+class MissingArtistsWidget():
 
     def __init__(self, request, category='all'):
         self.party = request.party.id
@@ -21,7 +21,7 @@ class ExistingArtistsWidget():
         return "glyphicon glyphicon-user"
 
     def header(self):
-        return _(u"Existing Artists")
+        return _(u"Missing Artists")
 
     def description(self):
         return _(u"You didn't create any artists yet. Please do so using the "
@@ -49,12 +49,6 @@ class ExistingArtistsWidget():
             return len(content_list)
         else:
             return 0
-
-    def output(self):
-        """
-        not needed ?
-        """
-        return ""
 
     def badge(self):
         return self.get_len(Artist.search_by_party(self.party))

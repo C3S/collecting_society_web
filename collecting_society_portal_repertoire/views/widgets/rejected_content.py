@@ -42,21 +42,21 @@ class RejectedContentWidget():
         else:
             return 0
 
-    def output(self):
-        dupl = self.get_len(self.dupl())
-        ferrors = self.get_len(self.ferrors())
-        lossyc = self.get_len(self.lossyc())
-        rejects = dupl + ferrors + lossyc
-        output = render(
-            self.template,
-            {
-                'dupl': dupl,
-                'ferrors': ferrors,
-                'lossyc': lossyc,
-                'rejects': rejects
-            }
-        )
-        return output
+    # def output(self):
+    #     dupl = self.get_len(self.dupl())
+    #     ferrors = self.get_len(self.ferrors())
+    #     lossyc = self.get_len(self.lossyc())
+    #     rejects = dupl + ferrors + lossyc
+    #     output = render(
+    #         self.template,
+    #         {
+    #             'dupl': dupl,
+    #             'ferrors': ferrors,
+    #             'lossyc': lossyc,
+    #             'rejects': rejects
+    #         }
+    #     )
+    #     return output
 
     def badge(self):
         dupl = self.get_len(self.dupl())

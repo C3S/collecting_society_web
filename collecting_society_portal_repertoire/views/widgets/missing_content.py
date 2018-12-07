@@ -8,7 +8,7 @@ from ...models import Artist, Content
 from ...services import _
 
 
-class ExistingContentWidget():
+class MissingContentWidget():
 
     def __init__(self, request, category='all'):
         content_count = Content.current_viewable(request)
@@ -26,7 +26,7 @@ class ExistingContentWidget():
         return "glyphicon glyphicon-plus-sign"
 
     def header(self):
-        return _(u"Existing Files")
+        return _(u"No Files Uploaded Yet")
 
     def description(self):
         return _(u"You didn't upload any files yet. Please do so using the "
@@ -43,12 +43,6 @@ class ExistingContentWidget():
                  "your revenues) more directly. Start with one of the two "
                  "file types in order to associate it with a creation. You "
                  "may add a file of the other type later on.")
-
-    def output(self):
-        """
-        not needed ?
-        """
-        return ""
 
     def badge(self):
         return self.content_count
