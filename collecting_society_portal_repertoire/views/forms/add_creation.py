@@ -305,7 +305,7 @@ class TitleField(colander.SchemaNode):
     schema_type = colander.String
 
 
-class FeaturedArtistField(colander.SchemaNode):
+class ArtistField(colander.SchemaNode):
     oid = "artist"
     schema_type = colander.Integer
     widget = current_artists_select_widget
@@ -324,7 +324,7 @@ class MetadataSchema(colander.Schema):
     title = _(u"Metadata")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_(u"Title"))
-    artist = FeaturedArtistField(title=_(u"Featured Artist"))
+    artist = ArtistField(title=_(u"Artist"))
     tariff_categories = CreationTariffCategorySequence(
         title=_(u"Tariff Category"))
 
