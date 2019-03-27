@@ -15,6 +15,8 @@ from collecting_society_portal.models import (
 )
 from collecting_society_portal.services import send_mail
 
+from pyramid.httpexceptions import HTTPFound
+
 from ...services import _
 
 log = logging.getLogger(__name__)
@@ -69,7 +71,7 @@ class RegisterWebuser(LoginWebuser):
 
         # wants membership
         if self.submitted('wants_membership'):
-            self.redirect("https://yes.c3s.cc?from=repertoire")
+            self.response = HTTPFound("https://yes.c3s.cc?from=repertoire")
 
         # wants no membership
         if self.submitted('wants_no_membership'):
