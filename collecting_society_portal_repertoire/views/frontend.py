@@ -65,6 +65,7 @@ class FrontentViews(ViewBase):
                     if web_user.new_email:
                         web_user.email = web_user.new_email
                         web_user.new_email = ''
+                web_user.opt_in_uuid = ''
                 web_user.save()
                 self.request.session.flash(
                     _(u"Your email verification was successful."),
