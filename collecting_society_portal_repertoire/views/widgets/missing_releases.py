@@ -39,7 +39,7 @@ class MissingReleasesWidget():
                  "of creations that have been made available to the public. "
                  "Sometimes only one creation is part of a release (called a "
                  "'single'). Creations are organized on a release using track "
-                 "numbers and medium numbers. Note that you may vary use "
+                 "numbers and medium numbers. Note that you may use "
                  "track titles that differ from the genuine creation title.")
 
     def badge(self):

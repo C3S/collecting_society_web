@@ -64,7 +64,7 @@
                                                 context, '..', 'creations', 'add'
                                             )}?uuid=${file.uuid}"
                                     class="btn btn-primary btn-sm" role="button"
-                                    i18n:translate="">Add Creation</a>
+                                    i18n:translate="">Extract metadata</a>
                                 </div>
                         </div>
                 </td>
