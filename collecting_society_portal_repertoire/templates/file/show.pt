@@ -19,7 +19,7 @@
             <div class="btn-group" role="group">
                 <a href="${request.resource_path(context, '..')}"
                    class="btn btn-default" role="button"
-                   i18n:translate="">Files</a>
+                   i18n:translate="">Overview</a>
             </div>
             <div class="btn-group cs-form-controls pull-right" role="group">
                 <a href="${request.resource_path(context, 'delete')}"

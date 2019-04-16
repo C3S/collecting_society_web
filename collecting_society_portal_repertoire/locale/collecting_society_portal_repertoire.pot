@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-04-16 14:56+0200\n"
+"POT-Creation-Date: 2019-04-16 16:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,9 +89,6 @@ msgid "Dashboard"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/includes.py:239
-#: ./collecting_society_portal_repertoire/templates/file/upload.pt:16
-#: ./collecting_society_portal_repertoire/templates/file/show.pt:22
-#: ./collecting_society_portal_repertoire/templates/file/list.pt:13
 #: ./collecting_society_portal_repertoire/views/forms/add_creation.py:345
 msgid "Files"
 msgstr ""
@@ -706,6 +703,11 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
+#: ./collecting_society_portal_repertoire/templates/file/upload.pt:16
+#: ./collecting_society_portal_repertoire/templates/file/show.pt:22
+msgid "Overview"
+msgstr ""
+
 #: ./collecting_society_portal_repertoire/templates/file/upload.pt:24
 #: ./collecting_society_portal_repertoire/templates/file/upload.pt:82
 msgid "Start"
@@ -855,6 +857,10 @@ msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/file/show.pt:202
 msgid "Track Number"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/templates/file/list.pt:13
+msgid "Files Overview"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/file/list.pt:67

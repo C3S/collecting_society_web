@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-04-16 14:56+0200\n"
-"PO-Revision-Date: 2019-04-16 15:46+0200\n"
+"POT-Creation-Date: 2019-04-16 16:11+0200\n"
+"PO-Revision-Date: 2019-04-16 16:11+0200\n"
 "Last-Translator: thomas <thomas.mielke@c3s.cc>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -90,9 +90,6 @@ msgid "Dashboard"
 msgstr "Dashboard"
 
 #: collecting_society_portal_repertoire/includes.py:239
-#: collecting_society_portal_repertoire/templates/file/upload.pt:16
-#: collecting_society_portal_repertoire/templates/file/show.pt:22
-#: collecting_society_portal_repertoire/templates/file/list.pt:13
 #: collecting_society_portal_repertoire/views/forms/add_creation.py:345
 msgid "Files"
 msgstr "Dateien"
@@ -722,6 +719,11 @@ msgstr "Veröffentlichung bearbeiten"
 msgid "Upload"
 msgstr "Hochladen"
 
+#: collecting_society_portal_repertoire/templates/file/upload.pt:16
+#: collecting_society_portal_repertoire/templates/file/show.pt:22
+msgid "Overview"
+msgstr "Übersicht"
+
 #: collecting_society_portal_repertoire/templates/file/upload.pt:24
 #: collecting_society_portal_repertoire/templates/file/upload.pt:82
 msgid "Start"
@@ -872,6 +874,10 @@ msgstr "Veröffentlichung"
 #: collecting_society_portal_repertoire/templates/file/show.pt:202
 msgid "Track Number"
 msgstr "Tracknummer"
+
+#: collecting_society_portal_repertoire/templates/file/list.pt:13
+msgid "Files Overview"
+msgstr "Datei Übersicht"
 
 #: collecting_society_portal_repertoire/templates/file/list.pt:67
 msgid "Extract metadata"

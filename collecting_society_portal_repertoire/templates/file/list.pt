@@ -10,7 +10,7 @@
     <!-- content right -->
     <tal:block metal:fill-slot="content-right">
 
-        <h1 class="cs-form-header" i18n:translate="">Files</h1>
+        <h1 class="cs-form-header" i18n:translate="">Files Overview</h1>
 
         <div class="btn-toolbar cs-form-controls" role="toolbar">
             <div class="btn-group" role="group">
