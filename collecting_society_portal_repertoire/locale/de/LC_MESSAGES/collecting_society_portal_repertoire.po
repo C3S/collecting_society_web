@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-04-16 00:19+0200\n"
-"PO-Revision-Date: 2019-04-16 00:19+0200\n"
+"POT-Creation-Date: 2019-04-16 14:56+0200\n"
+"PO-Revision-Date: 2019-04-16 15:46+0200\n"
 "Last-Translator: thomas <thomas.mielke@c3s.cc>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -934,8 +934,8 @@ msgid ""
 "Your email verification was successful. Now login with your new email "
 "address!"
 msgstr ""
-"Deine Email-Überprüfung war erfolgreich. Bitte jetzt mit der Email-Adresse "
-"einloggen."
+"Deine Email-Überprüfung war erfolgreich. Bitte logge Dich jetzt mit der "
+"neuen Email-Adresse ein!"
 
 #: collecting_society_portal_repertoire/views/file.py:94
 msgid "Content deleted: "
@@ -1056,10 +1056,27 @@ msgid ""
 "button in the group artist creation form. To create a group artist, go to "
 "the create artist form and make a check below 'Group'."
 msgstr ""
+"Du hast bisher noch keine Künstler angelegt. Bitte hole das über das Menü "
+"auf der linken Seite nach. Es gibt zwei Arten von Künstlern: Solo- und "
+"Gruppenkünstler. Ein Solo-Künstler kann Deinem bürgerlichen Namen, "
+"Künstlernamen oder jeglichem Pseudonym entsprechen, mit dem Du die "
+"Ergebnisse Deiner Solo-Karriere verknüpfen möchtest. Der Solo-Künstler wird "
+"außerdem wichtig, wenn es darum geht Deine Rolle bei einer Kollektivleistung "
+"zur Schöpfung eines Stücks zu dokumentieren. Ein Gruppenkünstler ist "
+"hingegen jegliche Form der Zusammenfassung individueller Künstler zum Zweck "
+"der Erstellung eines musikalischen Werks, z.B. eine Band oder ein "
+"Kollaborationsprojekt. Beim Anlegen eines Gruppen-Künstlers wirst Du "
+"aufgefordert die zugehörigen Solo-Künstler als Mitglieder hinzuzufügen, "
+"weshalb es eine gute Idee ist Deine(n) Solo-Künstler zuerst anzulegen. "
+"'Fremdkünstler', wie z.B. Bandmitglieder, die sich auf andere Personen "
+"beziehen, können beim Anlegen des Gruppenkünstlers 'on the fly' mit angelegt "
+"werden, indem man auf den 'Mitglied erzeugen'-Knopf klickt. Um einen "
+"Gruppenkünstler zu erzeugen, gehe auf das 'Künstler hinzufügen'-Formular und "
+"mache ein Häkchen unter 'Gruppe'."
 
 #: collecting_society_portal_repertoire/views/widgets/unprocessed_content.py:27
 msgid "Unprocessed Files"
-msgstr ""
+msgstr "Unverarbeitete Dateien"
 
 #: collecting_society_portal_repertoire/views/widgets/unprocessed_content.py:30
 msgid ""
@@ -1068,6 +1085,12 @@ msgid ""
 "minute to several hours depending on server loads. Please come back later to "
 "see if we are finished processing your files."
 msgstr ""
+"Anzahl Dateien, die sich in der Verarbeitungs-Warteschlange auf unseren "
+"Servern befinden. Du kannst hier nichts tun außer zu warten. Die "
+"Verarbeitung kann von unter einer Minute bis zu mehreren Stunden dauern -- "
+"je nachdem wie stark unsere Server ausgelastet sind. Bitte komme später "
+"wieder, um zu sehen, ob Deine hochgeladenen Dateien fertig verarbeitet "
+"wurden."
 
 #: collecting_society_portal_repertoire/views/forms/add_creation.py:202
 #, python-format
@@ -1174,6 +1197,8 @@ msgid ""
 "Congratulations! You created your first artist '${arna}' (${arco}). Now go "
 "back to the dashboard and see what's next."
 msgstr ""
+"Gratulation! Du hast Deinen ersten Künstler '${arna}' (${arco}) angelegt. "
+"Gehe jetzt zurück zum Dashboard, um zu erfahren was als nächstes kommt."
 
 #: collecting_society_portal_repertoire/views/forms/add_artist.py:148
 #, python-format
@@ -1224,18 +1249,15 @@ msgstr "Du musst die Nutzungsbedingungen akzeptieren."
 
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:290
 msgid "You need to provide your birthdate."
-msgstr ""
+msgstr "Du musst Dein Geburtsdatum angeben."
 
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:292
 msgid "Sorry, I don't believe you are that old."
-msgstr ""
+msgstr "Tut mir Leid aber ich glaube nicht, dass Du so alt bist."
 
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:294
-#, fuzzy
 msgid "Sorry, you are too young to register here."
-msgstr ""
-"Tut uns Leid, Du musst mindestens ${age} Jahre alt sein, um Dich hier zu "
-"registrieren."
+msgstr "Tut uns Leid, Du bist zu jung, um Dich hier registrieren zu können."
 
 #: collecting_society_portal_repertoire/views/forms/register_webuser.py:360
 msgid "Please use the email address as in your membership application."
@@ -1296,7 +1318,7 @@ msgstr ""
 
 #: collecting_society_portal_repertoire/views/forms/edit_profile.py:125
 msgid "Email address already taken"
-msgstr "Email-Adresse bereits vergeben."
+msgstr "Email-Adresse bereits vergeben"
 
 #: collecting_society_portal_repertoire/views/forms/edit_profile.py:181
 msgid "Password (leave empty if you don't want to change it)"

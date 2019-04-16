@@ -1,0 +1,4 @@
+pot-create -o collecting_society_portal_repertoire/locale/collecting_society_portal_repertoire.pot collecting_society_portal_repertoire
+msgmerge --update collecting_society_portal_repertoire/locale/*/LC_MESSAGES/collecting_society_portal_repertoire.po collecting_society_portal_repertoire/locale/collecting_society_portal_repertoire.pot
+poedit collecting_society_portal_repertoire/locale/de/LC_MESSAGES/collecting_society_portal_repertoire.po
+
