@@ -245,7 +245,15 @@ class EditCreation(FormController):
                             if not nrs:
                                 continue
                             create['neighbouring_rights_society'] = nrs.id
+                    # look for dupes
+                    # dupe_found = False
+                    # for item in _contributions:
+                    #     if (item['artist'][0].id == create['artist'].id and
+                    #         item['role'] == create['role']):
+                    #         dupe_found = True
+                    #         break                    
                     # append contribution
+                    #if not dupe_found:
                     CreationContribution.create([create])
 
                 # create contribution

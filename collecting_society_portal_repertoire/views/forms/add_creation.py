@@ -174,8 +174,16 @@ class AddCreation(FormController):
                         nrs = CollectingSociety.search_by_oid(_nrs)
                         if not nrs:
                             continue
-                        create['neighbouring_rights_society'] = nrs.id
+                        create['neighbouring_rights_society'] = nrs.Invalid
+                # look for dupes
+                # dupe_found = False
+                # for item in contributions_create:
+                #     if (item['artist'][0].id == create['artist'].id and
+                #         item['role'] == create['role']):
+                #         dupe_found = True
+                #         break                        
                 # append contribution
+                # if not dupe_found:
                 contributions_create.append(create)
 
             # append actions
