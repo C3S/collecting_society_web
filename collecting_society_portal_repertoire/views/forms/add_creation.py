@@ -290,6 +290,22 @@ def validate_content(node, values, **kwargs):  # multifield validator
         raise colander.Invalid(node, _(u"Only one uploaded content file "
                                        "for each file type (audio and sheet "
                                        "music)."))
+    
+    # look for dupes in contributions
+    contributions = values['contributions']['contributions']
+    reduced_contributions = []
+    for contrib in contributions:
+        if contrib['mode'] != 'remove':
+            reduced_contributions.append(
+                (
+                    contrib['artist'][0]['code'],
+                    contrib['contribution_type'],
+                    contrib['role']
+                )
+            )
+    unique_contributions = set(reduced_contributions)
+    if len(reduced_contributions) > len(unique_contributions):
+        raise colander.Invalid(node, _(u"Duplicate contribution found."))
 
 
 # --- Options -----------------------------------------------------------------
