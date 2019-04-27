@@ -7,6 +7,7 @@ import re
 from pyramid.security import (
     Allow,
     DENY_ALL,
+    NO_PERMISSION_REQUIRED,
 )
 
 from collecting_society_portal.resources import (

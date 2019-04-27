@@ -49,48 +49,54 @@ class FrontentViews(ViewBase):
         name='verify_email',
         decorator=Tdb.transaction(readonly=False))
     def verify_email(self):
+        return verify_email_helper(self)
 
-        # sanity checks
-        opt_in_uuid = False
-        if self.request.subpath:
-            opt_in_uuid = self.request.subpath[-1]
+def verify_email_helper(the_class):
+    """
+    also used by backend.py
+    """
+    
+    # sanity checks
+    opt_in_uuid = False
+    if the_class.request.subpath:
+        opt_in_uuid = the_class.request.subpath[-1]
 
-        # change opt in state
-        if opt_in_uuid:
-            web_user = WebUser.search_by_opt_in_uuid(str(opt_in_uuid))
-            if web_user:
-                if web_user.opt_in_state != 'opted-in':
-                    web_user.opt_in_state = 'opted-in'
-                else:  # already opted in? then this is a new email activation
-                    if web_user.new_email:
-                        web_user.email = web_user.new_email
-                        web_user.new_email = ''
-                web_user.opt_in_uuid = ''
-                web_user.save()
-                self.request.session.flash(
-                    _(u"Your email verification was successful."),
-                    'main-alert-success'
-                )
-                log.info("web_user login successful: %s" % web_user.email)
-                return self.redirect(
-                    BackendResource, '',
-                    headers=remember(self.request, web_user.email)
-                )
-            else:
-                self.request.session.flash(
-                    _(
-                        u"Your email verification was not successful "
-                        u"(wrong validation code)."
-                    ),
-                    'main-alert-danger'
-                )
+    # change opt in state
+    if opt_in_uuid:
+        web_user = WebUser.search_by_opt_in_uuid(str(opt_in_uuid))
+        if web_user:
+            if web_user.opt_in_state != 'opted-in':
+                web_user.opt_in_state = 'opted-in'
+            else:  # already opted in? then this is a new email activation
+                if web_user.new_email:
+                    web_user.email = web_user.new_email
+                    web_user.new_email = ''
+            web_user.opt_in_uuid = ''
+            web_user.save()
+            the_class.request.session.flash(
+                _(u"Your email verification was successful."),
+                'main-alert-success'
+            )
+            log.info("web_user login successful: %s" % web_user.email)
+            return the_class.redirect(
+                BackendResource, '',
+                headers=remember(the_class.request, web_user.email)
+            )
         else:
-            self.request.session.flash(
+            the_class.request.session.flash(
                 _(
                     u"Your email verification was not successful "
-                    u"(no validation code)."
+                    u"(wrong validation code)."
                 ),
                 'main-alert-danger'
             )
+    else:
+        the_class.request.session.flash(
+            _(
+                u"Your email verification was not successful "
+                u"(no validation code)."
+            ),
+            'main-alert-danger'
+        )
 
-        return self.redirect()
+    return the_class.redirect()

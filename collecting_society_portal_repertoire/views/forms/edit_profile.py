@@ -5,6 +5,7 @@ import logging
 import re
 import colander
 import deform
+import uuid
 
 from collecting_society_portal.models import (
     Tdb,
@@ -57,10 +58,12 @@ class EditProfile(FormController):
         web_user.party.lastname = self.appstruct['lastname']  # for clarity
         web_user.party.name = (web_user.party.firstname + ' '
                                + web_user.party.lastname)
+        web_user.party.save()
         # self.appstruct['name'] TODO: generate name using a tryton trigger
         if self.appstruct['email'].lower() != web_user.email.lower():
             # always save email lowercase, so tryton uniqueness is ensured
             web_user.new_email = self.appstruct['email'].lower()
+            web_user.opt_in_uuid = unicode(uuid.uuid4())
             web_user.save()
             # email verification
             template_variables = {
@@ -78,7 +81,6 @@ class EditProfile(FormController):
         if self.appstruct['password']:
             web_user.password = self.appstruct['password']
             web_user.save()
-        web_user.party.save()
 
         if self.appstruct['email'].lower() == web_user.email.lower():
             log.info(
@@ -127,7 +129,7 @@ def validate_unique_user_email(node, values, **kwargs):  # multifield validator
     # finally, check email format
     if len(email_value) > 7:
         if re.match('^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+' +  # noqa: W605
-                    '(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$', email_value) is not None:
+                    '(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,9})$', email_value) is not None:
             return
     raise colander.Invalid(node, "Invalid email address")
 
