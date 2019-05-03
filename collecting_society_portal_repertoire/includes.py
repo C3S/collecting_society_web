@@ -330,6 +330,9 @@ def web_registry(config):
                 "src": self.request.static_path(
                     'collecting_society_portal_repertoire:'
                     'static/js/jquery.fileupload.init.js')},
+            {
+                "src": self.request.static_path(
+                    'collecting_society_portal:static/js/portal.js')},
         ]
         return reg
 

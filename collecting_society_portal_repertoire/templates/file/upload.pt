@@ -156,6 +156,13 @@
                 return 'There is an ongoing file upload, are you sure that you want to leave this page?';}
         </script>
 
+        <!-- show start/cancel buttongroup -->
+        <script>
+        $('#fileupload').bind('fileuploadadd', function (e, data) {
+            $('.fileupload-buttonbar').show();
+        })
+        </script>
+
     </tal:block>
 
 </tal:block>
