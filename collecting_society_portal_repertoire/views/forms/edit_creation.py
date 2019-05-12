@@ -57,8 +57,9 @@ class EditCreation(FormController):
         self.appstruct = {
             'metadata': {
                 'title':  creation.title or '',
-                'artist': creation.artist.id,
-                'tariff_categories': []
+                'artist': creation.artist.id
+            },
+            'areas': {
             },
             'lyrics': {
                 'lyrics': creation.lyrics
@@ -66,14 +67,14 @@ class EditCreation(FormController):
         }
 
         # tariff categories
-        if creation.tariff_categories:
-            for ctc in creation.tariff_categories:
-                self.appstruct['metadata']['tariff_categories'].append({
-                    'mode': 'edit',
-                    'oid': ctc.oid,
-                    'category': ctc.category.oid,
-                    'collecting_society': ctc.collecting_society.oid
-                    })
+        tcats = TariffCategory.search_all()
+        for tcat in tcats:
+            for creation_tcat in creation.tariff_categories:
+                if creation_tcat.category.oid == tcat.oid:
+                    collecting_soc_oid = creation_tcat.collecting_society.oid
+                    self.appstruct['areas'][
+                        'tarrif_category_'+tcat.code] = collecting_soc_oid
+                    break
 
         # contributions
         if creation.contributions:
@@ -440,39 +441,44 @@ class EditCreation(FormController):
                 existing_original_relation.original_creation = original
                 existing_original_relation.save()
 
-        # creation tariff categories
-        _ctcs = a['metadata']['tariff_categories']
-        if _ctcs:
-            for _ctc in _ctcs:
-                if _ctc['mode'] == "add":
-                    continue
-                tariff_category = TariffCategory.search_by_oid(
-                    _ctc['category'])
-                if not tariff_category:
-                    continue
-                collecting_society = CollectingSociety.search_by_oid(
-                    _ctc['collecting_society'])
-                if not collecting_society:
-                    continue
-
-                # create creation tariff categories
-                if _ctc['mode'] == "create":
-                    # TODO: check, if category is already assigned
-                    # (function in model)
-                    CreationTariffCategory.create([{
-                        'creation': creation.id,
-                        'category': tariff_category.id,
-                        'collecting_society': collecting_society.id
-                    }])
-
-                # edit creation tariff categories
-                if _ctc['mode'] == "edit":
-                    ctc = CreationTariffCategory.search_by_oid(_ctc['oid'])
-                    if not ctc:
-                        continue
-                    ctc.category = tariff_category.id
-                    ctc.collecting_society = collecting_society.id
-                    ctc.save()
+        # areas of exploitation / tariff categories / collecting societies 
+        ctcs_to_delete = []  # collect necessary operations in list
+        ctcs_to_add = []     # to minimize number of tryton calls
+        tcats = TariffCategory.search_all()
+        for tcat in tcats: # for each tariff category
+            collecting_soc_oid_new = a['areas']['tarrif_category_'+tcat.code]
+            # find changes in previously stored collecting societies of creation
+            ctc_oid_old = None
+            for creation_tcat in creation.tariff_categories:
+                if creation_tcat.category.oid == tcat.oid:
+                    ctc_oid_old = creation_tcat.oid
+                    break
+            # collecting society association deleted for this tariff category?
+            if not collecting_soc_oid_new and ctc_oid_old:
+                ctc_to_delete = CreationTariffCategory.search_by_oid(ctc_oid_old)
+                if ctc_to_delete:
+                    ctcs_to_delete.append(ctc_to_delete)
+            # new collecting society association for this tariff category?
+            if collecting_soc_oid_new and not ctc_oid_old:
+                collecting_society = CollectingSociety.search_by_oid(collecting_soc_oid_new)
+                if collecting_society:
+                    ctcs_to_add.append({
+                            'creation': creation.id,
+                            'category': tcat.id,
+                            'collecting_society': collecting_society.id
+                        })
+            # collecting society association changed for this tariff category?
+            if (collecting_soc_oid_new and ctc_oid_old
+                    and creation_tcat.collecting_society.oid != collecting_soc_oid_new):
+                ctc_to_change = CreationTariffCategory.search_by_oid(ctc_oid_old)
+                collecting_society = CollectingSociety.search_by_oid(collecting_soc_oid_new)
+                if ctc_to_change and collecting_society:
+                    ctc_to_change.collecting_society = collecting_society
+                    ctc_to_change.save()
+        if ctcs_to_delete:
+            CreationTariffCategory.delete(ctcs_to_delete)
+        if ctcs_to_add:
+            CreationTariffCategory.create(ctcs_to_add)
 
         # content
         contents_to_add = []

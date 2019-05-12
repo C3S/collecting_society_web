@@ -93,30 +93,47 @@ class AddCreation(FormController):
             'entity_creator': party,
         }
 
+        # areas of exploitation / tariff categories / collecting societies 
+        ctcs_to_add = []  # to minimize number of tryton calls
+        tcats = TariffCategory.search_all()
+        for tcat in tcats: # for each tariff category
+            collecting_soc_oid_new = a['areas']['tarrif_category_'+tcat.code]
+            # add collecting society association for this tariff category
+            if collecting_soc_oid_new:
+                collecting_society = CollectingSociety.search_by_oid(collecting_soc_oid_new)
+                if collecting_society:
+                    ctcs_to_add.append({
+                            'creation': creation.id,
+                            'category': tcat.id,
+                            'collecting_society': collecting_society.id
+                        })
+        if ctcs_to_add:
+            CreationTariffCategory.create(ctcs_to_add)
+
         # creation tariff categories
-        _ctcs = a['metadata']['tariff_categories']
-        if _ctcs:
-            ctc_create = []
-            # create creation tariff categories
-            for _ctc in _ctcs:
-                if _ctc['mode'] != "create":
-                    continue
-                tariff_category = TariffCategory.search_by_oid(
-                    _ctc['category'])
-                if not tariff_category:
-                    continue
-                collecting_society = CollectingSociety.search_by_oid(
-                    _ctc['collecting_society'])
-                if not collecting_society:
-                    continue
-                ctc_create.append({
-                    'category': tariff_category.id,
-                    'collecting_society': collecting_society.id
-                    })
-            # append actions
-            _creation['tariff_categories'] = []
-            if ctc_create:
-                _creation['tariff_categories'].append(('create', ctc_create))
+        #_ctcs = a['metadata']['tariff_categories']
+        #if _ctcs:
+        #    ctc_create = []
+        #    # create creation tariff categories
+        #    for _ctc in _ctcs:
+        #        if _ctc['mode'] != "create":
+        #            continue
+        #        tariff_category = TariffCategory.search_by_oid(
+        #            _ctc['category'])
+        #        if not tariff_category:
+        #            continue
+        #        collecting_society = CollectingSociety.search_by_oid(
+        #            _ctc['collecting_society'])
+        #        if not collecting_society:
+        #            continue
+        #        ctc_create.append({
+        #            'category': tariff_category.id,
+        #            'collecting_society': collecting_society.id
+        #            })
+        #    # append actions
+        #    _creation['tariff_categories'] = []
+        #    if ctc_create:
+        #        _creation['tariff_categories'].append(('create', ctc_create))
 
         # contributions
         _contributions = self.appstruct['contributions']['contributions']
@@ -321,6 +338,45 @@ def current_artists_select_widget(node, kw):
     widget = deform.widget.Select2Widget(values=artist_options)
     return widget
 
+@colander.deferred
+def collecting_society_widget(node, kw):
+    values = [('', '')] + [
+        (tc.oid, tc.name) for tc in CollectingSociety.search(
+            [("represents_copyright", "=", True)])]
+    return deform.widget.Select2Widget(values=values, placeholder=_("None"))
+
+@colander.deferred
+def deferred_areas_schema_node(node, kw):
+    schema = colander.SchemaNode(
+        colander.Mapping(),
+        title=_(u"Areas"),
+        widget=deform.widget.MappingWidget(template='navs/mapping'),
+        description=_(u"Assign areas of exploitation the C3S "
+                    "will cover for this song. In case you are "
+                    "also a member of another collecting society, "
+                    "that handles different areas, "
+                    "please assign those areas to it, too. "
+                    "Changes made will take effect on the beginning "
+                    "of the next accounting period.")
+    )
+    values = [('', '')] + [
+        (tc.oid, tc.name) for tc in CollectingSociety.search(
+            [("represents_copyright", "=", True)])]
+    for tcat in TariffCategory.search_all():
+        schema.add(
+            colander.SchemaNode(
+                colander.String(),
+                title=_(tcat.name),
+                missing="",
+                oid="tarrif_category_"+tcat.code,
+                widget=deform.widget.Select2Widget(
+                    values=values,
+                    placeholder=_("None")
+                )
+            )
+        )
+
+    return schema
 
 # --- Fields ------------------------------------------------------------------
 
@@ -349,8 +405,6 @@ class MetadataSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_(u"Title"))
     artist = ArtistField(title=_(u"Artist"))
-    tariff_categories = CreationTariffCategorySequence(
-        title=_(u"Tariff Category"))
 
 
 class ContributionsSchema(colander.Schema):
@@ -380,6 +434,7 @@ class LyricsSchema(colander.Schema):
 class AddCreationSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
     metadata = MetadataSchema()
+    areas = deferred_areas_schema_node
     contributions = ContributionsSchema()
     originals = OriginalsSchema()
     content = ContentSchema()
