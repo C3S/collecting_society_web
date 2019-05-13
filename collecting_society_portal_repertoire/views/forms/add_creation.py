@@ -18,6 +18,7 @@ from ...models import (
     Creation,
     CreationRole,
     CreationDerivative,
+    CreationTariffCategory,
     Content
 )
 from .datatables import (
@@ -92,23 +93,6 @@ class AddCreation(FormController):
             'lyrics': a['lyrics']['lyrics'],
             'entity_creator': party,
         }
-
-        # areas of exploitation / tariff categories / collecting societies 
-        ctcs_to_add = []  # to minimize number of tryton calls
-        tcats = TariffCategory.search_all()
-        for tcat in tcats: # for each tariff category
-            collecting_soc_oid_new = a['areas']['tarrif_category_'+tcat.code]
-            # add collecting society association for this tariff category
-            if collecting_soc_oid_new:
-                collecting_society = CollectingSociety.search_by_oid(collecting_soc_oid_new)
-                if collecting_society:
-                    ctcs_to_add.append({
-                            'creation': creation.id,
-                            'category': tcat.id,
-                            'collecting_society': collecting_society.id
-                        })
-        if ctcs_to_add:
-            CreationTariffCategory.create(ctcs_to_add)
 
         # creation tariff categories
         #_ctcs = a['metadata']['tariff_categories']
@@ -232,6 +216,23 @@ class AddCreation(FormController):
             return
         creation = creations[0]
 
+        # areas of exploitation / tariff categories / collecting societies 
+        ctcs_to_add = []  # to minimize number of tryton calls
+        tcats = TariffCategory.search_all()
+        for tcat in tcats: # for each tariff category
+            collecting_soc_oid_new = a['areas']['tariff_category_'+tcat.code]
+            # add collecting society association for this tariff category
+            if collecting_soc_oid_new:
+                collecting_society = CollectingSociety.search_by_oid(collecting_soc_oid_new)
+                if collecting_society:
+                    ctcs_to_add.append({
+                            'creation': creation.id,
+                            'category': tcat.id,
+                            'collecting_society': collecting_society.id
+                        })
+        if ctcs_to_add:
+            CreationTariffCategory.create(ctcs_to_add)
+
         # add derivative-original relations
         # relations can be of allocation type 'adaption', 'cover', or 'remix'
         # (objects starting with a_ relate to form data provided by appstruct)
@@ -338,18 +339,20 @@ def current_artists_select_widget(node, kw):
     widget = deform.widget.Select2Widget(values=artist_options)
     return widget
 
-@colander.deferred
-def collecting_society_widget(node, kw):
-    values = [('', '')] + [
-        (tc.oid, tc.name) for tc in CollectingSociety.search(
-            [("represents_copyright", "=", True)])]
-    return deform.widget.Select2Widget(values=values, placeholder=_("None"))
+#@colander.deferred
+#def collecting_society_widget(node, kw):
+#    values = [('', '')] + [
+#        (tc.oid, tc.name) for tc in CollectingSociety.search(
+#            [("represents_copyright", "=", True)])]
+#    return deform.widget.Select2Widget(values=values, placeholder=_("None"))
 
 @colander.deferred
 def deferred_areas_schema_node(node, kw):
     schema = colander.SchemaNode(
         colander.Mapping(),
         title=_(u"Areas"),
+        oid="areas",
+        name="areas",
         widget=deform.widget.MappingWidget(template='navs/mapping'),
         description=_(u"Assign areas of exploitation the C3S "
                     "will cover for this song. In case you are "
@@ -367,8 +370,9 @@ def deferred_areas_schema_node(node, kw):
             colander.SchemaNode(
                 colander.String(),
                 title=_(tcat.name),
+                oid="tariff_category_"+tcat.code,
+                name="tariff_category_"+tcat.code,
                 missing="",
-                oid="tarrif_category_"+tcat.code,
                 widget=deform.widget.Select2Widget(
                     values=values,
                     placeholder=_("None")
@@ -398,6 +402,12 @@ class LyricsField(colander.SchemaNode):
     missing = ""
 
 
+#class AreasField(colander.SchemaNode):
+#    schema_type = colander.String
+#    widget = collecting_society_widget
+#    missing = ""
+
+
 # --- Schemas -----------------------------------------------------------------
 
 class MetadataSchema(colander.Schema):
@@ -406,6 +416,27 @@ class MetadataSchema(colander.Schema):
     working_title = TitleField(name='title', title=_(u"Title"))
     artist = ArtistField(title=_(u"Artist"))
 
+
+#class AreasSchema(colander.Schema):
+#    title = _(u"Areas")
+#    description=_(u"Assign areas of exploitation the C3S "
+#                "will cover for this song. In case you are "
+#                "also a member of another collecting society, "
+#                "that handles different areas, "
+#                "please assign those areas to it, too. "
+#                "Changes made will take effect on the beginning "
+#                "of the next accounting period.")    
+#    widget = deform.widget.MappingWidget(template='navs/mapping')
+#    tariff_category_L = AreasField(title=_(u'Live'), oid="tariff_category_L")
+#    tariff_category_R = AreasField(title=_(u'Reproduction'), oid="tariff_category_R")
+#    tariff_category_P = AreasField(title=_(u'Playing'), oid="tariff_category_P")
+#    tariff_category_T = AreasField(title=_(u'TV'), oid="tariff_category_T")
+#    tariff_category_C = AreasField(title=_(u'Cinema'), oid="tariff_category_C")
+#    tariff_category_O = AreasField(title=_(u'Other Arts'), oid="tariff_category_O")
+#    tariff_category_M = AreasField(title=_(u'Media'), oid="tariff_category_M")
+#    tariff_category_I = AreasField(title=_(u'Internet'), oid="tariff_category_I")
+#    tariff_category_A = AreasField(title=_(u'Advertising'), oid="tariff_category_A")
+    
 
 class ContributionsSchema(colander.Schema):
     title = _(u"Contributions")
@@ -435,6 +466,7 @@ class AddCreationSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
     metadata = MetadataSchema()
     areas = deferred_areas_schema_node
+    #areas = AreasSchema()
     contributions = ContributionsSchema()
     originals = OriginalsSchema()
     content = ContentSchema()

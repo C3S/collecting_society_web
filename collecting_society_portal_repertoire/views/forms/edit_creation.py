@@ -73,7 +73,7 @@ class EditCreation(FormController):
                 if creation_tcat.category.oid == tcat.oid:
                     collecting_soc_oid = creation_tcat.collecting_society.oid
                     self.appstruct['areas'][
-                        'tarrif_category_'+tcat.code] = collecting_soc_oid
+                        'tariff_category_'+tcat.code] = collecting_soc_oid
                     break
 
         # contributions
@@ -446,7 +446,7 @@ class EditCreation(FormController):
         ctcs_to_add = []     # to minimize number of tryton calls
         tcats = TariffCategory.search_all()
         for tcat in tcats: # for each tariff category
-            collecting_soc_oid_new = a['areas']['tarrif_category_'+tcat.code]
+            collecting_soc_oid_new = a['areas']['tariff_category_'+tcat.code]
             # find changes in previously stored collecting societies of creation
             ctc_oid_old = None
             for creation_tcat in creation.tariff_categories:
