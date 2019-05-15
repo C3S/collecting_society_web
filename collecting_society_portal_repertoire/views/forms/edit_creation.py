@@ -117,8 +117,8 @@ class EditCreation(FormController):
             }
 
         # original works, this creation is derived from
-        if creation.original_relations:
-            _originals = []
+        if creation.original_relations:            
+            a_derivation = { 'adaption': [], 'cover':[], 'remix':[] }
             for original_relation in creation.original_relations:
                 original_mode = "add"
                 if (
@@ -129,24 +129,22 @@ class EditCreation(FormController):
                     )
                 ):
                     original_mode = "edit"
-                _originals.append({
-                        'mode': 'edit',
-                        'oid': original_relation.oid,
-                        'type': original_relation.allocation_type,
-                        'original': [{
-                            'mode': original_mode,
-                            'code': original_relation.original_creation.
-                                code,
-                            'oid': original_relation.original_creation.
-                                oid,
-                            'titlefield': original_relation.
-                                original_creation.title,
-                            'artist': original_relation.original_creation.
-                                artist.name
-                        }]
-                    })
-            self.appstruct['originals'] = {
-                'originals': _originals
+                a_derivation[original_relation.allocation_type].append({
+                    'mode': original_mode,
+                    'code': original_relation.original_creation.
+                        code,
+                    'oid': original_relation.original_creation.
+                        oid,
+                    'titlefield': original_relation.
+                        original_creation.title,
+                    'artist': original_relation.original_creation.
+                        artist.name
+                })
+                
+            self.appstruct['derivation'] = {
+                'adaption': a_derivation['adaption'],
+                'cover': a_derivation['cover'],
+                'remix': a_derivation['remix']
             }
 
         # content files that are assigned to the creation
@@ -336,10 +334,11 @@ class EditCreation(FormController):
         #    creation.id)
         originals = creation.original_relations
         oids_to_preserve = []
-        for a_original in a['originals']['originals']:
-            # sanity: already in list? then it must be a dupe: only add once
-            if a_original['oid'] not in oids_to_preserve:
-                oids_to_preserve.append(a_original['oid'])
+        for derivation_type in [ 'adaption', 'cover', 'remix' ]:
+            for a_derivation in a['derivation'][derivation_type]:
+                # sanity: already in list? then it must be a dupe: only add once
+                if a_derivation['oid'] not in oids_to_preserve:
+                    oids_to_preserve.append(a_derivation['oid'])
         if originals:
             for original in originals:  # loop through database
                 # original from db table no longer in appstruct?
@@ -349,97 +348,39 @@ class EditCreation(FormController):
         # add new derivative-original relations or perform edits there
         # relations can be of allocation type 'adaption', 'cover', or 'remix'
         # (objects starting with a_ relate to form data provided by appstruct)
-        for a_original_relation in a['originals']['originals']:
-            a_original = a_original_relation['original'][0]
+        for derivation_type in [ 'adaption', 'cover', 'remix' ]:
+            for a_derivation in a['derivation'][derivation_type]:
 
-            # sanity checks
-            if a_original['code'] == creation.code:  # original of self?
-                self.request.session.flash(
-                    _(u"Warning: A Creation cannot be the original of it self."
-                      " If you do an adaption of a creation, you need to "
-                      "create a new creation in order to be able to refer to "
-                      "it as an original."),
-                    'main-alert-warning'
-                )
-
-            # new derivative-original relation to create?
-            if a_original_relation['mode'] == 'create':
-
-                # create foreign creation
-                if a_original['mode'] == 'create':
-                    original = Creation.create_foreign(
-                        party,
-                        a_original['artist'],
-                        a_original['titlefield']
+                # sanity checks
+                if a_derivation['code'] == creation.code:  # original of self?
+                    self.request.session.flash(
+                        _(u"Warning: A Creation cannot be the original of it self."
+                        " If you do an adaption of a creation, you need to "
+                        "create a new creation in order to be able to refer to "
+                        "it as an original."),
+                        'main-alert-warning'
                     )
-                    if not original:
-                        continue
-                else:  # add creation
-                    original = Creation.search_by_oid(a_original['oid'])
-                    if not original:
-                        # TODO: Userfeedback
-                        continue
-                _original = {
-                    'original_creation': original.id,
-                    'derivative_creation': creation.id,
-                    'allocation_type': a_original_relation['type']
-                }
-                CreationDerivative.create([_original])
-
-            # allocation_type of derivative-original relation has been changed?
-            if a_original_relation['mode'] == 'edit':
-
-                # find the derivative-original relation in the database and
-                # change the allocation_type, e.g. from 'remix' to 'cover'
-                existing_original_relation = CreationDerivative.search_by_oid(
-                        a_original_relation['oid'])
-                if not existing_original_relation:
-                    continue
-                existing_original_relation.allocation_type = (
-                    a_original_relation['type'])
-
-                # create foreign creation
-                if a_original['mode'] == "create":
-                    original = Creation.create_foreign(
-                        party,
-                        a_original['artist'],
-                        a_original['titlefield']
-                    )
-                    if not original:
-                        continue
-                else:  # add (including edit) foreign creation
-                    original = Creation.search_by_oid(a_original['oid'])
-                    if not original:
-                        continue
-                    # edit foreign creation
-                    if a_original['mode'] == "edit":
-                        # form data of foreign original changed?
-                        # if (original.artist.name != a_original['artist'] or
-                        #         original.title != a_original['titlefield']):
-                        if (
-                            not Creation.is_foreign_original(
-                                self.request,
-                                creation,
-                                original
-                            )
-                        ):
-                            self.request.session.flash(
-                                _(
-                                    u"Warning: You don't have permissions "
-                                    "to edit the original. Changes won't "
-                                    "take effekt."
-                                ),
-                                'main-alert-warning'
-                            )
+                else:
+                    # create foreign creation
+                    if a_derivation['mode'] == 'create':
+                        original = Creation.create_foreign(
+                            party,
+                            a_derivation['artist'],
+                            a_derivation['titlefield']
+                        )
+                        if not original:
                             continue
-                        original.artist.name = a_original['artist']
-                        original.artist.save()
-                        original.title = a_original['titlefield']
-                        original.save()
-
-                # save derivative-original relation
-                existing_original_relation.original_creation = original
-                existing_original_relation.save()
+                    else:  # add creation
+                        original = Creation.search_by_oid(a_derivation['oid'])
+                        if not original:
+                            # TODO: Userfeedback
+                            continue
+                    a_original = {
+                        'original_creation': original.id,
+                        'derivative_creation': creation.id,
+                        'allocation_type': derivation_type
+                    }
+                    CreationDerivative.create([a_original])
 
         # areas of exploitation / tariff categories / collecting societies 
         ctcs_to_delete = []  # collect necessary operations in list

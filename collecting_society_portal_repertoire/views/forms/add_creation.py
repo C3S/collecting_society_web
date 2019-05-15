@@ -24,7 +24,7 @@ from ...models import (
 from .datatables import (
     ContentSequence,
     ContributionSequence,
-    OriginalSequence,
+    CreationSequence,
     CreationTariffCategorySequence
 )
 
@@ -234,32 +234,27 @@ class AddCreation(FormController):
             CreationTariffCategory.create(ctcs_to_add)
 
         # add derivative-original relations
-        # relations can be of allocation type 'adaption', 'cover', or 'remix'
         # (objects starting with a_ relate to form data provided by appstruct)
-        for a_original_relation in a['originals']['originals']:
-            a_original = a_original_relation['original'][0]
-
-            # new derivative-original relation to create?
-            if a_original_relation['mode'] == 'create':
-
+        for derivation_type in [ 'adaption', 'cover', 'remix' ]:
+            for a_derivation in a['derivation'][derivation_type]:
                 # create foreign creation
-                if a_original['mode'] == 'create':
+                if a_derivation['mode'] == 'create':
                     original = Creation.create_foreign(
                         party,
-                        a_original['artist'],
-                        a_original['titlefield']
+                        a_derivation['artist'],
+                        a_derivation['titlefield']
                     )
                     if not original:
                         continue
                 else:  # add creation
-                    original = Creation.search_by_oid(a_original['oid'])
+                    original = Creation.search_by_oid(a_derivation['oid'])
                     if not original:
                         # TODO: Userfeedback
                         continue
                 _original = {
                     'original_creation': original.id,
                     'derivative_creation': creation.id,
-                    'allocation_type': a_original_relation['type']
+                    'allocation_type': derivation_type
                 }
                 CreationDerivative.create([_original])
 
@@ -444,10 +439,12 @@ class ContributionsSchema(colander.Schema):
     contributions = ContributionSequence(title="", min_len=1)
 
 
-class OriginalsSchema(colander.Schema):
+class DerivationSchema(colander.Schema):
     title = _(u"Derivation")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    originals = OriginalSequence(title="")
+    adaption = CreationSequence(title="Adaption of")
+    cover = CreationSequence(title="Cover of")
+    remix = CreationSequence(title="Remix of")
 
 
 class ContentSchema(colander.Schema):
@@ -468,7 +465,7 @@ class AddCreationSchema(colander.Schema):
     areas = deferred_areas_schema_node
     #areas = AreasSchema()
     contributions = ContributionsSchema()
-    originals = OriginalsSchema()
+    derivation = DerivationSchema()
     content = ContentSchema()
     lyrics = LyricsSchema()
 
