@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-04-16 16:11+0200\n"
+"POT-Creation-Date: 2019-05-17 16:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,7 +89,7 @@ msgid "Dashboard"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/includes.py:239
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:345
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:451
 msgid "Files"
 msgstr ""
 
@@ -199,13 +199,13 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/release/add.pt:23
 #: ./collecting_society_portal_repertoire/templates/release/edit.pt:23
 #: ./collecting_society_portal_repertoire/templates/profile/edit.pt:20
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:372
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:480
 #: ./collecting_society_portal_repertoire/views/forms/edit_artist.py:232
 #: ./collecting_society_portal_repertoire/views/forms/edit_release.py:408
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:477
 #: ./collecting_society_portal_repertoire/views/forms/add_artist.py:205
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:192
-#: ./collecting_society_portal_repertoire/views/forms/edit_creation.py:522
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:194
+#: ./collecting_society_portal_repertoire/views/forms/edit_creation.py:477
 msgid "Submit"
 msgstr ""
 
@@ -275,7 +275,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/track_sequence.pt:45
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:53
 #: ./collecting_society_portal_repertoire/templates/file/show.pt:181
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:326
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:411
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:425
 #: ./collecting_society_portal_repertoire/views/forms/datatables/creation_sequence.py:92
 msgid "Title"
@@ -298,7 +298,7 @@ msgid "Styles"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:87
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:333
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:437
 msgid "Contributions"
 msgstr ""
 
@@ -378,8 +378,8 @@ msgid "Content"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/creation/show.pt:305
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:351
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:353
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:457
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:459
 #: ./collecting_society_portal_repertoire/views/api/datatables/content.py:103
 msgid "Lyrics"
 msgstr ""
@@ -431,7 +431,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/profile/show.pt:36
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:359
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:375
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:179
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:181
 msgid "Email"
 msgstr ""
 
@@ -537,7 +537,7 @@ msgstr ""
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/creation_sequence.pt:9
 #: ./collecting_society_portal_repertoire/templates/release/show.pt:77
 #: ./collecting_society_portal_repertoire/templates/file/show.pt:174
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:327
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:412
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:422
 msgid "Artist"
 msgstr ""
@@ -564,7 +564,6 @@ msgid "Neighbouring Rights Society"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/deform/datatables/creation_tariff_category_sequence.pt:9
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:329
 msgid "Tariff Category"
 msgstr ""
 
@@ -869,13 +868,13 @@ msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/profile/show.pt:26
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:372
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:177
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:179
 msgid "Firstname"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/templates/profile/show.pt:31
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:373
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:178
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:180
 msgid "Lastname"
 msgstr ""
 
@@ -903,23 +902,16 @@ msgstr ""
 msgid "Creation deleted: ${crct} (${crco})"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/frontend.py:71
+#: ./collecting_society_portal_repertoire/views/frontend.py:77
 msgid "Your email verification was successful."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/frontend.py:81
+#: ./collecting_society_portal_repertoire/views/frontend.py:87
 msgid "Your email verification was not successful (wrong validation code)."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/frontend.py:89
-#: ./collecting_society_portal_repertoire/views/backend.py:99
+#: ./collecting_society_portal_repertoire/views/frontend.py:95
 msgid "Your email verification was not successful (no validation code)."
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/views/backend.py:88
-msgid ""
-"Your email verification was successful. Now login with your new email "
-"address!"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/file.py:94
@@ -1023,32 +1015,55 @@ msgid ""
 " we are finished processing your files."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:202
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:211
 #, python-format
 msgid "Creation could not be added:  ${crct}"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:242
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:263
 #, python-format
 msgid "Creation added:  ${crct} (${crco})"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:274
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:295
 #, python-format
 msgid "Content file ${coco} is already assigned to creation ${crco}."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:282
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:303
 msgid ""
 "Only one uploaded content file for each file type (audio and sheet music)."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:324
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:321
+msgid "Duplicate contribution found."
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:348
+msgid "Areas"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:352
+msgid ""
+"Assign areas of exploitation the C3S will cover for this song. In case you "
+"are also a member of another collecting society, that handles different "
+"areas, please assign those areas to it, too. Changes made will take effect on"
+" the beginning of the next accounting period."
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:373
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:53
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:61
+#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:67
+msgid "None"
+msgstr ""
+
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:409
 #: ./collecting_society_portal_repertoire/views/forms/add_release.py:465
 msgid "Metadata"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:339
+#: ./collecting_society_portal_repertoire/views/forms/add_creation.py:443
 msgid "Derivation"
 msgstr ""
 
@@ -1157,7 +1172,7 @@ msgid ""
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/forms/register_webuser.py:278
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:111
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:113
 msgid "Please enter your name."
 msgstr ""
 
@@ -1220,48 +1235,36 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:87
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:89
 #, python-format
 msgid "Profile changed for: ${name}"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:96
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:98
 #, python-format
 msgid ""
 "Profile changed for: ${name} -- activation email for new email address sent. "
 "Please check your (new) email inbox."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:125
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:127
 msgid "Email address already taken"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:181
+#: ./collecting_society_portal_repertoire/views/forms/edit_profile.py:183
 msgid "Password (leave empty if you don't want to change it)"
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_creation.py:349
+#: ./collecting_society_portal_repertoire/views/forms/edit_creation.py:357
 msgid ""
 "Warning: A Creation cannot be the original of it self. If you do an adaption "
 "of a creation, you need to create a new creation in order to be able to refer"
 " to it as an original."
 msgstr ""
 
-#: ./collecting_society_portal_repertoire/views/forms/edit_creation.py:418
-msgid ""
-"Warning: You don't have permissions to edit the original. Changes won't take "
-"effekt."
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/views/forms/edit_creation.py:495
+#: ./collecting_society_portal_repertoire/views/forms/edit_creation.py:450
 #, python-format
 msgid "Creation edited: ${crct} (${crco})"
-msgstr ""
-
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:53
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:61
-#: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:67
-msgid "None"
 msgstr ""
 
 #: ./collecting_society_portal_repertoire/views/forms/datatables/contribution_sequence.py:93
