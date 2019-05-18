@@ -58,7 +58,8 @@
                                     and file.processing_state != 'uploaded' 
                                     and file.processing_state != 'rejected'
                                     and file.processing_state != 'deleted'
-                                    and file.processing_state != 'unknown'">
+                                    and file.processing_state != 'unknown'
+                                    and file.name[-4:].lower() != '.pdf'">
                                 <div class="btn-group" role="group">
                                     <a href="${request.resource_path(
                                                 context, '..', 'creations', 'add'

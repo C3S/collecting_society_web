@@ -151,8 +151,8 @@ def web_registry(config):
                 'name': _(u'survey'),
                 'page': 'survey'},
             {
-                'name': _(u'buggers'),
-                'page': 'buggers'},
+                'name': _(u'bug hunters'),
+                'page': 'bughunters'},
             {
                 'name': _(u'caution'),
                 'page': 'caution'},

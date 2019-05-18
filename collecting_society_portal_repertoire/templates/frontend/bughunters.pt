@@ -2,7 +2,7 @@
       Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
 <tal:block i18n:domain="collecting_society_portal_repertoire">
 
-    <h1 i18n:translate="">Buggers</h1>
+    <h1 i18n:translate="">Bug Hunters</h1>
 
     <p>
         Natürlich haben wir für Euch überall im System Bugs versteckt. Damit wir
