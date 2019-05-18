@@ -2,6 +2,7 @@
 # Repository: https://github.com/C3S/collecting_society.portal.repertoire
 
 import logging
+import uuid
 
 from pyramid.security import (
     remember,
@@ -71,7 +72,7 @@ def verify_email_helper(the_class):
                 if web_user.new_email:
                     web_user.email = web_user.new_email
                     web_user.new_email = ''
-            web_user.opt_in_uuid = ''
+            web_user.opt_in_uuid = unicode(uuid.uuid4())  # invalidate uuid
             web_user.save()
             the_class.request.session.flash(
                 _(u"Your email verification was successful."),
