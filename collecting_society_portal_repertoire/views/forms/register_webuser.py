@@ -330,6 +330,13 @@ class LastnameField(colander.SchemaNode):
 class BirthdateField(colander.SchemaNode):
     oid = "birthdate"
     schema_type = colander.Date
+    widget = deform.widget.DateInputWidget(
+        options={'selectMonths': True,
+                 'formatSubmit': "yyyy-mm-dd",
+                 'selectYears': 200,
+                 'format': 'yyyy-mm-dd'}
+    )
+
     validator = colander.Function(right_age)
 
 
