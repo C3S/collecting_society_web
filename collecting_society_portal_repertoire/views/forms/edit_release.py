@@ -61,7 +61,6 @@ class EditRelease(FormController):
                     release.warning or '',
             },
             'tracks': {
-                'tracks': []
             },
             'production': {
                 'isrc_code':
@@ -106,28 +105,35 @@ class EditRelease(FormController):
                 })
 
         # tracks
+        # filtered_tracks = Track.search_by_release_and_medium_number(
+        #     release.id, medium)
         tracks = sorted(release.tracks, key=lambda t: t.track_number)
         log.debug(tracks)
         for track in tracks:
+            if not 'medium'+str(track.medium_number) in self.appstruct[
+                    'tracks']:
+                self.appstruct['tracks']['medium'+str(track.medium_number)] = [
+                    ]
             creation_mode = "add"
             if Creation.is_foreign_track(
                     self.request, release, track.creation):
                 creation_mode = "edit"
-            self.appstruct['tracks']['tracks'].append({
-                'mode': "edit",
-                'oid': track.oid,
-                'track_title': track.title,
-                'license': track.license.oid,
-                # TODO: 'medium_number': track.medium_number,
-                # TODO: 'track_number': track.track_number,
-                'track': [{
-                    'mode': creation_mode,
-                    'oid': track.creation.oid,
-                    'code': track.creation.code,
-                    'titlefield': track.creation.title,
-                    'artist': track.creation.artist.name
-                }]
-            })
+            self.appstruct['tracks']['medium'+str(track.medium_number)].append(
+                {
+                    'mode': "edit",
+                    'oid': track.oid,
+                    'track_title': track.title,
+                    'license': track.license.oid,
+                    # TODO: 'medium_number': track.medium_number,
+                    # TODO: 'track_number': track.track_number,
+                    'track': [{
+                        'mode': creation_mode,
+                        'oid': track.creation.oid,
+                        'code': track.creation.code,
+                        'titlefield': track.creation.title,
+                        'artist': track.creation.artist.name
+                    }]
+                })
 
         # publisher
         if release.publisher:
@@ -225,89 +231,91 @@ class EditRelease(FormController):
             _release['artists'] = [['remove', _remove]]
 
         # tracks
-        _tracks = appstruct['tracks']['tracks']
-        if _tracks:
-            tracks_create = []
-            tracks_delete = list(release.tracks)
-            for track_number, _track in enumerate(_tracks):
-                _creation = _track['track'][0]
-                license = License.search_by_oid(_track['license'])
-                if not license:
-                    continue
-
-                # create track
-                if _track['mode'] == "create":
-                    # create foreign creation
-                    if _creation['mode'] == "create":
-                        creation = Creation.create_foreign(
-                            party,
-                            _creation['artist'],
-                            _creation['titlefield']
-                        )
-                        if not creation:
-                            continue
-                    # add creation
-                    else:
-                        creation = Creation.search_by_oid(_creation['oid'])
-                        if not creation:
-                            continue
-                    # append track
-                    tracks_create.append({
-                        'creation': creation.id,
-                        'title': _track['track_title'],
-                        'medium_number': 0,  # TODO
-                        'track_number': track_number + 1,
-                        'license': license.id
-                        })
-
-                # edit track
-                if _track['mode'] == "edit":
-                    track = Track.search_by_oid(_track['oid'])
-                    if not track:
+        _release['tracks'] = []
+        tracks_create = []
+        tracks_delete = list(release.tracks)
+        for _medium in range(1, 10):
+            _tracks = appstruct['tracks']['medium'+str(_medium)]
+            if _tracks:
+                for track_number, _track in enumerate(_tracks):
+                    _creation = _track['track'][0]
+                    license = License.search_by_oid(_track['license'])
+                    if not license:
                         continue
-                    if track in tracks_delete:
-                        tracks_delete.remove(track)
-                    # create foreign creation
-                    if _creation['mode'] == "create":
-                        creation = Creation.create_foreign(
-                            party,
-                            _creation['artist'],
-                            _creation['titlefield']
-                        )
-                        if not creation:
-                            continue
-                    else:  # add (including edit) foreign creation
-                        creation = Creation.search_by_oid(_creation['oid'])
-                        if not creation:
-                            continue
-                        # edit foreign creation
-                        if _creation['mode'] == "edit":
-                            if not creation.permits(web_user, 'edit_creation'):
-                                self.request.session.flash(
-                                    _(u"Warning: You don't have permissions "
-                                      "to edit the track. Changes won't take "
-                                      "effekt."),
-                                    'main-alert-warning'
-                                )
-                                continue
-                            creation.artist.name = _creation['artist']
-                            creation.artist.save()
-                            creation.title = _creation['titlefield']
-                            creation.save()
-                    # update track
-                    track.creation = creation.id
-                    track.license = license.id
-                    track.title = _track['track_title']
-                    track.medium_number = 0  # TODO
-                    track.track_number = track_number + 1
-                    track.save()
 
-            # append actions
-            _release['tracks'] = []
-            if tracks_create:
-                _release['tracks'].append(('create', tracks_create))
-            if tracks_delete:
-                _release['tracks'].append(('delete', tracks_delete))
+                    # create track
+                    if _track['mode'] == "create":
+                        # create foreign creation
+                        if _creation['mode'] == "create":
+                            creation = Creation.create_foreign(
+                                party,
+                                _creation['artist'],
+                                _creation['titlefield']
+                            )
+                            if not creation:
+                                continue
+                        # add creation
+                        else:
+                            creation = Creation.search_by_oid(_creation['oid'])
+                            if not creation:
+                                continue
+                        # append track
+                        tracks_create.append({
+                            'creation': creation.id,
+                            'title': _track['track_title'],
+                            'medium_number': _medium,
+                            'track_number': track_number + 1,
+                            'license': license.id
+                            })
+
+                    # edit track
+                    if _track['mode'] == "edit":
+                        track = Track.search_by_oid(_track['oid'])
+                        if not track:
+                            continue
+                        if track in tracks_delete:
+                            tracks_delete.remove(track)
+                        # create foreign creation
+                        if _creation['mode'] == "create":
+                            creation = Creation.create_foreign(
+                                party,
+                                _creation['artist'],
+                                _creation['titlefield']
+                            )
+                            if not creation:
+                                continue
+                        else:  # add (including edit) foreign creation
+                            creation = Creation.search_by_oid(_creation['oid'])
+                            if not creation:
+                                continue
+                            # edit foreign creation
+                            if _creation['mode'] == "edit":
+                                if not creation.permits(web_user,
+                                                        'edit_creation'):
+                                    self.request.session.flash(
+                                        _(u"Warning: You don't have "
+                                          "permissions to edit the track. "
+                                          "Changes won't take effekt."),
+                                        'main-alert-warning'
+                                    )
+                                    continue
+                                creation.artist.name = _creation['artist']
+                                creation.artist.save()
+                                creation.title = _creation['titlefield']
+                                creation.save()
+                        # update track
+                        track.creation = creation.id
+                        track.license = license.id
+                        track.title = _track['track_title']
+                        track.medium_number = _medium
+                        track.track_number = track_number + 1
+                        track.save()
+
+        # append actions
+        if tracks_create:
+            _release['tracks'].append(('create', tracks_create))
+        if tracks_delete:
+            _release['tracks'].append(('delete', tracks_delete))
 
         # label
         _label = next(iter(appstruct['distribution']['label']), None)
