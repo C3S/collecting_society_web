@@ -136,22 +136,9 @@
                 <td>
                     <div tal:repeat="track release.tracks"
                          class="cs-list-item">
-                        <a tal:attributes="href request.resource_path(
-                                           context, '..', '..', 'creations',
-                                           track.creation.code)"
-                           tal:omit-tag="not track.creation.permits(
-                                         request.web_user, 'view_creation')">
-                            <img class="img-responsive cs-img-inline"
-                                 src="${request.static_path(
-                                        'collecting_society_portal_repertoire:'
-                                        'static/img/element-icon-songs-green.png')}"/></a>
-                        <a tal:attributes="href request.resource_path(
-                                           context, '..', '..', 'creations',
-                                           track.creation.code)"
-                           tal:omit-tag="not track.creation.permits(
-                                         request.web_user, 'view_creation')">
-                            ${track.title}
-                        </a>
+                            ${track.medium_number} - 
+                            ${track.track_number}
+                            <small>${track.title}</small>
                     </div>
                 </td>
             </tr>
