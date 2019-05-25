@@ -108,7 +108,6 @@ class EditRelease(FormController):
         # filtered_tracks = Track.search_by_release_and_medium_number(
         #     release.id, medium)
         tracks = sorted(release.tracks, key=lambda t: t.track_number)
-        log.debug(tracks)
         for track in tracks:
             if not 'medium'+str(track.medium_number) in self.appstruct[
                     'tracks']:

@@ -40,6 +40,7 @@ class AddCreation(FormController):
 
     def controller(self):
         self.form = add_creation_form(self.request)
+        self.render()
         if self.submitted():
             if self.validate():
                 self.create_creation()

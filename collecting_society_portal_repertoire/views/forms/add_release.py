@@ -40,6 +40,7 @@ class AddRelease(FormController):
 
     def controller(self):
         self.form = add_release_form(self.request)
+        self.render()
         if self.submitted() and self.validate():
             self.create_release()
         return self.response
