@@ -95,31 +95,6 @@ class AddCreation(FormController):
             'entity_creator': party,
         }
 
-        # creation tariff categories
-        #_ctcs = a['metadata']['tariff_categories']
-        #if _ctcs:
-        #    ctc_create = []
-        #    # create creation tariff categories
-        #    for _ctc in _ctcs:
-        #        if _ctc['mode'] != "create":
-        #            continue
-        #        tariff_category = TariffCategory.search_by_oid(
-        #            _ctc['category'])
-        #        if not tariff_category:
-        #            continue
-        #        collecting_society = CollectingSociety.search_by_oid(
-        #            _ctc['collecting_society'])
-        #        if not collecting_society:
-        #            continue
-        #        ctc_create.append({
-        #            'category': tariff_category.id,
-        #            'collecting_society': collecting_society.id
-        #            })
-        #    # append actions
-        #    _creation['tariff_categories'] = []
-        #    if ctc_create:
-        #        _creation['tariff_categories'].append(('create', ctc_create))
-
         # contributions
         _contributions = self.appstruct['contributions']['contributions']
         if _contributions:
@@ -183,7 +158,7 @@ class AddCreation(FormController):
                 #     if (item['artist'][0].id == create['artist'].id and
                 #         item['role'] == create['role']):
                 #         dupe_found = True
-                #         break                        
+                #         break
                 # append contribution
                 # if not dupe_found:
                 contributions_create.append(create)
@@ -217,14 +192,15 @@ class AddCreation(FormController):
             return
         creation = creations[0]
 
-        # areas of exploitation / tariff categories / collecting societies 
+        # areas of exploitation / tariff categories / collecting societies
         ctcs_to_add = []  # to minimize number of tryton calls
         tcats = TariffCategory.search_all()
-        for tcat in tcats: # for each tariff category
+        for tcat in tcats:  # for each tariff category
             collecting_soc_oid_new = a['areas']['tariff_category_'+tcat.code]
             # add collecting society association for this tariff category
             if collecting_soc_oid_new:
-                collecting_society = CollectingSociety.search_by_oid(collecting_soc_oid_new)
+                collecting_society = CollectingSociety.search_by_oid(
+                    collecting_soc_oid_new)
                 if collecting_society:
                     ctcs_to_add.append({
                             'creation': creation.id,
@@ -236,7 +212,7 @@ class AddCreation(FormController):
 
         # add derivative-original relations
         # (objects starting with a_ relate to form data provided by appstruct)
-        for derivation_type in [ 'adaption', 'cover', 'remix' ]:
+        for derivation_type in ['adaption', 'cover', 'remix']:
             for a_derivation in a['derivation'][derivation_type]:
                 # create foreign creation
                 if a_derivation['mode'] == 'create':
@@ -304,7 +280,7 @@ def validate_content(node, values, **kwargs):  # multifield validator
         raise colander.Invalid(node, _(u"Only one uploaded content file "
                                        "for each file type (audio and sheet "
                                        "music)."))
-    
+
     # look for dupes in contributions
     contributions = values['contributions']['contributions']
     reduced_contributions = []
@@ -335,6 +311,7 @@ def current_artists_select_widget(node, kw):
     widget = deform.widget.Select2Widget(values=artist_options)
     return widget
 
+
 @colander.deferred
 def deferred_areas_schema_node(node, kw):
     schema = colander.SchemaNode(
@@ -344,12 +321,12 @@ def deferred_areas_schema_node(node, kw):
         name="areas",
         widget=deform.widget.MappingWidget(template='navs/mapping'),
         description=_(u"Assign areas of exploitation the C3S "
-                    "will cover for this song. In case you are "
-                    "also a member of another collecting society, "
-                    "that handles different areas, "
-                    "please assign those areas to it, too. "
-                    "Changes made will take effect on the beginning "
-                    "of the next accounting period.")
+                      "will cover for this song. In case you are "
+                      "also a member of another collecting society, "
+                      "that handles different areas, "
+                      "please assign those areas to it, too. "
+                      "Changes made will take effect on the beginning "
+                      "of the next accounting period.")
     )
     values = [('', '')] + [
         (tc.oid, tc.name) for tc in CollectingSociety.search(
@@ -372,6 +349,7 @@ def deferred_areas_schema_node(node, kw):
     return schema
 
 # --- Fields ------------------------------------------------------------------
+
 
 class TitleField(colander.SchemaNode):
     oid = "title"
@@ -398,7 +376,7 @@ class MetadataSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_(u"Title"))
     artist = ArtistField(title=_(u"Artist"))
-    
+
 
 class ContributionsSchema(colander.Schema):
     title = _(u"Contributions")
