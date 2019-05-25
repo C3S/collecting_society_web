@@ -321,6 +321,30 @@ class Content(Tdb):
         return result[0]
 
     @classmethod
+    def search_by_creation_and_category(cls, creation_id, category):
+        """
+        Searches a content by creation id and content category.
+
+        Args:
+            creation_id (int): Id of the creation.
+            category (strint): e.g. 'audio' oder 'sheet'
+
+        Returns:
+            obj (content): Content.
+            None: If no match is found.
+        """
+        if creation_id is None:
+            return None
+        result = cls.get().search([
+            ('active', '=', True),
+            ('creation', '=', creation_id),
+            ('category', '=', category)
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_extension(cls, extension):
         """
         Searches a content by extension.

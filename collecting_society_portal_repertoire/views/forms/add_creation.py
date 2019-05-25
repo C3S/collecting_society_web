@@ -69,7 +69,7 @@ class AddCreation(FormController):
             meta_artist = Artist.search_by_name(content.metadata_artist)
             if meta_artist:
                 self.appstruct['metadata']['artist'] = meta_artist[0].id
-            self.appstruct['content']['content'] = [{
+            self.appstruct['content']['audio'] = [{
                 'code': content.code,
                 'category': content.category,
                 'mode': "add",
@@ -169,12 +169,15 @@ class AddCreation(FormController):
                     ('create', contributions_create))
 
         # content
-        if a['content']['content']:
-            _creation['content'] = []
-            for content_listenty in a['content']['content']:
-                content = Content.search_by_code(content_listenty['code'])
-                if content:
-                    _creation['content'].append(('add', [content.id]))
+        _creation['content'] = []
+        for content_type in ['audio', 'sheet']:
+            if a['content'][content_type]:
+                for content_listenty in a['content'][content_type]:
+                    content = Content.search_by_code(content_listenty['code'])
+                    if not content.permits(web_user, 'edit_content'):
+                        continue
+                    if content:
+                        _creation['content'].append(('add', [content.id]))
 
         # create creation
         creations = Creation.create([_creation])
@@ -253,17 +256,15 @@ def validate_content(node, values, **kwargs):  # multifield validator
 
     # Content.search_by_id()
     request = node.bindings["request"]
-    contents = values["content"]["content"]
+    contents = values["content"]["audio"] + values["content"]["sheet"]
     if contents == [] or None:
         return
         # raise colander.Invalid(node, _(
         #     u"Please assign a uploaded file to this creation"))
-    audio_count = 0
-    sheet_count = 0
     edit_creation_code = getattr(request.context, 'code', None)
     for content_listenty in contents:
         c = Content.search_by_code(content_listenty['code'])
-        if c.creation:  # selected content is already assigned some creation
+        if c.creation:  # selected content is already assigned to some creation
             crco = c.creation.code  # creation code of content_listenty
             if (edit_creation_code is None or  # either in Add Creation or
                     edit_creation_code != crco):    # in Edit Creation and code
@@ -271,14 +272,6 @@ def validate_content(node, values, **kwargs):  # multifield validator
                     node, _(u"Content file ${coco} is "
                             "already assigned to creation ${crco}.",
                             mapping={'coco': c.code, 'crco': crco}))
-        if c.category == 'audio':
-            audio_count = audio_count + 1
-        if c.category == 'sheet':
-            sheet_count = sheet_count + 1
-    if audio_count > 1 or sheet_count > 1:
-        raise colander.Invalid(node, _(u"Only one uploaded content file "
-                                       "for each file type (audio and sheet "
-                                       "music)."))
 
     # look for dupes in contributions
     contributions = values['contributions']['contributions']
@@ -394,7 +387,10 @@ class DerivationSchema(colander.Schema):
 class ContentSchema(colander.Schema):
     title = _(u"Files")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    content = ContentSequence(title="", actions=['add'])
+    audio = ContentSequence(title=_("Audio Files"), actions=['add'],
+                            max_len=1, category='audio')
+    sheet = ContentSequence(title=_("Sheet Music Files"),
+                            actions=['add'], max_len=1, category='sheet')
 
 
 class LyricsSchema(colander.Schema):

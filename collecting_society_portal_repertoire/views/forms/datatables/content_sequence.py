@@ -40,8 +40,6 @@ def content_sequence_widget(node, kw):
         _(u'Name', 'collecting_society_portal_repertoire'))
     kw.get('request').code_translation = get_localizer(kw.get('request')).translate(
         _(u'Code', 'collecting_society_portal_repertoire'))
-    kw.get('request').category_translation = get_localizer(kw.get('request')).translate(
-        _(u'Category', 'collecting_society_portal_repertoire'))
     return DatatableSequenceWidget(
         request=kw.get('request'),
         template='datatables/content_sequence'
@@ -98,7 +96,6 @@ class ContentSchema(colander.Schema):
     oid = OidField()
     name = NameField()
     code = CodeField()
-    category = CategoryField()
     preparer = [prepare_required]
     title = ""
 

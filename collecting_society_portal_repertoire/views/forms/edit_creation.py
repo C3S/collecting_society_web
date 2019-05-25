@@ -149,20 +149,22 @@ class EditCreation(FormController):
 
         # content files that are assigned to the creation
         if creation.content:
-            _contentfiles = []
+            self.appstruct['content'] = {}            
+            _contentfiles = {}
             for contentfile in creation.content:
-                _contentfiles.append(
+                if contentfile.category not in _contentfiles:
+                    _contentfiles[contentfile.category] = []
+                _contentfiles[contentfile.category].append(
                     {
                         'mode': 'add',
                         'oid': contentfile.oid,
                         'code': contentfile.code,
-                        'name': contentfile.name,
-                        'category': contentfile.category
+                        'name': contentfile.name
                     }
                 )
-            self.appstruct['content'] = {
-                'content': _contentfiles
-            }
+            for contenttype in _contentfiles.keys():
+                self.appstruct['content'][contenttype] = \
+                    _contentfiles[contenttype]
 
         # render form with init data
         self.render(self.appstruct)
@@ -348,16 +350,16 @@ class EditCreation(FormController):
         # add new derivative-original relations or perform edits there
         # relations can be of allocation type 'adaption', 'cover', or 'remix'
         # (objects starting with a_ relate to form data provided by appstruct)
-        for derivation_type in [ 'adaption', 'cover', 'remix' ]:
+        for derivation_type in ['adaption', 'cover', 'remix']:
             for a_derivation in a['derivation'][derivation_type]:
 
                 # sanity checks
                 if a_derivation['code'] == creation.code:  # original of self?
                     self.request.session.flash(
                         _(u"Warning: A Creation cannot be the original of it self."
-                        " If you do an adaption of a creation, you need to "
-                        "create a new creation in order to be able to refer to "
-                        "it as an original."),
+                          " If you do an adaption of a creation, you need to "
+                          "create a new creation in order to be able to refer to "
+                          "it as an original."),
                         'main-alert-warning'
                     )
                 else:
@@ -423,22 +425,15 @@ class EditCreation(FormController):
 
         # content
         contents_to_add = []
-        for content_item in self.appstruct['content']['content']:
-            content = Content.search_by_oid(content_item['oid'])
-            if content:
-                # content = Content.search_by_code(content_item['code'])
-                # sanity checks
-                # TODO: maybe something like this:
-                # # is not the webusers content and wasn't there before?
-                # if web_user.party != content.entity_creator:  # skip it!
-                #     if content not in creation.content:
-                #         self.request.session.flash(
-                #             _(u"Content couldn't be added: ") + content.title,
-                #             'main-alert-warning'
-                #         )
-                #         continue
-                # Alex: better: content.permits(web_user, 'edit_content')
-                contents_to_add.append(content)
+        for contenttype in self.appstruct['content'].keys():
+            if self.appstruct['content'][contenttype]:
+                content_new = self.appstruct['content'][contenttype][0]
+                content_to_add = Content.search_by_oid(content_new['oid'])
+                if not content_to_add:
+                    continue
+                if not content_to_add.permits(web_user, 'edit_content'):
+                    continue
+                contents_to_add.append(content_to_add)
         creation.content = contents_to_add
 
         # update creation

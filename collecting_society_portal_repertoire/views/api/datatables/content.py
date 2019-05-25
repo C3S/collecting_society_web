@@ -6,6 +6,7 @@ import logging
 from pyramid.security import NO_PERMISSION_REQUIRED
 from cornice import Service
 from cornice.validators import colander_body_validator
+import colander
 
 from collecting_society_portal.models import Tdb
 
@@ -29,7 +30,7 @@ log = logging.getLogger(__name__)
 # --- schemas -----------------------------------------------------------------
 
 class ContentDatatablesSchema(DatatablesSchema):
-    pass
+    category = colander.SchemaNode(colander.String(), missing="")
 
 
 # --- service: content -------------------------------------------------------
@@ -80,6 +81,8 @@ def post_content(request):
         if column['name'] == 'category':
             search = Tdb.escape(column['search']['value'], wrap=True)
             domain.append(('category', 'ilike', search))
+    if 'category' in data:
+        domain.append(('category', '=', data['category']))
     # order
     order = []
     for _order in data['order']:
@@ -91,7 +94,12 @@ def post_content(request):
         if name == 'category':
             order.append(('category', _order['dir']))
     # statistics
-    total_domain = []
+    total_domain = [
+        ('entity_creator', '=', request.web_user.party.id),  # only own
+        ('creation', '=', None)                              # only orphaned
+    ]
+    if 'category' in data:
+        total_domain.append(('category', '=', data['category']))    
     total = Content.search_count(total_domain)
     filtered = Content.search_count(domain)
     # localization
