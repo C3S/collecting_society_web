@@ -113,39 +113,37 @@ class AddRelease(FormController):
 
         # tracks
         tracks_create = []
-        for _medium in range(1, 10):
-            _tracks = appstruct['tracks']['medium'+str(_medium)]
-            if _tracks:
-                for track_number, _track in enumerate(_tracks):
-                    _creation = _track['track'][0]
-                    license = License.search_by_oid(_track['license'])
-                    if not license:
-                        continue
+        for _medium in appstruct['tracks']['media']:
+            for track_number, _track in enumerate(_medium):
+                _creation = _track['track'][0]
+                license = License.search_by_oid(_track['license'])
+                if not license:
+                    continue
 
-                    # create track
-                    if _track['mode'] == "create":
-                        # create creation
-                        if _creation['mode'] == "create":
-                            creation = Creation.create_foreign(
-                                party,
-                                _creation['artist'],
-                                _creation['titlefield']
-                            )
-                            if not creation:
-                                continue
-                        # add creation
-                        else:
-                            creation = Creation.search_by_oid(_creation['oid'])
-                            if not creation:
-                                continue
-                        # append track
-                        tracks_create.append({
-                            'creation': creation.id,
-                            'title': _track['track_title'],
-                            'medium_number': _medium,
-                            'track_number': track_number + 1,
-                            'license': license.id
-                            })
+                # create track
+                if _track['mode'] == "create":
+                    # create creation
+                    if _creation['mode'] == "create":
+                        creation = Creation.create_foreign(
+                            party,
+                            _creation['artist'],
+                            _creation['titlefield']
+                        )
+                        if not creation:
+                            continue
+                    # add creation
+                    else:
+                        creation = Creation.search_by_oid(_creation['oid'])
+                        if not creation:
+                            continue
+                    # append track
+                    tracks_create.append({
+                        'creation': creation.id,
+                        'title': _track['track_title'],
+                        'medium_number': _medium,
+                        'track_number': track_number + 1,
+                        'license': license.id
+                        })
 
         # append actions
         _release['tracks'] = []
@@ -431,18 +429,18 @@ class MetadataSchema(colander.Schema):
     picture = PictureField(title=_(u"Picture"))
 
 
+class MediaSequence(colander.SequenceSchema):
+    title = ""
+    description = _(u"Please add a medium, then add some tracks.")
+    track_sequence = TrackSequence(title=_(u"Medium"), min_len=1,
+                                   language_overrides={
+                                       "custom": {"create": _(u"Add Track")}
+                                   })
+
+
 class TracksSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    medium1 = TrackSequence(title="Medium 1", actions=['create', 'edit'])
-    medium2 = TrackSequence(title="Medium 2", actions=['create', 'edit'])
-    medium3 = TrackSequence(title="Medium 3", actions=['create', 'edit'])
-    medium4 = TrackSequence(title="Medium 4", actions=['create', 'edit'])
-    medium5 = TrackSequence(title="Medium 5", actions=['create', 'edit'])
-    medium6 = TrackSequence(title="Medium 6", actions=['create', 'edit'])
-    medium7 = TrackSequence(title="Medium 7", actions=['create', 'edit'])
-    medium8 = TrackSequence(title="Medium 8", actions=['create', 'edit'])
-    medium9 = TrackSequence(title="Medium 9", actions=['create', 'edit'])
-    medium10 = TrackSequence(title="Medium 10", actions=['create', 'edit'])
+    media = MediaSequence(actions=['create', 'edit'])
 
 
 class ProductionSchema(colander.Schema):

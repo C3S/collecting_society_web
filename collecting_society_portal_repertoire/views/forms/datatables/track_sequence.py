@@ -11,6 +11,7 @@ from collecting_society_portal.views.forms.datatables import (
     DatatableSequenceWidget
 )
 
+from ....services import _
 from ....models import License
 from . import CreationSequence
 
@@ -37,7 +38,8 @@ def track_sequence_widget(node, kw):
     return DatatableSequenceWidget(
         request=kw.get('request'),
         template='datatables/track_sequence',
-        item_template='datatables/track_sequence_item'
+        item_template='datatables/track_sequence_item',
+        language_overrides=getattr(node, "language_overrides", {})
     )
 
 
@@ -106,6 +108,7 @@ class TrackSchema(colander.Schema):
 
 
 class TrackSequence(DatatableSequence):
+    # title = _(u"Tracks")
     track_sequence = TrackSchema()
     widget = track_sequence_widget
     actions = ['create', 'edit']
