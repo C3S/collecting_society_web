@@ -61,6 +61,7 @@ class EditRelease(FormController):
                     release.warning or '',
             },
             'tracks': {
+                'media': []
             },
             'production': {
                 'isrc_code':
@@ -105,34 +106,36 @@ class EditRelease(FormController):
                 })
 
         # tracks
-        # filtered_tracks = Track.search_by_release_and_medium_number(
-        #     release.id, medium)
-        tracks = sorted(release.tracks, key=lambda t: t.track_number)
-        for track in tracks:
-            if not 'medium'+str(track.medium_number) in self.appstruct[
-                    'tracks']:
-                self.appstruct['tracks']['medium'+str(track.medium_number)] = [
-                    ]
-            creation_mode = "add"
-            if Creation.is_foreign_track(
-                    self.request, release, track.creation):
-                creation_mode = "edit"
-            self.appstruct['tracks']['medium'+str(track.medium_number)].append(
-                {
-                    'mode': "edit",
-                    'oid': track.oid,
-                    'track_title': track.title,
-                    'license': track.license.oid,
-                    # TODO: 'medium_number': track.medium_number,
-                    # TODO: 'track_number': track.track_number,
-                    'track': [{
-                        'mode': creation_mode,
-                        'oid': track.creation.oid,
-                        'code': track.creation.code,
-                        'titlefield': track.creation.title,
-                        'artist': track.creation.artist.name
-                    }]
-                })
+        m = []
+        for t in release.tracks:  # get list of medium numbers from all tracks
+            m.append(t.medium_number)
+        media_numbers = sorted(list(set(m)), key=lambda m: m)
+        for medium in media_numbers:
+            tracks = sorted(release.tracks, key=lambda t: t.track_number)
+            a_tracklist = []
+            for track in tracks:
+                if track.medium_number == medium:
+                    creation_mode = "add"
+                    if Creation.is_foreign_track(
+                            self.request, release, track.creation):
+                        creation_mode = "edit"
+                    a_tracklist.append(
+                        {
+                            'mode': "edit",
+                            'oid': track.oid,
+                            'track_title': track.title,
+                            'license': track.license.oid,
+                            # TODO: 'medium_number': track.medium_number,
+                            # TODO: 'track_number': track.track_number,
+                            'track': [{
+                                'mode': creation_mode,
+                                'oid': track.creation.oid,
+                                'code': track.creation.code,
+                                'titlefield': track.creation.title,
+                                'artist': track.creation.artist.name
+                            }]
+                        })
+            self.appstruct['tracks']['media'].append(a_tracklist)
 
         # publisher
         if release.publisher:
