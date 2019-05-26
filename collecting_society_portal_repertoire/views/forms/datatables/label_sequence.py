@@ -9,6 +9,8 @@ from collecting_society_portal.views.forms.datatables import (
     DatatableSequenceWidget
 )
 
+from ....models import Label
+
 
 def prepare_ignored(value):
     # workaround for conditinally required fields, as form validators are not
@@ -27,9 +29,28 @@ def prepare_required(value):
 
 @colander.deferred
 def label_sequence_widget(node, kw):
+    # get initial source data
+    source_data = []
+    domain = []
+    labels = Label.search(
+        domain=domain,
+        offset=0,
+        limit=10,
+        order=[('name', 'asc')])
+    for label in labels:
+        source_data.append({
+            'oid': label.oid,
+            'gvl_code': label.gvl_code,
+            'name': label.name})
+    # get statistics
+    total_domain = []
+    total = Label.search_count(total_domain)
+    # return widget
     return DatatableSequenceWidget(
         request=kw.get('request'),
-        template='datatables/label_sequence'
+        template='datatables/label_sequence',
+        source_data=source_data,
+        source_data_total=total
     )
 
 

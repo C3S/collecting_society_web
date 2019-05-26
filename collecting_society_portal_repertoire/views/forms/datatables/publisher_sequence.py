@@ -9,6 +9,8 @@ from collecting_society_portal.views.forms.datatables import (
     DatatableSequenceWidget
 )
 
+from ....models import Publisher
+
 
 def prepare_ignored(value):
     # workaround for conditinally required fields, as form validators are not
@@ -27,9 +29,27 @@ def prepare_required(value):
 
 @colander.deferred
 def publisher_sequence_widget(node, kw):
+    # get initial source data
+    source_data = []
+    domain = []
+    publishers = Publisher.search(
+        domain=domain,
+        offset=0,
+        limit=10,
+        order=[('name', 'asc')])
+    for publisher in publishers:
+        source_data.append({
+            'oid': publisher.oid,
+            'name': publisher.name})
+    # get statistics
+    total_domain = []
+    total = Publisher.search_count(total_domain)
+    # return widget
     return DatatableSequenceWidget(
         request=kw.get('request'),
-        template='datatables/publisher_sequence'
+        template='datatables/publisher_sequence',
+        source_data=source_data,
+        source_data_total=total
     )
 
 

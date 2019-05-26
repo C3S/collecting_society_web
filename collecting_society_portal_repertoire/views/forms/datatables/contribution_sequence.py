@@ -16,7 +16,9 @@ from ....models import (
     CollectingSociety,
     CreationRole
 )
+
 from . import ArtistSequence
+from ....models import Creation
 
 log = logging.getLogger(__name__)
 
@@ -38,10 +40,30 @@ def prepare_required(value):
 
 @colander.deferred
 def contribution_sequence_widget(node, kw):
+    # get initial source data
+    source_data = []
+    domain = []
+    creations = Creation.search(
+        domain=domain,
+        offset=0,
+        limit=10,
+        order=[('title', 'asc')])
+    for creation in creations:
+        source_data.append({
+            'oid': creation.oid,
+            'titlefield': creation.title,
+            'artist': creation.artist.name,
+            'code': creation.code})
+    # get statistics
+    total_domain = []
+    total = Creation.search_count(total_domain)
+    # return widget
     return DatatableSequenceWidget(
         request=kw.get('request'),
         template='datatables/contribution_sequence',
-        item_template='datatables/contribution_sequence_item'
+        item_template='datatables/contribution_sequence_item',
+        source_data=source_data,
+        source_data_total=total
     )
 
 

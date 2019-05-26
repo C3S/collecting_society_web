@@ -11,7 +11,10 @@ from collecting_society_portal.views.forms.datatables import (
     DatatableSequenceWidget
 )
 
-from ....models import License
+from ....models import (
+    License,
+    Creation
+)
 from . import CreationSequence
 
 log = logging.getLogger(__name__)
@@ -34,10 +37,29 @@ def prepare_required(value):
 
 @colander.deferred
 def track_sequence_widget(node, kw):
+    # get initial source data
+    source_data = []
+    domain = []
+    creations = Creation.search(
+        domain=domain,
+        offset=0,
+        limit=10,
+        order=[('title', 'asc')])
+    for creation in creations:
+        source_data.append({
+            'oid': creation.oid,
+            'titlefield': creation.title,
+            'artist': creation.artist.name,
+            'code': creation.code})
+    # get statistics
+    total_domain = []
+    total = Creation.search_count(total_domain)
     return DatatableSequenceWidget(
         request=kw.get('request'),
         template='datatables/track_sequence',
-        item_template='datatables/track_sequence_item'
+        item_template='datatables/track_sequence_item',
+        source_data=source_data,
+        source_data_total=total
     )
 
 

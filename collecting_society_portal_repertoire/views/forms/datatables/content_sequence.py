@@ -5,13 +5,15 @@ import logging
 
 import colander
 import deform
+from pyramid.i18n import get_localizer
 
 from collecting_society_portal.views.forms.datatables import (
     DatatableSequence,
     DatatableSequenceWidget
 )
+
 from ....services import _
-from pyramid.i18n import get_localizer, TranslationString
+from ....models import Content
 
 log = logging.getLogger(__name__)
 
@@ -36,13 +38,54 @@ def prepare_required(value):
 
 @colander.deferred
 def content_sequence_widget(node, kw):
-    kw.get('request').name_translation = get_localizer(kw.get('request')).translate(
-        _(u'Name', 'collecting_society_portal_repertoire'))
-    kw.get('request').code_translation = get_localizer(kw.get('request')).translate(
-        _(u'Code', 'collecting_society_portal_repertoire'))
+    request = kw.get('request')
+    # translation strings
+    request.name_translation = get_localizer(
+        request).translate(
+            _(u'Name', 'collecting_society_portal_repertoire'))
+    request.code_translation = get_localizer(
+        request).translate(
+            _(u'Code', 'collecting_society_portal_repertoire'))
+    locale = get_localizer(request)
+    locale_domain = 'collecting_society_portal_repertoire'
+    content_category = {
+        'audio': locale.translate(_(u'Audio', locale_domain)),
+        'sheet': locale.translate(_(u'Sheet Music', locale_domain)),
+        'lyrics': locale.translate(_(u'Lyrics', locale_domain)),
+    }
+    # get initial source data
+    source_data = []
+    domain = [
+        ('entity_creator', '=', request.web_user.party.id),  # only own
+        ('creation', '=', None)                              # only orphaned
+    ]
+    if getattr(node, 'category', None):
+        domain.append(('category', '=', node.category))
+    contents = Content.search(
+        domain=domain,
+        offset=0,
+        limit=10,
+        order=[('name', 'asc')])
+    for content in contents:
+        source_data.append({
+            'oid': content.oid,
+            'name': content.name,
+            'code': content.code,
+            'category': content_category[content.category]})
+    # get statistics
+    total_domain = [
+        ('entity_creator', '=', request.web_user.party.id),  # only own
+        ('creation', '=', None)                              # only orphaned
+    ]
+    if getattr(node, 'category', None):
+        total_domain.append(('category', '=', node.category))
+    total = Content.search_count(total_domain)
+    # return widget
     return DatatableSequenceWidget(
-        request=kw.get('request'),
-        template='datatables/content_sequence'
+        request=request,
+        template='datatables/content_sequence',
+        source_data=source_data,
+        source_data_total=total
     )
 
 

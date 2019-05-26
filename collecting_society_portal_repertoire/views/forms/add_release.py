@@ -423,7 +423,7 @@ class MetadataSchema(colander.Schema):
     release_type = ReleaseTypeField(title=_(u"Release Type"))
     artist = ArtistField(title=_(u"Artist"))
     split_artists = SplitArtistSequence(
-        title=_(u"Split Artists"), actions=['add'])
+        title=_(u"Split Artists"), actions=['add'], group=True)
     release_title = ReleaseTitleField(title=_(u"Title"))
     genres = GenreCheckboxField(title=_(u"Genres"))
     styles = StyleCheckboxField(title=_(u"Styles"))

@@ -11,6 +11,8 @@ from collecting_society_portal.views.forms.datatables import (
     DatatableSequenceWidget
 )
 
+from ....models import Artist
+
 log = logging.getLogger(__name__)
 
 
@@ -37,9 +39,33 @@ def prepare_required(value):
 
 @colander.deferred
 def artist_sequence_widget(node, kw):
+    # get initial source data
+    source_data = []
+    domain = []
+    if getattr(node, 'group', None):
+        domain.append(('group', '=', node.group))
+    artists = Artist.search(
+        domain=domain,
+        offset=0,
+        limit=10,
+        order=[('name', 'asc')])
+    for artist in artists:
+        source_data.append({
+            'name': artist.name,
+            'code': artist.code,
+            'oid': artist.oid,
+            'description': artist.description})
+    # get statistics
+    total_domain = []
+    if getattr(node, 'group', None):
+        total_domain.append(('group', '=', node.group))
+    total = Artist.search_count(total_domain)
+    # return widget
     return DatatableSequenceWidget(
         request=kw.get('request'),
-        template='datatables/artist_sequence'
+        template='datatables/artist_sequence',
+        source_data=source_data,
+        source_data_total=total
     )
 
 
