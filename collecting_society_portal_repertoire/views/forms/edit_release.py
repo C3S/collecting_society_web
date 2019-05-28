@@ -236,10 +236,9 @@ class EditRelease(FormController):
         _release['tracks'] = []
         tracks_create = []
         tracks_delete = list(release.tracks)
-        for _medium in range(1, 10):
-            _tracks = appstruct['tracks']['medium'+str(_medium)]
-            if _tracks:
-                for track_number, _track in enumerate(_tracks):
+        for medium_number, _medium in enumerate(appstruct['tracks']['media']):
+            if _medium:
+                for track_number, _track in enumerate(_medium):
                     _creation = _track['track'][0]
                     license = License.search_by_oid(_track['license'])
                     if not license:
@@ -265,7 +264,7 @@ class EditRelease(FormController):
                         tracks_create.append({
                             'creation': creation.id,
                             'title': _track['track_title'],
-                            'medium_number': _medium,
+                            'medium_number': medium_number + 1,
                             'track_number': track_number + 1,
                             'license': license.id
                             })
@@ -309,7 +308,7 @@ class EditRelease(FormController):
                         track.creation = creation.id
                         track.license = license.id
                         track.title = _track['track_title']
-                        track.medium_number = _medium
+                        track.medium_number = medium_number + 1
                         track.track_number = track_number + 1
                         track.save()
 

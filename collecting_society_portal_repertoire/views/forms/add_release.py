@@ -113,37 +113,38 @@ class AddRelease(FormController):
 
         # tracks
         tracks_create = []
-        for _medium in appstruct['tracks']['media']:
-            for track_number, _track in enumerate(_medium):
-                _creation = _track['track'][0]
-                license = License.search_by_oid(_track['license'])
-                if not license:
-                    continue
+        for medium_number, _medium in enumerate(appstruct['tracks']['media']):
+            if _medium:
+                for track_number, _track in enumerate(_medium):
+                    _creation = _track['track'][0]
+                    license = License.search_by_oid(_track['license'])
+                    if not license:
+                        continue
 
-                # create track
-                if _track['mode'] == "create":
-                    # create creation
-                    if _creation['mode'] == "create":
-                        creation = Creation.create_foreign(
-                            party,
-                            _creation['artist'],
-                            _creation['titlefield']
-                        )
-                        if not creation:
-                            continue
-                    # add creation
-                    else:
-                        creation = Creation.search_by_oid(_creation['oid'])
-                        if not creation:
-                            continue
-                    # append track
-                    tracks_create.append({
-                        'creation': creation.id,
-                        'title': _track['track_title'],
-                        'medium_number': _medium,
-                        'track_number': track_number + 1,
-                        'license': license.id
-                        })
+                    # create track
+                    if _track['mode'] == "create":
+                        # create creation
+                        if _creation['mode'] == "create":
+                            creation = Creation.create_foreign(
+                                party,
+                                _creation['artist'],
+                                _creation['titlefield']
+                            )
+                            if not creation:
+                                continue
+                        # add creation
+                        else:
+                            creation = Creation.search_by_oid(_creation['oid'])
+                            if not creation:
+                                continue
+                        # append track
+                        tracks_create.append({
+                            'creation': creation.id,
+                            'title': _track['track_title'],
+                            'medium_number': medium_number + 1,
+                            'track_number': track_number + 1,
+                            'license': license.id
+                            })
 
         # append actions
         _release['tracks'] = []
