@@ -89,6 +89,7 @@ class RegisterWebuser(LoginWebuser):
             self.form = register_nonmember_form()
         else:
             self.form = register_nonmember_form()
+        self.render(self.data)
 
         # register webuser
         if self.submitted('register_webuser') and self.validate():

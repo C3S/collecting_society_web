@@ -26,6 +26,7 @@ class TestWebUser(IntegrationTestBase):
         formid = 'RegisterWebuser'
         form = DeformFormObject(self.cli, claims_membership_form(), formid)
         form.claims_membership()
+        self.screenshot()
         form = DeformFormObject(self.cli, register_nonmember_form(), formid)
         form.firstname.set('Firstname')
         form.lastname.set('Lastname')
@@ -51,6 +52,7 @@ class TestWebUser(IntegrationTestBase):
         self.screenshot()
         self.assertIn("User mail address not verified", self.cli.page_source)
 
+    @Tdb.transaction()
     def test_030_validate_user_registration(self):
         """
         validate user registration succeeds and logs user in

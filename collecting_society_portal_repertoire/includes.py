@@ -139,7 +139,7 @@ def web_registry(config):
             api_key=settings['api.c3smembership.api_key'])
         # top menue
         reg['menues']['top'] = []
-        if reg['services']['c3smembership'].is_connected():  
+        if reg['services']['c3smembership'].is_connected():
             reg['menues']['top'] += [
                 {
                     'name': _(u'register'),
