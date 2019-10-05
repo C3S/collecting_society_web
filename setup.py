@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
-# Repository: https://github.com/C3S/collecting_society.portal.repertoire
+# Repository: https://github.com/C3S/collecting_society_web
 
 import os
 from setuptools import setup, find_packages
 
-MODULE = 'collecting_society_portal_repertoire'
+MODULE = 'collecting_society_web'
 PREFIX = 'c3s'
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -15,7 +15,7 @@ with open(os.path.join(here, 'CHANGELOG.rst')) as f:
     CHANGELOG = f.read()
 
 requires = [
-    '%s_collecting_society_portal' % (PREFIX),
+    '%s_portal_web' % (PREFIX),
     'requests',
 ]
 
@@ -23,7 +23,7 @@ setup(
     name='%s_%s' % (PREFIX, MODULE),
     version='0.2',
     description=(
-        'Plugin for collecting_society.portal including: Repertoire'
+        'Collecting Society Portal'
     ),
     long_description=README + '\n\n' + CHANGELOG,
     classifiers=[
@@ -47,7 +47,7 @@ setup(
     license='AGPL-3',
     author='Alexander Blum',
     author_email='alexander.blum@c3s.cc',
-    url='https://github.com/C3S/collecting_society.portal.repertoire',
+    url='https://github.com/C3S/collecting_society_web',
     keywords='web pyramid pylons collecting society',
     packages=find_packages(),
     include_package_data=True,

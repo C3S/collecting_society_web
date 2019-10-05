@@ -1,0 +1,32 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block i18n:domain="collecting_society_web">
+
+    <h1 i18n:translate="">Contact</h1>
+
+    <p i18n:translate="">Cultural Commons Collecting Society SCE mit beschränkter Haftung (C3S SCE)</p>
+
+    <p>
+        <span i18n:translate="">Representatives</span>:<br />
+        Julian Tillmann<br />
+        Meik Michalke
+    </p>
+
+    <p>
+        <span i18n:translate="">Rochusstr. 44</span><br />
+        <span i18n:translate="">40479 Düsseldorf</span><br />
+        <span i18n:translate="">Germany</span>
+    </p>
+
+    <p>
+        <span i18n:translate="">Email</span>: ( info )at( c3s.cc )<br />
+        <span i18n:translate="">OpenPGP Public Key</span>:<br />
+        084A 1D48 A31B C872 DEF5 BB6C D647 F126 4C4E CD7F
+    </p>
+
+    <p>
+        <span i18n:translate="">Phone</span>: +49 211 280 10 700<br />
+        <span i18n:translate="">Fax</span>: +49 211 280 10 709
+    </p>
+
+</tal:block>

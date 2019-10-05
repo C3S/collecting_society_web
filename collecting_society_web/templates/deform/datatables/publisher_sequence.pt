@@ -1,0 +1,27 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            apiPath: "publisher",
+            unique: false,
+            columns: [
+                {
+                    name: "name",
+                    title: "${_('Name')}",
+                    data: "name",
+                    className: "all",
+                    orderable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: true,
+                        createShow: true,
+                    }
+                },
+            ],
+        };
+    </script>
+
+</tal:block>

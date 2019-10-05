@@ -1,0 +1,39 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            apiPath: "label",
+            unique: false,
+            columns: [
+                {
+                    name: "name",
+                    title: "${_('Name')}",
+                    data: "name",
+                    className: "all",
+                    orderable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: true,
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "gvl_code",
+                    title: "${_('Code')}",
+                    data: "gvl_code",
+                    orderable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'HiddenWidget',
+                        footerSearch: true,
+                    }
+                },
+            ],
+        };
+    </script>
+
+</tal:block>

@@ -1,0 +1,168 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend39" i18n:domain="collecting_society_web">
+
+    <tal:block metal:fill-slot="content-right">
+
+        <form id="fileupload" action="${url}/upload" method="POST" enctype="multipart/form-data">
+
+            <h1 class="cs-form-header" i18n:translate="">Upload</h1>
+
+            <!-- navigation -->
+            <div class="btn-toolbar cs-form-controls" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a href="${request.resource_path(context)}"
+                       class="btn btn-default" role="button"
+                       i18n:translate="">Overview</a>
+                    <span class="btn btn-primary fileinput-button">
+                        <span i18n:translate="">Add</span>
+                        <input type="file" name="files[]" multiple>
+                    </span>
+                </div>
+                <div class="btn-group fileupload-buttonbar" role="group">
+                    <button type="submit" class="btn btn-default start">
+                        <span i18n:translate="">Start</span>
+                    </button>
+                    <button type="reset" class="btn btn-default cancel">
+                        <span i18n:translate="">Cancel</span>
+                    </button>
+                </div>
+                <div class="cs-allowed-filetypes pull-right">
+                    <span tal:repeat="extension extensions"
+                          class="label label-default">${extension}</span>
+                </div>
+            </div>
+
+            <!-- progress state -->
+            <div class="container-fluid">
+                <div class="fileupload-progress">
+                    <!-- progress bar -->
+                    <div class="progress progress-striped active" role="progressbar"
+                         aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar progress-bar-success"></div>
+                    </div>
+                    <!-- extended progress state -->
+                    <div class="progress-extended">&nbsp;</div>
+                </div>
+            </div>
+
+            <!-- data container -->
+            <div id="data" class="hidden" data-url="${url}"
+                 data-extensions="${'\|'.join(extensions)}"></div>
+
+            <!-- content -->
+            <div class="cs-fileupload-content">
+                <!-- files -->
+                <div class="container-fluid">
+                    <div class="table-responsiv">
+                        <table role="presentation"
+                               class="table table-condensed cs-table-upload">
+                            <tbody class="files"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+        <!-- template: upload -->
+        <script id="template-upload" type="text/x-tmpl">
+        {% for (var i=0, file; file=o.files[i]; i++) { %}
+            <tr class="template-upload cs-upload-item">
+                <td>
+                    <div class="name h4">
+                        {%=file.name%}
+                        <div i18n:translate="" class="size badge">
+                            Processing...
+                        </div>
+                        <div class="btn-toolbar pull-right cs-upload-item-controls"
+                             role="toolbar">
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-default start" disabled>
+                                    <span i18n:translate="">Start</span>
+                                </button>
+                                {% if (!i) { %}
+                                    <button class="btn btn-sm btn-default cancel">
+                                        <span i18n:translate="">Cancel</span>
+                                    </button>
+                                {% } %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="toolbar">
+                        <div class="progress progress-striped active"
+                             role="progressbar" aria-valuemin="0"
+                             aria-valuemax="100" aria-valuenow="0">
+                            <div class="progress-bar progress-bar-success"
+                                 style="width:0%;">
+                            </div>
+                        </div>
+                        <strong class="error text-danger"></strong>
+                    </div>
+                    {% if(file.type === "application/pdf") { %}
+                        <div class="nopreview" i18n:translate="">No preview</div>
+                    {% } else { %}
+                        <div class="preview"></div>
+                    {% } %}
+                </td>
+            </tr>
+        {% } %}
+        </script>
+
+        <!-- template: panel -->
+        <script id="template-alert" type="text/x-tmpl">
+            <div class="alert alert-{%=o.class%}" role="alert">
+                <div class="cs-alert-content">
+                    <span class="cs-upload-text">
+                        {% if (o.file.error) { %}
+                            <span i18n:translate="">
+                                Upload failed.
+                            </span>
+                        {% } %}
+                        {% if (!o.file.error) { %}
+                            <span i18n:translate="">
+                                Upload was succesfull.
+                            </span>
+                        {% } %}
+                    </span>
+                </div>
+            </div>
+        </script>
+
+        <!-- template: download -->
+        <script id="template-download" type="text/x-tmpl">
+        {% for (var i=0, file; file=o.files[i]; i++) { %}
+            <tr class="template-download cs-download-item fade">
+                <td>
+                    <div class="name h4">
+                        {%=file.name%}
+                        <span i18n:translate="" class="size badge">
+                            {%=o.formatFileSize(file.size)%}
+                        </span>
+                    </div>
+                    {% include('template-alert', {
+                        file: file,
+                        class: file.error ? 'danger' : 'success',
+                    }); %}
+                </td>
+            </tr>
+        {% } %}
+        </script>
+
+        <!-- prevent user from accidentally leaving the page while upload is in progress -->
+        <script>
+        window.onbeforeunload = function() {
+            if ($('#fileupload').fileupload('progress').loaded < $('#fileupload').fileupload('progress').total)
+                return 'There is an ongoing file upload, are you sure that you want to leave this page?';}
+        </script>
+
+        <!-- show start/cancel buttongroup -->
+        <script>
+        $('#fileupload').bind('fileuploadadd', function (e, data) {
+            $('.fileupload-buttonbar').show();
+        })
+        </script>
+
+    </tal:block>
+
+</tal:block>

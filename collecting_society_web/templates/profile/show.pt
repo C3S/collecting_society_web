@@ -1,0 +1,55 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend363"
+           i18n:domain="collecting_society_web">
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <h1 i18n:translate="">Profile</h1>
+
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="javascript: history.back(1);"
+                   class="btn btn-default cs-green" role="button">
+                    <span class="glyphicon glyphicon-arrow-left"></span></a>
+                <a href="${request.resource_path(context, 'edit')}"
+                   class="btn btn-primary" role="button"
+                   i18n:translate="">Edit</a>
+            </div>
+        </div>
+
+        <div class="table cs-table cs-table-show">
+            <table class="table table-hover">
+
+                <tr>
+                    <th i18n:translate="">Firstname</th>
+                    <td>${request.party.firstname or ""}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Lastname</th>
+                    <td>${request.party.lastname or ""}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Email</th>
+                    <td>${request.web_user.email or ""}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Birthdate</th>
+                    <td>${request.party.birthdate.strftime("%d.%m.%Y") or ""}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Create date</th>
+                    <td>${request.web_user.create_date.strftime("%d.%m.%Y") or ""}</td>
+                </tr>
+
+            </table>
+        </div>
+
+    </tal:block>
+
+</tal:block>

@@ -1,0 +1,74 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="frontend" i18n:domain="collecting_society_web">
+
+    <!-- top -->
+    <tal:block metal:fill-slot="top">
+
+        <!-- top menue -->
+        <tal:block metal:use-macro="m['navbar']"
+                   tal:define="name 'top'; style 'navbar-fixed-top'">
+            <tal:block metal:fill-slot="links">
+                <a tal:attributes="href '#'+menu.page">${menu.name}</a>
+            </tal:block>
+        </tal:block>
+
+    </tal:block>
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left">
+        
+        <div class="cs-widget">
+            <div class="h1 cs-widget-title">
+                Repertoire
+                <small>Testversion 1</small>
+            </div>
+            <div class="cs-widget-body">
+                Willkommen auf der Werkeverwaltung der C3S. Lizenzgeber können
+                hier ihre Künstler, Werke und Veröffentlichungen anmelden.
+            </div>
+        </div>
+
+    </tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <div class="visible-xs">
+            <h1 i18n:translate="">Login</h1>
+            <div class="cs-widget cs-widget-login">
+                <div tal:content="structure LoginWebuser"/>
+            </div>
+        </div>
+
+        <!-- static sites -->
+        <tal:block tal:repeat="menu context.registry['menues']['top']|None">
+            <a class="cs-anchor" name="${menu.page}"></a>
+            <div class="cs-page cs-page-${menu.page}">
+                <div metal:use-macro="load: ${menu.page}.pt"></div>
+            </div>
+        </tal:block>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right">
+
+        <!-- registry: language flags -->
+        <div tal:condition="context.registry['meta']['languages']|False"
+                class="cs-langflags">
+            <a tal:repeat="language context.registry['meta']['languages']"
+                tal:attributes="href '?_LOCALE_='+language['id']">
+                <img src="${language['icon']}"
+                        alt="${language['name']}"/>
+            </a>
+        </div>
+                    
+        <div class="cs-widget cs-widget-login hidden-xs">
+            <div class="h1 cs-widget-title" i18n:translate="">Login</div>
+            <div class="cs-widget-body" tal:content="structure LoginWebuser"/>
+        </div>
+
+    </tal:block>
+
+</tal:block>

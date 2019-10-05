@@ -3,7 +3,7 @@ Core Application
 
 ::
 
-    collecting_society.portal.repertoire - Web Portal plugin: Repertoire
+    collecting_society_web - Collecting Society Portal
 
     Copyright (C) 2014-2016 Cultural Commons Collecting Society SCE mit
                             beschränkter Haftung (C3S SCE)

@@ -1,0 +1,176 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend363"
+           i18n:domain="collecting_society_web"
+           tal:define="artist context.artist;
+                       creations artist.creations">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <h1>${artist.name}</h1>
+
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="${request.resource_path(context, '..')}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Artists</a>
+                <a href="${request.resource_path(context, 'edit')}"
+                   class="btn btn-primary" role="button"
+                   i18n:translate="">Edit</a>
+            </div>
+            <div class="btn-group cs-form-controls pull-right" role="group">
+                <a href="${request.resource_path(context, 'delete')}"
+                   class="btn btn-danger" role="button"
+                   i18n:translate="">Delete</a>
+            </div>
+        </div>
+
+        <table class="table cs-table cs-table-show">
+
+            <tr>
+                <td colspan="2">
+                    <img tal:condition="artist.picture_data"
+                         tal:define="pic h.b64encode(artist.picture_data) | None"
+                         class="img-responsive center-block"
+                         src="data:${artist.picture_data_mime_type};base64,${pic}" />
+                    <img tal:condition="not artist.picture_data and not artist.group"
+                         class="img-responsive center-block cs-defaultpic"
+                         src="${request.static_path(
+                                'collecting_society_web:'
+                                'static/img/element-icon-soloartists-green.png')}" />
+                    <img tal:condition="not artist.picture_data and artist.group"
+                         class="img-responsive center-block cs-defaultpic"
+                         src="${request.static_path(
+                                'collecting_society_web:'
+                                'static/img/element-icon-groupartists-green.png')}" />
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Name</th>
+                <td>${artist.name}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">C3S ID</th>
+                <td>${artist.code}</td>
+            </tr>
+
+            <tr tal:condition="artist.description">
+                <th i18n:translate="">Description</th>
+                <td>${artist.description}</td>
+            </tr>
+
+            <!-- <tr>
+                <th i18n:translate="">Group</th>
+                <td>
+                    <tal i18n:translate="" tal:condition="artist.group">Yes</tal>
+                    <tal i18n:translate="" tal:condition="not artist.group">No</tal>
+                </td>
+            </tr> -->
+
+            <tr tal:condition="artist.group">
+                <th i18n:translate="">Members</th>
+                <td>
+                    <div tal:repeat="solo_artist artist.solo_artists"
+                         class="cs-list-item">
+                        <a tal:attributes="href request.resource_path(
+                                           context, '..', solo_artist.code)"
+                           tal:omit-tag="not solo_artist.permits(
+                                         request.web_user, 'view_artist')">
+                            <img tal:condition="solo_artist.picture_data"
+                                 tal:define="pic h.b64encode(artist.picture_data) | None"
+                                 class="img-responsive cs-img-inline"
+                                 src="data:${artist.picture_data_mime_type};base64,${pic}"/>
+                            <img tal:condition="not solo_artist.picture_data"
+                                 class="img-responsive cs-img-inline"
+                                 src="${request.static_path(
+                                        'collecting_society_web:'
+                                        'static/img/element-icon-soloartists-green.png')}"/></a>
+                        <a tal:attributes="href request.resource_path(
+                                           context, '..', solo_artist.code)"
+                           tal:omit-tag="not solo_artist.permits(
+                                         request.web_user, 'view_artist')">
+                            ${solo_artist.name}
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr tal:condition="not artist.group and artist.group_artists">
+                <th i18n:translate="">Groups</th>
+                <td>
+                    <div tal:repeat="group_artist artist.group_artists"
+                         class="cs-list-item">
+                        <a tal:attributes="href request.resource_path(
+                                           context, '..', group_artist.code)"
+                           tal:omit-tag="not group_artist.permits(
+                                         request.web_user, 'view_artist')">
+                            <img tal:condition="group_artist.picture_data"
+                                 tal:define="pic h.b64encode(artist.picture_data) | None"
+                                 class="img-responsive cs-img-inline"
+                                 src="data:${artist.picture_data_mime_type};base64,${pic}"/>
+                            <img tal:condition="not group_artist.picture_data"
+                                 class="img-responsive cs-img-inline"
+                                 src="${request.static_path(
+                                        'collecting_society_web:'
+                                        'static/img/element-icon-groupartists-green.png')}"/></a>
+                        <a tal:attributes="href request.resource_path(
+                                           context, '..', group_artist.code)"
+                           tal:omit-tag="not group_artist.permits(
+                                         request.web_user, 'view_artist')">
+                            ${group_artist.name}
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr tal:condition="artist.releases">
+                <th i18n:translate="">Releases</th>
+                <td>
+                    <div tal:repeat="release artist.releases" class="cs-list-item">
+                        <a tal:attributes="href request.resource_path(
+                                                context, '..', '..', 'release', release.code)"
+                           tal:omit-tag="not release.permits(
+                                         request.web_user, 'view_release')">
+                            <img tal:condition="release.picture_data"
+                                 tal:define="pic h.b64encode(release.picture_data) | None"
+                                 class="img-responsive cs-img-inline"
+                                 src="data:${release.picture_data_mime_type};base64,${pic}"/>
+                            <img tal:condition="not release.picture_data"
+                                 class="img-responsive cs-img-inline"
+                                 src="${request.static_path(
+                                        'collecting_society_web:'
+                                        'static/img/element-icon-releases-green.png')}"/></a>
+                        <a tal:attributes="href request.resource_path(
+                                           context, '..', '..', 'releases', release.code)"
+                           tal:omit-tag="not release.permits(
+                                         request.web_user, 'view_release')">
+                            ${release.title}
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr tal:condition="creations">
+                <th i18n:translate="">Creations</th>
+                <td>${len(context.artist.creations)}</td>
+            </tr>
+
+            <!-- <tr tal:condition="contributions">
+                <th i18n:translate="">Contributions</th>
+                <td>$ {len(contributions)}</td>
+            </tr> -->
+
+        </table>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right"></tal:block>
+
+</tal:block>
