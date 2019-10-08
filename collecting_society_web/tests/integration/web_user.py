@@ -21,7 +21,7 @@ class TestWebUser(IntegrationTestBase):
         """
         registration registers user
         """
-        self.url()
+        self.url("gui", "/")
         self.screenshot()
         formid = 'RegisterWebuser'
         form = DeformFormObject(self.cli, claims_membership_form(), formid)
@@ -59,7 +59,7 @@ class TestWebUser(IntegrationTestBase):
         """
         webuser = WebUser.search_by_email('a@webuser.test')
         self.assertEqual(webuser.opt_in_state, "mail-sent")
-        self.url("verify_email/" + webuser.opt_in_uuid)
+        self.url("gui", "/verify_email/" + webuser.opt_in_uuid)
         self.screenshot()
         self.assertTrue(
             self.cli.find_elements_by_class_name('cs-backend')
@@ -69,7 +69,7 @@ class TestWebUser(IntegrationTestBase):
         """
         logout logs user out
         """
-        self.url('logout')
+        self.url("gui", "/logout")
         self.assertTrue(
             self.cli.find_elements_by_class_name('cs-frontend')
         )

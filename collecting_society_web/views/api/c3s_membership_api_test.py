@@ -87,8 +87,8 @@ echo = Service(
     name=_prefix + 'echo',
     path=_prefix + '/v1/echo',
     description="echo",
-    permission=NO_PERMISSION_REQUIRED,
-    environment='development'
+    permission=NO_PERMISSION_REQUIRED
+    # environment='development'
 )
 
 
@@ -121,8 +121,8 @@ is_member = Service(
     name=_prefix + 'is_member',
     path=_prefix + '/v1/is_member',
     description="is_member",
-    permission=NO_PERMISSION_REQUIRED,
-    environment='development'
+    permission=NO_PERMISSION_REQUIRED
+    # environment='development'
 )
 
 
@@ -161,8 +161,8 @@ generate_member_token = Service(
     name=_prefix + 'generate_member_token',
     path=_prefix + '/v1/generate_member_token',
     description="generate_member_token",
-    permission=NO_PERMISSION_REQUIRED,
-    environment='development'
+    permission=NO_PERMISSION_REQUIRED
+    # environment='development'
 )
 
 
@@ -220,8 +220,8 @@ search_member = Service(
     name=_prefix + 'search_member',
     path=_prefix + '/v1/search_member',
     description="search_member",
-    permission=NO_PERMISSION_REQUIRED,
-    environment='development'
+    permission=NO_PERMISSION_REQUIRED
+    # environment='development'
 )
 
 
