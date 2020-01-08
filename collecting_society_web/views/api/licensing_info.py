@@ -9,6 +9,19 @@ from cornice.service import get_services
 from cornice.validators import colander_body_validator
 from cornice_swagger.swagger import CorniceSwagger
 
+from ...services import _
+from ...models import (
+    CollectingSociety,
+    TariffCategory,
+    Artist,
+    Creation,
+    CreationContribution,
+    CreationDerivative,
+    CreationTariffCategory,
+    CreationRole,
+    Content
+)
+
 log = logging.getLogger(__name__)
 
 _prefix = 'repertoire'
@@ -48,9 +61,9 @@ class UserResource(object):
 # --- service: licensing ------------------------------------------------------
 
 licensing = Service(
-    name='value-test',
-    path='/values/{value}',
-    description="provide licensing information",
+    name='Creation',
+    path='/repertoire/creations/{c3s_code}',
+    description="provide licensing information about a creation",
     cors_enabled=True
 )
 
@@ -65,15 +78,43 @@ swagger = Service(name='OpenAPI',
 
 
 @licensing.get(permission=NO_PERMISSION_REQUIRED,
-               tags=['values'], response_schemas=response_schemas)
+               tags=['creations'], response_schemas=response_schemas)
 def get_value(request):
-    """Returns the value."""
-    key = request.matchdict['value']
-    return {'value': _VALUES.get(key)}
+    """Returns the properties of a specific creation."""
+    c3s_code = request.matchdict['c3s_code']
+    # iswc = request.matchdict['iswc']
+    # echoprint_fingerprint = request.matchdict['echoprint_fingerprint']
+    # artist = request.matchdict['artist']
+    # title = request.matchdict['title']
+
+    creation = Creation.search_by_code(c3s_code)
+    return {
+            'artist': creation.artist.name,
+            'title':  creation.title,
+            'lyrics': creation.lyrics,
+            'license': {
+                'name':    creation.license.name,
+                'code':    creation.license.code,
+                'version': creation.license.version,
+                'country': creation.license.country,
+                'link':    creation.license.link
+            },
+            'derivatives': [d.code for d in creation.derivative_relations],
+            'originals': [o.code for o in creation.original_relations],
+            'releases': [r.release.title for r in creation.releases],
+            'genres': [g.name for g in creation.genres],
+            'styles': [s.name for s in creation.styles],
+            'tariff_categories': [
+                {
+                    'name': t.name,
+                    'code': t.code,
+                    'description': t.description
+                } for t in creation.tariff_categories]
+           }
 
 
 @licensing.put(permission=NO_PERMISSION_REQUIRED,
-               tags=['values'],
+               tags=['creations'],
                validators=(colander_body_validator, ),
                schema=BodySchema(),
                response_schemas=response_schemas)
