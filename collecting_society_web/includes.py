@@ -32,6 +32,7 @@ from .resources import (
     ReleasesResource,
     CreationsResource,
     RepertoireResource,
+    UseworkResource,
     FilesResource,
     DebugC3sMembershipApiResource
 )
@@ -63,11 +64,14 @@ def web_resources(config):
     """
     BackendResource.add_child(ProfileResource)
     BackendResource.add_child(RepertoireResource)
+    BackendResource.add_child(UseworkResource)
 
     RepertoireResource.add_child(FilesResource)
     RepertoireResource.add_child(ArtistsResource)
     RepertoireResource.add_child(ReleasesResource)
     RepertoireResource.add_child(CreationsResource)
+
+    UseworkResource.add_child(FilesResource)
 
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
@@ -201,7 +205,11 @@ def web_registry(config):
             {
                 'name': _(u'Repertoire'), 'active': RepertoireResource,
                 'url':  self.request.resource_path(
-                            RepertoireResource(self.request), '')}
+                            RepertoireResource(self.request), '')},
+            {
+                'name': _(u'Use Work'), 'active': UseworkResource,
+                'url':  self.request.resource_path(
+                            UseworkResource(self.request), '')}
         ]
         # top menue
         reg['menues']['top'] = [

@@ -61,6 +61,27 @@ class RepertoireResource(ResourceBase):
     ]
 
 
+class UseworkResource(ResourceBase):
+    __parent__ = BackendResource
+    __name__ = "usework"
+    __acl__ = [
+        # add basic access for user with the role licenser
+        (Allow, 'licenser', (
+            'authenticated',
+            'list_artists',
+            'list_creations',
+            'list_releases',
+            'list_content',
+            'add_artist',
+            'add_creation',
+            'add_release',
+            'add_content',
+        )),
+        # prevent inheritance from backend resource
+        DENY_ALL
+    ]
+
+
 class ArtistsResource(ResourceBase):
     __parent__ = RepertoireResource
     __name__ = "artists"
