@@ -32,7 +32,7 @@ from .resources import (
     ReleasesResource,
     CreationsResource,
     RepertoireResource,
-    UseworkResource,
+    LicensingResource,
     FilesResource,
     DebugC3sMembershipApiResource
 )
@@ -64,14 +64,14 @@ def web_resources(config):
     """
     BackendResource.add_child(ProfileResource)
     BackendResource.add_child(RepertoireResource)
-    BackendResource.add_child(UseworkResource)
+    BackendResource.add_child(LicensingResource)
 
     RepertoireResource.add_child(FilesResource)
     RepertoireResource.add_child(ArtistsResource)
     RepertoireResource.add_child(ReleasesResource)
     RepertoireResource.add_child(CreationsResource)
 
-    UseworkResource.add_child(FilesResource)
+    LicensingResource.add_child(FilesResource)
 
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
@@ -200,17 +200,6 @@ def web_registry(config):
         # logo
         reg['static']['logo'] = self.request.static_path(
             'collecting_society_web:static/img/logo-c3s.png')
-        # main menue
-        reg['menues']['roles'] = [
-            {
-                'name': _(u'Repertoire'), 'active': RepertoireResource,
-                'url':  self.request.resource_path(
-                            RepertoireResource(self.request), '')},
-            {
-                'name': _(u'Use Work'), 'active': UseworkResource,
-                'url':  self.request.resource_path(
-                            UseworkResource(self.request), '')}
-        ]
         # top menue
         reg['menues']['top'] = [
             {
@@ -234,6 +223,26 @@ def web_registry(config):
                 'url':  self.request.resource_path(
                             BackendResource(self.request), 'logout')}
         ]
+        # main menue
+        reg['menues']['roles'] = [
+            {
+                'name': _(u'Repertoire'), 'active': RepertoireResource,
+                'url':  self.request.resource_path(
+                            RepertoireResource(self.request), '')},
+            {
+                'name': _(u'Licensing'), 'inactive': LicensingResource,
+                'url':  self.request.resource_path(
+                            LicensingResource(self.request), '')}
+        ]
+        # widgets content-right
+        reg['widgets']['content-right'] = [
+            # news_widget
+        ]
+        return reg
+
+    @RepertoireResource.extend_registry
+    def repertoire(self):
+        reg = self.dict()
         # main menue
         reg['menues']['main'] = [
             {
@@ -272,15 +281,7 @@ def web_registry(config):
                             'collecting_society_web:'
                             'static/img/element-icon-releases.png')},
         ]
-        # widgets content-right
-        reg['widgets']['content-right'] = [
-            # news_widget
-        ]
-        return reg
-
-    @RepertoireResource.extend_registry
-    def repertoire(self):
-        reg = self.dict()
+        # dashboard
         reg['widgets']['dashboard-central-widgets'] = [
             MissingArtistsWidget(self.request),
             MissingContentWidget(self.request),
@@ -290,6 +291,76 @@ def web_registry(config):
             # UncommitedContentWidget(self.request),
             UnprocessedContentWidget(self.request),
         ]
+        return reg
+
+    @LicensingResource.extend_registry
+    def licensing(self):
+        reg = self.dict()
+        # role menue
+        reg['menues']['roles'] = [
+            {
+                'name': _(u'Repertoire'), 'inactive': LicensingResource,
+                'url':  self.request.resource_path(
+                            RepertoireResource(self.request), '')},
+            {
+                'name': _(u'Licensing'), 'active': LicensingResource,
+                'url':  self.request.resource_path(
+                            LicensingResource(self.request), '')}
+        ]
+        # main menue
+        reg['menues']['main'] = [
+            {
+                'name': _(u'Dashboard'),
+                'url':  self.request.resource_path(
+                            LicensingResource(self.request), 'dashboard'),
+                'icon': self.request.static_path(
+                            'collecting_society_web:'
+                            'static/img/element-icon-dashboard.png')},
+            {
+                'name': _(u'Declarations'),
+                'url':  self.request.resource_path(
+                            FilesResource(self.request)),
+                'icon': self.request.static_path(
+                            'collecting_society_web:'
+                            'static/img/element-icon-upload.png')},
+            {
+                'name': _(u'Playlists'),
+                'url':  self.request.resource_path(
+                            ArtistsResource(self.request)),
+                'icon': self.request.static_path(
+                            'collecting_society_web:'
+                            'static/img/element-icon-soloartists.png')},
+            {
+                'name': _(u'Locations'),
+                'url':  self.request.resource_path(
+                            CreationsResource(self.request)),
+                'icon': self.request.static_path(
+                            'collecting_society_web:'
+                            'static/img/element-icon-songs.png')},
+            {
+                'name': _(u'Devices'),
+                'url':  self.request.resource_path(
+                            ReleasesResource(self.request)),
+                'icon': self.request.static_path(
+                            'collecting_society_web:'
+                            'static/img/element-icon-releases.png')},
+            {
+                'name': _(u'Accounting'),
+                'url':  self.request.resource_path(
+                            ReleasesResource(self.request)),
+                'icon': self.request.static_path(
+                            'collecting_society_web:'
+                            'static/img/element-icon-releases.png')},
+            {
+                'name': _(u'Statistics'),
+                'url':  self.request.resource_path(
+                            ReleasesResource(self.request)),
+                'icon': self.request.static_path(
+                            'collecting_society_web:'
+                            'static/img/element-icon-releases.png')},
+        ]
+        # dashboard
+        # ToDo
         return reg
 
     @FilesResource.extend_registry

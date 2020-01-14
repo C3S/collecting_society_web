@@ -38,7 +38,7 @@ valid = {
 }
 
 
-# --- Resources ---------------------------------------------------------------
+# --- Repertoire Resources ----------------------------------------------------
 
 class RepertoireResource(ResourceBase):
     __parent__ = BackendResource
@@ -61,28 +61,10 @@ class RepertoireResource(ResourceBase):
     ]
 
 
-class UseworkResource(ResourceBase):
-    __parent__ = BackendResource
-    __name__ = "usework"
-    __acl__ = [
-        # add basic access for user with the role licenser
-        (Allow, 'licenser', (
-            'authenticated',
-            'list_artists',
-            'list_creations',
-            'list_releases',
-            'list_content',
-            'add_artist',
-            'add_creation',
-            'add_release',
-            'add_content',
-        )),
-        # prevent inheritance from backend resource
-        DENY_ALL
-    ]
-
-
 class ArtistsResource(ResourceBase):
+    """
+    matches the webusers artists after clicking Artists in the Repertoire menu
+    """
     __parent__ = RepertoireResource
     __name__ = "artists"
     _write = ['add']
@@ -104,6 +86,9 @@ class ArtistsResource(ResourceBase):
 
 
 class ArtistResource(ModelResource):
+    """
+    matches a single artist after clicking one in Repertoire -> Artists
+    """
     __parent__ = ArtistsResource
     _write = ['edit', 'delete']
     _permit = ['view_artist', 'edit_artist', 'delete_artist']
@@ -123,6 +108,9 @@ class ArtistResource(ModelResource):
 
 
 class ReleasesResource(ResourceBase):
+    """
+    matches the webusers releases when clicking Releases in the Repertoire menu
+    """
     __parent__ = RepertoireResource
     __name__ = "releases"
     _write = ['add']
@@ -144,6 +132,9 @@ class ReleasesResource(ResourceBase):
 
 
 class ReleaseResource(ModelResource):
+    """
+    matches a single release after clicking one in Repertoire -> Release
+    """
     __parent__ = ReleasesResource
     _write = ['edit', 'delete']
     _permit = ['view_release', 'edit_release', 'delete_release']
@@ -163,6 +154,9 @@ class ReleaseResource(ModelResource):
 
 
 class CreationsResource(ResourceBase):
+    """
+    matches the webusers creations if clicking Creations in the Repertoire menu
+    """
     __parent__ = RepertoireResource
     __name__ = "creations"
     _write = ['add']
@@ -189,6 +183,9 @@ class CreationsResource(ResourceBase):
 
 
 class CreationResource(ModelResource):
+    """
+    matches a single creation after clicking one in Repertoire -> Creations
+    """
     __parent__ = CreationsResource
     _write = ['edit', 'delete']
     _permit = ['view_creation', 'edit_creation', 'delete_creation']
@@ -208,6 +205,9 @@ class CreationResource(ModelResource):
 
 
 class FilesResource(ResourceBase):
+    """
+    matches the webusers files after clicking Files in the Repertoire menu
+    """
     __parent__ = RepertoireResource
     __name__ = "files"
     _write = ['add']
@@ -229,6 +229,9 @@ class FilesResource(ResourceBase):
 
 
 class FileResource(ModelResource):
+    """
+    matches a single file after clicking one in Repertoire -> Files
+    """
     __parent__ = FilesResource
     _write = ['delete']
     _permit = ['view_content', 'delete_content']
@@ -250,3 +253,23 @@ class FileResource(ModelResource):
 class DebugC3sMembershipApiResource(ResourceBase):
     __parent__ = DebugResource
     __name__ = "membership"
+
+
+# --- Licensing Resources -----------------------------------------------------
+
+
+class LicensingResource(ResourceBase):
+    __parent__ = BackendResource
+    __name__ = "licensing"
+    __acl__ = [
+        # add basic access for user with the role licensee
+        (Allow, 'licensee', (
+            'authenticated',
+            'list_devices',
+            'add_device',
+        )),
+        # prevent inheritance from backend resource
+        DENY_ALL
+    ]
+
+
