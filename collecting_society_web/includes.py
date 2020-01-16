@@ -322,42 +322,42 @@ def web_registry(config):
                             FilesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
-                            'static/img/element-icon-upload.png')},
+                            'static/img/phoenix_icon_cart.svg')},
             {
                 'name': _(u'Playlists'),
                 'url':  self.request.resource_path(
                             ArtistsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
-                            'static/img/element-icon-soloartists.png')},
+                            'static/img/phoenix_icon_presentation.svg')},
             {
                 'name': _(u'Locations'),
                 'url':  self.request.resource_path(
                             CreationsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
-                            'static/img/element-icon-songs.png')},
+                            'static/img/phoenix_icon_store.svg')},
             {
                 'name': _(u'Devices'),
                 'url':  self.request.resource_path(
                             ReleasesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
-                            'static/img/element-icon-releases.png')},
+                            'static/img/phoenix_icon_diagram.svg')},
             {
                 'name': _(u'Accounting'),
                 'url':  self.request.resource_path(
                             ReleasesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
-                            'static/img/element-icon-releases.png')},
+                            'static/img/phoenix_icon_notes.svg')},
             {
                 'name': _(u'Statistics'),
                 'url':  self.request.resource_path(
                             ReleasesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
-                            'static/img/element-icon-releases.png')},
+                            'static/img/phoenix_icon_graph.svg')},
         ]
         # dashboard
         # ToDo
