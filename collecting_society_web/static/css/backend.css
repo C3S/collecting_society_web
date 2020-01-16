@@ -105,6 +105,18 @@ h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bott
 .cs-content-left .cs-menue-roles > li > a:hover,
 .cs-content-left .cs-menue-roles > li > a:visited { color:#fff; background-color:transparent; border:none!important; font-weight:bold; }
 
+.cs-content-left .cs-menue-roles > .active > a,
+.cs-content-left .cs-menue-roles > .active > a:hover,
+.cs-content-left .cs-menue-roles > .active > a:visited
+{
+    outline: none;
+    background-color:transparent; color:#fff; border:none!important; font-weight:bold;
+    background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 33%, rgba(255,255,255,0.2) 66%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,0.2) 33%,rgba(255,255,255,0.2) 66%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,0.2) 33%,rgba(255,255,255,0.2) 66%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 */
+}
+
 /* Content Middle */
 
 .cs-content-middle { background-color:#fff; }

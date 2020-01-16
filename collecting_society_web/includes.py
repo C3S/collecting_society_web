@@ -230,7 +230,7 @@ def web_registry(config):
                 'url':  self.request.resource_path(
                             RepertoireResource(self.request), '')},
             {
-                'name': _(u'Licensing'), 'inactive': LicensingResource,
+                'name': _(u'Licensing'), 'active': LicensingResource,
                 'url':  self.request.resource_path(
                             LicensingResource(self.request), '')}
         ]
@@ -299,7 +299,7 @@ def web_registry(config):
         # role menue
         reg['menues']['roles'] = [
             {
-                'name': _(u'Repertoire'), 'inactive': LicensingResource,
+                'name': _(u'Repertoire'), 'active': LicensingResource,
                 'url':  self.request.resource_path(
                             RepertoireResource(self.request), '')},
             {
