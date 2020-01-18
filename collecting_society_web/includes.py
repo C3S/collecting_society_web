@@ -34,7 +34,8 @@ from .resources import (
     RepertoireResource,
     LicensingResource,
     FilesResource,
-    DebugC3sMembershipApiResource
+    DebugC3sMembershipApiResource,
+    DevicesResource
 )
 from .views.widgets import (
     MissingArtistsWidget,
@@ -71,7 +72,7 @@ def web_resources(config):
     RepertoireResource.add_child(ReleasesResource)
     RepertoireResource.add_child(CreationsResource)
 
-    LicensingResource.add_child(FilesResource)
+    LicensingResource.add_child(DevicesResource)
 
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
@@ -340,7 +341,7 @@ def web_registry(config):
             {
                 'name': _(u'Devices'),
                 'url':  self.request.resource_path(
-                            ReleasesResource(self.request)),
+                            DevicesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/phoenix_icon_diagram.svg')},

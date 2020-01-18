@@ -19,3 +19,4 @@ from .label import Label
 from .publisher import Publisher
 from .license import License
 from .track import Track
+from .device import Device

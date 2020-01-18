@@ -21,7 +21,8 @@ from .models import (
     Artist,
     Release,
     Creation,
-    Content
+    Content,
+    Device
 )
 
 log = logging.getLogger(__name__)
@@ -271,5 +272,46 @@ class LicensingResource(ResourceBase):
         # prevent inheritance from backend resource
         DENY_ALL
     ]
+
+
+class DevicesResource(ResourceBase):
+    """
+    matches the webusers devices after clicking Devices Files in Licensing menu
+    """
+    __parent__ = LicensingResource
+    __name__ = "devices"
+    _write = ['add']
+
+    # traversal
+    def __getitem__(self, key):
+        # validate code
+        if re.match(valid['uuid'], key):
+            return DeviceResource(self.request, key)
+        # views needing writable transactions
+        if key in self._write:
+            self.readonly = False
+        raise KeyError(key)
+
+    # load resources
+    def context_found(self):
+        if self.request.view_name == '':
+            self.devices = Device.current_viewable(self.request)
+
+
+class DeviceResource(ModelResource):
+    """
+    matches a single device after clicking one in Licensing -> Devices
+    """
+    __parent__ = DevicesResource
+    _write = ['delete']
+    _permit = ['view_device', 'delete_device']
+
+    # load resources
+    def context_found(self):
+        self.device = Device.search_by_uuid(self.code)
+
+
+
+    
 
 
