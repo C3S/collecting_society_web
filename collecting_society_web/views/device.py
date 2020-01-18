@@ -15,8 +15,10 @@ from portal_web.views import ViewBase
 
 from ..services import _
 from ..models import Device
-from ..services.lossless_audio_formats import lossless_audio_extensions
-from ..services.sheet_music_formats import sheet_music_extensions
+from .forms import (
+    AddDevice,
+    EditDevice
+)
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +35,7 @@ class DevicesViews(ViewBase):
         return {}
 
     @view_config(
-        name='upload',
+        name='add',
         renderer='../templates/device/add.pt',
         permission='add_device')
     def add(self):

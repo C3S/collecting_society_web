@@ -296,6 +296,29 @@ class DevicesResource(ResourceBase):
     def context_found(self):
         if self.request.view_name == '':
             self.devices = Device.current_viewable(self.request)
+        # in add creation, provide content uuid, set by upload form
+        if self.request.view_name == 'add':
+            device_id = self.request.params.get('device_id', '')
+            if re.match(valid['uuid'], device_id):
+                self.device_id = device_id
+            device_name = self.request.params.get('device_name', '')
+            if len(device_name) > 0:
+                self.device_name = device_name
+            os_name = self.request.params.get('os_name', '')
+            if len(os_name) > 0:
+                self.os_name = os_name
+            os_version = self.request.params.get('os_version', '')
+            if len(os_version) > 0:
+                self.os_version = os_version
+            software_name = self.request.params.get('software_name', '')
+            if len(software_name) > 0:
+                self.software_name = software_name
+            software_version = self.request.params.get('software_version', '')
+            if len(software_version) > 0:
+                self.software_version = software_version
+            software_vendor = self.request.params.get('software_vendor', '')
+            if len(software_vendor) > 0:
+                self.software_vendor = software_vendor
 
 
 class DeviceResource(ModelResource):
@@ -303,7 +326,7 @@ class DeviceResource(ModelResource):
     matches a single device after clicking one in Licensing -> Devices
     """
     __parent__ = DevicesResource
-    _write = ['delete']
+    _write = ['edit', 'delete']
     _permit = ['view_device', 'delete_device']
 
     # load resources

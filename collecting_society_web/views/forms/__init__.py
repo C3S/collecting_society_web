@@ -2,11 +2,18 @@
 # Repository: https://github.com/C3S/collecting_society_web
 # flake8: noqa
 
-from .register_webuser import RegisterWebuser
+# --- Repertoire ---
 from .add_artist import AddArtist
+from .edit_artist import EditArtist
 from .add_release import AddRelease
 from .edit_release import EditRelease
 from .add_creation import AddCreation
 from .edit_creation import EditCreation
+
+# --- Licensee ---
+from .add_device import AddDevice
+from .edit_device import EditDevice
+
+# --- others ---
+from .register_webuser import RegisterWebuser
 from .edit_profile import EditProfile
-from .edit_artist import EditArtist
