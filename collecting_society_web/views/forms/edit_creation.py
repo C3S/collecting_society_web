@@ -51,7 +51,6 @@ class EditCreation(FormController):
 
     def edit_creation(self):
         creation = self.context.creation
-        web_user = self.request.web_user
 
         # set appstruct
         self.appstruct = {
@@ -117,8 +116,8 @@ class EditCreation(FormController):
             }
 
         # original works, this creation is derived from
-        if creation.original_relations:            
-            a_derivation = { 'adaption': [], 'cover':[], 'remix':[] }
+        if creation.original_relations:
+            a_derivation = {'adaption': [], 'cover': [], 'remix': []}
             for original_relation in creation.original_relations:
                 original_mode = "add"
                 if (
@@ -140,7 +139,7 @@ class EditCreation(FormController):
                     'artist': original_relation.original_creation.
                         artist.name
                 })
-                
+
             self.appstruct['derivation'] = {
                 'adaption': a_derivation['adaption'],
                 'cover': a_derivation['cover'],
@@ -149,7 +148,7 @@ class EditCreation(FormController):
 
         # content files that are assigned to the creation
         if creation.content:
-            self.appstruct['content'] = {}            
+            self.appstruct['content'] = {}
             _contentfiles = {}
             for contentfile in creation.content:
                 if contentfile.category not in _contentfiles:
@@ -252,9 +251,9 @@ class EditCreation(FormController):
                     #     if (item['artist'][0].id == create['artist'].id and
                     #         item['role'] == create['role']):
                     #         dupe_found = True
-                    #         break                    
+                    #         break
                     # append contribution
-                    #if not dupe_found:
+                    # if not dupe_found:
                     CreationContribution.create([create])
 
                 # create contribution
@@ -336,7 +335,7 @@ class EditCreation(FormController):
         #    creation.id)
         originals = creation.original_relations
         oids_to_preserve = []
-        for derivation_type in [ 'adaption', 'cover', 'remix' ]:
+        for derivation_type in ['adaption', 'cover', 'remix']:
             for a_derivation in a['derivation'][derivation_type]:
                 # sanity: already in list? then it must be a dupe: only add once
                 if a_derivation['oid'] not in oids_to_preserve:
@@ -384,7 +383,7 @@ class EditCreation(FormController):
                     }
                     CreationDerivative.create([a_original])
 
-        # areas of exploitation / tariff categories / collecting societies 
+        # areas of exploitation / tariff categories / collecting societies
         ctcs_to_delete = []  # collect necessary operations in list
         ctcs_to_add = []     # to minimize number of tryton calls
         tcats = TariffCategory.search_all()

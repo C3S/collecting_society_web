@@ -7,9 +7,7 @@ import deform
 import uuid
 
 from portal_web.models import (
-    Tdb,
-    Party,
-    WebUser
+    Tdb
 )
 from portal_web.views.forms import FormController
 from ...services import _
@@ -63,7 +61,8 @@ class AddDevice(FormController):
                 }
             }
 
-        # add metadata from device uuid, name, etc. provided by client device as url params
+        # add metadata from device uuid, name, etc. 
+        # provided by client device as url params
         device_id = getattr(self.context, 'device_id', False)
         if device_id:
             self.appstruct['general']['uuid'] = device_id
@@ -131,7 +130,8 @@ class AddDevice(FormController):
         device = device[0]
         log.info("device add successful for %s: %s" % (web_user, device))
         self.request.session.flash(
-            _(u"Device '${reti}' added to your account. Your device token is ${reco}.",
+            _(u"Device '${reti}' added to your account. "
+              "Your device token is ${reco}.",
               mapping={'reti': device.name,
                        'reco': device.uuid}),
             'main-alert-success'

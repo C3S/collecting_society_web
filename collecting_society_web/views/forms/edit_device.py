@@ -89,7 +89,7 @@ class EditDevice(FormController):
         if (device_in_database and
                 web_user == device_in_database.web_user):
             device.write([device], _device)
-            
+
             # user feedback
             log.info("edit device successful for %s: %s" % (web_user, device))
             self.request.session.flash(
@@ -104,12 +104,13 @@ class EditDevice(FormController):
             # user feedback
             log.info("edit device successful for %s: %s" % (web_user, device))
             self.request.session.flash(
-                _(u"Device ${name} edited but device id ${uuid} hasn't changed",
+                _(u"Device ${name} edited but device"
+                  " id ${uuid} hasn't changed",
                   mapping={'name': device.name,
                            'uuid': device.uuid}),
                 'main-alert-warning'
-            )                     
-            
+            )
+
         # redirect
         self.redirect()
 
