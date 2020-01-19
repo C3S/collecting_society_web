@@ -11,10 +11,7 @@ from portal_web.models import (
     Party,
     WebUser
 )
-from portal_web.views.forms import (
-    FormController
-)
-
+from portal_web.views.forms import FormController
 from ...services import _
 from ...models import Device
 
@@ -74,10 +71,10 @@ class AddDevice(FormController):
             if not self.appstruct['general']['uuid']:
                 self.appstruct['general']['uuid'] = str(uuid.uuid4())
         if not self.appstruct['general']['name']:
-            self.appstruct['general']['name'] = _("My Device")
-        if not self.appstruct['general']['name']:
             self.appstruct['general']['name'] = getattr(
                 self.context, 'device_name', False)
+        if not self.appstruct['general']['name']:
+            self.appstruct['general']['name'] = _("My Device")
         if not self.appstruct['os']['os_name']:
             self.appstruct['os']['os_name'] = getattr(
                 self.context, 'os_name', False) or ''

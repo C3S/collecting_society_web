@@ -50,12 +50,13 @@ class DeviceViews(ViewBase):
     @view_config(
         name='',
         renderer='../templates/device/show.pt',
-        permission='view_device')
+        permission='show_device')
     def show(self):
         return {}
 
     @view_config(
         name='edit',
+        renderer='../templates/device/edit.pt',
         permission='edit_device')
     def edit(self):
         self.register_form(EditDevice)
@@ -63,18 +64,18 @@ class DeviceViews(ViewBase):
 
     @view_config(
         name='delete',
-        decorator=Tdb.transaction(readonly=False),
-        permission='delete_device')
+        permission='delete_device',
+        decorator=Tdb.transaction(readonly=False))
     def delete(self):
         name = self.context.device.name
-        Content.delete([self.context.device])
+        Device.delete([self.context.device])
         log.info("device delete successful for %s: %s (%s)" % (
             self.request.web_user, name, self.context.code
         ))
         self.request.session.flash(
-            _(u"Device deleted: ") + name + ' (' + self.context.code + ')',
-            _(u"Device deleted: ${cona} (${coco})",
-              mapping={'cona': name, 'coco': self.context.code}),
+            _(u"Device deleted: ") + name + ' (' + self.context.uuid + ')',
+            _(u"Device deleted: ${name} (${uuid})",
+              mapping={'name': name, 'uuid': self.context.uuid}),
             'main-alert-success'
         )
         return self.redirect('..')

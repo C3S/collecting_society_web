@@ -327,14 +327,18 @@ class DeviceResource(ModelResource):
     """
     __parent__ = DevicesResource
     _write = ['edit', 'delete']
-    _permit = ['view_device', 'delete_device']
 
     # load resources
     def context_found(self):
         self.device = Device.search_by_uuid(self.code)
 
-
-
-    
-
-
+    # add instance level permissions
+    def __acl__(self):
+        device_in_database = Device.search_by_uuid(self.code)
+        if (device_in_database and
+                self.device.web_user == device_in_database.web_user):
+            return [
+                (Allow, self.request.authenticated_userid,
+                    ['show_device', 'edit_device', 'delete_device'])
+            ]
+        return []
