@@ -35,6 +35,8 @@ from .resources import (
     LicensingResource,
     FilesResource,
     DebugC3sMembershipApiResource,
+    DeclarationsResource,
+    LocationsResource,
     DevicesResource
 )
 from .views.widgets import (
@@ -72,6 +74,8 @@ def web_resources(config):
     RepertoireResource.add_child(ReleasesResource)
     RepertoireResource.add_child(CreationsResource)
 
+    LicensingResource.add_child(DeclarationsResource)
+    LicensingResource.add_child(LocationsResource)
     LicensingResource.add_child(DevicesResource)
 
     DebugResource.add_child(DebugC3sMembershipApiResource)
@@ -320,21 +324,14 @@ def web_registry(config):
             {
                 'name': _(u'Declarations'),
                 'url':  self.request.resource_path(
-                            FilesResource(self.request)),
+                            DeclarationsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/phoenix_icon_cart.svg')},
             {
-                'name': _(u'Playlists'),
-                'url':  self.request.resource_path(
-                            ArtistsResource(self.request)),
-                'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/phoenix_icon_presentation.svg')},
-            {
                 'name': _(u'Locations'),
                 'url':  self.request.resource_path(
-                            CreationsResource(self.request)),
+                            LocationsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/phoenix_icon_store.svg')},
@@ -348,14 +345,14 @@ def web_registry(config):
             {
                 'name': _(u'Accounting'),
                 'url':  self.request.resource_path(
-                            ReleasesResource(self.request)),
+                            DevicesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/phoenix_icon_notes.svg')},
             {
                 'name': _(u'Statistics'),
                 'url':  self.request.resource_path(
-                            ReleasesResource(self.request)),
+                            DevicesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/phoenix_icon_graph.svg')},
