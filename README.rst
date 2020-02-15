@@ -1,5 +1,6 @@
-collecting_society_web
-======================
+==========================
+Collecting Society Web GUI
+==========================
 
 Plugin for `portal_web <https://github.com/C3S/portal_web>`_ 
 including:
