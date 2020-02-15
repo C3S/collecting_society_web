@@ -31,12 +31,12 @@ _prefix = 'licensing'
 # --- schemas -----------------------------------------------------------------
 
 class BodySchema(colander.MappingSchema):
-"""Create a body schema for our requests"""
+    """Create a body schema for our requests"""
     value = colander.SchemaNode(colander.String(),
                                 description='My precious value')
 
 class ResponseSchema(colander.MappingSchema):
-"""Create a response schema for our 200 responses"""
+    """Create a response schema for our 200 responses"""
     body = BodySchema()
 
 
