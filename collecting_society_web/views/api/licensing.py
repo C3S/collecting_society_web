@@ -1,26 +1,27 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
+import operator
 import logging
 import colander
+
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.httpexceptions import HTTPNotFound, HTTPConflict
 from cornice import Service
 from cornice.service import get_services
-from cornice.validators import colander_path_validator, colander_body_validator, colander_querystring_validator, colander_validator
+from cornice.validators import (
+    colander_path_validator,
+    colander_body_validator,
+    colander_querystring_validator,
+    colander_validator
+)
 from cornice_swagger.swagger import CorniceSwagger
 
 from ...services import _
 from ...models import (
-    CollectingSociety,
-    TariffCategory,
-    Artist,
     Creation,
-    CreationContribution,
-    CreationDerivative,
-    CreationTariffCategory,
-    CreationRole,
-    Content
+    CreationIdentifier,
+    CreationIdentifierSpace
 )
 
 log = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ class BodySchema(colander.MappingSchema):
     """Create a body schema for our requests"""
     value = colander.SchemaNode(colander.String(),
                                 description='My precious value')
+
 
 class ResponseSchema(colander.MappingSchema):
     """Create a response schema for our 200 responses"""
@@ -73,7 +75,7 @@ class UserResource(object):
 
 licensing_info = Service(
     name=_prefix + 'info',
-    path=_prefix + '/info/creations/{code}',
+    path=_prefix + '/info/creations/{native_code}',
     description="provide licensing information about a creation",
     cors_enabled=True
 )
@@ -90,27 +92,206 @@ licensing_info_multicode = Service(
 # Create a service to serve our OpenAPI spec
 swagger = Service(name='OpenAPI',
                   path='__api__',
-                  description="OpenAPI documentation")
+                  description="OpenAPI documentation",
+                  )
 
 
 # --- API ---------------------------------------------------------------------
+
+# ... Fields (Querystring Parameters) ...
+
+
+class CodeField(colander.SchemaNode):
+    oid = "native_code"
+    name = "native_code"
+    schema_type = colander.String
+    validator = colander.Regex(r'^C\d{10}\Z')
+    missing = ""
+
+
+class ArtistField(colander.SchemaNode):
+    oid = "artist"
+    name = "artist"
+    schema_type = colander.String
+    validator = colander.Length(min=1)
+    missing = ""
+
+
+class TitleField(colander.SchemaNode):
+    oid = "title"
+    name = "title"
+    schema_type = colander.String
+    validator = colander.Length(min=1)
+    missing = ""
+
+
+def deferred_idspace_schemas_node(request):
+    schema = colander.SchemaNode(
+        colander.Mapping(),
+        description=_(u"artist/title combinations, native code, or "
+                      "foreign identifier spaces like isrc or iswc")
+    )
+
+    schema.add(CodeField(name='native_code', title=_("Native Code")))
+    schema.add(ArtistField(name='artist', title=_("Artist")))
+    schema.add(TitleField(name='title', title=_("Title")))
+
+    for id_space in CreationIdentifierSpace.search_all():
+        schema.add(
+            colander.SchemaNode(
+                colander.String(),
+                oid=id_space.name,
+                name=id_space.name,
+                missing=""
+                )
+            )
+
+    return schema
+
+
+def deferred_querystring_validator(request, schema=None, deserializer=None,
+                                   **kwargs):
+    """
+    Workaround to trick cornice into digesting a deferred schemas_node
+    as root node.
+    """
+    if callable(schema):
+        schema = schema(request)
+    return colander_querystring_validator(request, schema, deserializer,
+                                          **kwargs)
+
+
+# ... parameter processing ...
 
 
 @licensing_info.get(permission=NO_PERMISSION_REQUIRED,
                     tags=['creations'], response_schemas=response_schemas)
 def get_licensing_info(request):
-    """Returns the properties of a specific creation"""
-    code = request.matchdict['code']
+    """
+    Returns the properties of a specific creation that
+    is identified using the common REST scheme with
+    the native code following the creation object.
+
+    Example URL:
+        http://api.collecting_society.test/licensing/info/creations/C0000012345
+
+    """
+    native_code = request.matchdict['native_code']
+    return creation_data(native_code, 100)  # this is the code, 100% sure!
+
+
+@licensing_info_multicode.get(permission=NO_PERMISSION_REQUIRED,
+                              tags=['creations'],
+                              schema=deferred_idspace_schemas_node,
+                              validators=(deferred_querystring_validator,),
+                              response_schemas=response_schemas)
+def get_licensing_info_multicode(request):
+    """
+    Returns the properties of a specific creation
+    that is identified using multiple identifiers,
+    which are provided as querystring parameters.
+
+    Example URL:
+        http://api.collecting_society.test/licensing/info/creations?
+        native_code=C0000000001&artist=Registered Name 001
+        &title=Title of Song 001&ISRC=DES23445671&ISWC=DEX034567881
+    """
+    multicode = request.validated
+    scores = {}  # count hits for creation codes identified by parameters
+    number_of_identifiers_given = 0
+
+    # 1st special case: artistname / tracktitle as composite identifier
+    if ('artist' in multicode and 'title' in multicode and
+            multicode['artist'] and multicode['title']):
+        number_of_identifiers_given = number_of_identifiers_given + 1
+        cs = Creation.search_by_artistname_and_title(multicode['artist'],
+                                                     multicode['title'])
+        if cs:
+            c = cs[0]
+            if c.code in scores:
+                scores[c.code] = scores[c.code] + 1
+            else:
+                scores[c.code] = 1
+    if 'artist' in multicode:
+        del multicode['artist']
+    if 'title' in multicode:
+        del multicode['title']
+
+    # 2nd special case: the native code of the creation:
+    if 'native_code' in multicode and multicode['native_code']:
+        number_of_identifiers_given = number_of_identifiers_given + 1
+        c = Creation.search_by_code(multicode['native_code'])
+        if c:
+            if c.code in scores:
+                scores[c.code] = scores[c.code] + 1
+            else:
+                scores[c.code] = 1
+        del multicode['native_code']
+
+    # TODO: 3rd special case: audio fingerprint
+    # ...
+    # ...
+
+    # last (general) case: search in foreign id spaces defined in
+    #                      CreationIdentifierSpace, e.g. isrc, iswc ...
+    foreign_idspaces = [space.name for space in
+                        CreationIdentifierSpace.search_all()]
+    for queried_space_id in multicode:
+        if (queried_space_id in foreign_idspaces and
+                multicode[queried_space_id]):
+            number_of_identifiers_given = number_of_identifiers_given + 1
+            cid = CreationIdentifier.search_by_spacecode(queried_space_id,
+                                                         multicode[
+                                                             queried_space_id])
+            if cid:  # found creation via foreign id?
+                c = cid.creation
+                if c.code in scores:
+                    scores[c.code] = scores[c.code] + 1
+                else:
+                    scores[c.code] = 1
+
+    # nothing found?
+    number_of_hits = sum(count for count in scores.values())
+    if number_of_hits == 0:
+        raise HTTPNotFound
+
+    sorted_scores = sorted(scores.items(), key=operator.itemgetter(1))
+    best_matched_creation_code = sorted_scores[-1][0]
+    best_matched_creation_score = sorted_scores[-1][1]
+    final_score = int(100 * best_matched_creation_score
+                      / number_of_identifiers_given)
+    # TODO: raise HTTPConflict if result is ambigous e.g. if the
+    #       codes with the highest scores > 1 hav equal scores.
+    #       Alternatively have a priority which code to use in this case.
+
+    return creation_data(best_matched_creation_code, final_score)
+
+
+def creation_data(code, score):
+    """
+    Returns the properties of a specific creation, identified by the code.
+
+    Args:
+        creation code (String): native (C3S) code, i.e "C0000000123"
+        score (Int): certainty in %, derived from the query parameter(s)
+                     (to be returned in the result dict)
+
+    Return:
+        creation record (Dictionary) including the score
+
+    Exceptions:
+        HTTPNotFound, if creation can't be found from the code
+    """
     # iswc = request.matchdict['iswc']
     # echoprint_fingerprint = request.matchdict['echoprint_fingerprint']
     # artist = request.matchdict['artist']
     # title = request.matchdict['title']
-    # TODO: raise HTTPConflict when multiple ids lead to different creations
 
     creation = Creation.search_by_code(code)
     if not creation:
         raise HTTPNotFound
     return {
+            'native_code': creation.code,
             'artist': creation.artist.name,
             'title':  creation.title,
             'lyrics': creation.lyrics,
@@ -121,62 +302,35 @@ def get_licensing_info(request):
                 'country': creation.license.country,
                 'link':    creation.license.link
             },
-            'derivatives': [d.code for d in creation.derivative_relations],
-            'originals': [o.code for o in creation.original_relations],
+            'derivatives': [d.derivative_creation.code for d in
+                            creation.derivative_relations],
+            'originals': [o.original_creation.code for o in
+                          creation.original_relations],
             'releases': [r.release.title for r in creation.releases],
             'genres': [g.name for g in creation.genres],
             'styles': [s.name for s in creation.styles],
             'tariff_categories': [
                 {
-                    'name': t.name,
-                    'code': t.code,
-                    'description': t.description
-                } for t in creation.tariff_categories]
+                    'name': t.category.name,
+                    'code': t.category.code,
+                    'description': t.category.description
+                } for t in creation.tariff_categories],
+            'score': score
            }
 
 
-class CodeField(colander.SchemaNode):
-    oid = "code"
-    schema_type = colander.String
-    validator = colander.Regex(r'^C\d{10}\Z')
-    missing = ""
+# ... swagger stuff ...
 
 
-class ArtistField(colander.SchemaNode):
-    oid = "artist"
-    schema_type = colander.String
-    validator = colander.Length(min=1)
-    missing = ""
+@swagger.get(permission=NO_PERMISSION_REQUIRED)
+def openAPI_spec(request):
+    my_generator = CorniceSwagger(get_services())
+    my_generator.summary_docstrings = True
+    my_spec = my_generator('Repertoire API', '0.1.0')
+    return my_spec
 
 
-class TitleField(colander.SchemaNode):
-    oid = "title"
-    schema_type = colander.String
-    validator = colander.Length(min=1)
-    missing = ""
-
-
-class IdSchema(colander.MappingSchema):
-    code = CodeField(title=_("Code"))
-    artist = ArtistField(title=_("Artist"))
-    title = TitleField(title=_("Title"))
-
-
-@licensing_info_multicode.get(permission=NO_PERMISSION_REQUIRED,
-                              tags=['creations'],
-                              schema=IdSchema,
-                              validators=(colander_querystring_validator,),
-                              response_schemas=response_schemas)
-def get_licensing_info_multicode(request):
-    """Returns the properties of a specific creation"""
-    data = request.validated
-    return data
-    # iswc = request.matchdict['iswc']
-    # echoprint_fingerprint = request.matchdict['echoprint_fingerprint']
-    # artist = request.matchdict['artist']
-    # title = request.matchdict['title']
-    # TODO: raise HTTPConflict when multiple ids lead to different creations?
-
+# ... some test code TODO: delete ...
 
 # @licensing.put(permission=NO_PERMISSION_REQUIRED,
 #                tags=['creations'],
@@ -189,16 +343,7 @@ def get_licensing_info_multicode(request):
 #     key = request.matchdict['value']
 #     _VALUES[key] = request.json_body
 #     return _VALUES[key]
-
-
-@swagger.get(permission=NO_PERMISSION_REQUIRED)
-def openAPI_spec(request):
-    my_generator = CorniceSwagger(get_services())
-    my_generator.summary_docstrings = True
-    my_spec = my_generator('Repertoire API', '0.1.0')
-    return my_spec
-
-
+#
 # @licensing.get(
 #     permission=NO_PERMISSION_REQUIRED,
 #     validators=(colander_body_validator,),

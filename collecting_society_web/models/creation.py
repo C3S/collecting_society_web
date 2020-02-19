@@ -194,6 +194,11 @@ class Creation(Tdb):
         """
         Searches a creation by creation id
 
+        .. note::
+
+          We don't want our internal ids to be exposed to the world.
+          So better use ``search_by_oid()``.
+
         Args:
           creation_id (int): creation.id
           active (bool, optional): active records only? Defaults to True.
@@ -214,7 +219,7 @@ class Creation(Tdb):
         Searches a creation by oid (public api id)
 
         Args:
-          oid (int): creation.oid
+          oid (uuid): creation.oid
 
         Returns:
           obj: creation
@@ -288,6 +293,27 @@ class Creation(Tdb):
         """
         result = cls.get().search([
             ('artist', '=', artist_id),
+            ('active', 'in', (True, active))
+        ])
+        return result or None
+
+    @classmethod
+    def search_by_artistname_and_title(cls, artist_name, title, active=True):
+        """
+        Searches creations by artist name and title
+
+        Args:
+          artist_name (char): artist.name
+          title (char): creation.title
+          active (bool, optional): active records only? Defaults to True.
+
+        Returns:
+          list: creations
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('artist.name', '=', artist_name),
+            ('title', '=', title),
             ('active', 'in', (True, active))
         ])
         return result or None

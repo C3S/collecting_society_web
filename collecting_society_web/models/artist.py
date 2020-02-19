@@ -193,6 +193,11 @@ class Artist(Tdb):
         """
         Searches an artist by artist id
 
+        .. note::
+
+          We don't want our internal ids to be exposed to the world.
+          So better use ``search_by_oid()``.
+
         Args:
           artist_id (int): artist.id
 

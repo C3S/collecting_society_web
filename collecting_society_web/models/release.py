@@ -62,6 +62,11 @@ class Release(Tdb):
         """
         Searches releases by id
 
+        .. note::
+
+          We don't want our internal ids to be exposed to the world.
+          So better use ``search_by_oid()``.
+
         Args:
           uid (int): release id
 

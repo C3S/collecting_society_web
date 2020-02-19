@@ -12,6 +12,8 @@ from .creation_contribution import CreationContribution
 from .creation_derivative import CreationDerivative
 from .creation_role import CreationRole
 from .creation_tariff_category import CreationTariffCategory
+from .creation_identifier import CreationIdentifier
+from .creation_identifier_space import CreationIdentifierSpace
 from .content import Content
 from .genre import Genre
 from .style import Style

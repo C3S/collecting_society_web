@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 class CreationDerivative(Tdb):
     """
-    Model wrapper for Tryton model object 'creationd_derivative'
+    Model wrapper for Tryton model object 'creation_derivative'
     """
 
     __name__ = 'creation.original.derivative'
