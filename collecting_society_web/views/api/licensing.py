@@ -75,7 +75,7 @@ class UserResource(object):
 
 licensing_info = Service(
     name=_prefix + 'info',
-    path=_prefix + '/info/creations/{native_code}',
+    path=_prefix + '/info/creations/{native_id}',
     description="provide licensing information about a creation",
     cors_enabled=True
 )
@@ -102,8 +102,8 @@ swagger = Service(name='OpenAPI',
 
 
 class CodeField(colander.SchemaNode):
-    oid = "native_code"
-    name = "native_code"
+    oid = "native_id"
+    name = "native_id"
     schema_type = colander.String
     validator = colander.Regex(r'^C\d{10}\Z')
     missing = ""
@@ -132,7 +132,7 @@ def deferred_idspace_schemas_node(request):
                       "foreign identifier spaces like isrc or iswc")
     )
 
-    schema.add(CodeField(name='native_code', title=_("Native Code")))
+    schema.add(CodeField(name='native_id', title=_("Native Code")))
     schema.add(ArtistField(name='artist', title=_("Artist")))
     schema.add(TitleField(name='title', title=_("Title")))
 
@@ -176,8 +176,8 @@ def get_licensing_info(request):
         http://api.collecting_society.test/licensing/info/creations/C0000012345
 
     """
-    native_code = request.matchdict['native_code']
-    return creation_data(native_code, 100)  # this is the code, 100% sure!
+    native_id = request.matchdict['native_id']
+    return creation_data(native_id, 100)  # this is the code, 100% sure!
 
 
 @licensing_info_multicode.get(permission=NO_PERMISSION_REQUIRED,
@@ -193,7 +193,7 @@ def get_licensing_info_multicode(request):
 
     Example URL:
         http://api.collecting_society.test/licensing/info/creations?
-        native_code=C0000000001&artist=Registered Name 001
+        native_id=C0000000001&artist=Registered Name 001
         &title=Title of Song 001&ISRC=DES23445671&ISWC=DEX034567881
     """
     multicode = request.validated
@@ -218,15 +218,15 @@ def get_licensing_info_multicode(request):
         del multicode['title']
 
     # 2nd special case: the native code of the creation:
-    if 'native_code' in multicode and multicode['native_code']:
+    if 'native_id' in multicode and multicode['native_id']:
         number_of_identifiers_given = number_of_identifiers_given + 1
-        c = Creation.search_by_code(multicode['native_code'])
+        c = Creation.search_by_code(multicode['native_id'])
         if c:
             if c.code in scores:
                 scores[c.code] = scores[c.code] + 1
             else:
                 scores[c.code] = 1
-        del multicode['native_code']
+        del multicode['native_id']
 
     # TODO: 3rd special case: audio fingerprint
     # ...
@@ -290,8 +290,30 @@ def creation_data(code, score):
     creation = Creation.search_by_code(code)
     if not creation:
         raise HTTPNotFound
+
+    # assemble creations foreign identifier list
+    cfids = {}
+    for cfid in creation.identifiers:
+        cfids[cfid.id_space.name] = cfid.id_code
+
+    # assemble rightsholders
+    rightsholders = []
+    for crh in creation.rightsholders:
+        rightsholders.add({
+            'rightsholder_subject': crh.rightsholder_subject.code,
+            'rightsholder_object': crh.rightsholder_object.code,
+            'contribution': crh.contribution,
+            # 'successor': crh.successor,
+            # 'instrument': ?
+            'right': crh.right,
+            'valid_from': crh.valid_from,
+            'valid_to': crh.valid_to,
+            'country': crh.country.name,
+            'collecting_society': crh.collecting_society.name
+        })
+
     return {
-            'native_code': creation.code,
+            'native_id': creation.code,
             'artist': creation.artist.name,
             'title':  creation.title,
             'lyrics': creation.lyrics,
@@ -315,11 +337,13 @@ def creation_data(code, score):
                     'code': t.category.code,
                     'description': t.category.description
                 } for t in creation.tariff_categories],
+            'foreign_ids': cfids,
+            'rightsholders': rightsholders,
             'score': score
            }
 
 
-# ... swagger stuff ...
+# ... swagger/openAPI stuff ...
 
 
 @swagger.get(permission=NO_PERMISSION_REQUIRED)
