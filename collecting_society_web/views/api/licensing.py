@@ -299,15 +299,15 @@ def creation_data(code, score):
     # assemble rightsholders
     rightsholders = []
     for crh in creation.rightsholders:
-        rightsholders.add({
+        rightsholders.append({
             'rightsholder_subject': crh.rightsholder_subject.code,
             'rightsholder_object': crh.rightsholder_object.code,
             'contribution': crh.contribution,
             # 'successor': crh.successor,
             # 'instrument': ?
             'right': crh.right,
-            'valid_from': crh.valid_from,
-            'valid_to': crh.valid_to,
+            'valid_from': str(crh.valid_from),
+            'valid_to': str(crh.valid_to),
             'country': crh.country.name,
             'collecting_society': crh.collecting_society.name
         })
