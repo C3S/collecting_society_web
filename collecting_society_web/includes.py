@@ -23,10 +23,7 @@ from portal_web.resources import (
     DebugResource
 )
 
-from .services import (
-    _,
-    C3SMembershipApiClient
-)
+from .services import _
 from .resources import (
     ArtistsResource,
     ReleasesResource,
@@ -141,19 +138,12 @@ def web_registry(config):
         # logo
         reg['static']['logo'] = self.request.static_path(
             'collecting_society_web:static/img/logo-c3s.png')
-        # services
-        reg['services']['c3smembership'] = C3SMembershipApiClient(
-            base_url=settings['api.c3smembership.url'],
-            version=settings['api.c3smembership.version'],
-            api_key=settings['api.c3smembership.api_key'])
         # top menue
-        reg['menues']['top'] = []
-        if reg['services']['c3smembership'].is_connected():
-            reg['menues']['top'] += [
-                {
-                    'name': _(u'register'),
-                    'page': 'register'}
-            ]
+        reg['menues']['top'] = [
+            {
+                'name': _(u'register'),
+                'page': 'register'}
+        ]
         reg['menues']['top'] += [
             {
                 'name': _(u'survey'),

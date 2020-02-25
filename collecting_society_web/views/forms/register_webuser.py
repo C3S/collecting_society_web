@@ -120,14 +120,6 @@ class RegisterWebuser(LoginWebuser):
             return True
         return False
 
-    def is_member(self, api, web_user):
-        # TODO: Change back, when membership is integrated
-        # return api.is_member(
-        #     service='repertoire',
-        #     email=web_user['email']
-        # )
-        return False
-
     # --- Actions -------------------------------------------------------------
 
     @Tdb.transaction(readonly=False)
@@ -139,7 +131,6 @@ class RegisterWebuser(LoginWebuser):
             'password': self.data['password'],
             'roles': [('add', [WebUserRole.search_by_code('licenser').id])]
         }
-        _c3smembership = self.context.registry['services']['c3smembership']
         template_variables = {}
 
         # user is already registered
@@ -169,26 +160,10 @@ class RegisterWebuser(LoginWebuser):
         else:
             # user claims to be a c3s member
             if self.is_claiming_membership(self.data):
-                # TODO: Change back, when membership is integrated
-                # # user is a c3s member
-                # if self.is_member(_c3smembership, _web_user):
-                #     _create = True
-                #     template_name = "registration-member_success"
-                # # user is not a c3s member
-                # else:
-                #     template_name = "registration-member_fail_nomatch"
                 _create = True
                 template_name = "registration-member_success"
             # user claims not to be a c3s member
             else:
-                # TODO: Change back, when membership is integrated
-                # # user is a c3s member
-                # if self.is_member(_c3smembership, _web_user):
-                #     template_name = "registration-nonmember_fail_reserved"
-                # # user is not a c3s member
-                # else:
-                #     _create = True
-                #     template_name = "registration-nonmember_success"
                 _create = True
                 template_name = "registration-nonmember_success"
 
@@ -211,32 +186,20 @@ class RegisterWebuser(LoginWebuser):
 
             # creation successful
             web_user = web_users[0]
-            if self.is_member(_c3smembership, _web_user):
+            if self.is_claiming_membership(self.data):
                 # c3s membership
                 web_user.party.member_c3s = True
-                response = _c3smembership.generate_member_token(
-                    service='repertoire',
-                    email=web_user.email
-                )
-                if not response or 'token' not in response:
-                    log.debug(
-                        "web_user c3s membership token error: %s, %s" % (
-                            _web_user, response
-                        )
-                    )
-                web_user.party.member_c3s_token = response['token']
-                web_user.party.save()
-            else:
-                # save values of non-c3s-member form fields
-                web_user.party.repertoire_terms_accepted = self.data[
-                    'terms_accepted']
-                web_user.party.name = self.data['firstname'] + ' ' + self.data[
-                    'lastname']
-                # also save separately for clarity
-                web_user.party.firstname = self.data['firstname']
-                web_user.party.lastname = self.data['lastname']
-                web_user.party.birthdate = self.data['birthdate']
-                web_user.party.save()
+
+            # save values of non-c3s-member form fields
+            web_user.party.repertoire_terms_accepted = self.data[
+                'terms_accepted']
+            web_user.party.name = self.data['firstname'] + ' ' + self.data[
+                'lastname']
+            # also save separately for clarity
+            web_user.party.firstname = self.data['firstname']
+            web_user.party.lastname = self.data['lastname']
+            web_user.party.birthdate = self.data['birthdate']
+            web_user.party.save()
 
             template_variables = {
                 'link': self.request.resource_url(
