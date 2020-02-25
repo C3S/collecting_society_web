@@ -5,10 +5,16 @@ import operator
 import logging
 import colander
 
-from pyramid.security import NO_PERMISSION_REQUIRED
+from pyramid.security import (
+    Allow,
+    Everyone,
+    DENY_ALL,
+    NO_PERMISSION_REQUIRED,
+)
 from pyramid.httpexceptions import HTTPNotFound, HTTPConflict
 from cornice import Service
 from cornice.service import get_services
+from cornice.resource import resource
 from cornice.validators import (
     colander_path_validator,
     colander_body_validator,
@@ -17,12 +23,14 @@ from cornice.validators import (
 )
 from cornice_swagger.swagger import CorniceSwagger
 
+from portal_web.resources import ResourceBase
 from ...services import _
 from ...models import (
     Creation,
     CreationIdentifier,
     CreationIdentifierSpace
 )
+from ...resources import CreationsResource
 
 log = logging.getLogger(__name__)
 
@@ -379,3 +387,21 @@ def openAPI_spec(request):
 #     return {
 #         'data': data,
 #     }
+
+@resource(collection_path=_prefix + '/info2/creations',
+          path=_prefix + '/info2/creations/{code}',
+          permission=NO_PERMISSION_REQUIRED,
+          traverse=CreationsResource)
+class CreationApiResource(CreationsResource):
+
+    def __acl__(self):
+        return [(Allow, Everyone, 'view')]
+
+    def collection_get(self,
+                       permission='view'):
+        raise HTTPConflict  # not implemented yet
+        return None
+
+    def get(self,
+            permission='view'):
+        return creation_data(self.request.matchdict['code'], 100)
