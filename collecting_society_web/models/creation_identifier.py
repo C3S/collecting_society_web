@@ -46,7 +46,7 @@ class CreationIdentifier(Tdb):
           None: if no match is found
         """
         result = cls.get().search([
-          ('id_space', '=', id_space),
+          ('space', '=', id_space),
           ('id_code', '=', id_code)
           ])
         if not result:

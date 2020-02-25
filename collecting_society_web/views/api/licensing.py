@@ -8,33 +8,29 @@ import colander
 from pyramid.security import (
     Allow,
     Everyone,
-    DENY_ALL,
     NO_PERMISSION_REQUIRED,
 )
-from pyramid.httpexceptions import HTTPNotFound, HTTPConflict
+from pyramid.httpexceptions import HTTPNotFound
 from cornice import Service
 from cornice.service import get_services
-from cornice.resource import resource
+from cornice.resource import resource, view
 from cornice.validators import (
     colander_path_validator,
-    colander_body_validator,
-    colander_querystring_validator,
-    colander_validator
+    colander_querystring_validator
 )
 from cornice_swagger.swagger import CorniceSwagger
 
 from portal_web.resources import ResourceBase
 from ...services import _
 from ...models import (
-    Creation,
+    Creation as CreationModel,
     CreationIdentifier,
     CreationIdentifierSpace
 )
-from ...resources import CreationsResource
 
 log = logging.getLogger(__name__)
 
-_prefix = 'licensing'
+_apiversion = 'v1'
 
 
 # --- schemas -----------------------------------------------------------------
@@ -42,7 +38,7 @@ _prefix = 'licensing'
 class BodySchema(colander.MappingSchema):
     """Create a body schema for our requests"""
     value = colander.SchemaNode(colander.String(),
-                                description='My precious value')
+                                description='Some JSON returned')
 
 
 class ResponseSchema(colander.MappingSchema):
@@ -53,16 +49,12 @@ class ResponseSchema(colander.MappingSchema):
 # Aggregate the response schemas for get requests
 response_schemas = {
     '200': ResponseSchema(
-        description="Return 'http ok' response " +
+        description="Return 'http ok' response "
         "code because creation was found"
     ),
     '404': ResponseSchema(
         description="Return 'http not found' response code a creation with "
         "matching id couldn't be found in the database"
-    ),
-    '409': ResponseSchema(
-        description="Return 'http conflict' response code because creation "
-        "couldn't be identified because the ids refer to different creations"
     )
 }
 
@@ -79,31 +71,6 @@ class UserResource(object):
         self.readonly = False
 
 
-# --- service: licensing_info -----------------------------------------------
-
-licensing_info = Service(
-    name=_prefix + 'info',
-    path=_prefix + '/info/creations/{native_id}',
-    description="provide licensing information about a creation",
-    cors_enabled=True
-)
-
-
-licensing_info_multicode = Service(
-    name=_prefix + 'infomulticode',
-    path=_prefix + '/info/creations',
-    description="provide licensing information about a creation",
-    cors_enabled=True
-)
-
-
-# Create a service to serve our OpenAPI spec
-swagger = Service(name='OpenAPI',
-                  path='__api__',
-                  description="OpenAPI documentation",
-                  )
-
-
 # --- API ---------------------------------------------------------------------
 
 # ... Fields (Querystring Parameters) ...
@@ -114,7 +81,6 @@ class CodeField(colander.SchemaNode):
     name = "native_id"
     schema_type = colander.String
     validator = colander.Regex(r'^C\d{10}\Z')
-    missing = ""
 
 
 class ArtistField(colander.SchemaNode):
@@ -133,6 +99,10 @@ class TitleField(colander.SchemaNode):
     missing = ""
 
 
+class CreationGetSchema(colander.Schema):
+    code = CodeField(title=_(u"Native Code"))
+
+
 def deferred_idspace_schemas_node(request):
     schema = colander.SchemaNode(
         colander.Mapping(),
@@ -140,7 +110,8 @@ def deferred_idspace_schemas_node(request):
                       "foreign identifier spaces like isrc or iswc")
     )
 
-    schema.add(CodeField(name='native_id', title=_("Native Code")))
+    schema.add(CodeField(name='native_id', title=_("Native Code"),
+                         missing=""))
     schema.add(ArtistField(name='artist', title=_("Artist")))
     schema.add(TitleField(name='title', title=_("Title")))
 
@@ -169,11 +140,43 @@ def deferred_querystring_validator(request, schema=None, deserializer=None,
                                           **kwargs)
 
 
+# --- service: licensing_info -----------------------------------------------
+
+
+@resource(collection_path=_apiversion + '/creations',
+          path=_apiversion + '/creations/{native_id}',
+          permission=NO_PERMISSION_REQUIRED)
+class Creation(ResourceBase):
+
+    def __acl__(self):
+        return [(Allow, Everyone, 'view')]
+
+    @view(tags=['creations'],
+          schema=deferred_idspace_schemas_node,
+          validators=(deferred_querystring_validator,),
+          response_schemas=response_schemas)
+    def collection_get(self, permission='view'):        
+        return get_licensing_info_multicode(self.request)
+
+    @view(tags=['creations'],
+          schema=CreationGetSchema,
+          validators=(colander_path_validator,),
+          response_schemas=response_schemas)
+    def get(self,
+            permission='view'):
+        return creation_data([(self.request.matchdict['native_id'], 100)])
+
+
+# Create a service to serve our OpenAPI spec
+swagger = Service(name='OpenAPI',
+                  path='__api__',
+                  description="OpenAPI documentation",
+                  )
+
+
 # ... parameter processing ...
 
 
-@licensing_info.get(permission=NO_PERMISSION_REQUIRED,
-                    tags=['creations'], response_schemas=response_schemas)
 def get_licensing_info(request):
     """
     Returns the properties of a specific creation that
@@ -185,14 +188,9 @@ def get_licensing_info(request):
 
     """
     native_id = request.matchdict['native_id']
-    return creation_data(native_id, 100)  # this is the code, 100% sure!
+    return creation_data([(native_id, 100)])  # this is the code, 100% sure!
 
 
-@licensing_info_multicode.get(permission=NO_PERMISSION_REQUIRED,
-                              tags=['creations'],
-                              schema=deferred_idspace_schemas_node,
-                              validators=(deferred_querystring_validator,),
-                              response_schemas=response_schemas)
 def get_licensing_info_multicode(request):
     """
     Returns the properties of a specific creation
@@ -202,7 +200,7 @@ def get_licensing_info_multicode(request):
     Example URL:
         http://api.collecting_society.test/licensing/info/creations?
         native_id=C0000000001&artist=Registered Name 001
-        &title=Title of Song 001&ISRC=DES23445671&ISWC=DEX034567881
+        &title=Title of Song 001&ISRC=DE-A00-20-00001&ISWC=T-000.000.001-C
     """
     multicode = request.validated
     scores = {}  # count hits for creation codes identified by parameters
@@ -212,8 +210,8 @@ def get_licensing_info_multicode(request):
     if ('artist' in multicode and 'title' in multicode and
             multicode['artist'] and multicode['title']):
         number_of_identifiers_given = number_of_identifiers_given + 1
-        cs = Creation.search_by_artistname_and_title(multicode['artist'],
-                                                     multicode['title'])
+        cs = CreationModel.search_by_artistname_and_title(multicode['artist'],
+                                                          multicode['title'])
         if cs:
             c = cs[0]
             if c.code in scores:
@@ -228,7 +226,7 @@ def get_licensing_info_multicode(request):
     # 2nd special case: the native code of the creation:
     if 'native_id' in multicode and multicode['native_id']:
         number_of_identifiers_given = number_of_identifiers_given + 1
-        c = Creation.search_by_code(multicode['native_id'])
+        c = CreationModel.search_by_code(multicode['native_id'])
         if c:
             if c.code in scores:
                 scores[c.code] = scores[c.code] + 1
@@ -254,7 +252,7 @@ def get_licensing_info_multicode(request):
             if cid:  # found creation via foreign id?
                 c = cid.creation
                 if c.code in scores:
-                    scores[c.code] = scores[c.code] + 1
+                    scores[c.code] += 1
                 else:
                     scores[c.code] = 1
 
@@ -263,26 +261,23 @@ def get_licensing_info_multicode(request):
     if number_of_hits == 0:
         raise HTTPNotFound
 
-    sorted_scores = sorted(scores.items(), key=operator.itemgetter(1))
-    best_matched_creation_code = sorted_scores[-1][0]
-    best_matched_creation_score = sorted_scores[-1][1]
-    final_score = int(100 * best_matched_creation_score
-                      / number_of_identifiers_given)
-    # TODO: raise HTTPConflict if result is ambigous e.g. if the
-    #       codes with the highest scores > 1 hav equal scores.
-    #       Alternatively have a priority which code to use in this case.
+    # sort: highest score first
+    for code in scores.keys():
+        scores[code] = int(100 * scores[code] / number_of_identifiers_given)
+    sorted_scores = sorted(scores.items(), key=operator.itemgetter(1),
+                           reverse=True)
 
-    return creation_data(best_matched_creation_code, final_score)
+    return creation_data(sorted_scores)
 
 
-def creation_data(code, score):
+def creation_data(sorted_scores):
     """
-    Returns the properties of a specific creation, identified by the code.
+    Returns the properties of the found creations.
 
     Args:
-        creation code (String): native (C3S) code, i.e "C0000000123"
-        score (Int): certainty in %, derived from the query parameter(s)
-                     (to be returned in the result dict)
+        sorted_scores [(String, Int)]: native (C3S) code, i.e "C0000000123"
+            together with a score certainty in %, derived from the query
+            parameter(s) (to be returned in the result dict)
 
     Return:
         creation record (Dictionary) including the score
@@ -295,32 +290,34 @@ def creation_data(code, score):
     # artist = request.matchdict['artist']
     # title = request.matchdict['title']
 
-    creation = Creation.search_by_code(code)
-    if not creation:
-        raise HTTPNotFound
+    creations = []
+    for code, score in sorted_scores:
+        creation = CreationModel.search_by_code(code)
+        if not creation:
+            raise HTTPNotFound
 
-    # assemble creations foreign identifier list
-    cfids = {}
-    for cfid in creation.identifiers:
-        cfids[cfid.id_space.name] = cfid.id_code
+        # assemble creations foreign identifier list
+        cfids = {}
+        for cfid in creation.identifiers:
+            cfids[cfid.space.name] = cfid.id_code
 
-    # assemble rightsholders
-    rightsholders = []
-    for crh in creation.rightsholders:
-        rightsholders.append({
-            'rightsholder_subject': crh.rightsholder_subject.code,
-            'rightsholder_object': crh.rightsholder_object.code,
-            'contribution': crh.contribution,
-            # 'successor': crh.successor,
-            # 'instrument': ?
-            'right': crh.right,
-            'valid_from': str(crh.valid_from),
-            'valid_to': str(crh.valid_to),
-            'country': crh.country.name,
-            'collecting_society': crh.collecting_society.name
-        })
+        # assemble rightsholders
+        rightsholders = []
+        for crh in creation.rightsholders:
+            rightsholders.append({
+                'rightsholder_subject': crh.rightsholder_subject.code,
+                'rightsholder_object': crh.rightsholder_object.code,
+                'contribution': crh.contribution,
+                # 'successor': crh.successor,
+                # 'instrument': ?
+                'right': crh.right,
+                'valid_from': str(crh.valid_from),
+                'valid_to': str(crh.valid_to),
+                'country': crh.country.name,
+                'collecting_society': crh.collecting_society.name
+            })
 
-    return {
+        creations.append({
             'native_id': creation.code,
             'artist': creation.artist.name,
             'title':  creation.title,
@@ -334,11 +331,11 @@ def creation_data(code, score):
             },
             'derivatives': [d.derivative_creation.code for d in
                             creation.derivative_relations],
-            'originals': [o.original_creation.code for o in
-                          creation.original_relations],
-            'releases': [r.release.title for r in creation.releases],
-            'genres': [g.name for g in creation.genres],
-            'styles': [s.name for s in creation.styles],
+            'originals':   [o.original_creation.code for o in
+                            creation.original_relations],
+            'releases':    [r.release.title for r in creation.releases],
+            'genres':      [g.name for g in creation.genres],
+            'styles':      [s.name for s in creation.styles],
             'tariff_categories': [
                 {
                     'name': t.category.name,
@@ -347,8 +344,10 @@ def creation_data(code, score):
                 } for t in creation.tariff_categories],
             'foreign_ids': cfids,
             'rightsholders': rightsholders,
-            'score': score
-           }
+            'score': str(score)
+        })
+
+    return creations
 
 
 # ... swagger/openAPI stuff ...
@@ -356,52 +355,10 @@ def creation_data(code, score):
 
 @swagger.get(permission=NO_PERMISSION_REQUIRED)
 def openAPI_spec(request):
-    my_generator = CorniceSwagger(get_services())
+    services = get_services()
+    # services = get_services(
+    #     names=['collection_creation', 'creation'])
+    my_generator = CorniceSwagger(services)
     my_generator.summary_docstrings = True
-    my_spec = my_generator('Repertoire API', '0.1.0')
+    my_spec = my_generator('Repertoire API', '1.0.0')
     return my_spec
-
-
-# ... some test code TODO: delete ...
-
-# @licensing.put(permission=NO_PERMISSION_REQUIRED,
-#                tags=['creations'],
-#                validators=(colander_body_validator, ),
-#                schema=BodySchema(),
-#                response_schemas=response_schemas)
-# def set_value(request):
-#     """Sets the value and returns *True* or *False*."""
-# 
-#     key = request.matchdict['value']
-#     _VALUES[key] = request.json_body
-#     return _VALUES[key]
-#
-# @licensing.get(
-#     permission=NO_PERMISSION_REQUIRED,
-#     validators=(colander_body_validator,),
-#     factory=UserResource)
-# def get_licensing(request):
-#     data = request.validated
-#
-#     # response
-#     return {
-#         'data': data,
-#     }
-
-@resource(collection_path=_prefix + '/info2/creations',
-          path=_prefix + '/info2/creations/{code}',
-          permission=NO_PERMISSION_REQUIRED,
-          traverse=CreationsResource)
-class CreationApiResource(CreationsResource):
-
-    def __acl__(self):
-        return [(Allow, Everyone, 'view')]
-
-    def collection_get(self,
-                       permission='view'):
-        raise HTTPConflict  # not implemented yet
-        return None
-
-    def get(self,
-            permission='view'):
-        return creation_data(self.request.matchdict['code'], 100)
