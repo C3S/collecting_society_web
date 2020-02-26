@@ -6,6 +6,8 @@ from .collecting_society import CollectingSociety
 from .tariff_category import TariffCategory
 
 from .artist import Artist
+from .artist_identifier import ArtistIdentifier
+from .artist_identifier_space import ArtistIdentifierSpace
 from .release import Release
 from .creation import Creation
 from .creation_contribution import CreationContribution

@@ -20,9 +20,9 @@ from cornice.validators import (
 from portal_web.resources import ResourceBase
 from ....services import _
 from ....models import (
-    Creation as CreationModel,
-    CreationIdentifier,
-    CreationIdentifierSpace
+    Artist as ArtistModel,
+    ArtistIdentifier,
+    ArtistIdentifierSpace
 )
 from . import apiversion
 
@@ -46,10 +46,10 @@ class ResponseSchema(colander.MappingSchema):
 response_schemas = {
     '200': ResponseSchema(
         description="Return 'http ok' response "
-        "code because creation was found"
+        "code because artist was found"
     ),
     '404': ResponseSchema(
-        description="Return 'http not found' response code a creation with "
+        description="Return 'http not found' response code a artist with "
         "matching id couldn't be found in the database"
     )
 }
@@ -76,7 +76,7 @@ class CodeField(colander.SchemaNode):
     oid = "native_id"
     name = "native_id"
     schema_type = colander.String
-    validator = colander.Regex(r'^C\d{10}\Z')
+    validator = colander.Regex(r'^A\d{10}\Z')
 
 
 class ArtistField(colander.SchemaNode):
@@ -87,31 +87,22 @@ class ArtistField(colander.SchemaNode):
     missing = ""
 
 
-class TitleField(colander.SchemaNode):
-    oid = "title"
-    name = "title"
-    schema_type = colander.String
-    validator = colander.Length(min=1)
-    missing = ""
-
-
-class CreationGetSchema(colander.Schema):
+class ArtistGetSchema(colander.Schema):
     code = CodeField(title=_(u"Native Code"))
 
 
 def deferred_idspace_schemas_node(request):
     schema = colander.SchemaNode(
         colander.Mapping(),
-        description=_(u"artist/title combinations, native code, or "
-                      "foreign identifier spaces like isrc or iswc")
+        description=_(u"artist name, native code, or "
+                      "foreign identifier spaces like ipn")
     )
 
     schema.add(CodeField(name='native_id', title=_("Native Code"),
                          missing=""))
     schema.add(ArtistField(name='artist', title=_("Artist")))
-    schema.add(TitleField(name='title', title=_("Title")))
 
-    for id_space in CreationIdentifierSpace.search_all():
+    for id_space in ArtistIdentifierSpace.search_all():
         schema.add(
             colander.SchemaNode(
                 colander.String(),
@@ -136,57 +127,55 @@ def deferred_querystring_validator(request, schema=None, deserializer=None,
                                           **kwargs)
 
 
-# --- service for creation api ------------------------------------------------
+# --- service for artits api --------------------------------------------------
 
 
-@resource(collection_path=apiversion + '/creations',
-          path=apiversion + '/creations/{native_id}',
+@resource(collection_path=apiversion + '/artists',
+          path=apiversion + '/artists/{native_id}',
           permission=NO_PERMISSION_REQUIRED)
-class Creation(ResourceBase):
+class Artist(ResourceBase):
 
     def __acl__(self):
         return [(Allow, Everyone, 'view')]
 
-    @view(tags=['creations'],
+    @view(tags=['artists'],
           schema=deferred_idspace_schemas_node,
           validators=(deferred_querystring_validator,),
           response_schemas=response_schemas)
     def collection_get(self, permission='view'):        
         """
-        Returns the properties of a specific creation
+        Returns the properties of a specific artist
         that is identified using multiple identifiers,
         which are provided as querystring parameters.
 
         Example URL:
-            http://api.collecting_society.test/v1/creations?
+            http://api.collecting_society.test/v1/artists?
             native_id=C0000000001&artist=Registered Name 001
             &title=Title of Song 001&ISRC=DE-A00-20-00001&ISWC=T-000.000.001-C
         """
         multicode = self.request.validated
-        scores = {}  # count hits for creation codes identified by parameters
+        scores = {}  # count hits for artist codes identified by parameters
         number_of_identifiers_given = 0
 
-        # 1st special case: artistname / tracktitle as composite identifier
-        if ('artist' in multicode and 'title' in multicode and
-                multicode['artist'] and multicode['title']):
-            number_of_identifiers_given += 1
-            cs = CreationModel.search_by_artistname_and_title(
-                multicode['artist'], multicode['title'])
-            if cs:
-                c = cs[0]
-                if c.code in scores:
-                    scores[c.code] = scores[c.code] + 1
-                else:
-                    scores[c.code] = 1
+        # 1st special case: artist name  identifier
+        if 'artist' in multicode and multicode['artist']:
+            artists = ArtistModel.search_by_name(multicode['artist'])
+            if not artists:
+                number_of_identifiers_given += 1
+            else:
+                for artist in artists:
+                    number_of_identifiers_given += 1
+                    if artist.code in scores:
+                        scores[artist.code] += 1
+                    else:
+                        scores[artist.code] = 1
         if 'artist' in multicode:
             del multicode['artist']
-        if 'title' in multicode:
-            del multicode['title']
 
-        # 2nd special case: the native code of the creation:
+        # 2nd special case: the native code of the artist:
         if 'native_id' in multicode and multicode['native_id']:
             number_of_identifiers_given += 1
-            c = CreationModel.search_by_code(multicode['native_id'])
+            c = ArtistModel.search_by_code(multicode['native_id'])
             if c:
                 if c.code in scores:
                     scores[c.code] = scores[c.code] + 1
@@ -194,22 +183,18 @@ class Creation(ResourceBase):
                     scores[c.code] = 1
             del multicode['native_id']
 
-        # TODO: 3rd special case: audio fingerprint
-        # ...
-        # ...
-
         # last (general) case: search in foreign id spaces defined in
-        #                      CreationIdentifierSpace, e.g. isrc, iswc ...
+        #                      ArtistIdentifierSpace, e.g. isrc, iswc ...
         foreign_idspaces = [space.name for space in
-                            CreationIdentifierSpace.search_all()]
+                            ArtistIdentifierSpace.search_all()]
         for queried_space_id in multicode:
             if (queried_space_id in foreign_idspaces and
                     multicode[queried_space_id]):
                 number_of_identifiers_given += 1
-                cid = CreationIdentifier.search_by_spacecode(
+                aid = ArtistIdentifier.search_by_spacecode(
                     queried_space_id, multicode[queried_space_id])
-                if cid:  # found creation via foreign id?
-                    c = cid.creation
+                if aid:  # found artist via foreign id?
+                    c = aid.artist
                     if c.code in scores:
                         scores[c.code] += 1
                     else:
@@ -222,32 +207,32 @@ class Creation(ResourceBase):
 
         # sort: highest score first
         for code in scores.keys():
-            scores[code] = int(100 * scores[code] 
+            scores[code] = int(100 * scores[code]
                                / number_of_identifiers_given)
         sorted_scores = sorted(scores.items(), key=operator.itemgetter(1),
                                reverse=True)
 
-        return self.creation_data(sorted_scores)
+        return self.artist_data(sorted_scores)
 
-    @view(tags=['creations'],
-          schema=CreationGetSchema,
+    @view(tags=['artists'],
+          schema=ArtistGetSchema,
           validators=(colander_path_validator,),
           response_schemas=response_schemas)
     def get(self, permission='view'):
         """
-        Returns the properties of a specific creation that
+        Returns the properties of a specific artist that
         is identified using the common REST scheme with
-        the native code following the creation object.
+        the native code following the artist object.
 
         Example URL:
-            http://api.collecting_society.test/v1/creations/C0000012345
+            http://api.collecting_society.test/v1/artists/C0000012345
 
         """
-        return self.creation_data([(self.request.matchdict['native_id'], 100)])
+        return self.artist_data([(self.request.matchdict['native_id'], 100)])
 
-    def creation_data(self, sorted_scores):
+    def artist_data(self, sorted_scores):
         """
-        Returns the properties of the found creations.
+        Returns the properties of the found artists.
 
         Args:
             sorted_scores [(String, Int)]: native (C3S) code, i.e "C0000000123"
@@ -255,67 +240,48 @@ class Creation(ResourceBase):
                 parameter(s) (to be returned in the result dict)
 
         Return:
-            creation record (Dictionary) including the score
+            artist record (Dictionary) including the score
 
         Exceptions:
-            HTTPNotFound, if creation can't be found from the code
+            HTTPNotFound, if artist can't be found from the code
         """
 
-        creations = []
+        artists = []
         for code, score in sorted_scores:
-            creation = CreationModel.search_by_code(code)
-            if not creation:
+            artist = ArtistModel.search_by_code(code)
+            if not artist:
                 raise HTTPNotFound
 
-            # assemble creations foreign identifier list
-            cfids = {}
-            for cfid in creation.identifiers:
-                cfids[cfid.space.name] = cfid.id_code
+            # assemble artists foreign identifier list
+            afids = {}
+            for afid in artist.identifiers:
+                afids[afid.space.name] = afid.id_code
 
-            # assemble rightsholders
-            rightsholders = []
-            for crh in creation.rightsholders:
-                rightsholders.append({
-                    'rightsholder_subject': crh.rightsholder_subject.code,
-                    'rightsholder_object': crh.rightsholder_object.code,
-                    'contribution': crh.contribution,
-                    # 'successor': crh.successor,
-                    # 'instrument': ?
-                    'right': crh.right,
-                    'valid_from': str(crh.valid_from),
-                    'valid_to': str(crh.valid_to),
-                    'country': crh.country.name,
-                    'collecting_society': crh.collecting_society.name
-                })
-
-            creations.append({
-                'native_id': creation.code,
-                'artist': creation.artist.name,
-                'title':  creation.title,
-                'lyrics': creation.lyrics,
-                'license': {
-                    'name':    creation.license.name,
-                    'code':    creation.license.code,
-                    'version': creation.license.version,
-                    'country': creation.license.country,
-                    'link':    creation.license.link
-                },
-                'derivatives': [d.derivative_creation.code for d in
-                                creation.derivative_relations],
-                'originals':   [o.original_creation.code for o in
-                                creation.original_relations],
-                'releases':    [r.release.code for r in creation.releases],
-                'genres':      [g.name for g in creation.genres],
-                'styles':      [s.name for s in creation.styles],
-                'tariff_categories': [
-                    {
-                        'name': t.category.name,
-                        'code': t.category.code,
-                        'description': t.category.description
-                    } for t in creation.tariff_categories],
-                'foreign_ids': cfids,
-                'rightsholders': rightsholders,
+            artists.append({
+                'native_id': artist.code,
+                'artist': artist.name,
+                'foreign_ids': afids,
+                # 'party': artist.party,
+                'group': artist.group,
+                'solo_artists': [sa.code for sa in artist.solo_artists],
+                'group_artists': [ga.code for ga in artist.group_artists],
+                'releases': [rl.code for rl in artist.releases],
+                'creations': [cr.code for cr in artist.creations],
+                # 'access_parties': artist.access_parties,
+                # 'invitation_token': artist.invitation_token,
+                'description': artist.description,
+                # 'picture_data': artist.picture_data,
+                # 'picture_data_md5': artist.picture_data_md5,
+                # 'picture_thumbnail_data': artist.picture_thumbnail_data,
+                # 'picture_data_mime_type': artist.picture_data_mime_type,
+                # 'payee': artist.payee,
+                # 'payee_proposal': artist.payee_proposal,
+                # 'payee_acceptances': artist.payee_acceptances,
+                # 'valid_payee': artist.valid_payee,
+                # 'bank_account_number': artist.bank_account_number,
+                # 'bank_account_numbers': artist.bank_account_numbers,
+                # 'bank_account_owner': artist.bank_account_owner
                 'score': str(score)
             })
 
-        return creations
+        return artists

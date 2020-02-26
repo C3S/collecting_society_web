@@ -5,12 +5,11 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 from cornice import Service
 from cornice.service import get_services
 from cornice_swagger.swagger import CorniceSwagger
-
-_apiversion = 'v1'
+from . import apiversion
 
 # Create a service to serve our OpenAPI spec
 swagger = Service(name='OpenAPI',
-                  path=_apiversion+'/__api__',
+                  path=apiversion+'/__api__',
                   description="OpenAPI documentation",
                   )
 
