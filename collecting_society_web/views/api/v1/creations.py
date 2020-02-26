@@ -21,8 +21,8 @@ from cornice.validators import (
 from cornice_swagger.swagger import CorniceSwagger
 
 from portal_web.resources import ResourceBase
-from ...services import _
-from ...models import (
+from ....services import _
+from ....models import (
     Creation as CreationModel,
     CreationIdentifier,
     CreationIdentifierSpace
@@ -30,7 +30,7 @@ from ...models import (
 
 log = logging.getLogger(__name__)
 
-_apiversion = 'v1'
+_apiversion = '/v1'
 
 
 # --- schemas -----------------------------------------------------------------
@@ -165,13 +165,6 @@ class Creation(ResourceBase):
     def get(self,
             permission='view'):
         return creation_data([(self.request.matchdict['native_id'], 100)])
-
-
-# Create a service to serve our OpenAPI spec
-swagger = Service(name='OpenAPI',
-                  path='__api__',
-                  description="OpenAPI documentation",
-                  )
 
 
 # ... parameter processing ...
@@ -348,17 +341,3 @@ def creation_data(sorted_scores):
         })
 
     return creations
-
-
-# ... swagger/openAPI stuff ...
-
-
-@swagger.get(permission=NO_PERMISSION_REQUIRED)
-def openAPI_spec(request):
-    services = get_services()
-    # services = get_services(
-    #     names=['collection_creation', 'creation'])
-    my_generator = CorniceSwagger(services)
-    my_generator.summary_docstrings = True
-    my_spec = my_generator('Repertoire API', '1.0.0')
-    return my_spec
