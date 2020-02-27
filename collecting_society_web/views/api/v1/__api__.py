@@ -17,7 +17,10 @@ swagger = Service(name='OpenAPI',
 @swagger.get(permission=NO_PERMISSION_REQUIRED)
 def openAPI_spec(request):
     services = get_services(
-        names=['collection_creation', 'creation'])
+        names=['collection_artist', 'artist',
+               'collection_creation', 'creation',
+               'collection_release', 'release',
+        ])
     my_generator = CorniceSwagger(services)
     my_generator.summary_docstrings = True
     my_generator.base_path = ''

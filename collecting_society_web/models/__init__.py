@@ -9,6 +9,8 @@ from .artist import Artist
 from .artist_identifier import ArtistIdentifier
 from .artist_identifier_space import ArtistIdentifierSpace
 from .release import Release
+from .release_identifier import ReleaseIdentifier
+from .release_identifier_space import ReleaseIdentifierSpace
 from .creation import Creation
 from .creation_contribution import CreationContribution
 from .creation_derivative import CreationDerivative

@@ -20,9 +20,9 @@ from cornice.validators import (
 from portal_web.resources import ResourceBase
 from ....services import _
 from ....models import (
-    Artist as ArtistModel,
-    ArtistIdentifier,
-    ArtistIdentifierSpace
+    Release as ReleaseModel,
+    ReleaseIdentifier,
+    ReleaseIdentifierSpace
 )
 from . import apiversion
 
@@ -46,10 +46,10 @@ class ResponseSchema(colander.MappingSchema):
 response_schemas = {
     '200': ResponseSchema(
         description="Return 'http ok' response "
-        "code because artist was found"
+        "code because release was found"
     ),
     '404': ResponseSchema(
-        description="Return 'http not found' response code a artist with "
+        description="Return 'http not found' response code a release with "
         "matching id couldn't be found in the database"
     )
 }
@@ -76,33 +76,33 @@ class CodeField(colander.SchemaNode):
     oid = "native_id"
     name = "native_id"
     schema_type = colander.String
-    validator = colander.Regex(r'^A\d{10}\Z')
+    validator = colander.Regex(r'^R\d{10}\Z')
 
 
-class ArtistField(colander.SchemaNode):
-    oid = "artist"
-    name = "artist"
+class ReleaseField(colander.SchemaNode):
+    oid = "release"
+    name = "release"
     schema_type = colander.String
     validator = colander.Length(min=1)
     missing = ""
 
 
-class ArtistGetSchema(colander.Schema):
+class ReleaseGetSchema(colander.Schema):
     code = CodeField(title=_(u"Native Code"))
 
 
 def deferred_idspace_schemas_node(request):
     schema = colander.SchemaNode(
         colander.Mapping(),
-        description=_(u"artist name, native code, or "
-                      "foreign identifier spaces like ipn")
+        description=_(u"release name, native code, or "
+                      "foreign identifier spaces like isrc")
     )
 
     schema.add(CodeField(name='native_id', title=_("Native Code"),
                          missing=""))
-    schema.add(ArtistField(name='artist', title=_("Artist")))
+    schema.add(ReleaseField(name='release', title=_("Release")))
 
-    for id_space in ArtistIdentifierSpace.search_all():
+    for id_space in ReleaseIdentifierSpace.search_all():
         schema.add(
             colander.SchemaNode(
                 colander.String(),
@@ -130,52 +130,52 @@ def deferred_querystring_validator(request, schema=None, deserializer=None,
 # --- service for artits api --------------------------------------------------
 
 
-@resource(collection_path=apiversion + '/artists',
-          path=apiversion + '/artists/{native_id}',
+@resource(collection_path=apiversion + '/releases',
+          path=apiversion + '/releases/{native_id}',
           permission=NO_PERMISSION_REQUIRED)
-class Artist(ResourceBase):
+class Release(ResourceBase):
 
     def __acl__(self):
         return [(Allow, Everyone, 'view')]
 
-    @view(tags=['artists'],
+    @view(tags=['releases'],
           schema=deferred_idspace_schemas_node,
           validators=(deferred_querystring_validator,),
           response_schemas=response_schemas)
-    def collection_get(self, permission='view'):        
+    def collection_get(self, permission='view'):
         """
-        Returns the properties of a specific artist
+        Returns the properties of a specific release
         that is identified using multiple identifiers,
         which are provided as querystring parameters.
 
         Example URL:
-            http://api.collecting_society.test/v1/artists?
-            native_id=C0000000001&artist=Registered Name 001
-            &title=Title of Song 001&ISRC=DE-A00-20-00001&ISWC=T-000.000.001-C
+            http://api.collecting_society.test/v1/releases?
+            native_id=R0000000001&release=Release 001
+            &GRid=A1-ABCDE-0000000001-M&EAN/UPC=0000000000001
         """
         multicode = self.request.validated
-        scores = {}  # count hits for artist codes identified by parameters
+        scores = {}  # count hits for release codes identified by parameters
         number_of_identifiers_given = 0
 
-        # 1st special case: artist name  identifier
-        if 'artist' in multicode and multicode['artist']:
-            artists = ArtistModel.search_by_name(multicode['artist'])
-            if not artists:
+        # 1st special case: release name  identifier
+        if 'release' in multicode and multicode['release']:
+            releases = ReleaseModel.search_by_name(multicode['release'])
+            if not releases:
                 number_of_identifiers_given += 1
             else:
-                for artist in artists:
+                for release in releases:
                     number_of_identifiers_given += 1
-                    if artist.code in scores:
-                        scores[artist.code] += 1
+                    if release.code in scores:
+                        scores[release.code] += 1
                     else:
-                        scores[artist.code] = 1
-        if 'artist' in multicode:
-            del multicode['artist']
+                        scores[release.code] = 1
+        if 'release' in multicode:
+            del multicode['release']
 
-        # 2nd special case: the native code of the artist:
+        # 2nd special case: the native code of the release:
         if 'native_id' in multicode and multicode['native_id']:
             number_of_identifiers_given += 1
-            c = ArtistModel.search_by_code(multicode['native_id'])
+            c = ReleaseModel.search_by_code(multicode['native_id'])
             if c:
                 if c.code in scores:
                     scores[c.code] = scores[c.code] + 1
@@ -184,17 +184,17 @@ class Artist(ResourceBase):
             del multicode['native_id']
 
         # last (general) case: search in foreign id spaces defined in
-        #                      ArtistIdentifierSpace, e.g. isrc, iswc ...
+        #                      ReleaseIdentifierSpace, e.g. isrc, iswc ...
         foreign_idspaces = [space.name for space in
-                            ArtistIdentifierSpace.search_all()]
+                            ReleaseIdentifierSpace.search_all()]
         for queried_space_id in multicode:
             if (queried_space_id in foreign_idspaces and
                     multicode[queried_space_id]):
                 number_of_identifiers_given += 1
-                aid = ArtistIdentifier.search_by_spacecode(
+                aid = ReleaseIdentifier.search_by_spacecode(
                     queried_space_id, multicode[queried_space_id])
-                if aid:  # found artist via foreign id?
-                    c = aid.artist
+                if aid:  # found release via foreign id?
+                    c = aid.release
                     if c.code in scores:
                         scores[c.code] += 1
                     else:
@@ -212,76 +212,97 @@ class Artist(ResourceBase):
         sorted_scores = sorted(scores.items(), key=operator.itemgetter(1),
                                reverse=True)
 
-        return self.artist_data(sorted_scores)
+        return self.release_data(sorted_scores)
 
-    @view(tags=['artists'],
-          schema=ArtistGetSchema,
+    @view(tags=['releases'],
+          schema=ReleaseGetSchema,
           validators=(colander_path_validator,),
           response_schemas=response_schemas)
     def get(self, permission='view'):
         """
-        Returns the properties of a specific artist that
+        Returns the properties of a specific release that
         is identified using the common REST scheme with
-        the native code following the artist object.
+        the native code following the release object.
 
         Example URL:
-            http://api.collecting_society.test/v1/artists/C0000012345
+            http://api.collecting_society.test/v1/releases/R0000012345
 
         """
-        return self.artist_data([(self.request.matchdict['native_id'], 100)])
+        return self.release_data([(self.request.matchdict['native_id'], 100)])
 
-    def artist_data(self, sorted_scores):
+    def release_data(self, sorted_scores):
         """
-        Returns the properties of the found artists.
+        Returns the properties of the found releases.
 
         Args:
-            sorted_scores [(String, Int)]: native (C3S) code, i.e "C0000000123"
+            sorted_scores [(String, Int)]: native (C3S) code, i.e "R0000000123"
                 together with a score certainty in %, derived from the query
                 parameter(s) (to be returned in the result dict)
 
         Return:
-            artist record (Dictionary) including the score
+            release record (Dictionary) including the score
 
         Exceptions:
-            HTTPNotFound, if artist can't be found from the code
+            HTTPNotFound, if release can't be found from the code
         """
 
-        artists = []
+        releases = []
         for code, score in sorted_scores:
-            artist = ArtistModel.search_by_code(code)
-            if not artist:
+            release = ReleaseModel.search_by_code(code)
+            if not release:
                 raise HTTPNotFound
 
-            # assemble artists foreign identifier list
-            afids = {}
-            for afid in artist.identifiers:
-                afids[afid.space.name] = afid.id_code
+            # assemble releases foreign identifier list
+            rfids = {}
+            for rfid in release.identifiers:
+                rfids[rfid.space.name] = rfid.id_code
 
-            artists.append({
-                'native_id': artist.code,
-                'name': artist.name,
-                'foreign_ids': afids,
-                # 'party': artist.party,
-                'group': artist.group,
-                'solo_artists': [sa.code for sa in artist.solo_artists],
-                'group_artists': [ga.code for ga in artist.group_artists],
-                'releases': [rl.code for rl in artist.releases],
-                'creations': [cr.code for cr in artist.creations],
-                # 'access_parties': artist.access_parties,
-                # 'invitation_token': artist.invitation_token,
-                'description': artist.description,
-                # 'picture_data': artist.picture_data,
-                # 'picture_data_md5': artist.picture_data_md5,
-                # 'picture_thumbnail_data': artist.picture_thumbnail_data,
-                # 'picture_data_mime_type': artist.picture_data_mime_type,
-                # 'payee': artist.payee,
-                # 'payee_proposal': artist.payee_proposal,
-                # 'payee_acceptances': artist.payee_acceptances,
-                # 'valid_payee': artist.valid_payee,
-                # 'bank_account_number': artist.bank_account_number,
-                # 'bank_account_numbers': artist.bank_account_numbers,
-                # 'bank_account_owner': artist.bank_account_owner
+            # assemble rightsholders
+            rightsholders = []
+            for rrh in release.rightsholders:
+                rightsholders.append({
+                    'rightsholder_subject': rrh.rightsholder_subject.code,
+                    'rightsholder_object': rrh.rightsholder_object.code,
+                    'contribution': rrh.contribution,
+                    # 'successor': rrh.successor,
+                    # 'instrument': ?
+                    'right': rrh.right,
+                    'valid_from': str(rrh.valid_from),
+                    'valid_to': str(rrh.valid_to),
+                    'country': rrh.country.name,
+                    'collecting_society': rrh.collecting_society.name
+                })
+
+            releases.append({
+                'native_id': release.code,
+                'title': release.title,
+                'foreign_ids': rfids,
+                # 'picture_data': release.picture_data,
+                # 'picture_data_md5': release.picture_data_md5,
+                # 'picture_thumbnail_data': release.picture_thumbnail_data,
+                # 'picture_data_mime_type': release.picture_data_mime_type,
+                'genres': [rg.name for rg in release.genres],
+                'styles': [rs.name for rs in release.styles],
+                'warning': release.warning,
+                'copyright_date': str(release.copyright_date),
+                'production_date': str(release.production_date),
+                'producers': [pd.code for pd in release.producers],
+                'release_date': str(release.release_date),
+                'release_cancellation_date': str(
+                    release.release_cancellation_date),
+                'online_release_date': str(release.online_release_date),
+                'online_cancellation_date': str(
+                    release.online_cancellation_date),
+                'distribution_territory': release.distribution_territory,
+                'label': release.label.name,
+                'label_catalog_number': release.label_catalog_number,
+                'publisher': release.publisher.name,
+                'neighbouring_rights_societies': [
+                    nrs.name for nrs in release.neighbouring_rights_societies],
+                'published': release.published,
+
+                'rightsholders': rightsholders,
                 'score': str(score)
             })
 
-        return artists
+        return releases
