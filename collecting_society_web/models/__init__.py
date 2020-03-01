@@ -26,3 +26,4 @@ from .publisher import Publisher
 from .license import License
 from .track import Track
 from .device import Device
+from .event import Event
