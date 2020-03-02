@@ -27,3 +27,7 @@ from .license import License
 from .track import Track
 from .device import Device
 from .event import Event
+from .location import Location
+from .declaration import Declaration
+from .utilisation import Utilisation
+from .website import Website

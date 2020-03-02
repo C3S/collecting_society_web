@@ -8,8 +8,8 @@ from portal_web.models import Tdb, MixinSearchById
 log = logging.getLogger(__name__)
 
 
-class Event(Tdb, MixinSearchById):
+class Utilisation(Tdb, MixinSearchById):
     """
-    Model wrapper for Tryton model object 'event'
+    Model wrapper for Tryton model object 'utilisation'
     """
-    __name__ = 'event'
+    __name__ = 'utilisation'
