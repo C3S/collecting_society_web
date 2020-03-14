@@ -3,12 +3,12 @@
 
 import logging
 
-from portal_web.models import Tdb, MixinSearchById
+from portal_web.models import Tdb, MixinSearchById, MixinWebuser
 
 log = logging.getLogger(__name__)
 
 
-class Declaration(Tdb, MixinSearchById):
+class Declaration(Tdb, MixinSearchById, MixinWebuser):
     """
     Model wrapper for Tryton model object 'declaration'
     """

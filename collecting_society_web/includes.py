@@ -34,7 +34,8 @@ from .resources import (
     DebugC3sMembershipApiResource,
     DeclarationsResource,
     LocationsResource,
-    DevicesResource
+    DevicesResource,
+    DeclarationResource
 )
 from .views.widgets import (
     MissingArtistsWidget,
@@ -74,6 +75,7 @@ def web_resources(config):
     LicensingResource.add_child(DeclarationsResource)
     LicensingResource.add_child(LocationsResource)
     LicensingResource.add_child(DevicesResource)
+    LicensingResource.add_child(DeclarationsResource)
 
     DebugResource.add_child(DebugC3sMembershipApiResource)
 

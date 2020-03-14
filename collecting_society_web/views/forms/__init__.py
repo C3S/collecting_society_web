@@ -13,6 +13,8 @@ from .edit_creation import EditCreation
 # --- Licensee ---
 from .add_device import AddDevice
 from .edit_device import EditDevice
+from .add_declaration import AddDeclaration
+from .edit_declaration import EditDeclaration
 
 # --- others ---
 from .register_webuser import RegisterWebuser

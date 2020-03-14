@@ -5,46 +5,19 @@ import logging
 
 from portal_web.models import (
     Tdb,
-    Party
+    Party,
+    MixinWebuser
 )
 
 log = logging.getLogger(__name__)
 
 
-class Device(Tdb):
+class Device(Tdb, MixinWebuser):
     """
     Model wrapper for Tryton model object 'device'
     """
 
     __name__ = 'device'
-
-    @classmethod
-    def current_viewable(cls, request):
-        """
-        Searches devices, which the current web_user is allowed to view.
-
-        Args:
-          request (pyramid.request.Request): Current request.
-
-        Returns:
-          list: viewable devices of web_user
-          None: if no match is found
-        """
-        return cls.search_viewable_by_web_user(request.web_user.id)
-
-    @classmethod
-    def current_editable(cls, request):
-        """
-        Searches devices, which the current web_user is allowed to edit.
-
-        Args:
-          request (pyramid.request.Request): Current request.
-
-        Returns:
-          list: editable devices of web_user
-          None: if no match is found
-        """
-        return cls.search_editable_by_web_user(request.web_user.id)
 
     @classmethod
     def search(cls, domain, offset=None, limit=None, order=None,
@@ -152,35 +125,6 @@ class Device(Tdb):
             ('active', 'in', (True, active))
         ])
         return result
-
-    @classmethod
-    def search_viewable_by_web_user(cls, web_user_id, active=True):
-        """
-        Searches devices, which the web_user is allowed to view.
-
-        Args:
-          web_user_id (int): web.user.id
-
-        Returns:
-          list: viewable devices of web_user, empty if none were found
-        """
-        return cls.get().search([('web_user.id', '=', web_user_id)])
-
-    @classmethod
-    def search_editable_by_web_user(cls, web_user_id, active=True):
-        """
-        Searches devices, which the web_user is allowed to edit.
-
-        Args:
-          web_user_id (int): web.user.id
-
-        Returns:
-          list: viewable devices of web_user, empty if none were found
-        """
-        return cls.get().search([
-            ('acl.web_user', '=', web_user_id),
-            ('acl.roles.permissions.code', '=', 'edit_device')
-        ])
 
     @classmethod
     def delete(cls, device):
