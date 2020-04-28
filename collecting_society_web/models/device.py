@@ -5,14 +5,13 @@ import logging
 
 from portal_web.models import (
     Tdb,
-    Party,
-    MixinWebuser
+    Party
 )
 
 log = logging.getLogger(__name__)
 
 
-class Device(Tdb, MixinWebuser):
+class Device(Tdb):
     """
     Model wrapper for Tryton model object 'device'
     """
@@ -125,6 +124,20 @@ class Device(Tdb, MixinWebuser):
             ('active', 'in', (True, active))
         ])
         return result
+
+    @classmethod
+    def belongs_to_current_webuser(cls, request):
+        """
+        returns all objects that belong to a certain licensee
+
+        Args:
+          request (pyramid.request.Request): Current request.
+
+        Returns:
+          list: objects that belong to the licensee
+          None: if no match is found
+        """
+        return cls.get().search([('web_user', '=', request.web_user.id)])
 
     @classmethod
     def delete(cls, device):

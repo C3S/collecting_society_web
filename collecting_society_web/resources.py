@@ -279,9 +279,8 @@ class LicensingResource(ResourceBase):
 
 class DeclarationsResource(ResourceBase):
     """
-    matches the webusers declarations after clicking Declarations Files in the
-    Licensing
-    menu
+    matches the webusers declarations after clicking Declarations in the
+    Licensing menu
     """
     __parent__ = LicensingResource
     __name__ = "declarations"
@@ -300,8 +299,9 @@ class DeclarationsResource(ResourceBase):
     # load resources
     def context_found(self):
         if self.request.view_name == '':
-            self.declarations = Declaration.current_viewable(self.request)
-
+            self.declarations = Declaration.belongs_to_current_licensee(
+                                self.request)
+                                
 
 class DeclarationResource(ModelResource):
     """
@@ -418,7 +418,7 @@ class DevicesResource(ResourceBase):
     # load resources
     def context_found(self):
         if self.request.view_name == '':
-            self.devices = Device.current_viewable(self.request)
+            self.devices = Device.belongs_to_current_webuser(self.request)
         # in add creation, provide content uuid, set by upload form
         if self.request.view_name == 'add':
             device_id = self.request.params.get('device_id', '')

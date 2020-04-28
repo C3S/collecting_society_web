@@ -39,6 +39,7 @@ a { outline:none!important; }
 
 h1, .h1 { color:#317a19; border-bottom:1px solid rgb(221, 221, 221); margin-bottom:15px; padding-left:15px; padding-bottom:5px; font-size:28px; }
 
+.cs-img-smallicon { width:40px; }
 .cs-img-thumb { width:100px; }
 .cs-img-inline { max-width:30px; max-height:30px; display:inline; margin-right:5px; }
 .cs-thin { font-weight:normal; }

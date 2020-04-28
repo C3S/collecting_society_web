@@ -2,7 +2,7 @@
       Repository: https://github.com/C3S/collecting_society_web -->
 <tal:block metal:use-macro="backend39"
            i18n:domain="collecting_society_web"
-           tal:define="devices context.devices">
+           tal:define="declarations context.declarations">
 
     <!-- content left -->
     <tal:block metal:fill-slot="content-left"></tal:block>
@@ -10,7 +10,7 @@
     <!-- content right -->
     <tal:block metal:fill-slot="content-right">
 
-        <h1 class="cs-form-header" i18n:translate="">Devices</h1>
+        <h1 class="cs-form-header" i18n:translate="">Declarations</h1>
 
         <div class="btn-toolbar cs-form-controls" role="toolbar">
             <div class="btn-group" role="group">
@@ -22,31 +22,31 @@
 
         <table class="table cs-table cs-table-list">
 
-            <tr tal:repeat="device devices">
+            <tr tal:repeat="declaration declarations">
 
                 <td class="cs-img-smallicon">
                     <a href="${request.resource_path(
-                               context, device.uuid)}">
+                               context, declaration.creation_time)}">
                         <img class="img-responsive center-block"
                              src="${request.static_path(
                                     'collecting_society_web:'
-                                    'static/img/phoenix_icon_diagram-green.svg')}" />
+                                    'static/img/phoenix_icon_cart-green.svg')}" />
                     </a>
                 </td>
 
                 <td>
                     <a href="${request.resource_path(
-                               context, device.uuid)}"
-                       class="cs-device-title">
-                        ${device.name}
+                               context, declaration.creation_time)}"
+                       class="cs-declaration-title">
+                        ${declaration.period}
                     </a>
                 </td>
 
                 <td colspan='3' class="text-right cs-table-codecolumn">
                     <a href="${request.resource_path(
-                               context, device.uuid)}"
-                       class="cs-device-title">
-                        ${device.uuid}
+                               context, declaration.creation_time)}"
+                       class="cs-declaration-title">
+                        ${declaration.creation_time}
                     </a>
                 </td>
 
