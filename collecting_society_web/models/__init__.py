@@ -28,6 +28,7 @@ from .track import Track
 from .device import Device
 from .event import Event
 from .location import Location
+from .location_category import LocationCategory
 from .declaration import Declaration
 from .utilisation import Utilisation
 from .website import Website

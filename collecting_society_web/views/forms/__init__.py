@@ -15,6 +15,8 @@ from .add_device import AddDevice
 from .edit_device import EditDevice
 from .add_declaration import AddDeclaration
 from .edit_declaration import EditDeclaration
+from .add_location import AddLocation
+from .edit_location import EditLocation
 
 # --- others ---
 from .register_webuser import RegisterWebuser

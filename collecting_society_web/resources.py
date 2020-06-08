@@ -22,8 +22,9 @@ from .models import (
     Release,
     Creation,
     Content,
-    Device,
-    Declaration
+    Declaration,
+    Location,
+    Device
 )
 
 log = logging.getLogger(__name__)
@@ -271,6 +272,8 @@ class LicensingResource(ResourceBase):
             'add_device',
             'list_declarations',
             'add_declaration',
+            'list_locations',
+            'add_location',
         )),
         # prevent inheritance from backend resource
         DENY_ALL
@@ -329,17 +332,17 @@ class DeclarationResource(ModelResource):
 
 class LocationsResource(ResourceBase):
     """
-    matches the webusers devices after clicking Devices Files in Licensing menu
+    matches the locations the webusers is allowed to see or change
     """
     __parent__ = LicensingResource
-    __name__ = "devices"
+    __name__ = "locations"
     _write = ['add']
 
     # traversal
     def __getitem__(self, key):
-        # validate code
+        # validate oid
         if re.match(valid['uuid'], key):
-            return DeviceResource(self.request, key)
+            return LocationResource(self.request, key)
         # views needing writable transactions
         if key in self._write:
             self.readonly = False
@@ -348,58 +351,36 @@ class LocationsResource(ResourceBase):
     # load resources
     def context_found(self):
         if self.request.view_name == '':
-            self.devices = Device.current_viewable(self.request)
-        # in add creation, provide content uuid, set by upload form
-        if self.request.view_name == 'add':
-            device_id = self.request.params.get('device_id', '')
-            if re.match(valid['uuid'], device_id):
-                self.device_id = device_id
-            device_name = self.request.params.get('device_name', '')
-            if len(device_name) > 0:
-                self.device_name = device_name
-            os_name = self.request.params.get('os_name', '')
-            if len(os_name) > 0:
-                self.os_name = os_name
-            os_version = self.request.params.get('os_version', '')
-            if len(os_version) > 0:
-                self.os_version = os_version
-            software_name = self.request.params.get('software_name', '')
-            if len(software_name) > 0:
-                self.software_name = software_name
-            software_version = self.request.params.get('software_version', '')
-            if len(software_version) > 0:
-                self.software_version = software_version
-            software_vendor = self.request.params.get('software_vendor', '')
-            if len(software_vendor) > 0:
-                self.software_vendor = software_vendor
+            self.locations = Location.search_all()  
+            # TODO: restrict access
 
 
 class LocationResource(ModelResource):
     """
-    matches a single device after clicking one in Licensing -> Devices
+    matches a single location after clicking one in Licensing -> Location
     """
     __parent__ = LocationsResource
     _write = ['edit', 'delete']
 
     # load resources
     def context_found(self):
-        self.device = Device.search_by_uuid(self.code)
+        self.location = Device.search_by_oid(self.oid)
 
-    # add instance level permissions
+    # only allow write access, if this webuser created the location
     def __acl__(self):
-        device_in_database = Device.search_by_uuid(self.code)
-        if (device_in_database and
-                self.device.web_user == device_in_database.web_user):
+        location_in_db = Device.search_by_oid(self.oid)
+        if (location_in_db and
+                self.location.web_user.party == location_in_db.web_user.party):
             return [
                 (Allow, self.request.authenticated_userid,
-                    ['show_device', 'edit_device', 'delete_device'])
+                    ['show_location', 'edit_location', 'delete_location'])
             ]
         return []
 
 
 class DevicesResource(ResourceBase):
     """
-    matches the webusers devices after clicking Devices Files in Licensing menu
+    matches the webusers locations after clicking Devices Files in Licensing menu
     """
     __parent__ = LicensingResource
     __name__ = "devices"
@@ -469,7 +450,8 @@ class DeviceResource(ModelResource):
 
 class AccountingResource(ResourceBase):
     """
-    matches the webusers devices after clicking Devices Files in Licensing menu
+    matches the webusers accounting infos after clicking Accounting in
+    Licensing menu
     """
     __parent__ = LicensingResource
     __name__ = "devices"
@@ -516,7 +498,7 @@ class AccountingResource(ResourceBase):
 
 class AccountingItemResource(ModelResource):
     """
-    matches a single device after clicking one in Licensing -> Devices
+    matches a single item after clicking one in Licensing -> Accounting
     """
     __parent__ = AccountingResource
     _write = ['edit', 'delete']
@@ -539,7 +521,7 @@ class AccountingItemResource(ModelResource):
 
 class StatisticsResource(ResourceBase):
     """
-    matches the webusers devices after clicking Devices Files in Licensing menu
+    matches the webusers statistics after clicking Statistics in Licensing menu
     """
     __parent__ = LicensingResource
     __name__ = "devices"
@@ -586,7 +568,7 @@ class StatisticsResource(ResourceBase):
 
 class StatisticsItemResource(ModelResource):
     """
-    matches a single device after clicking one in Licensing -> Devices
+    matches a single item after clicking one in Licensing -> Statistics
     """
     __parent__ = StatisticsResource
     _write = ['edit', 'delete']

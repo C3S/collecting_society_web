@@ -240,7 +240,7 @@ def web_registry(config):
     @RepertoireResource.extend_registry
     def repertoire(self):
         reg = self.dict()
-        # main menue
+        # main repertoire menue
         reg['menues']['main'] = [
             {
                 'name': _(u'Dashboard'),
@@ -304,7 +304,7 @@ def web_registry(config):
                 'url':  self.request.resource_path(
                             LicensingResource(self.request), '')}
         ]
-        # main menue
+        # main licensing menue
         reg['menues']['main'] = [
             {
                 'name': _(u'Dashboard'),
