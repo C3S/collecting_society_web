@@ -30,7 +30,7 @@
                         <img class="img-responsive center-block"
                              src="${request.static_path(
                                     'collecting_society_web:'
-                                    'static/img/phoenix_icon_cart-green.svg')}" />
+                                    'static/img/phoenix_icon_store-green.svg')}" />
                     </a>
                 </td>
 
@@ -39,6 +39,14 @@
                                context, location.oid)}"
                        class="cs-location-title">
                         ${location.name}
+                    </a>
+                </td>
+
+                <td class="text-right cs-table-codecolumn">
+                    <a href="${request.resource_path(
+                               context, location.oid)}"
+                       class="cs-location-title">
+                        ${(location.party.addresses[0].city or '') if location.party.addresses else ''}
                     </a>
                 </td>
 
