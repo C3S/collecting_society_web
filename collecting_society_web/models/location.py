@@ -47,7 +47,7 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
         for values in vlist:
             if 'name' not in values:
                 raise KeyError('name is missing')
-            if 'longitude' in values != 'latitude' in values:
+            if ('longitude' in values) != ('latitude' in values):
                 raise KeyError('Missing value in latitude/longitude geoinfo ' +
                                'pair')
         result = cls.get().create(vlist)
