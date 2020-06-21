@@ -50,7 +50,7 @@ class AddLocation(FormController):
 
         party = {
             'name': self.appstruct['contact']['contact_name'],
-            'first_name': self.appstruct['contact']['contact_first_name'],
+            'firstname': self.appstruct['contact']['contact_first_name'],
             'website': self.appstruct['contact']['website'],
             'email': self.appstruct['contact']['email'],
             'fax': self.appstruct['contact']['fax'],
@@ -72,7 +72,6 @@ class AddLocation(FormController):
         address = {
             'name': self.appstruct['address']['address_name'],
             'street': self.appstruct['address']['street'],
-            'streetbis': self.appstruct['address']['streetbis'],
             'zip': self.appstruct['address']['zip'],
             'city': self.appstruct['address']['city'],
             'country': self.appstruct['address']['country']
@@ -214,14 +213,8 @@ class AddressNameField(colander.SchemaNode):
     missing = ""
 
 
-class StreetNameField(colander.SchemaNode):
+class StreetField(colander.SchemaNode):
     oid = "street"
-    schema_type = colander.String
-    missing = ""
-
-
-class StreetBisNameField(colander.SchemaNode):
-    oid = "streetbis"
     schema_type = colander.String
     missing = ""
 
@@ -251,7 +244,8 @@ class GeneralSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     name = NameField(title=_(u"Name"))
     category = CategoryField(title=_(u"Category"))
-    public = PublicField(title=_(u"Public"))
+    public = PublicField(title=_(u"Public data (other licensees may reuse "
+                                 "this location)"))
     latitude = LatitudeField(title=_(u"Latitude"))
     longitude = LongitudeField(title=_(u"Longitude"))
 
@@ -259,7 +253,8 @@ class GeneralSchema(colander.Schema):
 class ContactSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     contact_name = ContactNameField(title=_(u"Contact person name"))
-    contact_first_name = ContactNameField(title=_(u"Contact person first name"))
+    contact_first_name = ContactNameField(
+                         title=_(u"Contact person first name"))
     website = WebsiteField(title=_(u"Website"))
     email = EmailField(title=_(u"Email"))
     fax = FaxField(title=_(u"Fax"))
@@ -268,8 +263,7 @@ class ContactSchema(colander.Schema):
 class AddressSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     address_name = AddressNameField(title=_(u"Name (doorbell)"))
-    street = StreetNameField(title=_(u"Street"))
-    streetbis = StreetBisNameField(title=_(u"Street (bis)"))
+    street = StreetField(title=_(u"Street"))
     zip = ZipField(title=_(u"Zip"))
     city = CityField(title=_(u"City"))
     country = CountryField(title=_(u"Country"))

@@ -47,7 +47,23 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
         for values in vlist:
             if 'name' not in values:
                 raise KeyError('name is missing')
-            if 'longitude' not in values or 'latitude' not in values:
-                raise KeyError('Full latitude/longitude geoinfo is necessary')
+            if 'longitude' in values != 'latitude' in values:
+                raise KeyError('Missing value in latitude/longitude geoinfo ' +
+                               'pair')
         result = cls.get().create(vlist)
         return result or None
+
+    @classmethod
+    def delete(cls, location):
+        """
+        Deletes location
+
+        Args:
+          location (list): locations::
+
+            [location1, location2, ...]
+
+        Returns:
+          ?
+        """
+        return cls.get().delete(location)

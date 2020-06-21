@@ -30,7 +30,7 @@
 
                 <div tal:content="structure AddLocation" style="float: left;"/>
 
-                <div id="map" style="width: 300px; height: 500px;"/>
+                <div id="map" style="width: 400px; height: 530px;"/>
 
                 <script>
                     var form = document.getElementById('AddLocation');
@@ -44,21 +44,49 @@
                         tileSize: 512,
                         zoomOffset: -1
                     }).addTo(mymap);
-                    L.marker([form.latitude.value, form.longitude.value]).addTo(mymap)
-                            .bindPopup(form.name.value).openPopup();
+
+                    var theMarker = {};
+                    theMarker = L.marker([form.latitude.value, form.longitude.value]).addTo(mymap);
                             
                     function onMapClick(e) {
-                        var form = document.getElementById('AddLocation');
                         if (form)
                         {
-                            form.latitude.value = e.latlng.lat;
-                            form.longitude.value = e.latlng.lng;
-                                L.marker([form.latitude.value, form.longitude.value]).addTo(mymap)
-                            .bindPopup(form.name.value).openPopup();
+                            form.latitude.value = e.latlng.lat.toFixed(4);
+                            form.longitude.value = e.latlng.lng.toFixed(4);
+                            repositionMarker(e.latlng.lat, e.latlng.lng);
                         }
+                    
+                    }
+
+                    function repositionMarker(lat, lng) {
+                        if (theMarker != undefined) {
+                            mymap.removeLayer(theMarker);
+                        };
+                        theMarker = L.marker([lat, lng]).addTo(mymap);
+                        mymap.setView([form.latitude.value, form.longitude.value]);
                     }
 
                     mymap.on('click', onMapClick);
+
+                    $('.deform').find('input#latitude.form-control').on("change", 
+                        function(e) { repositionMarker(form.latitude.value, form.longitude.value);
+                        console.log(form.latitude.value, form.longitude.value); }
+                    );
+
+                    $('.deform').find('input#latitude.form-control').keyup(
+                        function(e) { repositionMarker(form.latitude.value, form.longitude.value);
+                        console.log(form.latitude.value, form.longitude.value); }
+                    );
+
+                    $('.deform').find('input#longitude.form-control').on("change", 
+                        function(e) { repositionMarker(form.latitude.value, form.longitude.value);
+                        console.log(form.latitude.value, form.longitude.value); }
+                    );
+
+                    $('.deform').find('input#longitude.form-control').keyup(
+                        function(e) { repositionMarker(form.latitude.value, form.longitude.value);
+                        console.log(form.latitude.value, form.longitude.value); }
+                    );
                 </script>
 
             </div>

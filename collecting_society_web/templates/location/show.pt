@@ -1,0 +1,145 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend363"
+           i18n:domain="collecting_society_web"
+           tal:define="location context.location">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <h1>
+            ${location.name}
+            <small tal:condition="location.party.addresses and 
+                location.party.addresses[0].city != ''">
+                    ${location.party.addresses[0].city}
+            </small>
+        </h1>
+
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="${request.resource_path(context, '..')}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Locations</a>
+                <a href="${request.resource_path(context, 'edit')}"
+                   class="btn btn-primary" role="button"
+                   i18n:translate="">Edit</a>
+            </div>
+            <div class="btn-group cs-form-controls pull-right" role="group">
+                <a href="${request.resource_path(context, 'delete')}"
+                   class="btn btn-danger" role="button"
+                   i18n:translate="">Delete</a>
+            </div>
+        </div>
+
+        <table class="table cs-table cs-table-show">
+
+            <tr>
+                <th i18n:translate="">Name</th>
+                <td>${location.name}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Category</th>
+                <td>${location.category.name}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Public data</th>
+                <td tal:condition="location.public" i18n:translate="">yes</td>
+                <td tal:condition="not location.public" i18n:translate="">no</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Latitude</th>
+                <td>
+                    <div tal:condition="location.latitude > 0" i18n:translate="">${round(location.latitude, 4)} (north)</div>
+                    <div tal:condition="location.latitude < 0" i18n:translate="">${round(location.latitude, 4)} (south)</div>
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Longitude</th>
+                <td>
+                    <div tal:condition="location.longitude > 0" i18n:translate="">${round(location.longitude, 4)} (east)</div>
+                    <div tal:condition="location.longitude < 0" i18n:translate="">${round(location.longitude, 4)} (west)</div>
+                </td>
+            </tr>
+
+            <tr tal:condition="location.spaces">
+                <th i18n:translate="">Spaces</th>
+                <td>
+                    <div tal:repeat="space location.spaces">
+                        ${space.category.name} (${space.size} m²)
+                    </div>
+                </td>
+            </tr>            
+
+            <hr/>
+
+            <tr>
+                <th i18n:translate="">Contact person name</th>
+                <td>${location.party.name}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Contact person first name</th>
+                <td>${location.party.firstname}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Website</th>
+                <td>${location.party.website}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Email</th>
+                <td>${location.party.email}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Fax</th>
+                <td>${location.party.fax}</td>
+            </tr>
+
+            <div tal:condition="location.party.addresses">
+
+                <hr/>
+
+                <tr>
+                    <th i18n:translate="">Name on doorbell</th>
+                    <td>${location.party.addresses[0].name}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Street</th>
+                    <td>${location.party.addresses[0].street}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Zip</th>
+                    <td>${location.party.addresses[0].zip}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">City</th>
+                    <td>${location.party.addresses[0].city}</td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Country</th>
+                    <td>${location.party.addresses[0].country}</td>
+                </tr>
+            
+            </div>
+
+        </table>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right"></tal:block>
+
+</tal:block>

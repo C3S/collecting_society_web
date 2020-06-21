@@ -67,15 +67,16 @@ class LocationViews(ViewBase):
         permission='delete_location',
         decorator=Tdb.transaction(readonly=False))
     def delete(self):
+        # TODO: check if location is used in any event and disallow delete then
         name = self.context.location.name
         Location.delete([self.context.location])
         log.info("location delete successful for %s: %s (%s)" % (
             self.request.web_user, name, self.context.code
         ))
         self.request.session.flash(
-            _(u"Location deleted: ") + name + ' (' + self.context.id + ')',
-            _(u"Location deleted: ${name} (${id})",
-              mapping={'name': name, 'id': self.context.id}),
+            _(u"Location deleted: ") + name,
+            _(u"Location deleted: ${name}",
+              mapping={'name': name}),
             'main-alert-success'
         )
         return self.redirect('..')

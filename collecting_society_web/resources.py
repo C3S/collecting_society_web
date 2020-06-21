@@ -364,13 +364,14 @@ class LocationResource(ModelResource):
 
     # load resources
     def context_found(self):
-        self.location = Device.search_by_oid(self.oid)
+        self.location = Location.search_by_oid(self.code)
 
     # only allow write access, if this webuser created the location
     def __acl__(self):
-        location_in_db = Device.search_by_oid(self.oid)
-        if (location_in_db and
-                self.location.web_user.party == location_in_db.web_user.party):
+        location_in_db = Location.search_by_oid(self.code)
+        if (location_in_db  # TODO: do we need an entity creato here?    and
+            #   self.location.web_user.party == location_in_db.web_user.party
+            ):
             return [
                 (Allow, self.request.authenticated_userid,
                     ['show_location', 'edit_location', 'delete_location'])
