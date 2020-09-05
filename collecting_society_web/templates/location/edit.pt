@@ -14,26 +14,27 @@
 
         <div class="cs-form-container">
 
-            <h1 class="cs-form-header" i18n:translate="">Add Location</h1>
+            <h1 class="cs-form-header" i18n:translate="">Edit Location</h1>
 
             <div class="btn-toolbar cs-form-controls" role="toolbar">
                 <div class="btn-group" role="group">
-                    <a href="${request.resource_path(context)}"
-                    class="btn btn-default" role="button"
-                    i18n:translate="">Locations</a>
-                    <a href="#" class="btn btn-primary" role="button"
-                    onclick="$('#AddLocationsubmit').click();"
-                    i18n:translate="">Submit</a>
+                    <a href="${request.resource_path(context, '..')}"
+                       class="btn btn-default" role="button"
+                       i18n:translate="">Locations</a>
+                    <a class="btn btn-primary" role="button"
+                       onclick="$('#EditLocationsubmit').click();"
+                       i18n:translate="">Submit</a>
                 </div>
             </div>
+
             <div class="cs-formdata-and-map-container">
 
-                <div tal:content="structure AddLocation" style="float: left;"/>
+                <div tal:content="structure EditLocation" style="float: left;"/>
 
                 <div id="map" style="width: 300px; height: 530px;"/>
 
                 <script>
-                    var form = document.getElementById('AddLocation');
+                    var form = document.getElementById('EditLocation');
                     var mymap = L.map('map').setView([form.latitude.value, form.longitude.value], 15);
                     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
                         maxZoom: 18,

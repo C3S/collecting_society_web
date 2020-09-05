@@ -29,6 +29,8 @@ from .device import Device
 from .event import Event
 from .location import Location
 from .location_category import LocationCategory
+from .location_space import LocationSpace
+from .location_space_category import LocationSpaceCategory
 from .declaration import Declaration
 from .utilisation import Utilisation
 from .website import Website

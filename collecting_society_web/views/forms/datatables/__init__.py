@@ -12,3 +12,4 @@ from .original_sequence import OriginalSequence
 from .content_sequence import ContentSequence
 from .label_sequence import LabelSequence
 from .publisher_sequence import PublisherSequence
+from .location_space_sequence import LocationSpaceSequence

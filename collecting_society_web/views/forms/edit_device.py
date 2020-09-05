@@ -4,9 +4,7 @@
 import logging
 import deform
 
-from portal_web.models import (
-    Tdb
-)
+from portal_web.models import Tdb
 from .add_device import AddDeviceSchema
 from portal_web.views.forms import FormController
 from ...services import _
@@ -102,7 +100,6 @@ class EditDevice(FormController):
             log.info("tried to edit device and write with wrong webuser %s: %s"
                      % (web_user, device))
             # user feedback
-            log.info("edit device successful for %s: %s" % (web_user, device))
             self.request.session.flash(
                 _(u"Device ${name} edited but device"
                   " id ${uuid} hasn't changed",

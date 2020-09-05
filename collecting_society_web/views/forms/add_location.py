@@ -9,7 +9,8 @@ from portal_web.models import Tdb, Party, Address
 from portal_web.views.forms import FormController
 
 from ...services import _
-from ...models import Location, LocationCategory
+from ...models import Location, LocationCategory, LocationSpaceCategory
+from .datatables import LocationSpaceSequence
 
 log = logging.getLogger(__name__)
 
@@ -44,16 +45,15 @@ class AddLocation(FormController):
             # 'party': self.appstruct['party'],
             'public': self.appstruct['general']['public'],
             'latitude': self.appstruct['general']['latitude'],
-            'longitude': self.appstruct['general']['longitude'],
-            # 'spaces': self.appstruct['spaces']
+            'longitude': self.appstruct['general']['longitude']
         }
 
         party = {
             'name': self.appstruct['contact']['contact_name'],
             'firstname': self.appstruct['contact']['contact_first_name'],
-            'website': self.appstruct['contact']['website'],
-            'email': self.appstruct['contact']['email'],
-            'fax': self.appstruct['contact']['fax'],
+            # 'website': self.appstruct['contact']['website'],
+            # 'email': self.appstruct['contact']['email'],
+            # 'fax': self.appstruct['contact']['fax'],
             # 'web_user': web_user,
             # member_c3s
             # member_c3s_token
@@ -77,6 +77,32 @@ class AddLocation(FormController):
             'country': self.appstruct['address']['country']
             # TODO: subsection
         }
+
+        # spaces
+        spaces_create = []
+        spaces = self.appstruct['spaces']['spaces']
+        if spaces:
+            for space in spaces:
+                if space['mode'] == "create":
+                    lsc = LocationSpaceCategory.search_by_code(
+                        space['category'])
+                    if not lsc:
+                        continue
+                    # append space
+                    if space['size_estimated']:
+                        indicator_field = 'estimated_size'
+                    else:
+                        indicator_field = 'confirmed_size'
+                    spaces_create.append({
+                        'name': space['name'],
+                        'category': lsc.id,
+                        indicator_field: space['size']
+                    })
+
+        # agglomerated append actions
+        location['spaces'] = []
+        if spaces_create:
+            location['spaces'].append(('create', spaces_create))
 
         # remove empty fields
         for tab in [location, party, address]:
@@ -162,13 +188,13 @@ class PublicField(colander.SchemaNode):
 class LatitudeField(colander.SchemaNode):
     oid = "latitude"
     schema_type = colander.Float
-    validator = colander.Range(min=-90, max=90)
+    validator = colander.Range(min=-180, max=180)
 
 
 class LongitudeField(colander.SchemaNode):
     oid = "longitude"
     schema_type = colander.Float
-    validator = colander.Range(min=-90, max=90)
+    validator = colander.Range(min=-180, max=180)
 
 
 # -- Contact info tab --
@@ -177,7 +203,6 @@ class LongitudeField(colander.SchemaNode):
 class ContactNameField(colander.SchemaNode):
     oid = "contact_name"
     schema_type = colander.String
-    missing = ""
 
 
 class ContactFirstNameField(colander.SchemaNode):
@@ -210,7 +235,6 @@ class FaxField(colander.SchemaNode):
 class AddressNameField(colander.SchemaNode):
     oid = "address_name"
     schema_type = colander.String
-    missing = ""
 
 
 class StreetField(colander.SchemaNode):
@@ -237,6 +261,12 @@ class CountryField(colander.SchemaNode):
     missing = ""
 
 
+class SubsectionField(colander.SchemaNode):
+    oid = "subsection"
+    schema_type = colander.String
+    missing = ""
+
+
 # --- Schemas -----------------------------------------------------------------
 
 
@@ -255,9 +285,9 @@ class ContactSchema(colander.Schema):
     contact_name = ContactNameField(title=_(u"Contact person name"))
     contact_first_name = ContactNameField(
                          title=_(u"Contact person first name"))
-    website = WebsiteField(title=_(u"Website"))
-    email = EmailField(title=_(u"Email"))
-    fax = FaxField(title=_(u"Fax"))
+    website = WebsiteField(title=_(u"Website (not yet functional)"))
+    email = EmailField(title=_(u"Email (not yet functional)"))
+    fax = FaxField(title=_(u"Fax (not yet functional)"))
 
 
 class AddressSchema(colander.Schema):
@@ -266,8 +296,23 @@ class AddressSchema(colander.Schema):
     street = StreetField(title=_(u"Street"))
     zip = ZipField(title=_(u"Zip"))
     city = CityField(title=_(u"City"))
-    country = CountryField(title=_(u"Country"))
-    # subdivision
+    country = CountryField(title=_(u"Country (not yet functional)"))
+    subsection = SubsectionField(title=_(u"Subsection (not yet functional)"))
+
+
+class SpacesSchema(colander.Schema):
+    title = _(u"Spaces")
+    widget = deform.widget.MappingWidget(template='navs/mapping')
+    spaces = LocationSpaceSequence(title=_("Spaces"),
+                                   min_len=1,
+                                   language_overrides={
+                                       "custom": {"create": _(u"Add Space")}
+                                   })
+    description = _(u"Please add at least one space to the location with a "
+                    "unique name (e.g. as indicated by the floor plan) so we "
+                    "know where the music is actually being played. Examples: "
+                    "show room #1, main floor, concert hall, meadow east to "
+                    "the pond, 2nd stage")
 
 
 class AddLocationSchema(colander.Schema):
@@ -275,6 +320,7 @@ class AddLocationSchema(colander.Schema):
     general = GeneralSchema(title=_(u"General"))
     contact = ContactSchema(title=_(u"Contact information"))
     address = AddressSchema(title=_(u"Business address"))
+    spaces = SpacesSchema()
 
 
 # --- Forms -------------------------------------------------------------------

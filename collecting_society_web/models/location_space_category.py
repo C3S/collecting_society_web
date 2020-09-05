@@ -7,14 +7,15 @@ from portal_web.models import (
     Tdb,
     MixinSearchById,
     MixinSearchByName,
-    MixinSearchByCode
+    MixinSearchByCode,
+    MixinSearchAll
 )
 
 log = logging.getLogger(__name__)
 
 
-class LocationSpaceCategory(Tdb, MixinSearchById, MixinSearchByCode, 
-                            MixinSearchByName):
+class LocationSpaceCategory(Tdb, MixinSearchById, MixinSearchByCode,
+                            MixinSearchByName, MixinSearchAll):
     """
     Model wrapper for Tryton model object 'location.space.category'
     """

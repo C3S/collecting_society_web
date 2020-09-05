@@ -72,7 +72,7 @@
                 <th i18n:translate="">Spaces</th>
                 <td>
                     <div tal:repeat="space location.spaces">
-                        ${space.category.name} (${space.size} m²)
+                        ${space.name} (${space.category.name}, ${space.size} m²)
                     </div>
                 </td>
             </tr>            
