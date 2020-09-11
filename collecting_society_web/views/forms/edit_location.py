@@ -57,13 +57,18 @@ class EditLocation(FormController):
             }
         }
         if location.party.addresses:
+            if location.party.addresses[0].country:
+                country_id = location.party.addresses[0].country.id
+            else:
+                country_id = ''
+
             self.appstruct['address'] = {
                 'address_name': location.party.addresses[0].name or '',
                 'street': location.party.addresses[0].street or '',
                 'zip': location.party.addresses[0].zip or '',
                 'city': location.party.addresses[0].city or '',
-                'country': location.party.addresses[0].country or ''
-                # TODO: subsection
+                'country': country_id
+                # TODO: subdivision
             }
 
         # location spaces
@@ -173,7 +178,7 @@ class EditLocation(FormController):
                 'street': self.appstruct['address']['street'],
                 'zip': self.appstruct['address']['zip'],
                 'city': self.appstruct['address']['city'],
-                # 'country': self.appstruct['address']['country']
+                'country': self.appstruct['address']['country']
                 # 'subsection': self.appstruct['address']['subsection']
                 # TODO: country and subsection
             }

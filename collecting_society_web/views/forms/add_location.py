@@ -5,7 +5,7 @@ import logging
 import colander
 import deform
 
-from portal_web.models import Tdb, Party, Address
+from portal_web.models import Tdb, Party, Address, Country, Subdivision
 from portal_web.views.forms import FormController
 
 from ...services import _
@@ -163,6 +163,21 @@ def deferred_category_widget(node, kw):
     widget = deform.widget.Select2Widget(values=cat_options, multiple=False)
     return widget
 
+@colander.deferred
+def deferred_country_widget(node, kw):
+    countries = Country.search_all()
+    country_options = [(c.id, unicode(c.name)) for c in countries]
+    widget = deform.widget.Select2Widget(values=country_options,
+                                         multiple=False)
+    return widget
+
+@colander.deferred
+def deferred_subdivision_widget(node, kw):
+    subs = Subdivision.search_all()
+    sub_options = [(sub.id, unicode(sub.name)) for sub in subs]
+    widget = deform.widget.Select2Widget(values=sub_options, multiple=False)
+    return widget
+
 # --- Fields ------------------------------------------------------------------
 
 # -- General tab --
@@ -258,12 +273,14 @@ class CityField(colander.SchemaNode):
 class CountryField(colander.SchemaNode):
     oid = "country"
     schema_type = colander.String
+    widget = deferred_country_widget
     missing = ""
 
 
-class SubsectionField(colander.SchemaNode):
-    oid = "subsection"
+class SubdivisionField(colander.SchemaNode):
+    oid = "subdivision"
     schema_type = colander.String
+    widget = deferred_subdivision_widget
     missing = ""
 
 
@@ -296,8 +313,8 @@ class AddressSchema(colander.Schema):
     street = StreetField(title=_(u"Street"))
     zip = ZipField(title=_(u"Zip"))
     city = CityField(title=_(u"City"))
-    country = CountryField(title=_(u"Country (not yet functional)"))
-    subsection = SubsectionField(title=_(u"Subsection (not yet functional)"))
+    country = CountryField(title=_(u"Country"))
+    # TODO: subdivision = SubdivisionField(title=_(u"Subdivision"))
 
 
 class SpacesSchema(colander.Schema):

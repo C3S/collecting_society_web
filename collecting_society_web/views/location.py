@@ -10,7 +10,7 @@ from pyramid.view import (
     view_defaults
 )
 
-from portal_web.models import Tdb
+from portal_web.models import Tdb, Country, Subdivision
 from portal_web.views import ViewBase
 
 from ..services import _
@@ -52,6 +52,7 @@ class LocationViews(ViewBase):
         renderer='../templates/location/show.pt',
         permission='show_location')
     def show(self):
+        self.context.country = self.context.location.party.addresses[0].country.name
         return {}
 
     @view_config(
