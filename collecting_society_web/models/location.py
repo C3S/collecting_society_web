@@ -19,6 +19,24 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
     """
     __name__ = 'location'
 
+
+
+    @classmethod
+    def search_by_entity_creator(cls, party_id, active=True):
+        """
+        Searches locations, the web_user is allowed to view.
+
+        Args:
+          web_user_id (int): web.user.id
+
+        Returns:
+          list: viewable creations of web_user, empty if none were found
+        """
+        return cls.get().search([
+            ('entity_creator.id', '=', party_id),
+            ('active', 'in', (True, active))
+        ])
+
     @classmethod
     def create(cls, vlist):
         """

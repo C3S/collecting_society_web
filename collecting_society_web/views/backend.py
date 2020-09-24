@@ -34,7 +34,7 @@ class BackendViews(ViewBase):
     @view_config(
         name='')
     def dashboard(self):
-        return self.redirect('repertoire')
+        return self.redirect('licensing')
 
     @view_config(
         name='help',

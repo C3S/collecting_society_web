@@ -165,12 +165,19 @@ class EditLocation(FormController):
         if party_record:
             party_vlist = {
                 'name': self.appstruct['contact']['contact_name'],
-                'firstname': self.appstruct['contact']['contact_first_name'],
-                # 'website': self.appstruct['contact']['website'],
-                # 'email': self.appstruct['contact']['email'],
-                # 'fax': self.appstruct['contact']['fax'],
-                # TODO: find out how these undocumented ContactMechanisms work
+                'firstname': self.appstruct['contact']['contact_first_name']
             }
+            if party_record.contact_mechanisms:
+                for contact in party_record.contact_mechanisms:
+                    if contact.type == 'website':
+                        contact.email = self.appstruct['contact']['website']
+                        contact.save()
+                    if contact.type == 'email':
+                        contact.email = self.appstruct['contact']['email']
+                        contact.save()
+                    if contact.type == 'fax':
+                        contact.email = self.appstruct['contact']['fax']
+                        contact.save()
             party_record.write([party_record], party_vlist)
 
             address_vlist = {

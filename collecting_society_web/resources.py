@@ -351,8 +351,7 @@ class LocationsResource(ResourceBase):
     # load resources
     def context_found(self):
         if self.request.view_name == '':
-            self.locations = Location.search_all()  
-            # TODO: restrict access
+            self.locations = Location.search_by_entity_creator(self.request.web_user.party.id)
 
 
 class LocationResource(ModelResource):
@@ -369,8 +368,8 @@ class LocationResource(ModelResource):
     # only allow write access, if this webuser created the location
     def __acl__(self):
         location_in_db = Location.search_by_oid(self.code)
-        if (location_in_db  # TODO: do we need an entity creato here?    and
-            #   self.location.web_user.party == location_in_db.web_user.party
+        if (location_in_db and
+            self.request.web_user.party == location_in_db.entity_creator
             ):
             return [
                 (Allow, self.request.authenticated_userid,

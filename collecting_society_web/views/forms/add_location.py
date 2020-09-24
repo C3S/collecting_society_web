@@ -45,15 +45,28 @@ class AddLocation(FormController):
             # 'party': self.appstruct['party'],
             'public': self.appstruct['general']['public'],
             'latitude': self.appstruct['general']['latitude'],
-            'longitude': self.appstruct['general']['longitude']
+            'longitude': self.appstruct['general']['longitude'],
+            'entity_creator': web_user.party
         }
 
         party = {
             'name': self.appstruct['contact']['contact_name'],
             'firstname': self.appstruct['contact']['contact_first_name'],
-            # 'website': self.appstruct['contact']['website'],
-            # 'email': self.appstruct['contact']['email'],
-            # 'fax': self.appstruct['contact']['fax'],
+                        'contact_mechanisms': [(
+                            'create',
+                            [{
+                                'type': 'website',
+                                'value': self.appstruct['contact']['website']
+                            },
+                            {
+                                'type': 'email',
+                                'value': self.appstruct['contact']['email']
+                            },
+                            {
+                                'type': 'fax',
+                                'value': self.appstruct['contact']['fax']
+                            }]
+                        )],
             # 'web_user': web_user,
             # member_c3s
             # member_c3s_token
@@ -75,7 +88,7 @@ class AddLocation(FormController):
             'zip': self.appstruct['address']['zip'],
             'city': self.appstruct['address']['city'],
             'country': self.appstruct['address']['country']
-            # TODO: subsection
+            # TODO: subsection?
         }
 
         # spaces
