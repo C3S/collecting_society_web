@@ -52,21 +52,21 @@ class AddLocation(FormController):
         party = {
             'name': self.appstruct['contact']['contact_name'],
             'firstname': self.appstruct['contact']['contact_first_name'],
-                        'contact_mechanisms': [(
-                            'create',
-                            [{
-                                'type': 'website',
-                                'value': self.appstruct['contact']['website']
-                            },
-                            {
-                                'type': 'email',
-                                'value': self.appstruct['contact']['email']
-                            },
-                            {
-                                'type': 'fax',
-                                'value': self.appstruct['contact']['fax']
-                            }]
-                        )],
+            'contact_mechanisms': [(
+                'create',
+                [{
+                    'type': 'website',
+                    'value': self.appstruct['contact']['website']
+                },
+                {
+                    'type': 'email',
+                    'value': self.appstruct['contact']['email']
+                },
+                {
+                    'type': 'fax',
+                    'value': self.appstruct['contact']['fax']
+                }]
+            )],
             # 'web_user': web_user,
             # member_c3s
             # member_c3s_token
@@ -315,9 +315,9 @@ class ContactSchema(colander.Schema):
     contact_name = ContactNameField(title=_(u"Contact person name"))
     contact_first_name = ContactNameField(
                          title=_(u"Contact person first name"))
-    website = WebsiteField(title=_(u"Website (not yet functional)"))
-    email = EmailField(title=_(u"Email (not yet functional)"))
-    fax = FaxField(title=_(u"Fax (not yet functional)"))
+    website = WebsiteField(title=_(u"Website"))
+    email = EmailField(title=_(u"Email"))
+    fax = FaxField(title=_(u"Fax"))
 
 
 class AddressSchema(colander.Schema):

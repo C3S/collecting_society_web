@@ -13,7 +13,7 @@ class TestEvent(UnitTestBase, TestDataPortal, TestDataCollectingSociety):
     @classmethod
     def setUpClass(cls):
         """
-        Initializes the database connection and creats test data.
+        Initializes the database connection and creates test data.
         """
         super(TestEvent, cls).setUpClass()
         Tdb.init()
@@ -26,7 +26,8 @@ class TestEvent(UnitTestBase, TestDataPortal, TestDataCollectingSociety):
         cls.test_location = cls.createLocation(
             name="Gargoyle Club (upstairs)",
             category=lcat_nichtclub,
-            party=test_party
+            party=test_party,
+            entity_creator=test_party
         )
 
     @Tdb.transaction()

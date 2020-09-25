@@ -129,7 +129,8 @@ class RegisterWebuser(LoginWebuser):
         _web_user = {
             'email': self.data['email'].lower(),
             'password': self.data['password'],
-            'roles': [('add', [WebUserRole.search_by_code('licenser').id])]
+            'roles': [('add', [WebUserRole.search_by_code('licenser').id,
+                               WebUserRole.search_by_code('licensee').id])]
         }
         template_variables = {}
 

@@ -22,11 +22,12 @@ class TestDataCollectingSociety():
 
     @classmethod
     @Tdb.transaction(readonly=False)
-    def createLocation(cls, name, category, party):
+    def createLocation(cls, name, category, party, entity_creator):
         location, = Tdb.pool().get('location').create([{
             'name': name,
             'category': category,
-            'party': party.id
+            'party': party.id,
+            'entity_creator': entity_creator.id
         }])
         cls.data.append(location)
         return location

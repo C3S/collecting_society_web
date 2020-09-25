@@ -48,6 +48,7 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
             [
                 {
                     'name': str (required)
+                    'entity_creator': int (required)
                 },
                 {
                     ...
@@ -65,6 +66,8 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
         for values in vlist:
             if 'name' not in values:
                 raise KeyError('name is missing')
+            if 'entity_creator' not in values:
+                raise KeyError('entity_creator is missing')
             if ('longitude' in values) != ('latitude' in values):
                 raise KeyError('Missing value in latitude/longitude geoinfo ' +
                                'pair')

@@ -170,13 +170,6 @@ class EditArtist(FormController):
                     # edit artist
                     member_artist.name = member['name']
                     has_email = False
-                    log.debug(
-                        (
-                            "member_artist.party.contact_mechanisms: {}\n"
-                        ).format(
-                            member_artist.party.contact_mechanisms
-                        )
-                    )
                     if member_party.contact_mechanisms:
                         for contact in member_party.contact_mechanisms:
                             if contact.type == 'email':

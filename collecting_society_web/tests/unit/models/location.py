@@ -39,7 +39,8 @@ class TestLocation(UnitTestBase, TestDataPortal, TestDataCollectingSociety):
         locationdata = {
             'name': name,
             'category': self.lcat_nichtclub,
-            'party': self.test_party
+            'party': self.test_party,
+            'entity_creator': self.test_party
         }
         location, = Location.create([locationdata])
         assert location
