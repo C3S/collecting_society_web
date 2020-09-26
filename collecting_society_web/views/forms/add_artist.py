@@ -16,7 +16,7 @@ from portal_web.views.forms import (
 )
 
 from ...services import (_, picture_processing)
-from ...models import Artist
+from ...models import Artist, ArtistIdentifierSpace
 from .datatables import ArtistSequence
 
 log = logging.getLogger(__name__)
@@ -55,6 +55,13 @@ class AddArtist(FormController):
             'entity_origin': 'direct',
             'claim_state': 'claimed',
             'name': self.appstruct['name'],
+            'identifiers': [(
+                'create',
+                [{
+                    'space': ArtistIdentifierSpace.search_by_name('IPN'),
+                    'id_code': self.appstruct['ipn_code']
+                }]
+            )],
             'description': self.appstruct['description'] or '',
         }
 
@@ -172,6 +179,12 @@ class NameField(colander.SchemaNode):
     schema_type = colander.String
 
 
+class IpnCodeField(colander.SchemaNode):
+    oid = "ipn_code"
+    schema_type = colander.String
+    missing = ""
+
+
 class DescriptionField(colander.SchemaNode):
     oid = "description"
     schema_type = colander.String
@@ -192,6 +205,7 @@ class AddArtistSchema(colander.Schema):
     group = GroupField(title=_(u"Group"))
     # title = _(u"Add Artist")
     name = NameField(title=_(u"Name"))
+    ipn_code = IpnCodeField(title=_(u"International Performer Number"))
     description = DescriptionField(title=_(u"Description"))
     picture = PictureField(title=_(u"Picture"))
     members = ArtistSequence(title=_(u"Members"))

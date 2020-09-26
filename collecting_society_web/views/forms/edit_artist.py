@@ -46,6 +46,7 @@ class EditArtist(FormController):
         self.appstruct = {
             'group': artist.group,
             'name': artist.name,
+            'ipn_code': artist.get_id_code('IPN') or '',
             'description': artist.description or ''
         }
 
@@ -190,6 +191,8 @@ class EditArtist(FormController):
 
             # add new member list
             artist.solo_artists = members_future
+
+        artist.set_id_code('IPN', appstruct['ipn_code'])
 
         # update artist
         artist.save()

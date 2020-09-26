@@ -169,9 +169,9 @@
                 <td>${release.publisher.name}</td>
             </tr>
 
-            <tr tal:condition="release.isrc_code">
-                <th i18n:translate="">ISRC Code</th>
-                <td>${release.isrc_code}</td>
+            <tr tal:condition="release.get_id_code('GRid')">
+                <th i18n:translate="">GRid Code</th>
+                <td>${release.get_id_code('GRid')}</td>
             </tr>
 
             <tr tal:condition="release.copyright_date">
@@ -194,9 +194,9 @@
                 <td>${release.label_catalog_number}</td>
             </tr>
 
-            <tr tal:condition="release.ean_upc_code">
+            <tr tal:condition="release.get_id_code('EAN/UPC')">
                 <th i18n:translate="">EAN or UPC Code</th>
-                <td>${release.ean_upc_code}</td>
+                <td>${release.get_id_code('EAN/UPC')}</td>
             </tr>
 
             <tr tal:condition="release.release_date">

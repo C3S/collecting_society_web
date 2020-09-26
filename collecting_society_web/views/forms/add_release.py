@@ -73,8 +73,8 @@ class AddRelease(FormController):
                 [('add', map(int, appstruct['metadata']['styles']))],
             'warning':
                 appstruct['metadata']['warning'],
-            'isrc_code':
-                appstruct['production']['isrc_code'],
+            'grid_code':
+                appstruct['production']['grid_code'],
             'copyright_date':
                 appstruct['production']['copyright_date'],
             'production_date':
@@ -374,14 +374,15 @@ class EanUpcCodeField(colander.SchemaNode):
     missing = ""
 
 
-class IsrcCodeField(colander.SchemaNode):
-    oid = "isrc_code"
+class GRidCodeField(colander.SchemaNode):
+    oid = "grid_code"
     schema_type = colander.String
-    validator = colander.Regex('^[a-zA-Z][a-zA-Z][a-zA-Z0-9][a-zA-Z0-9][a-z'
-                               'A-Z0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*$',
-                               msg=_('Please enter a valid international '
-                                     'standard recording code, for example: '
-                                     'DEA123456789'))
+    validator = colander.Regex(
+        '^A1-[a-zA-Z0-9]{5}-[a-zA-Z0-9]{10}-[a-zA-Z0-9]*$',
+        msg=_('Please enter a valid '
+              'Global Release Identifier, for example: '
+              'A1-2425G-ABC1234002-M')
+    )
     missing = ""
 
 
@@ -447,7 +448,7 @@ class TracksSchema(colander.Schema):
 class ProductionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     publisher = PublisherSequence(title=_(u"Publisher"), max_len=1)
-    isrc_code = IsrcCodeField(title=_(u"ISRC Code"))
+    grid_code = GRidCodeField(title=_(u"GRid Code"))
     copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
     # copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
     production_date = ProductionDateField(title=_(u"Production Date"))

@@ -55,6 +55,11 @@
                 <td>${artist.name}</td>
             </tr>
 
+            <tr tal:condition="artist.get_id_code('IPN')">
+                <th i18n:translate="">IPN</th>
+                <td>${artist.get_id_code('IPN')}</td>
+            </tr>
+
             <tr>
                 <th i18n:translate="">C3S ID</th>
                 <td>${artist.code}</td>

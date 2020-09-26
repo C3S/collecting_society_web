@@ -64,8 +64,8 @@ class EditRelease(FormController):
                 'media': []
             },
             'production': {
-                'isrc_code':
-                    release.isrc_code or '',
+                'grid_code':
+                    release.get_id_code('GRid') or '',
                 'copyright_date':
                     release.copyright_date or '',
                 'production_date':
@@ -75,7 +75,7 @@ class EditRelease(FormController):
                 'label_catalog_number':
                     release.label_catalog_number or '',
                 'ean_upc_code':
-                    release.ean_upc_code or '',
+                    release.get_id_code('EAN/UPC') or '',
                 'release_date':
                     release.release_date or '',
                 'release_cancellation_date':
@@ -182,16 +182,12 @@ class EditRelease(FormController):
                 [('add', map(int, appstruct['metadata']['styles']))],
             'warning':
                 appstruct['metadata']['warning'],
-            'isrc_code':
-                appstruct['production']['isrc_code'],
             'copyright_date':
                 appstruct['production']['copyright_date'],
             'production_date':
                 appstruct['production']['production_date'],
             'label_catalog_number':
                 appstruct['distribution']['label_catalog_number'],
-            'ean_upc_code':
-                appstruct['distribution']['ean_upc_code'],
             'release_date':
                 appstruct['distribution']['release_date'],
             'release_cancellation_date':
@@ -341,6 +337,12 @@ class EditRelease(FormController):
                 if party == release.label.entity_creator:
                     release.label.name = _label['name']
                     release.label.save()
+
+        # identifiers
+        release.set_id_code('GRid', appstruct['production']['grid_code'])
+        release.set_id_code('EAN/UPC',
+                            appstruct['distribution']['ean_upc_code'])
+        release.save()
 
         # publisher
         _publisher = next(iter(appstruct['production']['publisher']), None)
