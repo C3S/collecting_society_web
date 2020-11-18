@@ -139,3 +139,8 @@ class ArtistSchema(colander.Schema):
 class ArtistSequence(DatatableSequence):
     artist_sequence = ArtistSchema()
     widget = artist_sequence_widget
+
+
+class ArtistIndividual(ArtistSequence):
+    min_len = 1
+    max_len = 1

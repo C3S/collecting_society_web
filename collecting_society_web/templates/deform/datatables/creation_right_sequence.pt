@@ -1,0 +1,38 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            apiPath: "creation_rights",
+            columns: [
+                {
+                    name: "right",
+                    title: "${_('Right')}",
+                    data: "right",
+                    className: "all",
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'Select2Widget'
+                    }
+                },
+                {
+                    name: "contribution",
+                    title: "${_('Contribution')}",
+                    data: "contribution",
+                    className: "all",
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'Select2Widget'
+                    }
+                }
+            ],
+        };
+    </script>   
+
+</tal:block>

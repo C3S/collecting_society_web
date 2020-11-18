@@ -1,0 +1,62 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            apiPath: "creation_rightsholder",
+            columns: [
+                {
+                    name: "subject",
+                    title: "${_('Artist')}",
+                    data: "subject",
+                    className: "always",
+                    orderable: true,
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        var text = "";
+                        if(data && data.datatableSequence === true) {
+                            var subdata = data.target.table.rows().data();
+                            if (subdata.length > 0) {
+                                var text = tmpl.encode(subdata[0].name);
+                            }
+                        }
+                        return text;
+                    },
+                    defaultContent: "",
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'DatatableSequenceWidget',
+                    }
+                },
+                {
+                    name: "rights",
+                    title: "${_('Rights')}",
+                    data: "rights",
+                    className: "always",
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        var text = "";
+                        if(data && data.datatableSequence === true) {
+                            var subdata = data.target.table.rows().data();
+                            if (subdata.length > 0) {
+                                var text = tmpl.encode(subdata[0].right);
+                            }
+                        }
+                        return text;
+                    },
+                    defaultContent: "",
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'DatatableSequenceWidget',
+                    }
+                }                         
+            ],
+        };
+    </script>
+
+</tal:block>

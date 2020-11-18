@@ -11,14 +11,18 @@
                     orderable: false,
                     searchable: false,
                     render: function(data, type, row, meta) {
-                        if(type !== 'display' && type !== 'sort')
+                        if(type !== 'display' && type !== 'sort') {
                             return data;
-                        if(data.datatableSequence === true)
-                            data = data.target.table.rows().data();
-                            var artist = tmpl.encode(data[0].artist);
-                            var title = tmpl.encode(data[0].titlefield);
+                        }
+                        var artist = ""
+                        var title = ""
+                        if(data.datatableSequence === true) {
+                            var subdata = data.target.table.rows().data();
+                            artist = tmpl.encode(subdata[0].artist);
+                            title = tmpl.encode(subdata[0].titlefield);
                             if(row.track_title !== "")
                                 title = tmpl.encode(row.track_title);
+                        }
                         return title + "<br><small>" + artist + "</small>";
                     },
                     defaultContent: "",

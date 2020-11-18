@@ -16,8 +16,8 @@
                             return data;
                         var name = "";
                         if(data.datatableSequence === true)
-                            data = data.target.table.rows().data();
-                            name = tmpl.encode(data[0].name);
+                            var subdata = data.target.table.rows().data();
+                            name = tmpl.encode(subdata[0].name);
                         return name;
                     },
                     defaultContent: "",

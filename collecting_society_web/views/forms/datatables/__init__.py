@@ -4,8 +4,10 @@
 
 from creation_tariff_category_sequence import CreationTariffCategorySequence
 
-from .artist_sequence import ArtistSequence
+from .artist_sequence import ArtistSequence, ArtistIndividual
 from .creation_sequence import CreationSequence
+from .creation_right_sequence import CreationRightSequence
+from .creation_rightsholder_sequence import CreationRightsholderSequence
 from .contribution_sequence import ContributionSequence
 from .track_sequence import TrackSequence
 from .original_sequence import OriginalSequence

@@ -3,6 +3,7 @@
 
 import logging
 import deform
+from ast import literal_eval
 
 from portal_web.models import Tdb
 from portal_web.views.forms import FormController
@@ -16,8 +17,11 @@ from ...models import (
     CreationContribution,
     CreationDerivative,
     CreationTariffCategory,
+    CreationRightsholder,
+    CreationRightsholderInstrument,
     CreationRole,
-    Content
+    Content,
+    Instrument
 )
 from .add_creation import (
     AddCreationSchema,
@@ -74,6 +78,57 @@ class EditCreation(FormController):
                     self.appstruct['areas'][
                         'tariff_category_'+tcat.code] = collecting_soc_oid
                     break
+
+        # rightsholders
+        if creation.rightsholders:
+            a_rightsholders = []
+            for rightsholder in creation.rightsholders:
+                rightsholder_mode = 'edit'
+                rightsholder_email = ''
+                #if Artist.is_foreign_contributor(
+                #        self.request, rightsholder, rightsholder.artist):
+                #    artist_mode = 'edit'
+                #    artist_email = rightsholder.artist.party.email
+                #role_oid = ''
+                #if rightsholder.roles:
+                #    role_oid = rightsholder.roles[0].oid
+                #cs_name = ''
+                #if rightsholder.collecting_society:
+                #    cs_name = rightsholder.collecting_society.name
+                #nrs_name = ''
+                #if rightsholder.neighbouring_rights_society:
+                #    nrs_name = rightsholder.neighbouring_rights_society.oid
+                a_rightsholders.append({
+                    'mode': rightsholder_mode,
+                    'subject': [{
+                        'mode': 'edit',
+                        'oid': rightsholder.rightsholder_subject.oid,
+                        'name': rightsholder.rightsholder_subject.name,
+                        'code': rightsholder.rightsholder_subject.code,
+                        'description':
+                            rightsholder.rightsholder_subject.description or
+                            '',
+                        'email': rightsholder_email,
+                    }],
+                    'rights': [
+                        {
+                            'mode': 'edit',
+                            'right': rightsholder.right,
+                            'contribution': rightsholder.contribution,
+                            'old_contribution': rightsholder.contribution,
+                            'instruments': 
+                                [unicode(i.id) for i in
+                                    rightsholder.instruments],
+                            'old_instruments':
+                                repr([unicode(i.id) for i in
+                                    rightsholder.instruments]),
+                        }
+                    ]
+                })
+            self.appstruct['rightsholders'] = {
+                'rightsholders': a_rightsholders,
+                'mode': 'edit'
+            }
 
         # contributions
         if creation.contributions:
@@ -187,148 +242,248 @@ class EditCreation(FormController):
         if a['lyrics']['lyrics']:
             creation.lyrics = a['lyrics']['lyrics']
 
-        # contributions
-        _contributions = self.appstruct['contributions']['contributions']
-        if _contributions:
-            for _contribution in _contributions:
-                _artist = _contribution['artist'][0]
-                _cs = _contribution['collecting_society']
-                _nrs = _contribution['neighbouring_rights_society']
-                _type = _contribution['contribution_type']
-                _role = _contribution['role']
 
-                # create contribution
-                if _contribution['mode'] == "create":
 
-                    # create artist
-                    if _artist['mode'] == "create":
-                        artist = Artist.create_foreign(
-                            party, _artist['name'], _artist['email'],
-                            group=False)
-                        if not artist:
-                            continue
 
-                    # add artist
-                    else:
-                        artist = Artist.search_by_oid(_artist['oid'])
-                        if not artist:
-                            continue
 
-                    # prepare contribution
-                    create = {
-                        'creation': creation.id,
-                        'artist': artist.id,
-                        'type': _contribution['contribution_type']
-                    }
-                    # type: text
-                    if _type == 'text' and _cs:
-                        cs = CollectingSociety.search_by_oid(_cs)
-                        if not cs:
-                            continue
-                        create['collecting_society'] = cs.id
-                    # type: composition
-                    if _type == 'composition' and _role:
-                        role = CreationRole.search_by_oid(_role)
-                        if not role:
-                            continue
-                        create['roles'] = [('add', [role.id])]
-                    # type: performance
-                    if _type == 'performance':
-                        create['performance'] = _contribution['performance']
-                        if _role:
-                            role = CreationRole.search_by_oid(_role)
-                            if not role:
-                                continue
-                            create['roles'] = [('add', [role.id])]
-                        if _nrs:
-                            nrs = CollectingSociety.search_by_oid(_nrs)
-                            if not nrs:
-                                continue
-                            create['neighbouring_rights_society'] = nrs.id
-                    # look for dupes
-                    # dupe_found = False
-                    # for item in _contributions:
-                    #     if (item['artist'][0].id == create['artist'].id and
-                    #         item['role'] == create['role']):
-                    #         dupe_found = True
-                    #         break
-                    # append contribution
-                    # if not dupe_found:
-                    CreationContribution.create([create])
+        # rightsholders
+        a_rightsholders = a['rightsholders']['rightsholders']
+        if a_rightsholders:
+            for a_rightsholder in a_rightsholders:
+                # TODO: filter out rightsholder entries with successors
+                #       so we only show the current righstholders here 
 
-                # create contribution
-                if _contribution['mode'] == "edit":
-                    contribution = CreationContribution.search_by_oid(
-                        _contribution['oid'])
-                    if not contribution or not contribution.creation.permits(
-                            web_user, 'edit_creation'):
+                a_subject = a_rightsholder['subject'][0]
+                a_rights = a_rightsholder['rights']
+
+                # create rightsholder
+                #if a_rightsholder['mode'] == "create":
+                #    continue  # XXXXXXXXXXXXX TODO: foreign subjects
+
+                # edit rightsholder
+                #if a_rightsholder['mode'] == "edit":
+                #    pass
+
+                for a_right in a_rights:
+                    new_contribution = a_right["contribution"]
+                    new_instruments = a_right["instruments"]
+                    old_instruments = set(literal_eval(
+                                          a_right["old_instruments"]))
+                    if (new_contribution == a_right["old_contribution"] and
+                        (new_contribution != "instrument" or
+                            new_instruments == old_instruments)):
+                        continue  # skip, if right hasn't changed
+                    r_right = (
+                        CreationRightsholder.
+                        search_artist_creation_contribution_and_instrument(
+                            artist_code=a_subject["code"],
+                            creation_code=creation["code"],
+                            contribution=a_right["old_contribution"]
+                        ))
+                    if not r_right:
+                        log.warning("right couldn't be found in database: "
+                                    " for editing %s/%s (%s)" % (
+                                        a_subject["code"],
+                                        creation["code"],
+                                        a_right["old_contribution"]))
                         continue
+                    r_right = r_right[0]
+                    r_right.contribution = new_contribution
 
-                    # create artist
-                    if _artist['mode'] == "create":
-                        artist = Artist.create_foreign(
-                            party, _artist['name'], _artist['email'],
-                            group=False)
-                        if not artist:
-                            continue
+                    # modify instruments
+                    instruments_to_add = []
+                    instruments_to_delete = []
+                    instruments_to_assign = []
+                    if new_instruments:
+                        for instrument in new_instruments:
+                            r_ci = CreationRightsholderInstrument.
+                                    search_by_crightsholder_and_instrument(
+                                        r_right.id, instrument)
+                            if r_ci:  # record already exists for instrument?
+                                instruments_to_assign += r_ci
+                                continue  # nothing to do
+                            else:  # new instrument?
+                                if Instrument.search_by_id(instrument):
+                                    # instrument exists?
+                                    instruments_to_add.append({
+                                            'rightsholder': r_right.id,
+                                            'instrument': int(instrument)
+                                    })
+                                else:
+                                    log.warning("instrument id %s couldn't"
+                                                " be found in database "
+                                                " while editing rights for"
+                                                " %s/%s"
+                                                % (
+                                                    str(instrument),
+                                                    a_subject["code"],
+                                                    creation["code"]))
+                    # instrument deleted?
+                    if old_instruments:
+                        for instrument in old_instruments:
+                            if instrument not in new_instruments:
+                                # record exists in db?
+                                r_ci = CreationRightsholderInstrument.
+                                        search_by_crightsholder_and_instrument(
+                                            r_right.id, instrument)
+                                if r_ci:
+                                    instruments_to_delete.append({
+                                        'rightsholder': r_right.id,
+                                        'instrument': int(instrument)
+                                    })
 
-                    # add artist
-                    else:
-                        artist = Artist.search_by_oid(_artist['oid'])
-                        if not artist:
-                            continue
+                    if instruments_to_delete:
+                        CreationRightsholderInstrument.delete(
+                            instruments_to_delete)
+                    if instruments_to_add:
+                        instruments_to_assign += CreationRightsholderInstrument
+                            .create(instruments_to_add))
 
-                        # edit artist
-                        if _artist['mode'] == "edit":
-                            if not Artist.is_foreign_contributor(
-                                    self.request, contribution,
-                                    contribution.artist):
-                                continue
-                            artist.name = _artist['name']
-                            has_email = False
-                            if artist.party.contact_mechanisms:
-                                for contact in artist.party.contact_mechanisms:
-                                    if contact.type == 'email':
-                                        has_email = True
-                                        contact.email = _artist['email']
-                                        contact.save()
-                            if not has_email:
-                                # TODO: find out, how to create a new contact
-                                # mechanism without user validation error
-                                log.debug("warning: email not created (TODO)")
-                            artist.save()
+                    # r_right.instruments = instruments_to_assign
+                    r_right.save()
 
-                    contribution.roles = []
-                    contribution.performance = None
-                    contribution.collecting_society = None
-                    contribution.neighbouring_rights_society = None
-                    contribution.type = _contribution['contribution_type']
-                    # type: text
-                    if _type == 'text' and _cs:
-                        cs = CollectingSociety.search_by_oid(_cs)
-                        if not cs:
-                            continue
-                        contribution.collecting_society = cs.id
-                    # type: composition
-                    if _type == 'composition' and _role:
-                        role = CreationRole.search_by_oid(_role)
-                        if not role:
-                            continue
-                        contribution.roles = [role.id]
-                    # type: performance
-                    if _type == 'performance':
-                        contribution.performance = _contribution['performance']
-                        if _role:
-                            role = CreationRole.search_by_oid(_role)
-                            if not role:
-                                continue
-                            contribution.roles = [role.id]
-                        if _nrs:
-                            nrs = CollectingSociety.search_by_oid(_nrs)
-                            if not nrs:
-                                continue
-                            contribution.neighbouring_rights_society = nrs.id
-                    contribution.save()
+        # contributions
+        #_contributions = self.appstruct['contributions']['contributions']
+        #if _contributions:
+        #    for _contribution in _contributions:
+        #        _artist = _contribution['artist'][0]
+        #        _cs = _contribution['collecting_society']
+        #        _nrs = _contribution['neighbouring_rights_society']
+        #        _type = _contribution['contribution_type']
+        #        _role = _contribution['role']
+#
+        #        # create contribution
+        #        if _contribution['mode'] == "create":
+#
+        #            # create artist
+        #            if _artist['mode'] == "create":
+        #                artist = Artist.create_foreign(
+        #                    party, _artist['name'], _artist['email'],
+        #                    group=False)
+        #                if not artist:
+        #                    continue
+#
+        #            # add artist
+        #            else:
+        #                artist = Artist.search_by_oid(_artist['oid'])
+        #                if not artist:
+        #                    continue
+#
+        #            # prepare contribution
+        #            create = {
+        #                'creation': creation.id,
+        #                'artist': artist.id,
+        #                'type': _contribution['contribution_type']
+        #            }
+        #            # type: text
+        #            if _type == 'text' and _cs:
+        #                cs = CollectingSociety.search_by_oid(_cs)
+        #                if not cs:
+        #                    continue
+        #                create['collecting_society'] = cs.id
+        #            # type: composition
+        #            if _type == 'composition' and _role:
+        #                role = CreationRole.search_by_oid(_role)
+        #                if not role:
+        #                    continue
+        #                create['roles'] = [('add', [role.id])]
+        #            # type: performance
+        #            if _type == 'performance':
+        #                create['performance'] = _contribution['performance']
+        #                if _role:
+        #                    role = CreationRole.search_by_oid(_role)
+        #                    if not role:
+        #                        continue
+        #                    create['roles'] = [('add', [role.id])]
+        #                if _nrs:
+        #                    nrs = CollectingSociety.search_by_oid(_nrs)
+        #                    if not nrs:
+        #                        continue
+        #                    create['neighbouring_rights_society'] = nrs.id
+        #            # look for dupes
+        #            # dupe_found = False
+        #            # for item in _contributions:
+        #            #     if (item['artist'][0].id == create['artist'].id and
+        #            #         item['role'] == create['role']):
+        #            #         dupe_found = True
+        #            #         break
+        #            # append contribution
+        #            # if not dupe_found:
+        #            CreationContribution.create([create])
+#
+        #        # create contribution
+        #        if _contribution['mode'] == "edit":
+        #            contribution = CreationContribution.search_by_oid(
+        #                _contribution['oid'])
+        #            if not contribution or not contribution.creation.permits(
+        #                    web_user, 'edit_creation'):
+        #                continue
+#
+        #            # create artist
+        #            if _artist['mode'] == "create":
+        #                artist = Artist.create_foreign(
+        #                    party, _artist['name'], _artist['email'],
+        #                    group=False)
+        #                if not artist:
+        #                    continue
+#
+        #            # add artist
+        #            else:
+        #                artist = Artist.search_by_oid(_artist['oid'])
+        #                if not artist:
+        #                    continue
+#
+        #                # edit artist
+        #                if _artist['mode'] == "edit":
+        #                    if not Artist.is_foreign_contributor(
+        #                            self.request, contribution,
+        #                            contribution.artist):
+        #                        continue
+        #                    artist.name = _artist['name']
+        #                    has_email = False
+        #                    if artist.party.contact_mechanisms:
+        #                        for contact in artist.party.contact_mechanisms:
+        #                            if contact.type == 'email':
+        #                                has_email = True
+        #                                contact.email = _artist['email']
+        #                                contact.save()
+        #                    if not has_email:
+        #                        # TODO: find out, how to create a new contact
+        #                        # mechanism without user validation error
+        #                        log.debug("warning: email not created (TODO)")
+        #                    artist.save()
+
+                    # contribution.roles = []
+                    # contribution.performance = None
+                    # contribution.collecting_society = None
+                    # contribution.neighbouring_rights_society = None
+                    # contribution.type = _contribution['contribution_type']
+                    # # type: text
+                    # if _type == 'text' and _cs:
+                    #     cs = CollectingSociety.search_by_oid(_cs)
+                    #     if not cs:
+                    #         continue
+                    #     contribution.collecting_society = cs.id
+                    # # type: composition
+                    # if _type == 'composition' and _role:
+                    #     role = CreationRole.search_by_oid(_role)
+                    #     if not role:
+                    #         continue
+                    #     contribution.roles = [role.id]
+                    # # type: performance
+                    # if _type == 'performance':
+                    #     contribution.performance = _contribution['performance']
+                    #     if _role:
+                    #         role = CreationRole.search_by_oid(_role)
+                    #         if not role:
+                    #             continue
+                    #         contribution.roles = [role.id]
+                    #     if _nrs:
+                    #         nrs = CollectingSociety.search_by_oid(_nrs)
+                    #         if not nrs:
+                    #             continue
+                    #         contribution.neighbouring_rights_society = nrs.id
+                    # contribution.save()
 
         # look for removed originals
         # originals = CreationDerivative.search_originals_of_creation_by_id(
@@ -387,7 +542,7 @@ class EditCreation(FormController):
         ctcs_to_delete = []  # collect necessary operations in list
         ctcs_to_add = []     # to minimize number of tryton calls
         tcats = TariffCategory.search_all()
-        for tcat in tcats: # for each tariff category
+        for tcat in tcats:  # for each tariff category
             collecting_soc_oid_new = a['areas']['tariff_category_'+tcat.code]
             # find changes in previously stored collecting societies of creation
             ctc_oid_old = None

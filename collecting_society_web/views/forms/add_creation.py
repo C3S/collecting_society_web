@@ -25,6 +25,7 @@ from .datatables import (
     ContentSequence,
     ContributionSequence,
     CreationSequence,
+    CreationRightsholderSequence,
     CreationTariffCategorySequence
 )
 
@@ -275,20 +276,20 @@ def validate_content(node, values, **kwargs):  # multifield validator
                             mapping={'coco': c.code, 'crco': crco}))
 
     # look for dupes in contributions
-    contributions = values['contributions']['contributions']
-    reduced_contributions = []
-    for contrib in contributions:
-        if contrib['mode'] != 'remove':
-            reduced_contributions.append(
-                (
-                    contrib['artist'][0]['code'],
-                    contrib['contribution_type'],
-                    contrib['role']
-                )
-            )
-    unique_contributions = set(reduced_contributions)
-    if len(reduced_contributions) > len(unique_contributions):
-        raise colander.Invalid(node, _(u"Duplicate contribution found."))
+    # contributions = values['contributions']['contributions']
+    # reduced_contributions = []
+    # for contrib in contributions:
+    #     if contrib['mode'] != 'remove':
+    #         reduced_contributions.append(
+    #             (
+    #                 contrib['artist'][0]['code'],
+    #                 contrib['contribution_type'],
+    #                 contrib['role']
+    #             )
+    #         )
+    # unique_contributions = set(reduced_contributions)
+    # if len(reduced_contributions) > len(unique_contributions):
+    #     raise colander.Invalid(node, _(u"Duplicate contribution found."))
 
 
 # --- Options -----------------------------------------------------------------
@@ -371,10 +372,11 @@ class MetadataSchema(colander.Schema):
     artist = ArtistField(title=_(u"Artist"))
 
 
-class ContributionsSchema(colander.Schema):
-    title = _(u"Contributions")
+class RightsholdersSchema(colander.Schema):
+    title = _(u"Rightsholders")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    contributions = ContributionSequence(title="", min_len=1)
+    rightsholders = CreationRightsholderSequence(title="", min_len=1)
+    # contributions = ContributionSequence(title="", min_len=1)
 
 
 class DerivationSchema(colander.Schema):
@@ -403,7 +405,7 @@ class LyricsSchema(colander.Schema):
 class AddCreationSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
     metadata = MetadataSchema()
-    contributions = ContributionsSchema()
+    rightsholders = RightsholdersSchema()
     derivation = DerivationSchema()
     content = ContentSchema()
     lyrics = LyricsSchema()

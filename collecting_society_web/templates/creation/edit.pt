@@ -29,7 +29,6 @@
             <script class="datatable_sequence_item_script">
                 $(document).ready(function() {
                     $.each($(".deform-sequence-item"), function(_, item) {
-                        console.log($(item));
                         var contribution = $(item)
                             .find('.item-contribution_type').first();
                         var performance = $(item)
