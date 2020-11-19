@@ -15,28 +15,23 @@ class CreationRightsholder(Tdb):
     __name__ = 'creation.rightsholder'
 
     @classmethod
-    def search_artist_creation_contribution_and_instrument(cls,
-                                                              artist_code,
-                                                              creation_code,
-                                                              contribution):
+    def search(cls, domain, offset=None, limit=None, order=None,
+               escape=False):
         """
-        Searches creation.rightsholder by a quadruple of fields
+        Searches creation rightsholders by domain
 
         Args:
-          artist_code (int): artist.code
-          creation_code (int): creation.code
-          contribution (char): "composition", "lyrics", etc.
+          domain (list): domain passed to tryton
 
         Returns:
-          list: creations.rightsholder
-          None: if no match is found
+          obj: list of creation rightsholders
         """
-        result = cls.get().search([
-            ('rightsholder_subject.code', '=', artist_code),
-            ('rightsholder_object.code', '=', creation_code),
-            ('contribution', '=', contribution)
-            ])
-        return result or None
+        # prepare query
+        if escape:
+            domain = cls.escape_domain(domain)
+        # search
+        result = cls.get().search(domain, offset, limit, order)
+        return result
 
     @classmethod
     def search_count(cls, domain, escape=False, active=True):

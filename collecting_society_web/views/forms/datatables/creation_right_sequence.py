@@ -25,11 +25,11 @@ def prepare_ignored(value):
     return value if value else "IGNORED"
 
 
-# def prepare_required(value):
-#     # oid required for add/edit
-#     if value['mode'] != "create" and value['oid'] == "IGNORED":
-#         value['oid'] = ""
-#     return value
+def prepare_required(value):
+    # oid required for add/edit
+    if value['mode'] != "create" and value['oid'] == "IGNORED":
+        value['oid'] = ""
+    return value
 
 
 # --- Options -----------------------------------------------------------------
@@ -55,7 +55,7 @@ contribution_options = [
 @colander.deferred
 def deferred_instrument_widget(node, kw):
     instruments = Instrument.search_all()
-    inst_options = [(inst.id, unicode(inst.name)) for inst in instruments]
+    inst_options = [(inst.oid, unicode(inst.name)) for inst in instruments]
     widget = deform.widget.Select2Widget(values=inst_options, multiple=True)
     return widget
 
@@ -79,6 +79,17 @@ class ModeField(colander.SchemaNode):
         ['create', 'edit'])
 
 
+class OidField(colander.SchemaNode):
+    oid = "oid"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    preparer = [prepare_ignored]
+    validator = colander.Any(
+        colander.uuid,
+        colander.Regex(r'^IGNORED\Z', '')
+    )
+
+
 class RightField(colander.SchemaNode):
     oid = "right"
     schema_type = colander.String
@@ -92,34 +103,20 @@ class ContributionField(colander.SchemaNode):
                                          multiple=False)
 
 
-class OldContributionField(colander.SchemaNode):
-    oid = "old_contribution"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-
-
 class InstrumentsField(colander.SchemaNode):
     oid = "instruments"
     schema_type = colander.Set
     widget = deferred_instrument_widget
 
 
-class OldInstrumentsField(colander.SchemaNode):
-    oid = "old_instruments"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-
-
 # --- Schemas -----------------------------------------------------------------
-
 
 class CreationRightSchema(colander.Schema):
     mode = ModeField()
+    oid = OidField()
     right = RightField()
     contribution = ContributionField()
-    old_contribution = OldContributionField()
     instruments = InstrumentsField()
-    old_instruments = OldInstrumentsField()
     title = ""
 
 

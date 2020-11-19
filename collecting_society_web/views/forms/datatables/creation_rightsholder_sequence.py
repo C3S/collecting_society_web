@@ -20,17 +20,6 @@ from ....models import CreationRightsholder
 log = logging.getLogger(__name__)
 
 
-def prepare_ignored(value):
-    # workaround for conditinally required fields, as form validators are not
-    # processed, if a normal required field is missing
-    return value if value else "IGNORED"
-
-
-def prepare_required(value):
-    # oid required for add/edit
-    return value if value else "IGNORED"
-
-
 # --- Options -----------------------------------------------------------------
 
 
@@ -63,7 +52,6 @@ class CreationRightsholderSchema(colander.Schema):
     mode = ModeField()
     subject = ArtistIndividual(title=_(u"Rightsholder"))
     rights = CreationRightSequence(min_len=1)
-    preparer = [prepare_required]
     title = ""
 
 

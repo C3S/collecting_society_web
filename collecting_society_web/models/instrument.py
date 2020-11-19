@@ -6,12 +6,13 @@ import logging
 from portal_web.models import (
     Tdb,
     MixinSearchById,
+    MixinSearchByOid,
     MixinSearchAll
 )
 log = logging.getLogger(__name__)
 
 
-class Instrument(Tdb, MixinSearchById, MixinSearchAll):
+class Instrument(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
     """
     Model wrapper for Tryton model object 'instrument'
     """
