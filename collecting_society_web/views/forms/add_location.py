@@ -53,19 +53,7 @@ class AddLocation(FormController):
             'name': self.appstruct['contact']['contact_name'],
             'firstname': self.appstruct['contact']['contact_first_name'],
             'contact_mechanisms': [(
-                'create',
-                [{
-                    'type': 'website',
-                    'value': self.appstruct['contact']['website']
-                },
-                {
-                    'type': 'email',
-                    'value': self.appstruct['contact']['email']
-                },
-                {
-                    'type': 'fax',
-                    'value': self.appstruct['contact']['fax']
-                }]
+                'create', []
             )],
             # 'web_user': web_user,
             # member_c3s
@@ -80,7 +68,16 @@ class AddLocation(FormController):
             # identifiers
             # legal_person
             'common_public_interest': 'no'
-        }  
+        }
+        for contact_mechanism in ['website', 'email', 'fax']:
+            cm_value = self.appstruct['contact'][contact_mechanism]
+            if cm_value:
+                party['contact_mechanisms'][0][1].append(
+                    {
+                        'type': contact_mechanism,
+                        'value': cm_value
+                    }
+                )
 
         address = {
             'name': self.appstruct['address']['address_name'],
