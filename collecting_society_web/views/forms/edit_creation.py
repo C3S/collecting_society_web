@@ -3,9 +3,8 @@
 
 import logging
 import deform
-from ast import literal_eval
 
-from portal_web.models import Tdb
+from portal_web.models import Tdb, Country
 from portal_web.views.forms import FormController
 
 from ...services import _
@@ -14,12 +13,9 @@ from ...models import (
     TariffCategory,
     Artist,
     Creation,
-    CreationContribution,
     CreationDerivative,
     CreationTariffCategory,
     CreationRightsholder,
-    CreationRightsholderInstrument,
-    CreationRole,
     Content,
     Instrument
 )
@@ -81,7 +77,7 @@ class EditCreation(FormController):
 
         # rightsholders
         if creation.rightsholders:
-            a_rightsholders = []
+            a_rightsholders = []            
             for rightsholder in creation.rightsholders:
                 subject_mode = "add"
                 subject_email = ""
@@ -111,6 +107,22 @@ class EditCreation(FormController):
                             [str(i.oid) for i in rightsholder.instruments],
                     }]
                 })
+
+            # look for duplicate rightsholders
+            a_rightsholders.sort(key=lambda x: x['subject'][0]['code'])
+            for i in range(len(a_rightsholders)):
+                if (i < len(a_rightsholders)-1 and  # entries with same artist?
+                        a_rightsholders[i]['subject'][0]['code'] ==
+                        a_rightsholders[i+1]['subject'][0]['code']):
+                    if (a_rightsholders[i+1]['rights'][0] not in
+                            a_rightsholders[i]['rights']):  # same right?
+                        # merge rights of the same artist
+                        a_rightsholders[i]['rights'].append(
+                            a_rightsholders[i+1]['rights'][0])
+                    del a_rightsholders[i+1]  # delete duplicate
+
+
+            # finally add rightholders to appstruct
             self.appstruct['rightsholders'] = {
                 'rightsholders': a_rightsholders
             }
@@ -170,14 +182,11 @@ class EditCreation(FormController):
                     original_mode = "edit"
                 a_derivation[original_relation.allocation_type].append({
                     'mode': original_mode,
-                    'code': original_relation.original_creation.
-                        code,
-                    'oid': original_relation.original_creation.
-                        oid,
-                    'titlefield': original_relation.
-                        original_creation.title,
-                    'artist': original_relation.original_creation.
-                        artist.name
+                    'code': original_relation.original_creation.code,
+                    'oid': original_relation.original_creation.oid,
+                    'titlefield': original_relation.original_creation.title,
+                    'artist': 
+                        original_relation.original_creation.artist.name
                 })
 
             self.appstruct['derivation'] = {
@@ -246,7 +255,7 @@ class EditCreation(FormController):
             a_subject = a_rightsholder['subject'][0]
             for a_right in a_rightsholder['rights']:
                 # add objects to create
-                if a_right['mode'] == "create" and a_right['oid'] == "IGNORE":
+                if a_right['mode'] == "create" and a_right['oid'] == "IGNORED":
                     continue
                 # remove objects to delete
                 if a_right['oid'] in rightsholders_current:
@@ -291,7 +300,20 @@ class EditCreation(FormController):
 
                 # create right
                 if a_right['mode'] == "create":
-                    # TODO: create
+                    instrument_ids = []
+                    if a_right["contribution"] == "instrument":
+                        instruments = Instrument.search_by_oids(
+                            a_right["instruments"])
+                        instrument_ids = [i.id for i in instruments]
+                    new_right = {
+                        'rightsholder_subject': rightsholder_subject.id,
+                        'rightsholder_object': creation.id,
+                        'right': a_right['right'],
+                        'contribution': a_right['contribution'],
+                        'instruments': [('add', instrument_ids)],
+                        'country': Country.search_by_code('DE').id
+                    }
+                    CreationRightsholder.create([new_right])
                     continue
 
                 # edit right
@@ -318,7 +340,7 @@ class EditCreation(FormController):
         oids_to_preserve = []
         for derivation_type in ['adaption', 'cover', 'remix']:
             for a_derivation in a['derivation'][derivation_type]:
-                # sanity: already in list? then it must be a dupe: only add once
+                # sanity: already in list? then must be a dupe: only add once
                 if a_derivation['oid'] not in oids_to_preserve:
                     oids_to_preserve.append(a_derivation['oid'])
         if originals:
@@ -336,10 +358,10 @@ class EditCreation(FormController):
                 # sanity checks
                 if a_derivation['code'] == creation.code:  # original of self?
                     self.request.session.flash(
-                        _(u"Warning: A Creation cannot be the original of it self."
-                          " If you do an adaption of a creation, you need to "
-                          "create a new creation in order to be able to refer to "
-                          "it as an original."),
+                        _(u"Warning: A Creation cannot be the original of it "
+                          "self. If you do an adaption of a creation, you "
+                          "need to create a new creation in order to be able "
+                          "to refer to it as an original."),
                         'main-alert-warning'
                     )
                 else:

@@ -52,3 +52,37 @@ class CreationRightsholder(Tdb):
         # search
         result = cls.get().search_count(domain)
         return result
+
+
+    @classmethod
+    def create(cls, vlist):
+        """
+        Creates creation.rightsholder relations
+
+        Args:
+          vlist (list): list of dicts with attributes 
+          to create creation.rightsholder relations::
+
+            [
+                {
+                    'rightsholder_subject': rightsholder_subject.id,
+                    'rightsholder_object': creation.id,
+                    'right': "copyright",
+                    'contribution': "production",
+                    'instruments': instruments_dict,
+                },
+                {
+                    ...
+                }
+            ]
+
+        Raises:
+          KeyError: if required field is missing
+
+        Returns:
+          list: created creation.rightsholder relations
+          None: if no object was created
+        """
+        log.debug('create CreationRightsholder:\n{}'.format(vlist))
+        result = cls.get().create(vlist)
+        return result or None
