@@ -3,7 +3,6 @@
 
     <script metal:fill-slot="settings">
         var datatableSequenceSettings = {
-            apiPath: "creation_rights",
             columns: [
                 {
                     name: "right",
@@ -33,6 +32,6 @@
                 }
             ],
         };
-    </script>   
+    </script>
 
 </tal:block>
