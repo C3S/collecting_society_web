@@ -4,7 +4,6 @@
     <script metal:fill-slot="settings">
         var datatableSequenceSettings = {
             apiPath: "creation",
-            //unique: "code",
             columns: [
                 {
                     name: "type",
@@ -28,8 +27,9 @@
                     render: function(data, type, row, meta) {
                         if(type !== 'display' && type !== 'sort')
                             return data;
-                        if(data.datatableSequence === true)
-                            var subdata = data.target.table.rows().data();
+                        if(data.datatableSequence !== true)
+                            return "";
+                        var subdata = data.target.table.rows().data();
                         return "[" + tmpl.encode(subdata[0].artist) + "]<br>" +
                                tmpl.encode(subdata[0].titlefield);
                     },
