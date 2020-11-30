@@ -15,7 +15,7 @@ from ...models import (
     Creation,
     CreationDerivative,
     CreationTariffCategory,
-    CreationRightsholder,
+    CreationRight,
     Content,
     Instrument
 )
@@ -76,41 +76,43 @@ class EditCreation(FormController):
                     break
 
         # rightsholders
-        if creation.rightsholders:
+        if creation.rights:
             a_rightsholders = []            
-            for rightsholder in creation.rightsholders:
+            for right in creation.rights:
                 subject_mode = "add"
                 subject_email = ""
-                artist = rightsholder.rightsholder_subject
+                artist = right.rightsholder
                 if Artist.is_foreign_rightsholder(
-                        self.request, rightsholder, artist):
+                        self.request, right, artist):
                     subject_mode = "edit"
                     subject_email = artist.party.email
                 a_rightsholders.append({
                     'mode': 'edit',
                     'subject': [{
                         'mode': subject_mode,
-                        'oid': rightsholder.rightsholder_subject.oid,
-                        'name': rightsholder.rightsholder_subject.name,
-                        'code': rightsholder.rightsholder_subject.code,
+                        'oid': right.rightsholder.oid,
+                        'name': right.rightsholder.name,
+                        'code': right.rightsholder.code,
                         'description':
-                            rightsholder.rightsholder_subject.description or
+                            right.rightsholder.description or
                             '',
                         'email': subject_email,
                     }],
                     'rights': [{
                         'mode': 'edit',
-                        'oid': rightsholder.oid,
-                        'right': rightsholder.right,
-                        'contribution': rightsholder.contribution,
+                        'oid': right.oid,
+                        'type_of_right': right.type_of_right,
+                        'contribution': right.contribution,
                         'instruments':
-                            [str(i.oid) for i in rightsholder.instruments],
+                            [str(i.oid) for i in right.instruments],
+                        'collecting_society': right.collecting_society,
                     }]
                 })
 
             # look for duplicate rightsholders
             a_rightsholders.sort(key=lambda x: x['subject'][0]['code'])
-            for i in range(len(a_rightsholders)):
+            i = 0
+            while i < len(a_rightsholders):
                 if (i < len(a_rightsholders)-1 and  # entries with same artist?
                         a_rightsholders[i]['subject'][0]['code'] ==
                         a_rightsholders[i+1]['subject'][0]['code']):
@@ -119,8 +121,11 @@ class EditCreation(FormController):
                         # merge rights of the same artist
                         a_rightsholders[i]['rights'].append(
                             a_rightsholders[i+1]['rights'][0])
-                    del a_rightsholders[i+1]  # delete duplicate
+                    del a_rightsholders[i+1]  # delete duplicate and stay here
+                else:                         # to check for another duplicate
+                    i = i + 1  # move forward if another rightsholder is found
 
+            # TODO: Maybe check for duplicate instruments records an merge them
 
             # finally add rightholders to appstruct
             self.appstruct['rightsholders'] = {
@@ -238,8 +243,8 @@ class EditCreation(FormController):
 
         # rightsholders
         rightsholders_current = {
-            cr.oid: cr for cr in CreationRightsholder.search(
-                ['rightsholder_object.id', '=', creation.id])}
+            cr.oid: cr for cr in CreationRight.search(
+                ['rightsobject.id', '=', creation.id])}
         rightsholders_delete = set(rightsholders_current.values())
 
         # rightsholders: merge artists
@@ -273,10 +278,35 @@ class EditCreation(FormController):
                     _(u"Creation edit failed: ${crct} (${crco})",
                       mapping={'crct': creation.title,
                                'crco': creation.code}),
-                    'main-alert-error'
+                    'main-alert-danger'
                 )
                 self.redirect()
                 return
+
+        # prohibit duplicate rights subjects
+        a_rho_to_remove = []
+        for a_rightsholder in a['rightsholders']['rightsholders']:
+            for a_rho_to_match in a['rightsholders']['rightsholders']:
+                if (a_rightsholder != a_rho_to_match and
+                        a_rightsholder not in a_rho_to_remove and
+                        a_rho_to_match not in a_rho_to_remove):
+                    if (a_rightsholder['subject'][0]['code'] ==
+                            a_rho_to_match['subject'][0]['code']):
+                        if a_rightsholder['mode'] == 'create':
+                            a_rho_to_remove.append(a_rightsholder)
+                        else:  # must be the other one that was newly created
+                            a_rho_to_remove.append(a_rho_to_match)
+                        self.request.session.flash(
+                            _(u"Warning: Only one rightsholder entry allowed "
+                              "for '${name}'. Entry has been removed.",
+                              mapping={
+                                  'name': a_rightsholder['subject'][0]['code']
+                              }),
+                            'main-alert-warning'
+                        )
+        for a_rho in a_rho_to_remove:
+            del a_rho
+        # TODO: cover this also in a colander form validator
 
         # rightsholders: create and edit
         for a_rightsholder in a['rightsholders']['rightsholders']:
@@ -296,6 +326,31 @@ class EditCreation(FormController):
                 # TODO: foreign subjects
                 pass
 
+            # check for duplicate rights per rightsholder and merge instruments
+            #a_rights_to_remove = []
+            #for a_right in a_rightsholder['rights']:
+            #    for a_match in a_rightsholder['rights']:
+            #        if (a_right != a_match and
+            #                a_right not in a_rho_to_remove and
+            #                a_match not in a_rho_to_remove):
+            #            if (a_right['subject'][0]['code'] ==
+            #                    a_match['subject'][0]['code']):
+            #                if a_right['mode'] == 'create':
+            #                    a_rho_to_remove.append(a_right)
+            #                else:  # must be the other one that was newly created
+            #                    a_rho_to_remove.append(a_match)
+            #                self.request.session.flash(
+            #                    _(u"Warning: Only one rightsholder entry allowed "
+            #                    "for '${name}'. Entry has been removed.",
+            #                    mapping={
+            #                        'name': a_rightsholder['subject'][0]['code']
+            #                    }),
+            #                    'main-alert-warning'
+            #                )
+            #for a_rho in a_rho_to_remove:
+            #    del a_rho
+            # TODO: cover this also in a colander form validator                
+
             for a_right in a_rightsholder['rights']:
 
                 # create right
@@ -306,32 +361,36 @@ class EditCreation(FormController):
                             a_right["instruments"])
                         instrument_ids = [i.id for i in instruments]
                     new_right = {
-                        'rightsholder_subject': rightsholder_subject.id,
-                        'rightsholder_object': creation.id,
-                        'right': a_right['right'],
+                        'rightsholder': rightsholder_subject.id,
+                        'rightsobject': creation.id,
+                        'type_of_right': a_right['type_of_right'],
                         'contribution': a_right['contribution'],
                         'instruments': [('add', instrument_ids)],
+                        'collecting_society': a_right['collecting_society'],
                         'country': Country.search_by_code('DE').id
                     }
-                    CreationRightsholder.create([new_right])
+                    CreationRight.create([new_right])
                     continue
 
                 # edit right
                 rightsholder = rightsholders_current[a_right['oid']]
-                rightsholder.right = a_right['right']
-                rightsholder.rightsholder_subject = rightsholder_subject
+                rightsholder.type_of_right = a_right['type_of_right']
+                rightsholder.rightsholder = rightsholder_subject
+                rightsholder.rightsobject = creation
                 rightsholder.contribution = a_right["contribution"]
                 rightsholder.instruments = []
                 if rightsholder.contribution == "instrument":
                     rightsholder.instruments = Instrument.search_by_oids(
                         a_right["instruments"])
+                rightsholder.collecting_society = a_right["collecting_society"]
+                # rightsholder.country = Country.search_by_code('DE').id
                 rightsholder.save()
                 # TODO: collecting society
                 # rightsholder.collecting_society = 
         
         # rightsholders: delete
         if rightsholders_delete:
-            CreationRightsholder.delete(rightsholders_delete)
+            CreationRight.delete(rightsholders_delete)
 
         # look for removed originals
         # originals = CreationDerivative.search_originals_of_creation_by_id(

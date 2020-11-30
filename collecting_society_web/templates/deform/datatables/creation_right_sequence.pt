@@ -6,9 +6,9 @@
             apiPath: "creation_rights",
             columns: [
                 {
-                    name: "right",
-                    title: "${_('Right')}",
-                    data: "right",
+                    name: "type_of_right",
+                    title: "${_('Type')}",
+                    data: "type_of_right",
                     className: "all",
                     orderable: false,
                     searchable: false,
@@ -29,6 +29,20 @@
                     datatableSequence: {
                         position: "displayed",
                         widgetType: 'Select2Widget'
+                    }
+                },
+                {
+                    name: "collecting_society",
+                    title: "${_('Collecting Society')}",
+                    data: "collecting_society",
+                    className: "none",
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    defaultContent: "",
+                    datatableSequence: {
+                        position: "collapsed",
+                        widgetType: 'Select2Widget',
                     }
                 }
             ],

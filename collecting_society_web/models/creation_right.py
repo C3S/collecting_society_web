@@ -8,23 +8,23 @@ from portal_web.models import Tdb
 log = logging.getLogger(__name__)
 
 
-class CreationRightsholder(Tdb):
+class CreationRight(Tdb):
     """
-    Model wrapper for Tryton model object 'creation.rightsholder'
+    Model wrapper for Tryton model object 'creation.right'
     """
-    __name__ = 'creation.rightsholder'
+    __name__ = 'creation.right'
 
     @classmethod
     def search(cls, domain, offset=None, limit=None, order=None,
                escape=False):
         """
-        Searches creation rightsholders by domain
+        Searches creation rights by domain
 
         Args:
           domain (list): domain passed to tryton
 
         Returns:
-          obj: list of creation rightsholders
+          obj: list of creation rights
         """
         # prepare query
         if escape:
@@ -36,13 +36,13 @@ class CreationRightsholder(Tdb):
     @classmethod
     def search_count(cls, domain, escape=False, active=True):
         """
-        Counts creation rightsholders by domain
+        Counts creation rights by domain
 
         Args:
           domain (list): domain passed to tryton
 
         Returns:
-          int: number of creation rightsholders
+          int: number of creation rights
         """
         # prepare query
         if escape:
@@ -57,17 +57,17 @@ class CreationRightsholder(Tdb):
     @classmethod
     def create(cls, vlist):
         """
-        Creates creation.rightsholder relations
+        Creates creation.right relations
 
         Args:
           vlist (list): list of dicts with attributes 
-          to create creation.rightsholder relations::
+          to create creation.right relations::
 
             [
                 {
-                    'rightsholder_subject': rightsholder_subject.id,
-                    'rightsholder_object': creation.id,
-                    'right': "copyright",
+                    'rightsholder': right_subject.id,
+                    'rightsobject': creation.id,
+                    'type_of_right': "copyright",
                     'contribution': "production",
                     'instruments': instruments_dict,
                 },
@@ -80,9 +80,9 @@ class CreationRightsholder(Tdb):
           KeyError: if required field is missing
 
         Returns:
-          list: created creation.rightsholder relations
+          list: created creation.right relations
           None: if no object was created
         """
-        log.debug('create CreationRightsholder:\n{}'.format(vlist))
+        log.debug('create CreationRight:\n{}'.format(vlist))
         result = cls.get().create(vlist)
         return result or None

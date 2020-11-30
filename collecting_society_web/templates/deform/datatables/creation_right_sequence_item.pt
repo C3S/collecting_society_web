@@ -1,0 +1,49 @@
+<div tal:omit-tag="field.widget.hidden"
+     tal:define="hidden hidden|field.widget.hidden;
+                 error_class error_class|field.widget.error_class;
+                 description description|field.description;
+                 title title|field.title;
+                 oid oid|field.oid"
+     class="deform-sequence-item ${field.error and error_class or ''}"
+     i18n:domain="deform">
+
+    ${field.start_mapping()}
+    <div tal:repeat="child field.children"
+         tal:replace="structure child.render_template(field.widget.item_template)" >
+    </div>     
+    ${field.end_mapping()}
+
+    <tal:errors condition="field.error and not hidden"
+                define="errstr 'error-%s' % oid"
+                repeat="msg field.error.messages()">
+        <p tal:condition="msg"
+           id="${errstr if repeat.msg.index==0 else '%s-%s' % (errstr, repeat.msg.index)}"
+           class="${error_class} help-block"
+           i18n:translate="">${msg}</p>
+    </tal:errors>
+
+    <script class="datatable_sequence_item_script">
+        $(document).ready(function() {
+            var form = $(".cs-modal-create .deform-sequence-item");
+            var type_of_right = $('.item-type_of_right').first();
+            var contribution = $('.item-contribution').first();
+            var instruments = $('.item-instruments').first();
+            var cs = $('.item-collecting_society').first();
+            contribution.change(function() {
+                var selected = contribution
+                    .find("select")
+                    .children(":selected")
+                    .first();
+                switch(selected.attr('value')) {
+                    case 'instrument':
+                        instruments.show();
+                        break;
+                    default:
+                        instruments.hide();
+                }
+            });
+            contribution.trigger('change');
+        });
+    </script>
+
+</div>

@@ -93,7 +93,7 @@ class Artist(Tdb, MixinWebuser):
         return True
     
     @classmethod
-    def is_foreign_rightsholder(cls, request, rightsholder, artist):
+    def is_foreign_rightsholder(cls, request, right, artist):
         """
         Checks if the artist is a foreign object and still editable by the
         current webuser.
@@ -106,7 +106,7 @@ class Artist(Tdb, MixinWebuser):
 
         Args:
           request (pyramid.request.Request): Current request.
-          rightsholder (obj): Rightsholder object.
+          right (obj): Right object.
           artist (obj): Artist to check.
 
         Returns:
@@ -114,7 +114,7 @@ class Artist(Tdb, MixinWebuser):
           false: otherwise.
         """
         # sanity checks
-        if artist != rightsholder.rightsholder_subject:
+        if artist != right.rightsholder:
             return False
         # 1) is a foreign object
         if artist.entity_origin != 'indirect':
@@ -124,13 +124,13 @@ class Artist(Tdb, MixinWebuser):
             return False
         # 3) is editable by the current web user
         permission = ""
-        if rightsholder.__class__.__name__ == "CreationRightsholder":
+        if right.__class__.__name__ == "CreationRight":
             permission = "edit_creation"
-        if rightsholder.__class__.__name__ == "ReleaseRightsholder":
+        if right.__class__.__name__ == "ReleaseRight":
             permission = "edit_release"
         if not permission:
             return False
-        if not rightsholder.rightsholder_object.permits(
+        if not right.rightsobject.permits(
                 request.web_user, permission):
             return False
         # 4) TODO: was not part of a distribution yet

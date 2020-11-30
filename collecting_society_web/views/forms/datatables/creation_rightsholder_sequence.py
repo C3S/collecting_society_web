@@ -15,7 +15,7 @@ from portal_web.views.forms.datatables import (
 
 from . import ArtistIndividual, CreationRightSequence
 from ....services import _
-from ....models import CreationRightsholder
+from ....models import CreationRight
 
 log = logging.getLogger(__name__)
 

@@ -14,7 +14,7 @@ from portal_web.views.forms.datatables import (
 )
 
 from ....services import _
-from ....models import CreationRightsholder, Instrument
+from ....models import CreationRight, Instrument, CollectingSociety
 
 log = logging.getLogger(__name__)
 
@@ -60,6 +60,17 @@ def deferred_instrument_widget(node, kw):
     return widget
 
 
+@colander.deferred
+def collecting_society_widget(node, kw):
+    values = [('', '')] + [
+        (tc.oid, tc.name) for tc in CollectingSociety.search(
+            #[("represents_copyright", "=", True)]
+            []  # TODO: switch between neighboring and copyright societies
+                #       according to type_of_right
+        )]
+    return deform.widget.Select2Widget(values=values, placeholder=_("None"))
+
+
 # --- Fields ------------------------------------------------------------------
 
 
@@ -67,7 +78,8 @@ def deferred_instrument_widget(node, kw):
 def creation_right_sequence_widget(node, kw):
     return DatatableSequenceWidget(
         request=kw.get('request'),
-        template='datatables/creation_right_sequence'
+        template='datatables/creation_right_sequence',
+        item_template='datatables/creation_right_sequence_item'
     )
 
 
@@ -90,8 +102,8 @@ class OidField(colander.SchemaNode):
     )
 
 
-class RightField(colander.SchemaNode):
-    oid = "right"
+class TypeOfRightField(colander.SchemaNode):
+    oid = "type_of_right"
     schema_type = colander.String
     widget = deform.widget.Select2Widget(values=right_options, multiple=False)
 
@@ -109,14 +121,23 @@ class InstrumentsField(colander.SchemaNode):
     widget = deferred_instrument_widget
 
 
+class CollectingSocietyField(colander.SchemaNode):
+    oid = "collecting_society"
+    schema_type = colander.String
+    widget = collecting_society_widget
+    validator = colander.uuid
+    missing = ""
+
 # --- Schemas -----------------------------------------------------------------
+
 
 class CreationRightSchema(colander.Schema):
     mode = ModeField()
     oid = OidField()
-    right = RightField()
+    type_of_right = TypeOfRightField()
     contribution = ContributionField()
     instruments = InstrumentsField()
+    collecting_society = CollectingSocietyField()
     title = ""
 
 

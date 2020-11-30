@@ -18,8 +18,8 @@ from .creation_role import CreationRole
 from .creation_tariff_category import CreationTariffCategory
 from .creation_identifier import CreationIdentifier
 from .creation_identifier_space import CreationIdentifierSpace
-from .creation_rightsholder import CreationRightsholder
-from .creation_rightsholder_instrument import CreationRightsholderInstrument
+from .creation_right import CreationRight
+from .creation_right_instrument import CreationRightInstrument
 from .content import Content
 from .genre import Genre
 from .instrument import Instrument
