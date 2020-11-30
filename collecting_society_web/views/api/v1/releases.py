@@ -257,16 +257,16 @@ class Release(ResourceBase):
             for rfid in release.identifiers:
                 rfids[rfid.space.name] = rfid.id_code
 
-            # assemble rightsholders
-            rightsholders = []
+            # assemble rights
+            rights = []
             for rrh in release.rightsholders:
-                rightsholders.append({
-                    'rightsholder_subject': rrh.rightsholder_subject.code,
-                    'rightsholder_object': rrh.rightsholder_object.code,
+                rights.append({
+                    'rightsholder': rrh.rightsholder.code,
+                    'rightsobject': rrh.rightsobject.code,
                     'contribution': rrh.contribution,
                     # 'successor': rrh.successor,
                     # 'instrument': ?
-                    'right': rrh.right,
+                    'type_of_right': rrh.type_of_right,
                     'valid_from': str(rrh.valid_from),
                     'valid_to': str(rrh.valid_to),
                     'country': rrh.country.name,
@@ -301,7 +301,7 @@ class Release(ResourceBase):
                     nrs.name for nrs in release.neighbouring_rights_societies],
                 'published': release.published,
 
-                'rightsholders': rightsholders,
+                'rights': rights,
                 'score': str(score)
             })
 

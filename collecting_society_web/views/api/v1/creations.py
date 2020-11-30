@@ -273,19 +273,19 @@ class Creation(ResourceBase):
                 cfids[cfid.space.name] = cfid.id_code
 
             # assemble rightsholders
-            rightsholders = []
+            rights = []
             for crh in creation.rightsholders:
-                rightsholders.append({
-                    'rightsholder_subject': crh.rightsholder_subject.code,
-                    'rightsholder_object': crh.rightsholder_object.code,
+                rights.append({
+                    'rightsholder': crh.rightsholder.code,
+                    'rightsobject': crh.rightsobject.code,
                     'contribution': crh.contribution,
                     # 'successor': crh.successor,
                     # 'instrument': ?
-                    'right': crh.right,
+                    'type_of_right': crh.type_of_right,
                     'valid_from': str(crh.valid_from),
                     'valid_to': str(crh.valid_to),
                     'country': crh.country.name,
-                    'collecting_society': crh.collecting_society.name
+                    'collecting_society': crh.collecting_society.name or None
                 })
 
             creations.append({
@@ -314,7 +314,7 @@ class Creation(ResourceBase):
                         'description': t.category.description
                     } for t in creation.tariff_categories],
                 'foreign_ids': cfids,
-                'rightsholders': rightsholders,
+                'rights': rights,
                 'score': str(score)
             })
 

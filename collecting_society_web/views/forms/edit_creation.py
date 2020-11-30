@@ -105,7 +105,7 @@ class EditCreation(FormController):
                         'contribution': right.contribution,
                         'instruments':
                             [str(i.oid) for i in right.instruments],
-                        'collecting_society': right.collecting_society,
+                        'collecting_society': right.collecting_society or None,
                     }]
                 })
 
@@ -366,9 +366,12 @@ class EditCreation(FormController):
                         'type_of_right': a_right['type_of_right'],
                         'contribution': a_right['contribution'],
                         'instruments': [('add', instrument_ids)],
-                        'collecting_society': a_right['collecting_society'],
                         'country': Country.search_by_code('DE').id
                     }
+                    if a_right['collecting_society']:
+                        new_right['collecting_society'] = a_right[
+                            'collecting_society'
+                        ]
                     CreationRight.create([new_right])
                     continue
 
@@ -382,7 +385,10 @@ class EditCreation(FormController):
                 if rightsholder.contribution == "instrument":
                     rightsholder.instruments = Instrument.search_by_oids(
                         a_right["instruments"])
-                rightsholder.collecting_society = a_right["collecting_society"]
+                if a_right['collecting_society']:
+                    rightsholder.collecting_society = a_right[
+                        "collecting_society"
+                    ]
                 # rightsholder.country = Country.search_by_code('DE').id
                 rightsholder.save()
                 # TODO: collecting society
