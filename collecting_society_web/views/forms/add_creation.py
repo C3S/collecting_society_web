@@ -7,7 +7,8 @@ import deform
 
 from portal_web.models import (
     Tdb,
-    WebUser
+    WebUser,
+    Country
 )
 from portal_web.views.forms import FormController
 from ...services import _
@@ -16,17 +17,17 @@ from ...models import (
     TariffCategory,
     Artist,
     Creation,
-    CreationRole,
     CreationDerivative,
     CreationTariffCategory,
-    Content
+    CreationRight,
+    Content,
+    Instrument,
+    CollectingSociety
 )
 from .datatables import (
     ContentSequence,
-    ContributionSequence,
     CreationSequence,
-    CreationRightsholderSequence,
-    CreationTariffCategorySequence
+    CreationRightsholderSequence
 )
 
 log = logging.getLogger(__name__)
@@ -96,80 +97,6 @@ class AddCreation(FormController):
             'entity_creator': party,
         }
 
-        # contributions
-        _contributions = self.appstruct['contributions']['contributions']
-        if _contributions:
-            contributions_create = []
-            for _contribution in _contributions:
-                if _contribution['mode'] != "create":
-                    continue
-                _artist = _contribution['artist'][0]
-                _cs = _contribution['collecting_society']
-                _nrs = _contribution['neighbouring_rights_society']
-                _type = _contribution['contribution_type']
-                _role = _contribution['role']
-
-                # create artist
-                if _artist['mode'] == "create":
-                    artist = Artist.create_foreign(
-                        party, _artist['name'], _artist['email'],
-                        group=False)
-                    if not artist:
-                        continue
-
-                # add artist
-                else:
-                    artist = Artist.search_by_oid(_artist['oid'])
-                    if not artist:
-                        continue
-
-                # prepare contribution
-                create = {
-                    'artist': artist.id,
-                    'type': _contribution['contribution_type']
-                }
-                # type: text
-                if _type == 'text' and _cs:
-                    cs = CollectingSociety.search_by_oid(_cs)
-                    if not cs:
-                        continue
-                    create['collecting_society'] = cs.id
-                # type: composition
-                if _type == 'composition' and _role:
-                    role = CreationRole.search_by_oid(_role)
-                    if not role:
-                        continue
-                    create['roles'] = [('add', [role.id])]
-                # type: performance
-                if _type == 'performance':
-                    create['performance'] = _contribution['performance']
-                    if _role:
-                        role = CreationRole.search_by_oid(_role)
-                        if not role:
-                            continue
-                        create['roles'] = [('add', [role.id])]
-                    if _nrs:
-                        nrs = CollectingSociety.search_by_oid(_nrs)
-                        if not nrs:
-                            continue
-                        create['neighbouring_rights_society'] = nrs.Invalid
-                # look for dupes
-                # dupe_found = False
-                # for item in contributions_create:
-                #     if (item['artist'][0].id == create['artist'].id and
-                #         item['role'] == create['role']):
-                #         dupe_found = True
-                #         break
-                # append contribution
-                # if not dupe_found:
-                contributions_create.append(create)
-
-            # append actions
-            _creation['contributions'] = []
-            if contributions_create:
-                _creation['contributions'].append(
-                    ('create', contributions_create))
-
         # content
         _creation['content'] = []
         for content_type in ['audio', 'sheet']:
@@ -195,6 +122,102 @@ class AddCreation(FormController):
             self.redirect()
             return
         creation = creations[0]
+
+        # rightsholders
+
+        # rightsholders: merge artists
+        # TODO: merge rightsholders_current with same rightsholder subject
+        #       within appstruct
+
+        # rightsholders: merge instruments
+        # TODO: merge instruments of rights (contribution == instrument)
+        #       within appstruct; use one right with oid, if present
+
+        # prohibit duplicate rights subjects
+        a_rho_to_remove = []
+        for a_rightsholder in a['rightsholders']['rightsholders']:
+            for a_rho_to_match in a['rightsholders']['rightsholders']:
+                if (a_rightsholder != a_rho_to_match and
+                        a_rightsholder not in a_rho_to_remove and
+                        a_rho_to_match not in a_rho_to_remove):
+                    if (a_rightsholder['subject'][0]['code'] ==
+                            a_rho_to_match['subject'][0]['code']):
+                        if a_rightsholder['mode'] == 'create':
+                            a_rho_to_remove.append(a_rightsholder)
+                        else:  # must be the other one that was newly created
+                            a_rho_to_remove.append(a_rho_to_match)
+                        self.request.session.flash(
+                            _(u"Warning: Only one rightsholder entry allowed "
+                              "for '${name}'. Entry has been removed.",
+                              mapping={
+                                  'name': a_rightsholder['subject'][0]['code']
+                              }),
+                            'main-alert-warning'
+                        )
+        for a_rho in a_rho_to_remove:
+            del a_rho
+        # TODO: cover this also in a colander form validator
+
+        # rightsholders: create
+        for a_rightsholder in a['rightsholders']['rightsholders']:
+            a_subject = a_rightsholder['subject'][0]
+            rightsholder_subject = None
+
+            # create rightsholder subject
+            if a_subject['mode'] == "create":
+                # TODO: foreign subjects
+                # rightsholder_subject = ...
+                pass
+            else:
+                rightsholder_subject = Artist.search_by_code(a_subject['code'])
+
+            # check for duplicate rights per rightsholder and merge instruments
+            #a_rights_to_remove = []
+            #for a_right in a_rightsholder['rights']:
+            #    for a_match in a_rightsholder['rights']:
+            #        if (a_right != a_match and
+            #                a_right not in a_rho_to_remove and
+            #                a_match not in a_rho_to_remove):
+            #            if (a_right['subject'][0]['code'] ==
+            #                    a_match['subject'][0]['code']):
+            #                if a_right['mode'] == 'create':
+            #                    a_rho_to_remove.append(a_right)
+            #                else:  # must be the other one that was newly created
+            #                    a_rho_to_remove.append(a_match)
+            #                self.request.session.flash(
+            #                    _(u"Warning: Only one rightsholder entry allowed "
+            #                    "for '${name}'. Entry has been removed.",
+            #                    mapping={
+            #                        'name': a_rightsholder['subject'][0]['code']
+            #                    }),
+            #                    'main-alert-warning'
+            #                )
+            #for a_rho in a_rho_to_remove:
+            #    del a_rho
+            # TODO: cover this also in a colander form validator                
+
+            for a_right in a_rightsholder['rights']:
+
+                # create right
+                if a_right['mode'] == "create":
+                    instrument_ids = []
+                    if a_right["contribution"] == "instrument":
+                        instruments = Instrument.search_by_oids(
+                            a_right["instruments"])
+                        instrument_ids = [i.id for i in instruments]
+                    new_right = {
+                        'rightsholder': rightsholder_subject.id,
+                        'rightsobject': creation.id,
+                        'type_of_right': a_right['type_of_right'],
+                        'contribution': a_right['contribution'],
+                        'instruments': [('add', instrument_ids)],
+                        'country': Country.search_by_code('DE').id
+                    }
+                    if a_right['collecting_society']:
+                        cs_representing = CollectingSociety.search_by_oid(
+                            a_right['collecting_society'])
+                        new_right['collecting_society'] = cs_representing.id
+                    CreationRight.create([new_right])
 
         # areas of exploitation / tariff categories / collecting societies
         ctcs_to_add = []  # to minimize number of tryton calls
@@ -291,6 +314,23 @@ def validate_content(node, values, **kwargs):  # multifield validator
     # if len(reduced_contributions) > len(unique_contributions):
     #     raise colander.Invalid(node, _(u"Duplicate contribution found."))
 
+    # look for duplicate rightsholders
+    # a_rightsholders = values['rightsholders']['rightsholders']
+    # a_rightsholders.sort(key=lambda x: x['subject'][0]['code'])
+    # i = 0
+    # while i < len(a_rightsholders):
+    #     if (i < len(a_rightsholders)-1 and  # entries with same artist?
+    #             a_rightsholders[i]['subject'][0]['code'] ==
+    #             a_rightsholders[i+1]['subject'][0]['code']):
+    #         raise colander.Invalid(
+    #             node, _(u"Duplicate rightsholder entry ${n} (${c}). Please "
+    #                     "subsume all right of a specific rightsholder under "
+    #                     "a single entry.",
+    #                     mapping={'n': a_rightsholders[i]['subject'][0]['name'],
+    #                              'c': a_rightsholders[i]['subject'][0]['code']}
+    #                     ))
+
+    #     i = i + 1  # move forward if another rightsholder is found
 
 # --- Options -----------------------------------------------------------------
 
@@ -376,7 +416,6 @@ class RightsholdersSchema(colander.Schema):
     title = _(u"Rightsholders")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     rightsholders = CreationRightsholderSequence(title="", min_len=1)
-    # contributions = ContributionSequence(title="", min_len=1)
 
 
 class DerivationSchema(colander.Schema):

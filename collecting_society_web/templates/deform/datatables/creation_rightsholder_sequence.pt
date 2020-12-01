@@ -40,7 +40,9 @@
                         var rights = [];
                         var subdata = data.target.table.rows().data()
                         $.each(subdata, function(i, v) {
-                            var right = v.right + ": " + v.contribution;
+                            var right = v.type_of_right + ": " + v.contribution;
+                            if (v.collecting_society != "None") 
+                                right = right + " (" + v.collecting_society + ")";
                             rights.push(right);
                         });
                         return rights.join('<br>');

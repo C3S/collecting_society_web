@@ -17,7 +17,8 @@ from ...models import (
     CreationTariffCategory,
     CreationRight,
     Content,
-    Instrument
+    Instrument,
+    CollectingSociety
 )
 from .add_creation import (
     AddCreationSchema,
@@ -105,7 +106,9 @@ class EditCreation(FormController):
                         'contribution': right.contribution,
                         'instruments':
                             [str(i.oid) for i in right.instruments],
-                        'collecting_society': right.collecting_society or None,
+                        'collecting_society': None
+                            if not right.collecting_society
+                            else right.collecting_society.oid
                     }]
                 })
 
@@ -125,53 +128,13 @@ class EditCreation(FormController):
                 else:                         # to check for another duplicate
                     i = i + 1  # move forward if another rightsholder is found
 
-            # TODO: Maybe check for duplicate instruments records an merge them
+            # TODO: Maybe check for duplicate instrument records an merge them
 
             # finally add rightholders to appstruct
             self.appstruct['rightsholders'] = {
                 'rightsholders': a_rightsholders
             }
-
-        # contributions
-        if creation.contributions:
-            _contributions = []
-            for contribution in creation.contributions:
-                artist_mode = 'add'
-                artist_email = ''
-                if Artist.is_foreign_contributor(
-                        self.request, contribution, contribution.artist):
-                    artist_mode = 'edit'
-                    artist_email = contribution.artist.party.email
-                role_oid = ''
-                if contribution.roles:
-                    role_oid = contribution.roles[0].oid
-                cs_name = ''
-                if contribution.collecting_society:
-                    cs_name = contribution.collecting_society.name
-                nrs_name = ''
-                if contribution.neighbouring_rights_society:
-                    nrs_name = contribution.neighbouring_rights_society.oid
-                _contributions.append({
-                    'mode': 'edit',
-                    'oid': contribution.oid,
-                    'contribution_type': contribution.type,
-                    'performance': contribution.performance or '',
-                    'role': role_oid,
-                    'collecting_society': cs_name,
-                    'neighbouring_rights_society': nrs_name,
-                    'artist': [{
-                        'mode': artist_mode,
-                        'oid': contribution.artist.oid,
-                        'name': contribution.artist.name,
-                        'code': contribution.artist.code,
-                        'description': contribution.artist.description or '',
-                        'email': artist_email
-                    }]
-                })
-            self.appstruct['contributions'] = {
-                'contributions': _contributions
-            }
-
+    
         # original works, this creation is derived from
         if creation.original_relations:
             a_derivation = {'adaption': [], 'cover': [], 'remix': []}
@@ -369,9 +332,9 @@ class EditCreation(FormController):
                         'country': Country.search_by_code('DE').id
                     }
                     if a_right['collecting_society']:
-                        new_right['collecting_society'] = a_right[
-                            'collecting_society'
-                        ]
+                        cs_representing = CollectingSociety.search_by_oid(
+                            a_right['collecting_society'])
+                        new_right['collecting_society'] = cs_representing.id
                     CreationRight.create([new_right])
                     continue
 
@@ -386,14 +349,12 @@ class EditCreation(FormController):
                     rightsholder.instruments = Instrument.search_by_oids(
                         a_right["instruments"])
                 if a_right['collecting_society']:
-                    rightsholder.collecting_society = a_right[
-                        "collecting_society"
-                    ]
+                    cs_representing = CollectingSociety.search_by_oid(
+                        a_right['collecting_society'])
+                    rightsholder.collecting_society = cs_representing.id
                 # rightsholder.country = Country.search_by_code('DE').id
                 rightsholder.save()
-                # TODO: collecting society
-                # rightsholder.collecting_society = 
-        
+
         # rightsholders: delete
         if rightsholders_delete:
             CreationRight.delete(rightsholders_delete)
