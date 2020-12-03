@@ -53,6 +53,21 @@ class CreationRight(Tdb):
         result = cls.get().search_count(domain)
         return result
 
+    @classmethod
+    def get_contributions_by_type_of_right(cls, t_o_r):
+        if t_o_r == 'copyright':
+            return [
+                'lyrics',
+                'composition'
+            ]
+        elif t_o_r == 'ancillary':
+            return [
+                'instrument',
+                'production',
+                'mixing',
+                'mastering'
+            ]
+        return []
 
     @classmethod
     def create(cls, vlist):

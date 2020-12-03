@@ -49,6 +49,20 @@ contribution_options = [
 ]
 
 
+# --- Validators --------------------------------------------------------------
+
+def validate_multifield(node, values):  # multifield validator
+    """Check plausibility between fields"""
+
+    # check if contributions match rights
+    ctbr = values["contribution"]
+    tor = values["type_of_right"]
+    ctbr_list = CreationRight.get_contributions_by_type_of_right(tor)
+    if (ctbr not in ctbr_list):
+        raise colander.Invalid(
+            node, _(u"Contribution '${c}' does not apply to ${r}.",
+                    mapping={'c': ctbr, 'r': tor}))
+
 # --- Widgets -----------------------------------------------------------------
 
 
@@ -142,6 +156,7 @@ class CreationRightSchema(colander.Schema):
 
 
 class CreationRightSequence(DatatableSequence):
-    creation_right_sequence = CreationRightSchema()
+    creation_right_sequence = CreationRightSchema(
+        validator=validate_multifield)
     widget = creation_right_sequence_widget
     actions = ['create', 'edit']

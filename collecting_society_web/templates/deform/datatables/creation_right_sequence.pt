@@ -34,13 +34,13 @@
                     name: "collecting_society",
                     title: "${_('Collecting Society')}",
                     data: "collecting_society",
-                    className: "none",
+                    className: "all",
                     orderable: false,
                     searchable: false,
                     render: $.fn.dataTable.render.text(),
                     defaultContent: "",
                     datatableSequence: {
-                        position: "collapsed",
+                        position: "displayed",
                         widgetType: 'Select2Widget',
                     }
                 }
