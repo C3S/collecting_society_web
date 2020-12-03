@@ -70,6 +70,21 @@ class CreationRight(Tdb):
         return []
 
     @classmethod
+    def delete(cls, cr):
+        """
+        Deletes creation.right relations
+
+        Args:
+          cr (list): creation.right relations::
+
+            [creation right 1, creation.right 2, ...]
+
+        Returns:
+          ?
+        """
+        return cls.get().delete(cr)
+
+    @classmethod
     def create(cls, vlist):
         """
         Creates creation.right relations

@@ -344,6 +344,42 @@ def validate_content(node, values, **kwargs):  # multifield validator
     #                 node, _(u"Contribution '${c}' does not apply to (${r}).",
     #                         mapping={'c': ctbr, 'r': tor}))
 
+    # check for duplicate rightsholders
+    a_rightsholders = values['rightsholders']['rightsholders']
+    a_rightsholders.sort(key=lambda x: x['subject'][0]['code'])
+    i = 0
+    while i < len(a_rightsholders):
+        if (i < len(a_rightsholders)-1 and  # entries with same artist?
+                a_rightsholders[i]['subject'][0]['code'] ==
+                a_rightsholders[i+1]['subject'][0]['code']):
+            raise colander.Invalid(
+                node, _(u"Multiple entries for the same rightsholder '${r}'. "
+                        "Please have a single unique rightsholder to assign "
+                        "all the applying rights to.",
+                        mapping={'r': a_rightsholders[i]["subject"][0]["name"]}
+                        )
+            )
+        i = i + 1
+
+    # check for duplicate contributions of a rightsholder
+    a_rightsholders = values['rightsholders']['rightsholders']
+    for a_rightsholder in a_rightsholders:
+        a_rights = a_rightsholder['rights']
+        a_rights.sort(key=lambda x: x['contribution'])
+        i = 0
+        while i < len(a_rights):
+            if (i < len(a_rights)-1 and  # entries with same contribution?
+                    a_rights[i]['contribution'] ==
+                    a_rights[i+1]['contribution']):
+                raise colander.Invalid(
+                    node, _(u"Multiple entries for contribution '${c}' "
+                            "by ${r}. "
+                            "Please add a single unique contribution type per "
+                            "rightsholder.",
+                            mapping={'c': a_rights[i]['contribution'], 'r':
+                                     a_rightsholder["subject"][0]["name"]}))
+            i = i + 1
+
 # --- Options -----------------------------------------------------------------
 
 # --- Widgets -----------------------------------------------------------------

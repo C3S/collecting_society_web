@@ -311,8 +311,7 @@ class EditCreation(FormController):
             #                    'main-alert-warning'
             #                )
             #for a_rho in a_rho_to_remove:
-            #    del a_rho
-            # TODO: cover this also in a colander form validator                
+            #    del a_rho              
 
             for a_right in a_rightsholder['rights']:
 
