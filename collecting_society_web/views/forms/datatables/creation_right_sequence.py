@@ -57,11 +57,31 @@ def validate_multifield(node, values):  # multifield validator
     # check if contributions match rights
     ctbr = values["contribution"]
     tor = values["type_of_right"]
+    sel_cs_oid = values["collecting_society"]
     ctbr_list = CreationRight.get_contributions_by_type_of_right(tor)
     if (ctbr not in ctbr_list):
         raise colander.Invalid(
-            node, _(u"Contribution '${c}' does not apply to ${r}.",
+            node, _(u"Contribution type '${c}' does not apply to ${r}.",
                     mapping={'c': ctbr, 'r': tor}))
+
+    # check if collecting society represets the selected type of right
+    if tor == 'copyright':
+        cs_list = [tc.oid for tc in CollectingSociety.search(
+            [("represents_copyright", "=", True)]
+        )]
+    else:  # if tor == 'ancillary copyright':
+        cs_list = [tc.oid for tc in CollectingSociety.search(
+            [("represents_ancillary_copyright", "=", True)]
+        )]
+    if sel_cs_oid and sel_cs_oid not in cs_list:
+        sel_cs = CollectingSociety.search_by_oid(sel_cs_oid)
+        sel_cs_name = sel_cs.name
+        if not sel_cs_name:
+            sel_cs_name = "Selected collecting society"
+        raise colander.Invalid(
+            node, _(u"${c} does not represent ${r}.",
+                    mapping={'c': sel_cs_name, 'r': tor}))
+
 
 # --- Widgets -----------------------------------------------------------------
 

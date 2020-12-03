@@ -333,16 +333,16 @@ def validate_content(node, values, **kwargs):  # multifield validator
     #     i = i + 1  # move forward if another rightsholder is found
 
     # check if contributions match rights
-    a_rightsholders = values['rightsholders']['rightsholders']
-    for a_rightsholder in a_rightsholders:
-        for a_right in a_rightsholder['rights']:
-            ctbr = a_right["contribution"]
-            tor = a_right["type_of_right"]
-            if (ctbr not in CreationRight.get_contributions_by_type_of_right(
-                    tor)):
-                raise colander.Invalid(
-                    node, _(u"Contribution '${c}' does not apply to (${r}).",
-                            mapping={'c': ctbr, 'r': tor}))
+    # a_rightsholders = values['rightsholders']['rightsholders']
+    # for a_rightsholder in a_rightsholders:
+    #     for a_right in a_rightsholder['rights']:
+    #         ctbr = a_right["contribution"]
+    #         tor = a_right["type_of_right"]
+    #         if (ctbr not in CreationRight.get_contributions_by_type_of_right(
+    #                 tor)):
+    #             raise colander.Invalid(
+    #                 node, _(u"Contribution '${c}' does not apply to (${r}).",
+    #                         mapping={'c': ctbr, 'r': tor}))
 
 # --- Options -----------------------------------------------------------------
 
