@@ -1,4 +1,4 @@
-# For copyright and genre terms, see COPYRIGHT.rst (top level of repository)
+# For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
 import logging
@@ -90,7 +90,7 @@ class CreationRight(Tdb):
         Creates creation.right relations
 
         Args:
-          vlist (list): list of dicts with attributes 
+          vlist (list): list of dicts with attributes
           to create creation.right relations::
 
             [

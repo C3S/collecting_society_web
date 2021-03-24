@@ -80,14 +80,14 @@ class EditLocation(FormController):
                 size = ls_record.estimated_size
                 size_estimated = True
             self.appstruct['spaces']['spaces'].append(
-            {
-                'mode': "edit",
-                'oid': ls_record.oid,
-                'name': ls_record.name,
-                'category': ls_record.category.id,
-                'size': size,
-                'size_estimated': size_estimated
-            })
+                {
+                    'mode': "edit",
+                    'oid': ls_record.oid,
+                    'name': ls_record.name,
+                    'category': ls_record.category.id,
+                    'size': size,
+                    'size_estimated': size_estimated
+                })
 
         # render
         self.render(self.appstruct)
@@ -148,7 +148,7 @@ class EditLocation(FormController):
                         ls_record.confirmed_size = space['size']
                     ls_record.name = space['name']
                     ls_record.category = lsc_record.id
-                    ls_record.save()              
+                    ls_record.save()
 
         # agglomerated append and delete actions for location spaces
         location_vlist['spaces'] = []

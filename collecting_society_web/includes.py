@@ -35,7 +35,6 @@ from .resources import (
     DeclarationsResource,
     LocationsResource,
     DevicesResource,
-    DeclarationResource
 )
 from .views.widgets import (
     MissingArtistsWidget,
@@ -43,7 +42,6 @@ from .views.widgets import (
     MissingReleasesWidget,
     RejectedContentWidget,
     OrphanedContentWidget,
-    UncommitedContentWidget,
     UnprocessedContentWidget
 )
 
@@ -93,8 +91,6 @@ def web_registry(config):
     Returns:
         None
     """
-    settings = config.get_settings()
-
     # Metadata shared by Frontend and Backend
     def meta(request):
         return {

@@ -1,16 +1,14 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
-import os
 import logging
 
-from pyramid.httpexceptions import HTTPNotFound
 from pyramid.view import (
     view_config,
     view_defaults
 )
 
-from portal_web.models import Tdb, Country, Subdivision
+from portal_web.models import Tdb
 from portal_web.views import ViewBase
 
 from ..services import _
@@ -52,7 +50,8 @@ class LocationViews(ViewBase):
         renderer='../templates/location/show.pt',
         permission='show_location')
     def show(self):
-        self.context.country = self.context.location.party.addresses[0].country.name
+        addresses = self.context.location.party.addresses[0]
+        self.context.country = addresses[0].country.name
         return {}
 
     @view_config(

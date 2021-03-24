@@ -9,7 +9,6 @@ from portal_web.views.forms import FormController
 
 from ...services import _
 from ...models import (
-    CollectingSociety,
     TariffCategory,
     Artist,
     Creation,
@@ -78,7 +77,7 @@ class EditCreation(FormController):
 
         # rightsholders
         if creation.rights:
-            a_rightsholders = []            
+            a_rightsholders = []
             for right in creation.rights:
                 subject_mode = "add"
                 subject_email = ""
@@ -134,7 +133,7 @@ class EditCreation(FormController):
             self.appstruct['rightsholders'] = {
                 'rightsholders': a_rightsholders
             }
-    
+
         # original works, this creation is derived from
         if creation.original_relations:
             a_derivation = {'adaption': [], 'cover': [], 'remix': []}
@@ -153,7 +152,7 @@ class EditCreation(FormController):
                     'code': original_relation.original_creation.code,
                     'oid': original_relation.original_creation.oid,
                     'titlefield': original_relation.original_creation.title,
-                    'artist': 
+                    'artist':
                         original_relation.original_creation.artist.name
                 })
 
@@ -290,28 +289,30 @@ class EditCreation(FormController):
                 pass
 
             # check for duplicate rights per rightsholder and merge instruments
-            #a_rights_to_remove = []
-            #for a_right in a_rightsholder['rights']:
-            #    for a_match in a_rightsholder['rights']:
-            #        if (a_right != a_match and
-            #                a_right not in a_rho_to_remove and
-            #                a_match not in a_rho_to_remove):
-            #            if (a_right['subject'][0]['code'] ==
-            #                    a_match['subject'][0]['code']):
-            #                if a_right['mode'] == 'create':
-            #                    a_rho_to_remove.append(a_right)
-            #                else:  # must be the other one that was newly created
-            #                    a_rho_to_remove.append(a_match)
-            #                self.request.session.flash(
-            #                    _(u"Warning: Only one rightsholder entry allowed "
-            #                    "for '${name}'. Entry has been removed.",
-            #                    mapping={
-            #                        'name': a_rightsholder['subject'][0]['code']
-            #                    }),
-            #                    'main-alert-warning'
-            #                )
-            #for a_rho in a_rho_to_remove:
-            #    del a_rho              
+            # a_rights_to_remove = []
+            # for a_right in a_rightsholder['rights']:
+            #     for a_match in a_rightsholder['rights']:
+            #         if (a_right != a_match and
+            #                 a_right not in a_rho_to_remove and
+            #                 a_match not in a_rho_to_remove):
+            #             if (a_right['subject'][0]['code'] ==
+            #                     a_match['subject'][0]['code']):
+            #                 if a_right['mode'] == 'create':
+            #                     a_rho_to_remove.append(a_right)
+            #                 else:  # must be the other one newly created
+            #                     a_rho_to_remove.append(a_match)
+            #                 self.request.session.flash(
+            #                     _(u"Warning: Only one rightsholder entry "
+            #                       "allowed for '${name}'. Entry has been "
+            #                       "removed.",
+            #                       mapping={
+            #                           'name': a_rightsholder[
+            #                               'subject'][0]['code']
+            #                       }),
+            #                     'main-alert-warning'
+            #                 )
+            # for a_rho in a_rho_to_remove:
+            #     del a_rho
 
             for a_right in a_rightsholder['rights']:
 

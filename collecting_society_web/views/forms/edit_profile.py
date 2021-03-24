@@ -62,7 +62,7 @@ class EditProfile(FormController):
         if self.appstruct['email'].lower() != web_user.email.lower():
             # always save email lowercase, so tryton uniqueness is ensured
             web_user.new_email = self.appstruct['email'].lower()
-            web_user.opt_in_uuid = unicode(uuid.uuid4())
+            web_user.opt_in_uuid = unicode(uuid.uuid4())  # noqa: F821
             web_user.save()
             # email verification
             template_variables = {
@@ -127,8 +127,9 @@ def validate_unique_user_email(node, values, **kwargs):  # multifield validator
 
     # finally, check email format
     if len(email_value) > 7:
-        if re.match('^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+' +  # noqa: W605
-                    '(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,9})$', email_value) is not None:
+        pattern = '^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+' + \
+            '(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,9})$'  # noqa: W605
+        if re.match(pattern, email_value) is not None:
             return
     raise colander.Invalid(node, "Invalid email address")
 

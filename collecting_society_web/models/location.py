@@ -1,4 +1,4 @@
-# For copyright and genre terms, see COPYRIGHT.rst (top level of repository)
+# For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
 import logging
@@ -18,8 +18,6 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
     Model wrapper for Tryton model object 'location'
     """
     __name__ = 'location'
-
-
 
     @classmethod
     def search_by_entity_creator(cls, party_id, active=True):

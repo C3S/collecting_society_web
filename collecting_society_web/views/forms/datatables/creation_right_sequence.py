@@ -6,8 +6,6 @@ import logging
 import colander
 import deform
 
-from pyramid.i18n import get_localizer
-
 from portal_web.views.forms.datatables import (
     DatatableSequence,
     DatatableSequenceWidget
@@ -89,19 +87,18 @@ def validate_multifield(node, values):  # multifield validator
 @colander.deferred
 def deferred_instrument_widget(node, kw):
     instruments = Instrument.search_all()
-    inst_options = [(inst.oid, unicode(inst.name)) for inst in instruments]
+    inst_options = [
+        (inst.oid, unicode(inst.name)) for inst in instruments]  # noqa: F821
     widget = deform.widget.Select2Widget(values=inst_options, multiple=True)
     return widget
 
 
 @colander.deferred
 def collecting_society_widget(node, kw):
-    values = [('', '')] + [
-        (tc.oid, tc.name) for tc in CollectingSociety.search(
-            #[("represents_copyright", "=", True)]
-            []  # TODO: switch between neighboring and copyright societies
-                #       according to type_of_right
-        )]
+    # TODO: switch between neighboring and copyright societies according to
+    # type_of_right
+    collecting_societies = CollectingSociety.search([])
+    values = [('', '')] + [(tc.oid, tc.name) for tc in collecting_societies]
     return deform.widget.Select2Widget(values=values, placeholder=_("None"))
 
 
@@ -145,8 +142,8 @@ class TypeOfRightField(colander.SchemaNode):
 class ContributionField(colander.SchemaNode):
     oid = "contribution"
     schema_type = colander.String
-    widget = deform.widget.Select2Widget(values=contribution_options, 
-                                         multiple=False)
+    widget = deform.widget.Select2Widget(
+        values=contribution_options, multiple=False)
 
 
 class InstrumentsField(colander.SchemaNode):

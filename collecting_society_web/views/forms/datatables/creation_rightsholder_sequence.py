@@ -6,8 +6,6 @@ import logging
 import colander
 import deform
 
-from pyramid.i18n import get_localizer
-
 from portal_web.views.forms.datatables import (
     DatatableSequence,
     DatatableSequenceWidget
@@ -15,7 +13,6 @@ from portal_web.views.forms.datatables import (
 
 from . import ArtistIndividual, CreationRightSequence
 from ....services import _
-from ....models import CreationRight
 
 log = logging.getLogger(__name__)
 

@@ -85,7 +85,7 @@ def neighbouring_rights_society_widget(node, kw):
 
 @colander.deferred
 def deferred_role_widget(node, kw):
-    values = [('', '')] + [(l.oid, l.name) for l in CreationRole.search_all()]
+    values = [('', '')] + [(r.oid, r.name) for r in CreationRole.search_all()]
     return deform.widget.Select2Widget(values=values, placeholder=_("None"))
 
 

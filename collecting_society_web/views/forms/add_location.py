@@ -169,22 +169,27 @@ class AddLocation(FormController):
 @colander.deferred
 def deferred_category_widget(node, kw):
     cats = LocationCategory.search_all()
-    cat_options = [(cat.id, unicode(cat.name)) for cat in cats]
+    cat_options = [
+        (cat.id, unicode(cat.name)) for cat in cats]  # noqa: F821
     widget = deform.widget.Select2Widget(values=cat_options, multiple=False)
     return widget
+
 
 @colander.deferred
 def deferred_country_widget(node, kw):
     countries = Country.search_all()
-    country_options = [(c.id, unicode(c.name)) for c in countries]
+    country_options = [
+        (c.id, unicode(c.name)) for c in countries]  # noqa: F821
     widget = deform.widget.Select2Widget(values=country_options,
                                          multiple=False)
     return widget
 
+
 @colander.deferred
 def deferred_subdivision_widget(node, kw):
     subs = Subdivision.search_all()
-    sub_options = [(sub.id, unicode(sub.name)) for sub in subs]
+    sub_options = [
+        (sub.id, unicode(sub.name)) for sub in subs]  # noqa: F821
     widget = deform.widget.Select2Widget(values=sub_options, multiple=False)
     return widget
 

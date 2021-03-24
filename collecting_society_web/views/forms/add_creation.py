@@ -13,7 +13,6 @@ from portal_web.models import (
 from portal_web.views.forms import FormController
 from ...services import _
 from ...models import (
-    CollectingSociety,
     TariffCategory,
     Artist,
     Creation,
@@ -172,29 +171,32 @@ class AddCreation(FormController):
                 rightsholder_subject = Artist.search_by_code(a_subject['code'])
 
             # check for duplicate rights per rightsholder and merge instruments
-            #a_rights_to_remove = []
-            #for a_right in a_rightsholder['rights']:
-            #    for a_match in a_rightsholder['rights']:
-            #        if (a_right != a_match and
-            #                a_right not in a_rho_to_remove and
-            #                a_match not in a_rho_to_remove):
-            #            if (a_right['subject'][0]['code'] ==
-            #                    a_match['subject'][0]['code']):
-            #                if a_right['mode'] == 'create':
-            #                    a_rho_to_remove.append(a_right)
-            #                else:  # must be the other one that was newly created
-            #                    a_rho_to_remove.append(a_match)
-            #                self.request.session.flash(
-            #                    _(u"Warning: Only one rightsholder entry allowed "
-            #                    "for '${name}'. Entry has been removed.",
-            #                    mapping={
-            #                        'name': a_rightsholder['subject'][0]['code']
-            #                    }),
-            #                    'main-alert-warning'
-            #                )
-            #for a_rho in a_rho_to_remove:
-            #    del a_rho
-            # TODO: cover this also in a colander form validator                
+            # a_rights_to_remove = []
+            # for a_right in a_rightsholder['rights']:
+            #     for a_match in a_rightsholder['rights']:
+            #         if (a_right != a_match and
+            #                 a_right not in a_rho_to_remove and
+            #                 a_match not in a_rho_to_remove):
+            #             if (a_right['subject'][0]['code'] ==
+            #                     a_match['subject'][0]['code']):
+            #                 if a_right['mode'] == 'create':
+            #                     a_rho_to_remove.append(a_right)
+            #                 else:
+            #                     # must be the other one newly created
+            #                     a_rho_to_remove.append(a_match)
+            #                 self.request.session.flash(
+            #                     _(u"Warning: Only one rightsholder entry "
+            #                       "allowed for '${name}'. Entry has been "
+            #                       "removed.",
+            #                       mapping={
+            #                           'name': a_rightsholder[
+            #                               'subject'][0]['code']
+            #                       }),
+            #                     'main-alert-warning'
+            #                 )
+            # for a_rho in a_rho_to_remove:
+            #     del a_rho
+            # TODO: cover this also in a colander form validator
 
             for a_right in a_rightsholder['rights']:
 
@@ -326,8 +328,9 @@ def validate_content(node, values, **kwargs):  # multifield validator
     #             node, _(u"Duplicate rightsholder entry ${n} (${c}). Please "
     #                     "subsume all right of a specific rightsholder under "
     #                     "a single entry.",
-    #                     mapping={'n': a_rightsholders[i]['subject'][0]['name'],
-    #                              'c': a_rightsholders[i]['subject'][0]['code']}
+    #                     mapping={
+    #                         'n': a_rightsholders[i]['subject'][0]['name'],
+    #                         'c': a_rightsholders[i]['subject'][0]['code']}
     #                     ))
 
     #     i = i + 1  # move forward if another rightsholder is found
@@ -381,6 +384,7 @@ def validate_content(node, values, **kwargs):  # multifield validator
             i = i + 1
 
 # --- Options -----------------------------------------------------------------
+
 
 # --- Widgets -----------------------------------------------------------------
 

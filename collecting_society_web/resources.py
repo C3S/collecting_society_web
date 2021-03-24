@@ -7,7 +7,6 @@ import re
 from pyramid.security import (
     Allow,
     DENY_ALL,
-    NO_PERMISSION_REQUIRED,
 )
 
 from portal_web.resources import (
@@ -304,7 +303,7 @@ class DeclarationsResource(ResourceBase):
         if self.request.view_name == '':
             self.declarations = Declaration.belongs_to_current_licensee(
                                 self.request)
-                                
+
 
 class DeclarationResource(ModelResource):
     """
@@ -351,7 +350,8 @@ class LocationsResource(ResourceBase):
     # load resources
     def context_found(self):
         if self.request.view_name == '':
-            self.locations = Location.search_by_entity_creator(self.request.web_user.party.id)
+            self.locations = Location.search_by_entity_creator(
+                self.request.web_user.party.id)
 
 
 class LocationResource(ModelResource):
@@ -369,8 +369,7 @@ class LocationResource(ModelResource):
     def __acl__(self):
         location_in_db = Location.search_by_oid(self.code)
         if (location_in_db and
-            self.request.web_user.party == location_in_db.entity_creator
-            ):
+                self.request.web_user.party == location_in_db.entity_creator):
             return [
                 (Allow, self.request.authenticated_userid,
                     ['show_location', 'edit_location', 'delete_location'])
@@ -380,7 +379,8 @@ class LocationResource(ModelResource):
 
 class DevicesResource(ResourceBase):
     """
-    matches the webusers locations after clicking Devices Files in Licensing menu
+    matches the webusers locations after clicking Devices Files in Licensing
+    menu
     """
     __parent__ = LicensingResource
     __name__ = "devices"

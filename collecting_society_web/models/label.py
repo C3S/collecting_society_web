@@ -1,4 +1,4 @@
-# For copyright and label terms, see COPYRIGHT.rst (top level of repository)
+# For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
 import logging
@@ -120,7 +120,7 @@ class Label(Tdb):
           None: if no match is found
         """
         result = cls.get().search(  # noqa
-            [('name', 'like', name_starting_with + '\%')])
+            [('name', 'like', name_starting_with + '\%')])  # noqa: W605
         return result[0] or None
 
     @classmethod

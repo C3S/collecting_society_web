@@ -151,7 +151,7 @@ class Creation(ResourceBase):
           schema=deferred_idspace_schemas_node,
           validators=(deferred_querystring_validator,),
           response_schemas=response_schemas)
-    def collection_get(self, permission='view'):        
+    def collection_get(self, permission='view'):
         """
         Returns the properties of a specific creation
         that is identified using multiple identifiers,
@@ -222,7 +222,7 @@ class Creation(ResourceBase):
 
         # sort: highest score first
         for code in scores.keys():
-            scores[code] = int(100 * scores[code] 
+            scores[code] = int(100 * scores[code]
                                / number_of_identifiers_given)
         sorted_scores = sorted(scores.items(), key=operator.itemgetter(1),
                                reverse=True)

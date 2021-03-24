@@ -431,7 +431,7 @@ class Content(Tdb):
             ('processing_state', '!=', 'dropped'),
             ('processing_state', '!=', 'archived')
         ]
-        if category is not 'all':
+        if category != 'all':
             search_clause.append(
                 ('category', '=', category)
             )
@@ -464,7 +464,7 @@ class Content(Tdb):
                 ('processing_state', '=', 'dropped')
             ]
         ]
-        if category is not 'all':
+        if category != 'all':
             search_clause.append(
                 ('category', '=', category)
             )
@@ -491,19 +491,19 @@ class Content(Tdb):
                 ('entity_creator', '=', party_id),
                 ('processing_state', '=', 'rejected')
             ]
-        if reason is 'dupl':
+        if reason == 'dupl':
             search_clause.append(
                 ('duplicate_of', '!=', None)
             )
-        if reason is 'ferror':
+        if reason == 'ferror':
             search_clause.append(
                 ('rejection_reason', '=', 'format_error')
             )
-        if reason is 'lossyc':
+        if reason == 'lossyc':
             search_clause.append(
                 ('rejection_reason', '=', 'lossy_compression')
             )
-        if category is not 'all':
+        if category != 'all':
             search_clause.append(
                 ('category', '=', category)
             )
@@ -530,7 +530,7 @@ class Content(Tdb):
                 ('commit_state', '=', 'uncommited'),
                 ('processing_state', '!=', 'rejected')
             ]
-        if category is not 'all':
+        if category != 'all':
             search_clause.append(
                 ('category', '=', category)
             )

@@ -1,10 +1,8 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
-import os
 import logging
 
-from pyramid.httpexceptions import HTTPNotFound
 from pyramid.view import (
     view_config,
     view_defaults

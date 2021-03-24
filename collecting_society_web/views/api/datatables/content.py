@@ -12,7 +12,7 @@ from portal_web.models import Tdb
 
 from ....models import Content
 from ....services import _
-from pyramid.i18n import get_localizer, TranslationString
+from pyramid.i18n import get_localizer
 from . import (
     _prefix,
     get_cors_policy,
@@ -99,7 +99,7 @@ def post_content(request):
         ('creation', '=', None)                              # only orphaned
     ]
     if 'category' in data:
-        total_domain.append(('category', '=', data['category']))    
+        total_domain.append(('category', '=', data['category']))
     total = Content.search_count(total_domain)
     filtered = Content.search_count(domain)
     # localization

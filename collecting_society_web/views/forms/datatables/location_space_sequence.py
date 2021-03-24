@@ -69,15 +69,11 @@ def location_space_sequence_widget_thomas(node, kw):
     }
     # get initial source data
     source_data = []
-    domain = [
-        # ('entity_creator', '=', request.web_user.party.id),  # only own
-        # ('creation', '=', None)                              # only orphaned
-    ]
     location_spaces = LocationSpace.search_all(
-    #    domain=domain,
-    #    offset=0,
-    #    limit=10,
-    #    order=[('name', 'asc')]
+        # domain=domain,
+        # offset=0,
+        # limit=10,
+        # order=[('name', 'asc')]
     )
     for location_space in location_spaces:
         source_data.append({
@@ -86,8 +82,8 @@ def location_space_sequence_widget_thomas(node, kw):
             'category': location_space_category[location_space.category.name]})
     # get statistics
     total_domain = [
-    #    ('entity_creator', '=', request.web_user.party.id),  # only own
-    #    ('creation', '=', None)                              # only orphaned
+        # ('entity_creator', '=', request.web_user.party.id),  # only own
+        # ('creation', '=', None)                              # only orphaned
     ]
     if getattr(node, 'category', None):
         total_domain.append(('category', '=', node.category))

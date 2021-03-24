@@ -91,7 +91,7 @@ class Artist(Tdb, MixinWebuser):
             return False
         # 4) TODO: was not part of a distribution yet
         return True
-    
+
     @classmethod
     def is_foreign_rightsholder(cls, request, right, artist):
         """

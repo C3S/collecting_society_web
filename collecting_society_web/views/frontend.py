@@ -52,11 +52,12 @@ class FrontentViews(ViewBase):
     def verify_email(self):
         return verify_email_helper(self)
 
+
 def verify_email_helper(the_class):
     """
     also used by backend.py
     """
-    
+
     # sanity checks
     opt_in_uuid = False
     if the_class.request.subpath:
@@ -72,7 +73,8 @@ def verify_email_helper(the_class):
                 if web_user.new_email:
                     web_user.email = web_user.new_email
                     web_user.new_email = ''
-            web_user.opt_in_uuid = unicode(uuid.uuid4())  # invalidate uuid
+            # invalidate uuid
+            web_user.opt_in_uuid = unicode(uuid.uuid4())  # noqa: F821
             web_user.save()
             the_class.request.session.flash(
                 _(u"Your email verification was successful."),

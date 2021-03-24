@@ -1,8 +1,6 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
-from pyramid.renderers import render
-
 from ...models import Content
 
 from ...services import _
@@ -25,7 +23,10 @@ class UncommitedContentWidget():
         return _(u"Uncommitted Content")
 
     def description(self):
-        return _(u"Number of artists, creations, and releases you didn't yet release to be valid in the C3S database")
+        return _(
+            u"Number of artists, creations, and releases you didn't yet"
+            u"release to be valid in the C3S database"
+        )
 
     def get_len(self, content_list):
         if content_list:

@@ -1,7 +1,6 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
-from trytond.transaction import Transaction
 from portal_web.tests.base import UnitTestBase
 from portal_web.models import Tdb
 from portal_web.tests.testdata import TestDataPortal
@@ -16,7 +15,6 @@ class TestLocation(UnitTestBase, TestDataPortal, TestDataCollectingSociety):
         """
         Initializes the database connection and creats test data.
         """
-        #import ptvsd; ptvsd.enable_attach(address=("0.0.0.0", 51004), redirect_output=True); ptvsd.wait_for_attach(); ptvsd.break_into_debugger()
         super(TestLocation, cls).setUpClass()
         Tdb.init()
         cls.test_party = cls.createParty(

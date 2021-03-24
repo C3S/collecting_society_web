@@ -11,7 +11,6 @@ from portal_web.views.forms.datatables import (
     DatatableSequenceWidget
 )
 
-from ....services import _
 from ....models import (
     License,
     Creation
@@ -68,7 +67,7 @@ def track_sequence_widget(node, kw):
 
 @colander.deferred
 def deferred_license_widget(node, kw):
-    values = [(l.oid, l.name) for l in License.search_all()]
+    values = [(x.oid, x.name) for x in License.search_all()]
     return deform.widget.Select2Widget(values=values)
 
 

@@ -1,4 +1,4 @@
-# For copyright and label terms, see COPYRIGHT.rst (top level of repository)
+# For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
 import logging
@@ -15,14 +15,13 @@ class CreationDerivative(Tdb):
 
     __name__ = 'creation.original.derivative'
 
-
     @classmethod
     def create(cls, vlist):
         """
         Creates origina-derivative relations
 
         Args:
-          vlist (list): list of dicts with attributes 
+          vlist (list): list of dicts with attributes
           to create origina-derivative relations::
 
             [

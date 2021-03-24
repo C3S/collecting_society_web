@@ -61,7 +61,7 @@ class AddDevice(FormController):
                 }
             }
 
-        # add metadata from device uuid, name, etc. 
+        # add metadata from device uuid, name, etc.
         # provided by client device as url params
         device_id = getattr(self.context, 'device_id', False)
         if device_id:

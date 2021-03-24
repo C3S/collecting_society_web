@@ -142,7 +142,7 @@ class Artist(ResourceBase):
           schema=deferred_idspace_schemas_node,
           validators=(deferred_querystring_validator,),
           response_schemas=response_schemas)
-    def collection_get(self, permission='view'):        
+    def collection_get(self, permission='view'):
         """
         Returns the properties of a specific artist
         that is identified using multiple identifiers,

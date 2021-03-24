@@ -3,10 +3,7 @@
 
 import logging
 
-from portal_web.models import (
-    Tdb,
-    Party
-)
+from portal_web.models import Tdb
 
 log = logging.getLogger(__name__)
 
@@ -69,7 +66,6 @@ class Device(Tdb):
           None: if no match is found
         """
         return cls.get().search([('active', 'in', (True, active))])
-
 
     @classmethod
     def search_by_id(cls, device_id, active=True):

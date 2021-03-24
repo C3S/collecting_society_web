@@ -71,7 +71,8 @@ class AddDeclaration(FormController):
 
         # user feedback
         if not declaration:
-            log.info("declaration add failed for %s: %s" % (web_user, _declaration))
+            log.info("declaration add failed for %s: %s" % (
+                web_user, _declaration))
             # self.request.session.flash(
             #     _(u"Declaration could not be added: ${period}",
             #       mapping={'period': _declaration['period']}),
@@ -80,7 +81,8 @@ class AddDeclaration(FormController):
             self.redirect()
             return
         declaration = declaration[0]
-        log.info("declaration add successful for %s: %s" % (web_user, declaration))
+        log.info("declaration add successful for %s: %s" % (
+            web_user, declaration))
         # self.request.session.flash(
         #     _(u"Declaration '${period}' added to your account. "
         #       "Your declaration token is ${template}.",

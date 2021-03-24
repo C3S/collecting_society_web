@@ -173,7 +173,7 @@ class RegisterWebuser(LoginWebuser):
             web_users = WebUser.create([_web_user])
 
             # creation failed
-            if not web_users or len(web_users) is not 1:
+            if not web_users or len(web_users) != 1:
                 log.info("web_user creation not successful: %s" % _web_user)
                 self.request.session.flash(
                     _(
@@ -257,19 +257,19 @@ def right_age(value):
         return _(u'Sorry, I don\'t believe you are that old.')
     if value > datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364):
         return _(u"Sorry, you are too young to register here.")
-        #return _(
-        #    u"Sorry, you have to be ${age} years or older to register here.",
+        # return _(
+        #     u"Sorry, you have to be ${age} years or older to register here.",
         #
-        #    # TODO: mapping doesn't work here
-        #    # also see line 580 in repertoire_upload.py
-        #    mapping={'age': AGE_ADULT}
-        #)
-    #colander.Range(
-    #    min=datetime.date(1900, 1, 1),
-    #    min_err=TOO_OLD_MESSAGE,
-    #    max=datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364),
-    #    max_err=TOO_YOUNG_MESSAGE
-    #)
+        #     # TODO: mapping doesn't work here
+        #     # also see line 580 in repertoire_upload.py
+        #     mapping={'age': AGE_ADULT}
+        # )
+    # colander.Range(
+    #     min=datetime.date(1900, 1, 1),
+    #     min_err=TOO_OLD_MESSAGE,
+    #     max=datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364),
+    #     max_err=TOO_YOUNG_MESSAGE
+    # )
     return True
 
 
