@@ -34,8 +34,8 @@ class FilesViews(ViewBase):
         settings = self.request.registry.settings
         return {
             'url': ''.join([
-                settings['api.c3supload.url'], '/',
-                settings['api.c3supload.version']
+                settings['api.repertoire.url'], '/',
+                settings['api.repertoire.version']
             ])
         }
 
@@ -49,8 +49,8 @@ class FilesViews(ViewBase):
             'extensions': (lossless_audio_extensions() +
                            sheet_music_extensions()),
             'url': ''.join([
-                settings['api.c3supload.url'], '/',
-                settings['api.c3supload.version']
+                settings['api.repertoire.url'], '/',
+                settings['api.repertoire.version']
             ])
         }
 

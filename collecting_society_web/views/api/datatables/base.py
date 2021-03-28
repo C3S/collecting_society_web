@@ -18,7 +18,7 @@ _prefix = 'datatables'
 
 def get_cors_policy():
     return {
-        'origins': os.environ['API_DATATABLES_CORS_ORIGINS'].split(","),
+        'origins': os.environ['WEBAPI_CORS'].split(","),
         'credentials': True
     }
 

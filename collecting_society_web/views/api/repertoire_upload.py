@@ -69,7 +69,7 @@ _checksum_postfix = '.checksums'
 
 def get_cors_policy():
     return {
-        'origins': os.environ['API_C3SUPLOAD_CORS_ORIGINS'].split(","),
+        'origins': os.environ['WEBAPI_CORS'].split(","),
         'credentials': True
     }
 
@@ -113,7 +113,7 @@ def get_path(request, directory, filename=None):
     # special case: for previews use content base path
     if directory == _path_previews:
         content_base_directory = (
-            request.registry.settings['api.c3supload.content_base_path'])
+            request.registry.settings['api.repertoire.content_base_path'])
         if not filename:
             return os.path.join(content_base_directory, directory,
                                 webuser_directory)
@@ -121,7 +121,7 @@ def get_path(request, directory, filename=None):
                             webuser_directory, filename)
     else:
         storage_base_directory = (request.registry.settings[
-                                  'api.c3supload.storage_base_path'])
+                                  'api.repertoire.storage_base_path'])
         if not filename:
             return os.path.join(storage_base_directory, directory,
                                 webuser_directory)
@@ -131,7 +131,7 @@ def get_path(request, directory, filename=None):
 
 def cleanup_temp_directory(request):
     storage_base_directory = (request.registry.settings[
-                              'api.c3supload.storage_base_path'])
+                              'api.repertoire.storage_base_path'])
     temp_directory = os.path.join(storage_base_directory, _path_temporary)
 
     # filter for certain file patterns
@@ -141,7 +141,7 @@ def cleanup_temp_directory(request):
     # walk through the temporary directory structure
     now = time.time()
     expire_seconds = now - int(request.registry.settings[
-        'api.c3supload.tempfile_expire_days']) * 86400
+        'api.repertoire.tempfile_expire_days']) * 86400
     for root, dirs, files in os.walk(temp_directory):
         level = root.replace(temp_directory, '').count(os.sep)
         if level == 1:
@@ -181,8 +181,8 @@ def get_content_info(request, content):
             'rejection_reason_details': content.rejection_reason_details,
 
             'deleteUrl': get_url(
-                url=request.registry.settings['api.c3supload.url'],
-                version=request.registry.settings['api.c3supload.version'],
+                url=request.registry.settings['api.repertoire.url'],
+                version=request.registry.settings['api.repertoire.version'],
                 action='delete',
                 content_id=content.id
             ),
@@ -219,14 +219,14 @@ def get_content_info(request, content):
             'rejection_reason_details': content.rejection_reason_details,
 
             'previewUrl': get_url(
-                url=request.registry.settings['api.c3supload.url'],
-                version=request.registry.settings['api.c3supload.version'],
+                url=request.registry.settings['api.repertoire.url'],
+                version=request.registry.settings['api.repertoire.version'],
                 action='preview',
                 content_id=content.id
             ),
             'deleteUrl': get_url(
-                url=request.registry.settings['api.c3supload.url'],
-                version=request.registry.settings['api.c3supload.version'],
+                url=request.registry.settings['api.repertoire.url'],
+                version=request.registry.settings['api.repertoire.version'],
                 action='delete',
                 content_id=content.id
             ),
