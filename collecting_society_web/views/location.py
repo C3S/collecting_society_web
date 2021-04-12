@@ -50,8 +50,8 @@ class LocationViews(ViewBase):
         renderer='../templates/location/show.pt',
         permission='show_location')
     def show(self):
-        addresses = self.context.location.party.addresses[0]
-        self.context.country = addresses[0].country.name
+        address = self.context.location.party.addresses[0]
+        self.context.country = address.country.name
         return {}
 
     @view_config(
