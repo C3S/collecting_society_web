@@ -5,7 +5,7 @@
 
 *******************************************************************************/
 
-/* 
+/*
 
     COLORS:
 
@@ -52,12 +52,13 @@ a:visited { color:#dc5900; }
 nav > .cs-anchor { top:-50px; }
 
 .cs-widget { padding:10px; }
-.cs-widget-title { padding:10px 0 25px 0; margin:0 0 5px 0; border:none; }
+.cs-widget-title { padding:10px 0 20px 0; margin:0 0 5px 0; border:none; }
+.cs-widget-subtitlenote { font-size: small; display: block; opacity:0.8 }
 
 /* Content Left */
 
 .cs-content-left .cs-logo { margin-bottom: 0; }
-.cs-content-left .cs-widget { color:#fff; padding:10px; background-color:#4dae33; border:10px solid #4dae33; } 
+.cs-content-left .cs-widget { color:#fff; padding:10px; background-color:#4dae33; border:10px solid #4dae33; }
 .cs-content-left .cs-widget small { color:#317a19; }
 .cs-content-left .cs-widget-title { color:#fff; }
 
@@ -119,15 +120,12 @@ nav > .cs-anchor { top:-50px; }
     /* Content Middle */
 
     .cs-content-middle { padding-top:0; }
-
     .cs-content-middle nav + .alert { margin-top:140px; }
-
     .cs-content-middle .cs-page { padding-top:116px; }
 
     /* Content Right */
-    
     .cs-content-right { margin-top:0; }
-    
+
 }
 
 
@@ -146,5 +144,5 @@ nav > .cs-anchor { top:-50px; }
     /* Content Middle */
 
     /* Content Right */
-    
+
 }

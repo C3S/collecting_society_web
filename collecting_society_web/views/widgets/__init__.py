@@ -2,6 +2,7 @@
 # Repository: https://github.com/C3S/collecting_society_web
 # flake8: noqa
 
+from .service_info import ServiceInfoWidget
 from .missing_artists import MissingArtistsWidget
 from .missing_content import MissingContentWidget
 from .missing_releases import MissingReleasesWidget

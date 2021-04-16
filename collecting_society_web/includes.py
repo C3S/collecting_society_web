@@ -37,6 +37,7 @@ from .resources import (
     DevicesResource,
 )
 from .views.widgets import (
+    ServiceInfoWidget,
     MissingArtistsWidget,
     MissingContentWidget,
     MissingReleasesWidget,
@@ -156,6 +157,10 @@ def web_registry(config):
                 'name': _(u'terms'),
                 'page': 'terms'}
         ]
+        # widgets
+        reg['widgets']['content-left'] = [
+            ServiceInfoWidget(self.request),
+        ]
         return reg
 
     @BackendResource.extend_registry
@@ -274,7 +279,7 @@ def web_registry(config):
                             'collecting_society_web:'
                             'static/img/element-icon-releases.png')},
         ]
-        # dashboard
+        # widgets
         reg['widgets']['dashboard-central-widgets'] = [
             MissingArtistsWidget(self.request),
             MissingContentWidget(self.request),
@@ -345,7 +350,7 @@ def web_registry(config):
                             'collecting_society_web:'
                             'static/img/phoenix_icon_graph.svg')},
         ]
-        # dashboard
+        # widgets
         # ToDo
         return reg
 
