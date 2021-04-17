@@ -55,6 +55,7 @@ nav > .cs-anchor { top:-50px; }
 
 .cs-widget { padding:10px; }
 .cs-widget-title { padding:10px 0 20px 0; margin:0 0 5px 0; border:none; }
+.cs-widget-subtitle { display: block; }
 .cs-widget-subtitlenote { font-size: small; display: block; opacity:0.8 }
 
 /* Content Left */
