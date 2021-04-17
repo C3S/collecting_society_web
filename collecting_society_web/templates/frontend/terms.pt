@@ -6,24 +6,52 @@
 
     <small>
 
-        <p i18n:translate="">Cultural Commons Collecting Society SCE mit beschränkter Haftung (C3S SCE)</p>
+        <b i18n:translate="">
+            Cultural Commons Collecting Society SCE mit beschränkter Haftung (C3S SCE)
+        </b><br />
 
+        <b i18n:translate="">Representatives</b><br />
         <p>
-            <span i18n:translate="">Representatives</span>:<br />
-            Julian Tillmann<br />
-            Meik Michalke
+            <iframe name="directors-list" id="directors-list" 
+                    src="https://files.c3s.cc/orginfo/directors-ul.html"
+                    width="90%" height="50" frameborder="0"><br />
+                Sorry, your browser doesn&#8217;t support embedded frames.<br />
+            </iframe>
         </p>
 
+        <b i18n:translate="">Postal Address</b><br />
         <p>
             <span i18n:translate="">Rochusstr. 44</span><br />
             <span i18n:translate="">40479 Düsseldorf</span><br />
             <span i18n:translate="">Germany</span>
         </p>
 
+        <b i18n:translate="">Chairman of the Board of Directors</b><br />
+        <p>
+            <iframe src="https://files.c3s.cc/orginfo/board-chairman.html"
+                    name="board-chairman" height="30" frameborder="0"><br />
+                Sorry, your browser doesn&#8217;t support embedded frames.<br />
+            </iframe>
+            <script>
+                var cssLink = document.createElement("link");
+                cssLink.href = "/static/portal/css/base.css"; 
+                cssLink.rel = "stylesheet"; 
+                cssLink.type = "text/css"; 
+                frames['board-chairman'].document.head.appendChild(cssLink);
+            </script>
+        </p>
+
         <p>
             <span i18n:translate="">Email</span>: ( info )at( c3s.cc )<br />
             <span i18n:translate="">OpenPGP Public Key</span>:<br />
-            084A 1D48 A31B C872 DEF5 BB6C D647 F126 4C4E CD7F
+            <a href="https://keys.openpgp.org/search?q=info@c3s.cc">
+                084A 1D48 A31B C872 DEF5 BB6C D647 F126 4C4E CD7F
+            </a><br />
+            <small i18n:translate>
+                Who wants an encrypted response
+                and does not use WKD or keyserver with authentication:
+                Please attach your own public key to each email.
+            </small>
         </p>
 
         <p>
@@ -32,23 +60,46 @@
         </p>
 
         <p>
-            <span i18n:translate="">Cultural Commons Collecting Society SCE mit beschränkter Haftung (C3S SCE)</span><br />
-            <span i18n:translate="">registered in Dusseldorf, Germany, reg.no.: GnR 506 (Genossenschaftsregister Düsseldorf)</span><br />
-            <span i18n:translate="">registered office</span>: <span i18n:translate="">Heyestr. 194, 40625 Düsseldorf</span>.<br />            
-            <span i18n:translate="">European Cooperative Society founded in Hamburg on Sept. 25, 2013 under the law of the Federal Republic of Germany.</span>
+            <span i18n:translate="">
+                Cultural Commons Collecting Society SCE mit beschränkter Haftung (C3S SCE)
+            </span><br />
+            <span i18n:translate="">
+                registered in Dusseldorf, Germany, reg.no.: GnR 506
+                (Genossenschaftsregister Düsseldorf)
+            </span><br />
+            <span i18n:translate="">registered office</span>:
+            <span i18n:translate="">Heyestr. 194, 40625 Düsseldorf</span>.<br />
+            <span i18n:translate="">Minimum share capital: 30.000 €</span><br />
+            <span i18n:translate="">
+                European Cooperative Society founded in Hamburg on Sept. 25, 2013
+                under the law of the Federal Republic of Germany.
+            </span>
         </p>
 
-        <a href="http://archive.c3s.cc/legal/C3S_en_v1.0.pdf">>> <span i18n:translate="">Statute</span></a>
+        <a href="https://archive.c3s.cc/aktuell/legal/C3S_SCE_en.pdf">
+            >> <span i18n:translate="">Statute</span>
+        </a>
 
         <br /><br />
 
         <p>
-            <span i18n:translate="">Zuständige Aufsichtsbehörde bei Aufnahme der Tätigkeit als Verwertungsgesellschaft wird sein</span>:<br />
+            <span i18n:translate="">Auditing association of the cooperative:</span><br />
+            <span i18n:translate="">
+                Zentralverband deutscher Konsumgenossenschaften e.V. (located in Hamburg)
+            </span><br />
+            <a href="https://www.zdk.coop">www.zdk.coop</a>
+        </p>
+
+        <p>
+            <span i18n:translate="">
+                Zuständige Aufsichtsbehörde bei Aufnahme der Tätigkeit
+                als Verwertungsgesellschaft wird sein
+            </span>:<br />
             <span i18n:translate="">DPMA Deutsches Patent- und Markenamt</span><br />
             <span i18n:translate="">Zweibrückenstraße 12</span><br />
             <span i18n:translate="">80331 München</span>
         </p>
 
     </small>
-     
+
 </tal:block>

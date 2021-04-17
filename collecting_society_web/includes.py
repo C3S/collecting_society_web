@@ -141,18 +141,13 @@ def web_registry(config):
         reg['menues']['top'] = [
             {
                 'name': _(u'register'),
-                'page': 'register'}
-        ]
-        reg['menues']['top'] += [
+                'page': 'register'},
             {
-                'name': _(u'survey'),
-                'page': 'survey'},
+                'name': _(u'test'),
+                'page': 'test'},
             {
-                'name': _(u'bug hunters'),
-                'page': 'bughunters'},
-            {
-                'name': _(u'caution'),
-                'page': 'caution'},
+                'name': _(u'develop'),
+                'page': 'develop'},
             {
                 'name': _(u'terms'),
                 'page': 'terms'}
@@ -231,10 +226,6 @@ def web_registry(config):
                 'name': _(u'Licensing'), 'active': LicensingResource,
                 'url':  self.request.resource_path(
                             LicensingResource(self.request), '')}
-        ]
-        # widgets content-right
-        reg['widgets']['content-right'] = [
-            # news_widget
         ]
         return reg
 

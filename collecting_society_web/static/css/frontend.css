@@ -39,6 +39,8 @@ h4, .h4 {}
 h5, .h5 { color:#fc2a00; }
 h6, .h6 {}
 
+code { color: #4dae33; background-color: #d9f0c8; }
+
 a { color:#dc5900; }
 a:hover { color:#dc5900; }
 a:visited { color:#dc5900; }
