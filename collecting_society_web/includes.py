@@ -37,6 +37,7 @@ from .resources import (
     DevicesResource,
 )
 from .views.widgets import (
+    ServiceInfoWidget,
     MissingArtistsWidget,
     MissingContentWidget,
     MissingReleasesWidget,
@@ -140,21 +141,20 @@ def web_registry(config):
         reg['menues']['top'] = [
             {
                 'name': _(u'register'),
-                'page': 'register'}
-        ]
-        reg['menues']['top'] += [
+                'page': 'register'},
             {
-                'name': _(u'survey'),
-                'page': 'survey'},
+                'name': _(u'test'),
+                'page': 'test'},
             {
-                'name': _(u'bug hunters'),
-                'page': 'bughunters'},
-            {
-                'name': _(u'caution'),
-                'page': 'caution'},
+                'name': _(u'develop'),
+                'page': 'develop'},
             {
                 'name': _(u'terms'),
                 'page': 'terms'}
+        ]
+        # widgets
+        reg['widgets']['content-left'] = [
+            ServiceInfoWidget(self.request),
         ]
         return reg
 
@@ -227,10 +227,6 @@ def web_registry(config):
                 'url':  self.request.resource_path(
                             LicensingResource(self.request), '')}
         ]
-        # widgets content-right
-        reg['widgets']['content-right'] = [
-            # news_widget
-        ]
         return reg
 
     @RepertoireResource.extend_registry
@@ -274,7 +270,7 @@ def web_registry(config):
                             'collecting_society_web:'
                             'static/img/element-icon-releases.png')},
         ]
-        # dashboard
+        # widgets
         reg['widgets']['dashboard-central-widgets'] = [
             MissingArtistsWidget(self.request),
             MissingContentWidget(self.request),
@@ -345,7 +341,7 @@ def web_registry(config):
                             'collecting_society_web:'
                             'static/img/phoenix_icon_graph.svg')},
         ]
-        # dashboard
+        # widgets
         # ToDo
         return reg
 

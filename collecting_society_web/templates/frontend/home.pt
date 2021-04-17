@@ -17,17 +17,12 @@
 
     <!-- content left -->
     <tal:block metal:fill-slot="content-left">
-        
-        <div class="cs-widget">
-            <div class="h1 cs-widget-title">
-                Repertoire
-                <small>Testversion 1</small>
-            </div>
-            <div class="cs-widget-body">
-                Willkommen auf der Werkeverwaltung der C3S. Lizenzgeber können
-                hier ihre Künstler, Werke und Veröffentlichungen anmelden.
-            </div>
-        </div>
+
+        <!-- registry: sidebar widgets -->
+        <tal:block tal:condition="context.registry['widgets']['content-left']|None"
+                   tal:repeat="widget context.registry['widgets']['content-left']">
+            ${structure: widget.render()}
+        </tal:block>
 
     </tal:block>
 
@@ -63,7 +58,7 @@
                         alt="${language['name']}"/>
             </a>
         </div>
-                    
+
         <div class="cs-widget cs-widget-login hidden-xs">
             <div class="h1 cs-widget-title" i18n:translate="">Login</div>
             <div class="cs-widget-body" tal:content="structure LoginWebuser"/>
