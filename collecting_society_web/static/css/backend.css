@@ -90,6 +90,9 @@ h1, .h1 { color:#888; border-bottom:1px solid rgb(221, 221, 221); margin-bottom:
 .cs-menue-main .navbar-nav > li > a:active,
 .cs-menue-main .navbar-nav > li > a:visited,
 .cs-menue-main .navbar-nav > li > a:focus { color:#fff; }
+.cs-menue-main .cs-menue-item a img { opacity: 0.7; }
+.cs-menue-main .cs-menue-item a:hover img,
+.cs-menue-main .cs-menue-item.active a img { opacity: 1; }
 
 .cs-menue-main .navbar-nav > .active > a,
 .cs-menue-main .navbar-nav > .active > a:hover,
@@ -105,7 +108,8 @@ h1, .h1 { color:#888; border-bottom:1px solid rgb(221, 221, 221); margin-bottom:
 
 .cs-menue-roles .cs-menue-item a { padding: 15px 0; }
 .cs-menue-roles .cs-menue-item { box-shadow: inset 0 -20px 20px -10px #00000033; }
-.cs-menue-roles .cs-menue-item:hover,
+.cs-menue-roles .cs-menue-item:hover { box-shadow: inset 0 -20px 20px -10px #ffffff33; }
+.cs-menue-roles .cs-menue-item.active:hover,
 .cs-menue-roles .cs-menue-item.active { box-shadow: none; }
 .cs-menue-roles .cs-menue-item-repertoire:hover { background: url('../img/element-menue-bg-repertoire.png'); }
 .cs-menue-roles .cs-menue-item-repertoire { background: url('../img/element-menue-bg-repertoire.png'); }

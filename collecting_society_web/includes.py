@@ -327,43 +327,43 @@ def web_registry(config):
                 'url':  self.request.resource_path(
                             LicensingResource(self.request), 'dashboard'),
                 'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/element-icon-dashboard.png')},
+                            'collecting_society_web:static/img/'
+                            'element-icon-dashboard.png')},
             {
                 'name': _(u'Declarations'),
                 'url':  self.request.resource_path(
                             DeclarationsResource(self.request)),
                 'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/element-icon-declarations.svg')},
+                            'collecting_society_web:static/img/'
+                            'element-icon-declarations.svg')},
             {
                 'name': _(u'Locations'),
                 'url':  self.request.resource_path(
                             LocationsResource(self.request)),
                 'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/element-icon-locations.svg')},
+                            'collecting_society_web:static/img/'
+                            'element-icon-locations.svg')},
             {
                 'name': _(u'Devices'),
                 'url':  self.request.resource_path(
                             DevicesResource(self.request)),
                 'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/element-icon-devices.svg')},
+                            'collecting_society_web:static/img/'
+                            'element-icon-devices.svg')},
             # {
             #     'name': _(u'Accounting'),
             #     'url':  self.request.resource_path(
             #                 DevicesResource(self.request)),
             #     'icon': self.request.static_path(
-            #                 'collecting_society_web:'
-            #                 'static/img/element-icon-accounting.svg')},
+            #                 'collecting_society_web:static/img/'
+            #                 'element-icon-accounting.svg')},
             # {
             #     'name': _(u'Statistics'),
             #     'url':  self.request.resource_path(
             #                 DevicesResource(self.request)),
             #     'icon': self.request.static_path(
-            #                 'collecting_society_web:'
-            #                 'static/img/element-icoon-statistics.svg')},
+            #                 'collecting_society_web:static/img/'
+            #                 'element-icon-statistics.svg')},
         ]
         # widgets
         # ToDo
