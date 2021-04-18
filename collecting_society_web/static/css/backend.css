@@ -106,15 +106,17 @@ h1, .h1 { color:#888; border-bottom:1px solid rgb(221, 221, 221); margin-bottom:
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 */
 }
 
-.cs-menue-roles .cs-menue-item a { padding: 15px 0; }
-.cs-menue-roles .cs-menue-item { box-shadow: inset 0 -20px 20px -10px #00000033; }
-.cs-menue-roles .cs-menue-item:hover { box-shadow: inset 0 -20px 20px -10px #ffffff33; }
+.cs-menue-roles .cs-menue-item.active,
 .cs-menue-roles .cs-menue-item.active:hover,
-.cs-menue-roles .cs-menue-item.active { box-shadow: none; }
-.cs-menue-roles .cs-menue-item-repertoire:hover { background: url('../img/element-menue-bg-repertoire.png'); }
-.cs-menue-roles .cs-menue-item-repertoire { background: url('../img/element-menue-bg-repertoire.png'); }
-.cs-menue-roles .cs-menue-item-licensing:hover { background: url('../img/element-menue-bg-licensing.png'); }
-.cs-menue-roles .cs-menue-item-licensing { background: url('../img/element-menue-bg-licensing.png'); }
+.cs-menue-roles .cs-menue-item-repertoire:hover,
+.cs-menue-roles .cs-menue-item-licensing:hover { box-shadow: none; }
+.cs-menue-roles .cs-menue-item a { padding: 15px 0; }
+.cs-menue-roles .cs-menue-item-repertoire {
+    background: url('../img/element-menue-bg-repertoire.png'); box-shadow: inset 0 -20px 20px -10px #ffffff33;
+}
+.cs-menue-roles .cs-menue-item-licensing {
+    background: url('../img/element-menue-bg-licensing.png'); box-shadow: inset 0 -20px 20px -10px #00000033;
+}
 
 .cs-content-left .cs-menue-roles > li > a,
 .cs-content-left .cs-menue-roles > li > a:hover,
