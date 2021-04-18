@@ -30,7 +30,7 @@
                         <img class="img-responsive center-block"
                              src="${request.static_path(
                                     'collecting_society_web:'
-                                    'static/img/phoenix_icon_diagram-green.svg')}" />
+                                    'static/img/element-icon-devices-yellow.svg')}" />
                     </a>
                 </td>
 

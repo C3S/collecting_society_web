@@ -1,0 +1,76 @@
+/*******************************************************************************
+
+    For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+    Repository: https://github.com/C3S/collecting_society_web
+
+*******************************************************************************/
+
+/*
+
+    COLORS:
+
+    gray dark     #888888
+    gray bright   #f0f3ea
+    green dark    #317a19
+    green bright  #d9f0c8
+    yellow dark   #9e8a00
+    yellow bright #efefb4
+    orange        #dc5900
+    red dark      #a94442
+    red bright    #f2dede
+
+*/
+
+/*******************************************************************************
+
+    Extra small devices (phones, less than 768px)
+
+*******************************************************************************/
+
+/* Main */
+
+body {
+    background: #efefb4; /* Old browsers */
+    background: -moz-linear-gradient(left, #efefb4 0%, #fff 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, #efefb4 0%, #fff 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, #efefb4 0%, #fff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#efefb4', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
+}
+
+h1, .h1 { color:#9e8a00; }
+
+.btn-primary { background: url('../img/element-menue-bg-licensing.png'); border-color:#9e8a00; }
+.cs-table .btn-primary:hover,
+.cs-table .btn-primary:active,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus { background: url('../img/element-menue-bg-licensing.png'); border-color:#9e8a00; }
+
+.cs-table .btn-info,
+.btn-info { background-color:#efefb4; }
+
+.dataTables_wrapper .dataTables_processing { background: url('../img/element-menue-bg-licensing.png'); }
+.cs-modal-header { background: url('../img/element-menue-bg-licensing.png'); }
+
+/* Content Left */
+
+.cs-content-left { background: url('../img/element-menue-bg-licensing.png'); }
+
+/* Content Middle */
+
+.cs-navform .cs-nav-tabs .active a,
+.cs-navform .cs-nav-tabs .active a:hover,
+.cs-navform .cs-nav-tabs .active a:focus { color:#9e8a00; }
+.cs-navform .cs-nav-pills a { color:#9e8a00; }
+.cs-navform .cs-nav-pills a:hover { background-color:#efefb4; }
+.cs-navform .cs-nav-pills .active a,
+.cs-navform .cs-nav-pills .active a:hover,
+.cs-navform .cs-nav-pills .active a:focus { background-color:#efefb4; }
+
+.cs-file-icon { color:#efefb4; }
+
+.cs-upload-item .name { color:#9e8a00; }
+
+/* Widgets */
+
+.dashboard-widget { background-color: #efefb4; }

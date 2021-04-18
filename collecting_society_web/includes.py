@@ -232,6 +232,18 @@ def web_registry(config):
     @RepertoireResource.extend_registry
     def repertoire(self):
         reg = self.dict()
+        # css
+        reg['static']['css'] = [
+            self.request.static_path(
+                'portal_web:'
+                'static/lib/DataTables/datatables.min.css'),
+            self.request.static_path(
+                'collecting_society_web:'
+                'static/css/backend.css'),
+            self.request.static_path(
+                'collecting_society_web:'
+                'static/css/backend-repertoire.css'),
+        ]
         # main repertoire menue
         reg['menues']['main'] = [
             {
@@ -285,10 +297,22 @@ def web_registry(config):
     @LicensingResource.extend_registry
     def licensing(self):
         reg = self.dict()
+        # css
+        reg['static']['css'] = [
+            self.request.static_path(
+                'portal_web:'
+                'static/lib/DataTables/datatables.min.css'),
+            self.request.static_path(
+                'collecting_society_web:'
+                'static/css/backend.css'),
+            self.request.static_path(
+                'collecting_society_web:'
+                'static/css/backend-licensing.css'),
+        ]
         # role menue
         reg['menues']['roles'] = [
             {
-                'name': _(u'Repertoire'), 'active': LicensingResource,
+                'name': _(u'Repertoire'), 'active': RepertoireResource,
                 'url':  self.request.resource_path(
                             RepertoireResource(self.request), '')},
             {
@@ -303,43 +327,43 @@ def web_registry(config):
                 'url':  self.request.resource_path(
                             LicensingResource(self.request), 'dashboard'),
                 'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/element-icon-dashboard.png')},
+                            'collecting_society_web:static/img/'
+                            'element-icon-dashboard.png')},
             {
                 'name': _(u'Declarations'),
                 'url':  self.request.resource_path(
                             DeclarationsResource(self.request)),
                 'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/phoenix_icon_cart.svg')},
+                            'collecting_society_web:static/img/'
+                            'element-icon-declarations.svg')},
             {
                 'name': _(u'Locations'),
                 'url':  self.request.resource_path(
                             LocationsResource(self.request)),
                 'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/phoenix_icon_store.svg')},
+                            'collecting_society_web:static/img/'
+                            'element-icon-locations.svg')},
             {
                 'name': _(u'Devices'),
                 'url':  self.request.resource_path(
                             DevicesResource(self.request)),
                 'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/phoenix_icon_diagram.svg')},
-            {
-                'name': _(u'Accounting'),
-                'url':  self.request.resource_path(
-                            DevicesResource(self.request)),
-                'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/phoenix_icon_notes.svg')},
-            {
-                'name': _(u'Statistics'),
-                'url':  self.request.resource_path(
-                            DevicesResource(self.request)),
-                'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/phoenix_icon_graph.svg')},
+                            'collecting_society_web:static/img/'
+                            'element-icon-devices.svg')},
+            # {
+            #     'name': _(u'Accounting'),
+            #     'url':  self.request.resource_path(
+            #                 DevicesResource(self.request)),
+            #     'icon': self.request.static_path(
+            #                 'collecting_society_web:static/img/'
+            #                 'element-icon-accounting.svg')},
+            # {
+            #     'name': _(u'Statistics'),
+            #     'url':  self.request.resource_path(
+            #                 DevicesResource(self.request)),
+            #     'icon': self.request.static_path(
+            #                 'collecting_society_web:static/img/'
+            #                 'element-icon-statistics.svg')},
         ]
         # widgets
         # ToDo
@@ -354,6 +378,9 @@ def web_registry(config):
             self.request.static_path(
                 'collecting_society_web:'
                 'static/css/backend.css'),
+            self.request.static_path(
+                'collecting_society_web:'
+                'static/css/backend-repertoire.css'),
             self.request.static_path(
                 jfu + 'css/jquery.fileupload.css'),
             self.request.static_path(
@@ -411,7 +438,8 @@ def web_views(config):
     Returns:
         None
     """
-    config.add_static_view('static/repertoire', 'static', cache_max_age=3600)
+    config.add_static_view(
+        'static/collecting_society', 'static', cache_max_age=3600)
     config.scan(ignore=['.views.api', '.tests'])
 
 
@@ -428,13 +456,7 @@ def api_views(config):
     Returns:
         None
     """
-
-    # routes
-    # ...
-
-    # views
     config.add_static_view(
-        'static/repertoire', 'static', cache_max_age=3600,
-        environment='development'
-    )
+        'static/collecting_society', 'static', cache_max_age=3600,
+        environment='testing')
     config.scan('.views.api')
