@@ -103,6 +103,8 @@ nav > .cs-anchor { top:-50px; }
 
     /* Content Middle */
 
+    .cs-content-middle { padding-left: 30px; padding-right: 30px; }
+
     /* Content Right */
 
 }
