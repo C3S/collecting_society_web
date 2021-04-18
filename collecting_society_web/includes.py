@@ -288,7 +288,7 @@ def web_registry(config):
         # role menue
         reg['menues']['roles'] = [
             {
-                'name': _(u'Repertoire'), 'active': LicensingResource,
+                'name': _(u'Repertoire'), 'active': RepertoireResource,
                 'url':  self.request.resource_path(
                             RepertoireResource(self.request), '')},
             {
@@ -326,20 +326,20 @@ def web_registry(config):
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/phoenix_icon_diagram.svg')},
-            {
-                'name': _(u'Accounting'),
-                'url':  self.request.resource_path(
-                            DevicesResource(self.request)),
-                'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/phoenix_icon_notes.svg')},
-            {
-                'name': _(u'Statistics'),
-                'url':  self.request.resource_path(
-                            DevicesResource(self.request)),
-                'icon': self.request.static_path(
-                            'collecting_society_web:'
-                            'static/img/phoenix_icon_graph.svg')},
+            # {
+            #     'name': _(u'Accounting'),
+            #     'url':  self.request.resource_path(
+            #                 DevicesResource(self.request)),
+            #     'icon': self.request.static_path(
+            #                 'collecting_society_web:'
+            #                 'static/img/phoenix_icon_notes.svg')},
+            # {
+            #     'name': _(u'Statistics'),
+            #     'url':  self.request.resource_path(
+            #                 DevicesResource(self.request)),
+            #     'icon': self.request.static_path(
+            #                 'collecting_society_web:'
+            #                 'static/img/phoenix_icon_graph.svg')},
         ]
         # widgets
         # ToDo
@@ -411,7 +411,8 @@ def web_views(config):
     Returns:
         None
     """
-    config.add_static_view('static/repertoire', 'static', cache_max_age=3600)
+    config.add_static_view(
+        'static/collecting_society', 'static', cache_max_age=3600)
     config.scan(ignore=['.views.api', '.tests'])
 
 
@@ -428,13 +429,7 @@ def api_views(config):
     Returns:
         None
     """
-
-    # routes
-    # ...
-
-    # views
     config.add_static_view(
-        'static/repertoire', 'static', cache_max_age=3600,
-        environment='development'
-    )
+        'static/collecting_society', 'static', cache_max_age=3600,
+        environment='testing')
     config.scan('.views.api')
