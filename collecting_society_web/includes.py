@@ -95,9 +95,10 @@ def web_registry(config):
     # Metadata shared by Frontend and Backend
     def meta(request):
         return {
-            'title': _(u'C3S - Repertoire'),
-            'keywords': _(u'c3s,repertoire'),
-            'description': _(u'registration of repertoire for C3S'),
+            'title': _(u'C3S - Portal'),
+            'keywords': _(u'c3s,portal,repertoire,licensing'),
+            'description':
+                _(u'registration of repertoire and utilisations for C3S'),
             'languages': [
                 {
                     'id': 'en',
