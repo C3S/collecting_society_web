@@ -49,16 +49,6 @@
     <!-- content right -->
     <tal:block metal:fill-slot="content-right">
 
-        <!-- registry: language flags -->
-        <div tal:condition="context.registry['meta']['languages']|False"
-                class="cs-langflags">
-            <a tal:repeat="language context.registry['meta']['languages']"
-                tal:attributes="href '?_LOCALE_='+language['id']">
-                <img src="${language['icon']}"
-                        alt="${language['name']}"/>
-            </a>
-        </div>
-
         <div class="cs-widget cs-widget-login hidden-xs">
             <div class="h1 cs-widget-title" i18n:translate="">Login</div>
             <div class="cs-widget-body" tal:content="structure LoginWebuser"/>

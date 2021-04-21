@@ -122,6 +122,8 @@ nav > .cs-anchor { top:-50px; }
 
     /* Content Left */
 
+    .cs-content-left .cs-logo { margin-left: 17px; }
+
     /* Content Middle */
 
     .cs-content-middle { padding-top:0; }
@@ -129,7 +131,9 @@ nav > .cs-anchor { top:-50px; }
     .cs-content-middle .cs-page { padding-top:116px; }
 
     /* Content Right */
+
     .cs-content-right { margin-top:0; }
+    .cs-content-right .cs-langflags { margin-left: 20px; }
 
 }
 
