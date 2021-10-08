@@ -54,9 +54,9 @@ class EditRelease(FormController):
                 'release_title':
                     release.title or '',
                 'genres':
-                    [unicode(genre.id) for genre in release.genres],
+                    [str(genre.id) for genre in release.genres],
                 'styles':
-                    [unicode(style.id) for style in release.styles],
+                    [str(style.id) for style in release.styles],
                 'warning':
                     release.warning or '',
             },

@@ -74,7 +74,7 @@ def verify_email_helper(the_class):
                     web_user.email = web_user.new_email
                     web_user.new_email = ''
             # invalidate uuid
-            web_user.opt_in_uuid = unicode(uuid.uuid4())  # noqa: F821
+            web_user.opt_in_uuid = str(uuid.uuid4())  # noqa: F821
             web_user.save()
             the_class.request.session.flash(
                 _(u"Your email verification was successful."),

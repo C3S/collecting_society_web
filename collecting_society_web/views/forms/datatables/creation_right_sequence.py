@@ -88,7 +88,7 @@ def validate_multifield(node, values):  # multifield validator
 def deferred_instrument_widget(node, kw):
     instruments = Instrument.search_all()
     inst_options = [
-        (inst.oid, unicode(inst.name)) for inst in instruments]  # noqa: F821
+        (inst.oid, str(inst.name)) for inst in instruments]  # noqa: F821
     widget = deform.widget.Select2Widget(values=inst_options, multiple=True)
     return widget
 

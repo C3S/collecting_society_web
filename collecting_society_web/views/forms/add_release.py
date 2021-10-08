@@ -238,7 +238,7 @@ def current_artists_select_widget(node, kw):
 @colander.deferred
 def deferred_genre_widget(node, kw):
     genres = Genre.search_all()
-    genre_options = [(genre.id, unicode(genre.name)) for genre in genres]
+    genre_options = [(genre.id, str(genre.name)) for genre in genres]
     widget = deform.widget.Select2Widget(values=genre_options, multiple=True)
     return widget
 
@@ -246,7 +246,7 @@ def deferred_genre_widget(node, kw):
 @colander.deferred
 def deferred_style_widget(node, kw):
     styles = Style.search_all()
-    style_options = [(style.id, unicode(style.name)) for style in styles]
+    style_options = [(style.id, str(style.name)) for style in styles]
     widget = deform.widget.Select2Widget(values=style_options, multiple=True)
     return widget
 
