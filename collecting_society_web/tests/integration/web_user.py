@@ -101,7 +101,7 @@ class TestWebUser(IntegrationTestBase):
         )
 
     # TODO: move to test class for other general portal functionality
-    def test_070_check_locale(self):
+    def _test_070_check_locale(self):
         # formid = 'LoginWebuser'
         # form = DeformFormObject(self.cli, login_form(), formid)
         # self.screenshot()
