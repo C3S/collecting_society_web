@@ -37,7 +37,6 @@ class TestWebUser(IntegrationTestBase):
         self.screenshot()
         form.register_webuser(waitfor="Thank you for your registration")
         self.screenshot()
-        self.assertIn("Thank you for your registration", self.cli.page_source)
 
     def test_020_login_before_validation(self):
         """
@@ -48,9 +47,8 @@ class TestWebUser(IntegrationTestBase):
         form.login_email.set('a@webuser.test')
         form.login_password.set('awebuser')
         self.screenshot()
-        form.submit()
+        form.submit(waitfor="User mail address not verified")
         self.screenshot()
-        self.assertIn("User mail address not verified", self.cli.page_source)
 
     @Tdb.transaction()
     def test_030_validate_user_registration(self):
@@ -82,9 +80,8 @@ class TestWebUser(IntegrationTestBase):
         form = DeformFormObject(self.cli, login_form(), formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('wrongpassword')
-        form.submit()
+        form.submit("Login failed")
         self.screenshot()
-        self.assertIn("Login failed", self.cli.page_source)
 
     def test_060_login_with_right_credentials(self):
         """
