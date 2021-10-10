@@ -5,10 +5,10 @@ import operator
 import logging
 import colander
 
-from pyramid.security import (
+from pyramid.security import NO_PERMISSION_REQUIRED
+from pyramid.authorization import (
     Allow,
-    Everyone,
-    NO_PERMISSION_REQUIRED,
+    Everyone
 )
 from pyramid.httpexceptions import HTTPNotFound
 from cornice.resource import resource, view

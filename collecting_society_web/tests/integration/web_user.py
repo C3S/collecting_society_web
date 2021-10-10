@@ -35,9 +35,8 @@ class TestWebUser(IntegrationTestBase):
         form.register_password.set('awebuser')
         form.terms_accepted.set(True)
         self.screenshot()
-        form.register_webuser()
+        form.register_webuser(waitfor="Thank you for your registration")
         self.screenshot()
-        self.assertIn("Thank you for your registration", self.cli.page_source)
 
     def test_020_login_before_validation(self):
         """
@@ -48,9 +47,8 @@ class TestWebUser(IntegrationTestBase):
         form.login_email.set('a@webuser.test')
         form.login_password.set('awebuser')
         self.screenshot()
-        form.submit()
+        form.submit(waitfor="User mail address not verified")
         self.screenshot()
-        self.assertIn("User mail address not verified", self.cli.page_source)
 
     @Tdb.transaction()
     def test_030_validate_user_registration(self):
@@ -82,9 +80,8 @@ class TestWebUser(IntegrationTestBase):
         form = DeformFormObject(self.cli, login_form(), formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('wrongpassword')
-        form.submit()
+        form.submit("Login failed")
         self.screenshot()
-        self.assertIn("Login failed", self.cli.page_source)
 
     def test_060_login_with_right_credentials(self):
         """
@@ -99,3 +96,29 @@ class TestWebUser(IntegrationTestBase):
         self.assertTrue(
             self.cli.find_elements_by_class_name('cs-backend')
         )
+
+    # TODO: move to test class for other general portal functionality
+    def _test_070_check_locale(self):
+        # formid = 'LoginWebuser'
+        # form = DeformFormObject(self.cli, login_form(), formid)
+        # self.screenshot()
+        # TODO: fix and move to an own test class for general GUI functionality
+        # This throws ElementNotInteractableException: Message: Element
+        # <div class="cs-langflags"> could not be scrolled into view
+        # self.cli.find_elements_by_class_name("cs-langflags")[0].click()
+        # self.assertTrue(self.cli.get_cookie("_LOCALE_") == "en",
+        #                "Clicking English flag doesn't set the correct locale"
+        #                 "cookie")
+        # self.cli.find_elements_by_class_name("cs-langflags")[1].click()
+        # self.assertTrue(self.cli.get_cookie("_LOCALE_") == "de",
+        #                 "Clicking German flag doesn't set the correct locale"
+        #                 "cookie")
+        # self.assertTrue(form._form.buttons[0].title[1:] == u'bernehmen',
+        #                 "German locale doesn't work")
+        # self.cli.find_elements_by_class_name("cs-langflags")[0].click()
+        # self.assertTrue(self.cli.get_cookie("_LOCALE_") == "en",
+        #                 "Clicking English flag doesn't reset the correct "
+        #                 "locale cookie")
+        # self.assertTrue(form._form.buttons[0] == u'Submit',
+        #                 "English locale doesn't work")
+        self.assertTrue(True)

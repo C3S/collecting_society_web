@@ -17,7 +17,7 @@ from portal_web.resources import (
 )
 from portal_web.models import Tdb
 
-from frontend import verify_email_helper
+from .frontend import verify_email_helper
 
 log = logging.getLogger(__name__)
 

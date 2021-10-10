@@ -4,7 +4,7 @@
 import os
 import colander
 
-from pyramid.security import (
+from pyramid.authorization import (
     Allow,
     DENY_ALL,
 )
