@@ -170,7 +170,7 @@ class AddLocation(FormController):
 def deferred_category_widget(node, kw):
     cats = LocationCategory.search_all()
     cat_options = [
-        (cat.id, unicode(cat.name)) for cat in cats]  # noqa: F821
+        (cat.id, str(cat.name)) for cat in cats]  # noqa: F821
     widget = deform.widget.Select2Widget(values=cat_options, multiple=False)
     return widget
 
@@ -179,7 +179,7 @@ def deferred_category_widget(node, kw):
 def deferred_country_widget(node, kw):
     countries = Country.search_all()
     country_options = [
-        (c.id, unicode(c.name)) for c in countries]  # noqa: F821
+        (c.id, str(c.name)) for c in countries]  # noqa: F821
     widget = deform.widget.Select2Widget(values=country_options,
                                          multiple=False)
     return widget
@@ -189,7 +189,7 @@ def deferred_country_widget(node, kw):
 def deferred_subdivision_widget(node, kw):
     subs = Subdivision.search_all()
     sub_options = [
-        (sub.id, unicode(sub.name)) for sub in subs]  # noqa: F821
+        (sub.id, str(sub.name)) for sub in subs]  # noqa: F821
     widget = deform.widget.Select2Widget(values=sub_options, multiple=False)
     return widget
 

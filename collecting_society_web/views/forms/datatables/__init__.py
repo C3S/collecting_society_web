@@ -2,12 +2,11 @@
 # Repository: https://github.com/C3S/collecting_society_web
 # flake8: noqa
 
-from creation_tariff_category_sequence import CreationTariffCategorySequence
-
 from .artist_sequence import ArtistSequence, ArtistIndividual
 from .creation_sequence import CreationSequence
 from .creation_right_sequence import CreationRightSequence
 from .creation_rightsholder_sequence import CreationRightsholderSequence
+from .creation_tariff_category_sequence import CreationTariffCategorySequence
 from .contribution_sequence import ContributionSequence
 from .track_sequence import TrackSequence
 from .original_sequence import OriginalSequence

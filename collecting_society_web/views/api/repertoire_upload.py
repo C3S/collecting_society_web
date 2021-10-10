@@ -14,10 +14,10 @@ import time
 from cgi import FieldStorage
 
 from webob.byterange import ContentRange
-from pyramid.security import (
+from pyramid.security import NO_PERMISSION_REQUIRED
+from pyramid.authorization import (
     Allow,
-    DENY_ALL,
-    NO_PERMISSION_REQUIRED
+    DENY_ALL
 )
 from pyramid.httpexceptions import HTTPInternalServerError
 from cornice import Service

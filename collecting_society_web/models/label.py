@@ -120,7 +120,7 @@ class Label(Tdb):
           None: if no match is found
         """
         result = cls.get().search(  # noqa
-            [('name', 'like', name_starting_with + '\%')])  # noqa: W605
+            [('name', 'like', name_starting_with + '\\%')])
         return result[0] or None
 
     @classmethod

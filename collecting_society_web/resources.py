@@ -4,7 +4,7 @@
 import logging
 import re
 
-from pyramid.security import (
+from pyramid.authorization import (
     Allow,
     DENY_ALL,
 )
