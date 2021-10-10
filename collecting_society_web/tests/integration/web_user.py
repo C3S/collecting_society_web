@@ -35,7 +35,7 @@ class TestWebUser(IntegrationTestBase):
         form.register_password.set('awebuser')
         form.terms_accepted.set(True)
         self.screenshot()
-        form.register_webuser()
+        form.register_webuser(waitfor="Thank you for your registration")
         self.screenshot()
         self.assertIn("Thank you for your registration", self.cli.page_source)
 
