@@ -20,7 +20,7 @@ class RejectedContentWidget():
         return "glyphicon glyphicon-ban-circle"
 
     def header(self):
-        return _(u"Rejected Content")
+        return _("Rejected Content")
 
     def dupl(self):
         return Content.search_rejects(self.party, 'dupl', self.category)
@@ -32,7 +32,7 @@ class RejectedContentWidget():
         return Content.search_rejects(self.party, 'lossyc', self.category)
 
     def description(self):
-        return _(u"Total number of files you uploaded that where rejected")
+        return _("Total number of files you uploaded that where rejected")
 
     def get_len(self, content_list):
         if content_list:

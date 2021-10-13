@@ -71,7 +71,7 @@ class ReleaseViews(ViewBase):
             self.request.web_user, title, self.context.code
         ))
         self.request.session.flash(
-            _(u"Release deleted:  ${reti} (${reco})",
+            _("Release deleted:  ${reti} (${reco})",
               mapping={'reti': title,
                        'reco': self.context.code}),
             'main-alert-success'

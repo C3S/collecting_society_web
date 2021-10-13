@@ -42,16 +42,16 @@ def content_sequence_widget(node, kw):
     # translation strings
     request.name_translation = get_localizer(
         request).translate(
-            _(u'Name', 'collecting_society_web'))
+            _('Name', 'collecting_society_web'))
     request.code_translation = get_localizer(
         request).translate(
-            _(u'Code', 'collecting_society_web'))
+            _('Code', 'collecting_society_web'))
     locale = get_localizer(request)
     locale_domain = 'collecting_society_web'
     content_category = {
-        'audio': locale.translate(_(u'Audio', locale_domain)),
-        'sheet': locale.translate(_(u'Sheet Music', locale_domain)),
-        'lyrics': locale.translate(_(u'Lyrics', locale_domain)),
+        'audio': locale.translate(_('Audio', locale_domain)),
+        'sheet': locale.translate(_('Sheet Music', locale_domain)),
+        'lyrics': locale.translate(_('Lyrics', locale_domain)),
     }
     # get initial source data
     source_data = []

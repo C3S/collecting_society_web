@@ -131,7 +131,7 @@ class AddArtist(FormController):
         if not artists:
             log.info("artist add failed for %s: %s" % (email, _artist))
             self.request.session.flash(
-                _(u"Artist could not be added: ${arna}",
+                _("Artist could not be added: ${arna}",
                   mapping={'arna':  _artist['name']}),
                 'main-alert-danger'
             )
@@ -145,7 +145,7 @@ class AddArtist(FormController):
             is_first_artist = True
         if is_first_artist:
             self.request.session.flash(
-                _(u"Congratulations! You created your first artist "
+                _("Congratulations! You created your first artist "
                   "'${arna}' (${arco}). Now go back to the dashboard and "
                   "see what's next.",
                   mapping={'arna': artist.name, 'arco': artist.code}),
@@ -153,7 +153,7 @@ class AddArtist(FormController):
             )
         else:
             self.request.session.flash(
-                _(u"Artist added:  ${arna} (${arco})",
+                _("Artist added:  ${arna} (${arco})",
                   mapping={'arna': artist.name, 'arco': artist.code}),
                 'main-alert-success'
             )
@@ -202,13 +202,13 @@ class PictureField(colander.SchemaNode):
 # --- Schemas -----------------------------------------------------------------
 
 class AddArtistSchema(colander.Schema):
-    group = GroupField(title=_(u"Group"))
+    group = GroupField(title=_("Group"))
     # title = _(u"Add Artist")
-    name = NameField(title=_(u"Name"))
-    ipn_code = IpnCodeField(title=_(u"International Performer Number"))
-    description = DescriptionField(title=_(u"Description"))
-    picture = PictureField(title=_(u"Picture"))
-    members = ArtistSequence(title=_(u"Members"))
+    name = NameField(title=_("Name"))
+    ipn_code = IpnCodeField(title=_("International Performer Number"))
+    description = DescriptionField(title=_("Description"))
+    picture = PictureField(title=_("Picture"))
+    members = ArtistSequence(title=_("Members"))
 
 
 # --- Forms -------------------------------------------------------------------
@@ -217,6 +217,6 @@ def add_artist_form(request):
     return deform.Form(
         schema=AddArtistSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

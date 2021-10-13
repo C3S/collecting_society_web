@@ -290,7 +290,7 @@ class EditRelease(FormController):
                                 if not creation.permits(web_user,
                                                         'edit_creation'):
                                     self.request.session.flash(
-                                        _(u"Warning: You don't have "
+                                        _("Warning: You don't have "
                                           "permissions to edit the track. "
                                           "Changes won't take effekt."),
                                         'main-alert-warning'
@@ -390,7 +390,7 @@ class EditRelease(FormController):
         # user feedback
         log.info("edit release successful for %s: %s" % (web_user, release))
         self.request.session.flash(
-            _(u"Release edited:  ${reti} (${reco})",
+            _("Release edited:  ${reti} (${reco})",
               mapping={'reti': release.title,
                        'reco': release.code}),
             'main-alert-success'
@@ -416,6 +416,6 @@ def edit_release_form(request):
     return deform.Form(
         schema=AddReleaseSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

@@ -29,10 +29,10 @@ class MissingReleasesWidget():
         return "glyphicon glyphicon-cd"
 
     def header(self):
-        return _(u"Missing Releases")
+        return _("Missing Releases")
 
     def description(self):
-        return _(u"You didn't create any releases yet. Please do so using the "
+        return _("You didn't create any releases yet. Please do so using the "
                  "menu on the left side. Releases are generally collections "
                  "of creations that have been made available to the public. "
                  "Sometimes only one creation is part of a release (called a "

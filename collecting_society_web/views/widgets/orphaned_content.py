@@ -20,11 +20,11 @@ class OrphanedContentWidget():
         return "glyphicon glyphicon-leaf"
 
     def header(self):
-        return _(u"Unassigned Files")
+        return _("Unassigned Files")
 
     def description(self):
         return _(
-            u"This is the number of files you uploaded but didn't assign "
+            "This is the number of files you uploaded but didn't assign "
             "to a creation yet. The easiest way to assign a file to a "
             "creation is to go to the files list (by clicking on 'Files' "
             "in the left-hand menu) and then click the 'Extract metadata' "

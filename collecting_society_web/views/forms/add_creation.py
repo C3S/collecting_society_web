@@ -114,7 +114,7 @@ class AddCreation(FormController):
         if not creations:
             log.info("creation add failed for %s: %s" % (web_user, _creation))
             self.request.session.flash(
-                _(u"Creation could not be added:  ${crct}",
+                _("Creation could not be added:  ${crct}",
                   mapping={'crct': _creation['title']}),
                 'main-alert-danger'
             )
@@ -146,7 +146,7 @@ class AddCreation(FormController):
                         else:  # must be the other one that was newly created
                             a_rho_to_remove.append(a_rho_to_match)
                         self.request.session.flash(
-                            _(u"Warning: Only one rightsholder entry allowed "
+                            _("Warning: Only one rightsholder entry allowed "
                               "for '${name}'. Entry has been removed.",
                               mapping={
                                   'name': a_rightsholder['subject'][0]['code']
@@ -266,7 +266,7 @@ class AddCreation(FormController):
 
         log.info("creation add successful for %s: %s" % (web_user, creation))
         self.request.session.flash(
-            _(u"Creation added:  ${crct} (${crco})",
+            _("Creation added:  ${crct} (${crco})",
               mapping={'crct': creation.title,
                        'crco': creation.code}),
             'main-alert-success'
@@ -296,7 +296,7 @@ def validate_content(node, values, **kwargs):  # multifield validator
             if (edit_creation_code is None or  # either in Add Creation or
                     edit_creation_code != crco):    # in Edit Creation and code
                 raise colander.Invalid(    # doesn't fit the creation?
-                    node, _(u"Content file ${coco} is "
+                    node, _("Content file ${coco} is "
                             "already assigned to creation ${crco}.",
                             mapping={'coco': c.code, 'crco': crco}))
 
@@ -356,7 +356,7 @@ def validate_content(node, values, **kwargs):  # multifield validator
                 a_rightsholders[i]['subject'][0]['code'] ==
                 a_rightsholders[i+1]['subject'][0]['code']):
             raise colander.Invalid(
-                node, _(u"Multiple entries for the same rightsholder '${r}'. "
+                node, _("Multiple entries for the same rightsholder '${r}'. "
                         "Please have a single unique rightsholder to assign "
                         "all the applying rights to.",
                         mapping={'r': a_rightsholders[i]["subject"][0]["name"]}
@@ -375,7 +375,7 @@ def validate_content(node, values, **kwargs):  # multifield validator
                     a_rights[i]['contribution'] ==
                     a_rights[i+1]['contribution']):
                 raise colander.Invalid(
-                    node, _(u"Multiple entries for contribution '${c}' "
+                    node, _("Multiple entries for contribution '${c}' "
                             "by ${r}. "
                             "Please add a single unique contribution type per "
                             "rightsholder.",
@@ -402,11 +402,11 @@ def current_artists_select_widget(node, kw):
 def deferred_areas_schema_node(node, kw):
     schema = colander.SchemaNode(
         colander.Mapping(),
-        title=_(u"Areas"),
+        title=_("Areas"),
         oid="areas",
         name="areas",
         widget=deform.widget.MappingWidget(template='navs/mapping'),
-        description=_(u"Assign areas of exploitation the C3S "
+        description=_("Assign areas of exploitation the C3S "
                       "will cover for this song. In case you are "
                       "also a member of another collecting society, "
                       "that handles different areas, "
@@ -458,20 +458,20 @@ class LyricsField(colander.SchemaNode):
 # --- Schemas -----------------------------------------------------------------
 
 class MetadataSchema(colander.Schema):
-    title = _(u"Metadata")
+    title = _("Metadata")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    working_title = TitleField(name='title', title=_(u"Title"))
-    artist = ArtistField(title=_(u"Artist"))
+    working_title = TitleField(name='title', title=_("Title"))
+    artist = ArtistField(title=_("Artist"))
 
 
 class RightsholdersSchema(colander.Schema):
-    title = _(u"Rightsholders")
+    title = _("Rightsholders")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     rightsholders = CreationRightsholderSequence(title="", min_len=1)
 
 
 class DerivationSchema(colander.Schema):
-    title = _(u"Derivation")
+    title = _("Derivation")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     adaption = CreationSequence(title="Adaption of")
     cover = CreationSequence(title="Cover of")
@@ -479,7 +479,7 @@ class DerivationSchema(colander.Schema):
 
 
 class ContentSchema(colander.Schema):
-    title = _(u"Files")
+    title = _("Files")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     audio = ContentSequence(title=_("Audio Files"), actions=['add'],
                             max_len=1, category='audio')
@@ -488,9 +488,9 @@ class ContentSchema(colander.Schema):
 
 
 class LyricsSchema(colander.Schema):
-    title = _(u"Lyrics")
+    title = _("Lyrics")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    lyrics = LyricsField(title=_(u"Lyrics"))
+    lyrics = LyricsField(title=_("Lyrics"))
 
 
 class AddCreationSchema(colander.Schema):
@@ -510,6 +510,6 @@ def add_creation_form(request):
         schema=AddCreationSchema(validator=validate_content).bind(
             request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

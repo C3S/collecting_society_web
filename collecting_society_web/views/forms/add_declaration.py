@@ -115,12 +115,12 @@ class TemplateField(colander.SchemaNode):
 
 class GeneralSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    template = TemplateField(title=_(u"Template"))
+    template = TemplateField(title=_("Template"))
 
 
 class AddDeclarationSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
-    general = GeneralSchema(title=_(u"General"))
+    general = GeneralSchema(title=_("General"))
 
 
 # --- Forms -------------------------------------------------------------------
@@ -129,6 +129,6 @@ def add_declaration_form(request):
     return deform.Form(
         schema=AddDeclarationSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

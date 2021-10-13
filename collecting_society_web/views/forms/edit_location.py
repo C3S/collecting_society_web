@@ -205,7 +205,7 @@ class EditLocation(FormController):
             log.info("edit location successful for %s: %s" % (web_user,
                      location_record))
             self.request.session.flash(
-                _(u"Location edited:  ${name}",
+                _("Location edited:  ${name}",
                   mapping={'name': location_record.name}),
                 'main-alert-success'
             )
@@ -214,7 +214,7 @@ class EditLocation(FormController):
             log.info("edit location unsuccessful for %s: %s" % (web_user,
                      location_record))
             self.request.session.flash(
-                _(u"Location ${name} edited changes couldn't be stored",
+                _("Location ${name} edited changes couldn't be stored",
                   mapping={'name': location_record.name}),
                 'main-alert-warning'
             )
@@ -239,6 +239,6 @@ def edit_location_form(request):
     return deform.Form(
         schema=AddLocationSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

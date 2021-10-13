@@ -37,10 +37,10 @@ def picture_processing(fp):
             image.save(picture_data, "JPEG")
             picture_data.seek(0)
             if not picture_data:
-                return _(u'Unable to process picture')
+                return _('Unable to process picture')
             picture = picture_data.read()
             mimetype = 'image/jpeg'  # = mimetype
     except IOError as e:
-        return _(u'Error while processing picture data: "${e}"',
+        return _('Error while processing picture data: "${e}"',
                  mapping={'e': e}), None, None, None
     return None, picture, thumbnail, mimetype

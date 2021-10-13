@@ -194,7 +194,7 @@ class AddRelease(FormController):
         if not release:
             log.info("release add failed for %s: %s" % (web_user, _release))
             self.request.session.flash(
-                _(u"Release could not be added: ${reti}",
+                _("Release could not be added: ${reti}",
                   mapping={'reti': _release['title']}),
                 'main-alert-danger'
             )
@@ -203,7 +203,7 @@ class AddRelease(FormController):
         release = release[0]
         log.info("release add successful for %s: %s" % (web_user, release))
         self.request.session.flash(
-            _(u"Release added:  ${reti} (${reco})",
+            _("Release added:  ${reti} (${reco})",
               mapping={'reti': release.title,
                        'reco': release.code}),
             'main-alert-success'
@@ -420,23 +420,23 @@ class DistributionTerritoryField(colander.SchemaNode):
 
 class MetadataSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    release_type = ReleaseTypeField(title=_(u"Release Type"))
-    artist = ArtistField(title=_(u"Artist"))
+    release_type = ReleaseTypeField(title=_("Release Type"))
+    artist = ArtistField(title=_("Artist"))
     split_artists = SplitArtistSequence(
-        title=_(u"Split Artists"), actions=['add'], group=True)
-    release_title = ReleaseTitleField(title=_(u"Title"))
-    genres = GenreCheckboxField(title=_(u"Genres"))
-    styles = StyleCheckboxField(title=_(u"Styles"))
-    warning = WarningField(title=_(u"Warning"))
-    picture = PictureField(title=_(u"Picture"))
+        title=_("Split Artists"), actions=['add'], group=True)
+    release_title = ReleaseTitleField(title=_("Title"))
+    genres = GenreCheckboxField(title=_("Genres"))
+    styles = StyleCheckboxField(title=_("Styles"))
+    warning = WarningField(title=_("Warning"))
+    picture = PictureField(title=_("Picture"))
 
 
 class MediaSequence(colander.SequenceSchema):
     title = ""
-    description = _(u"Please add a medium, then add some tracks.")
-    track_sequence = TrackSequence(title=_(u"Medium"), min_len=1,
+    description = _("Please add a medium, then add some tracks.")
+    track_sequence = TrackSequence(title=_("Medium"), min_len=1,
                                    language_overrides={
-                                       "custom": {"create": _(u"Add Track")}
+                                       "custom": {"create": _("Add Track")}
                                    })
 
 
@@ -447,36 +447,36 @@ class TracksSchema(colander.Schema):
 
 class ProductionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    publisher = PublisherSequence(title=_(u"Publisher"), max_len=1)
-    grid_code = GRidCodeField(title=_(u"GRid Code"))
-    copyright_date = CopyrightDateField(title=_(u"Copyright Date"))
+    publisher = PublisherSequence(title=_("Publisher"), max_len=1)
+    grid_code = GRidCodeField(title=_("GRid Code"))
+    copyright_date = CopyrightDateField(title=_("Copyright Date"))
     # copyright_owner = CopyrightOwnerField(title=_(u"Copyright Owner(s)"))
-    production_date = ProductionDateField(title=_(u"Production Date"))
+    production_date = ProductionDateField(title=_("Production Date"))
 
 
 class DistributionSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    label = LabelSequence(title=_(u"Label"), max_len=1)
+    label = LabelSequence(title=_("Label"), max_len=1)
     label_catalog_number = LabelCatalogNumberField(
-        title=_(u"Label Catalog Number of Release"))
-    ean_upc_code = EanUpcCodeField(title=_(u"EAN or UPC Code"))
-    release_date = ReleaseDateField(title=_(u"Release Date"))
+        title=_("Label Catalog Number of Release"))
+    ean_upc_code = EanUpcCodeField(title=_("EAN or UPC Code"))
+    release_date = ReleaseDateField(title=_("Release Date"))
     release_cancellation_date = ReleaseCancellationDateField(
-        title=_(u"Release Cancellation Date"))
+        title=_("Release Cancellation Date"))
     online_release_date = OnlineReleaseDateField(
-        title=_(u"Online Release Date"))
+        title=_("Online Release Date"))
     online_cancellation_date = OnlineReleaseCancellationDateField(
-        title=_(u"Online Release Cancellation Date"))
+        title=_("Online Release Cancellation Date"))
     distribution_territory = DistributionTerritoryField(
-        title=_(u"Distribution Territory"))
+        title=_("Distribution Territory"))
 
 
 class AddReleaseSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
-    metadata = MetadataSchema(title=_(u"Metadata"))
-    production = ProductionSchema(title=_(u"Production"))
-    distribution = DistributionSchema(title=_(u"Distribution"))
-    tracks = TracksSchema(title=_(u"Tracks"))
+    metadata = MetadataSchema(title=_("Metadata"))
+    production = ProductionSchema(title=_("Production"))
+    distribution = DistributionSchema(title=_("Distribution"))
+    tracks = TracksSchema(title=_("Tracks"))
 
 
 # --- Forms -------------------------------------------------------------------
@@ -485,6 +485,6 @@ def add_release_form(request):
     return deform.Form(
         schema=AddReleaseSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

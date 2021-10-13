@@ -91,7 +91,7 @@ class EditDevice(FormController):
             # user feedback
             log.info("edit device successful for %s: %s" % (web_user, device))
             self.request.session.flash(
-                _(u"Device edited:  ${name} (${uuid})",
+                _("Device edited:  ${name} (${uuid})",
                   mapping={'name': device.name,
                            'uuid': device.uuid}),
                 'main-alert-success'
@@ -101,7 +101,7 @@ class EditDevice(FormController):
                      % (web_user, device))
             # user feedback
             self.request.session.flash(
-                _(u"Device ${name} edited but device"
+                _("Device ${name} edited but device"
                   " id ${uuid} hasn't changed",
                   mapping={'name': device.name,
                            'uuid': device.uuid}),
@@ -128,6 +128,6 @@ def edit_device_form(request):
     return deform.Form(
         schema=AddDeviceSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

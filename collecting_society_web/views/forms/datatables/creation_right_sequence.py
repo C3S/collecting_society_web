@@ -58,7 +58,7 @@ def validate_multifield(node, values):  # multifield validator
     ctbr_list = CreationRight.get_contributions_by_type_of_right(tor)
     if (ctbr not in ctbr_list):
         raise colander.Invalid(
-            node, _(u"Contribution type '${c}' does not apply to ${r}.",
+            node, _("Contribution type '${c}' does not apply to ${r}.",
                     mapping={'c': ctbr, 'r': tor}))
 
     # check if collecting society represets the selected type of right
@@ -77,7 +77,7 @@ def validate_multifield(node, values):  # multifield validator
         if not sel_cs_name:
             sel_cs_name = "Selected collecting society"
         raise colander.Invalid(
-            node, _(u"${c} does not represent ${r}.",
+            node, _("${c} does not represent ${r}.",
                     mapping={'c': sel_cs_name, 'r': tor}))
 
 

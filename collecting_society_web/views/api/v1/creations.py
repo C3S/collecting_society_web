@@ -96,13 +96,13 @@ class TitleField(colander.SchemaNode):
 
 
 class CreationGetSchema(colander.Schema):
-    code = CodeField(title=_(u"Native Code"))
+    code = CodeField(title=_("Native Code"))
 
 
 def deferred_idspace_schemas_node(request):
     schema = colander.SchemaNode(
         colander.Mapping(),
-        description=_(u"artist/title combinations, native code, or "
+        description=_("artist/title combinations, native code, or "
                       "foreign identifier spaces like isrc or iswc")
     )
 

@@ -20,12 +20,12 @@ class UncommitedContentWidget():
         return "glyphicon glyphicon-send"
 
     def header(self):
-        return _(u"Uncommitted Content")
+        return _("Uncommitted Content")
 
     def description(self):
         return _(
-            u"Number of artists, creations, and releases you didn't yet"
-            u"release to be valid in the C3S database"
+            "Number of artists, creations, and releases you didn't yet"
+            "release to be valid in the C3S database"
         )
 
     def get_len(self, content_list):

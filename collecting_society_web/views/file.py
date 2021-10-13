@@ -91,8 +91,8 @@ class FileViews(ViewBase):
             self.request.web_user, name, self.context.code
         ))
         self.request.session.flash(
-            _(u"Content deleted: ") + name + ' (' + self.context.code + ')',
-            _(u"Content deleted: ${cona} (${coco})",
+            _("Content deleted: ") + name + ' (' + self.context.code + ')',
+            _("Content deleted: ${cona} (${coco})",
               mapping={'cona': name, 'coco': self.context.code}),
             'main-alert-success'
         )

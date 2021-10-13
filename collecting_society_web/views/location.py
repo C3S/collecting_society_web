@@ -74,8 +74,8 @@ class LocationViews(ViewBase):
             self.request.web_user, name, self.context.code
         ))
         self.request.session.flash(
-            _(u"Location deleted: ") + name,
-            _(u"Location deleted: ${name}",
+            _("Location deleted: ") + name,
+            _("Location deleted: ${name}",
               mapping={'name': name}),
             'main-alert-success'
         )

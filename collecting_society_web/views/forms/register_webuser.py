@@ -143,15 +143,15 @@ class RegisterWebuser(LoginWebuser):
                 )
                 if opt_in_state == 'opted-in':
                     self.request.session.flash(
-                        _(u"You are already registered with your "
-                          u"credentials."),
+                        _("You are already registered with your "
+                          "credentials."),
                         'main-alert-info')
                     self.login()
                     return
                 else:
                     self.request.session.flash(
-                        _(u"Your email address is not verified yet. Please "
-                          u"follow the instructions in our email."),
+                        _("Your email address is not verified yet. Please "
+                          "follow the instructions in our email."),
                         'main-alert-info')
                     return
             # user fails authentication (email already registered)
@@ -177,9 +177,9 @@ class RegisterWebuser(LoginWebuser):
                 log.info("web_user creation not successful: %s" % _web_user)
                 self.request.session.flash(
                     _(
-                        u"There was an error during the registration process. "
-                        u"Please try again later and contact us, if this "
-                        u"error occurs again. Sorry for the inconveniece."
+                        "There was an error during the registration process. "
+                        "Please try again later and contact us, if this "
+                        "error occurs again. Sorry for the inconveniece."
                     ),
                     'main-alert-danger'
                 )
@@ -213,9 +213,9 @@ class RegisterWebuser(LoginWebuser):
         # flash message
         self.request.session.flash(
             _(
-                u"Thank you for your registration. We are now processing your "
-                u"request and will send you an email with further "
-                u"instructions."
+                "Thank you for your registration. We are now processing your "
+                "request and will send you an email with further "
+                "instructions."
             ),
             'main-alert-success'
         )
@@ -240,23 +240,23 @@ class RegisterWebuser(LoginWebuser):
 
 def not_empty(value):
     if not value or len(value) < 2:
-        return _(u"Please enter your name.")
+        return _("Please enter your name.")
     return True
 
 
 def terms_accepted(value):
     if not value:
-        return _(u"You need to accept the terms of service.")
+        return _("You need to accept the terms of service.")
     return True
 
 
 def right_age(value):
     if not value:
-        return _(u"You need to provide your birthdate.")
+        return _("You need to provide your birthdate.")
     if value < datetime.date(1900, 1, 1):
-        return _(u'Sorry, I don\'t believe you are that old.')
+        return _('Sorry, I don\'t believe you are that old.')
     if value > datetime.date.today() - datetime.timedelta(days=AGE_ADULT*364):
-        return _(u"Sorry, you are too young to register here.")
+        return _("Sorry, you are too young to register here.")
         # return _(
         #     u"Sorry, you have to be ${age} years or older to register here.",
         #
@@ -328,27 +328,27 @@ class CheckboxWithLabel(colander.SchemaNode):
 
 class RegisterMemberSchema(colander.MappingSchema):
     email = EmailField(
-        title=_(u"Email"),
+        title=_("Email"),
         description=_(
-            u"Please use the email address as in your membership application."
+            "Please use the email address as in your membership application."
         )
     )
-    password = CheckedPasswordField(title=_(u"Password"))
+    password = CheckedPasswordField(title=_("Password"))
     terms_accepted = CheckboxWithLabel(
-        title=_(u"Terms of Service"),
-        label=_(u"I accept the terms of service.")
+        title=_("Terms of Service"),
+        label=_("I accept the terms of service.")
     )
 
 
 class RegisterNonmemberSchema(colander.MappingSchema):
-    firstname = FirstnameField(title=_(u"Firstname"))
-    lastname = LastnameField(title=_(u"Lastname"))
-    birthdate = BirthdateField(title=_(u"Birthdate"))
-    email = EmailField(title=_(u"Email"))
-    password = CheckedPasswordField(title=_(u"Password"))
+    firstname = FirstnameField(title=_("Firstname"))
+    lastname = LastnameField(title=_("Lastname"))
+    birthdate = BirthdateField(title=_("Birthdate"))
+    email = EmailField(title=_("Email"))
+    password = CheckedPasswordField(title=_("Password"))
     terms_accepted = CheckboxWithLabel(
-        title=_(u"Terms of Service"),
-        label=_(u"I accept the terms of service.")
+        title=_("Terms of Service"),
+        label=_("I accept the terms of service.")
     )
 
 
@@ -357,13 +357,13 @@ class RegisterNonmemberSchema(colander.MappingSchema):
 def claims_membership_form():
     return deform.Form(
         action="/register",
-        title=_(u"Are you a C3S member?"),
+        title=_("Are you a C3S member?"),
         schema=colander.MappingSchema(),
         buttons=[
             deform.Button(
-                'claims_membership', _(u"Yes"), css_class="btn-default btn-lg"
+                'claims_membership', _("Yes"), css_class="btn-default btn-lg"
             ),
-            deform.Button('claims_no_membership', _(u"No"))
+            deform.Button('claims_no_membership', _("No"))
         ]
     )
 
@@ -371,12 +371,12 @@ def claims_membership_form():
 def wants_membership_form():
     return deform.Form(
         action="/register",
-        title=_(u"Do you want to apply for C3S membership?"),
+        title=_("Do you want to apply for C3S membership?"),
         schema=colander.MappingSchema(),
         buttons=[
-            deform.Button('wants_membership', _(u"Yes"), css_class="btn-lg"),
-            deform.Button('wants_no_membership', _(u"No")),
-            deform.Button('back', _(u"Back"), css_class="btn-xs")
+            deform.Button('wants_membership', _("Yes"), css_class="btn-lg"),
+            deform.Button('wants_no_membership', _("No")),
+            deform.Button('back', _("Back"), css_class="btn-xs")
         ]
     )
 
@@ -387,9 +387,9 @@ def register_member_form():
         schema=RegisterMemberSchema(),
         buttons=[
             deform.Button(
-                'register_webuser', _(u"Register"), css_class="btn-lg"
+                'register_webuser', _("Register"), css_class="btn-lg"
             ),
-            deform.Button('back', _(u"Back"))
+            deform.Button('back', _("Back"))
         ]
     )
 
@@ -400,8 +400,8 @@ def register_nonmember_form():
         schema=RegisterNonmemberSchema(),
         buttons=[
             deform.Button(
-                'register_webuser', _(u"Register"), css_class="btn-lg"
+                'register_webuser', _("Register"), css_class="btn-lg"
             ),
-            deform.Button('back', _(u"Back"))
+            deform.Button('back', _("Back"))
         ]
     )
