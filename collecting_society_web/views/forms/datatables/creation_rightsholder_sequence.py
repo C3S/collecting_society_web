@@ -47,7 +47,7 @@ class ModeField(colander.SchemaNode):
 
 class CreationRightsholderSchema(colander.Schema):
     mode = ModeField()
-    subject = ArtistIndividual(title=_(u"Rightsholder"))
+    subject = ArtistIndividual(title=_("Rightsholder"))
     rights = CreationRightSequence(min_len=1)
     title = ""
 

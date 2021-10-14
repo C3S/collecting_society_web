@@ -17,7 +17,7 @@ class ServiceInfoWidget():
         self.build = os.environ.get("BUILD")
 
     def title(self):
-        return _(u"Portal")
+        return _("Portal")
 
     def subtitle(self):
         if self.branch == "production":
@@ -33,7 +33,7 @@ class ServiceInfoWidget():
 
     def description(self):
         return _(
-            u"Welcome on the user portal of C3S. This service enables "
+            "Welcome on the user portal of C3S. This service enables "
             "licensers to register their artists, creations and releases, and "
             "licensees to register their utilisations.")
 

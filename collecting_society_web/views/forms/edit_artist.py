@@ -200,7 +200,7 @@ class EditArtist(FormController):
         # user feedback
         log.info("edit artist successful for %s: %s" % (email, artist))
         self.request.session.flash(
-            _(u"Artist edited: ${arna} (${arco})",
+            _("Artist edited: ${arna} (${arco})",
               mapping={'arna': artist.name, 'arco': artist.code}),
             'main-alert-success'
         )
@@ -225,6 +225,6 @@ def edit_artist_form(request):
     return deform.Form(
         schema=AddArtistSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

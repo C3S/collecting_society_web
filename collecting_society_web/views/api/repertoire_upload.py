@@ -386,13 +386,13 @@ def validate_upload(filename, absolute_path):
         extension = extension[1:]
     if (extension not in lossless_audio_extensions() and
             extension not in sheet_music_extensions()):
-        return _(u'Filetype not allowed.')
+        return _('Filetype not allowed.')
 
     # check mimetype
     mimetype = mime.from_file(absolute_path)
     if (mimetype not in lossless_audio_mimetypes() and
             mimetype not in sheet_music_mimetypes()):
-        return _(u'Mimetype not allowed.')
+        return _('Mimetype not allowed.')
 
 
 def get_category_from_mimetype(absolute_path):
@@ -647,9 +647,9 @@ def post_repertoire_upload(request):
                 files.append({
                     'name': fieldStorage.filename,
                     'error': _(
-                        u"Abuse detected. Wait for {number}"
-                        u" seconds before trying another"
-                        u" upload.",
+                        "Abuse detected. Wait for {number}"
+                        " seconds before trying another"
+                        " upload.",
                         mapping={'number': int(still_banned_for(request))}
                     )})
                 continue

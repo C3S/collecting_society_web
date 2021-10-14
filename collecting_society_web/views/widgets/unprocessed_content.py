@@ -22,10 +22,10 @@ class UnprocessedContentWidget():
         return "glyphicon glyphicon-plus-sign"
 
     def header(self):
-        return _(u"Unprocessed Files")
+        return _("Unprocessed Files")
 
     def description(self):
-        return _(u"Number of files that are enqueued for processing by our "
+        return _("Number of files that are enqueued for processing by our "
                  "servers. There is nothing you can do but wait. Processing "
                  "can take anything from under a minute to several hours "
                  "depending on server loads. Please come back later to see "

@@ -71,8 +71,8 @@ class DeclarationViews(ViewBase):
             self.request.web_user, name, self.context.code
         ))
         self.request.session.flash(
-            _(u"Declaration deleted: ") + name + ' (' + self.context.id + ')',
-            _(u"Declaration deleted: ${name} (${id})",
+            _("Declaration deleted: ") + name + ' (' + self.context.id + ')',
+            _("Declaration deleted: ${name} (${id})",
               mapping={'name': name, 'id': self.context.id}),
             'main-alert-success'
         )

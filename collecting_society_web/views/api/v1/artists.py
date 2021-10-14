@@ -88,13 +88,13 @@ class ArtistField(colander.SchemaNode):
 
 
 class ArtistGetSchema(colander.Schema):
-    code = CodeField(title=_(u"Native Code"))
+    code = CodeField(title=_("Native Code"))
 
 
 def deferred_idspace_schemas_node(request):
     schema = colander.SchemaNode(
         colander.Mapping(),
-        description=_(u"artist name, native code, or "
+        description=_("artist name, native code, or "
                       "foreign identifier spaces like ipn")
     )
 

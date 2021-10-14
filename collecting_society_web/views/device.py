@@ -71,8 +71,8 @@ class DeviceViews(ViewBase):
             self.request.web_user, name, self.context.code
         ))
         self.request.session.flash(
-            _(u"Device deleted: ") + name + ' (' + self.context.uuid + ')',
-            _(u"Device deleted: ${name} (${uuid})",
+            _("Device deleted: ") + name + ' (' + self.context.uuid + ')',
+            _("Device deleted: ${name} (${uuid})",
               mapping={'name': name, 'uuid': self.context.uuid}),
             'main-alert-success'
         )

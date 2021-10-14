@@ -85,7 +85,7 @@ class EditProfile(FormController):
             log.info(
                 "edit profile add successful for %s" % (web_user.party.name))
             self.request.session.flash(
-                _(u"Profile changed for: ${name}",
+                _("Profile changed for: ${name}",
                   mapping={'name': web_user.party.name}),
                 'main-alert-success'
             )
@@ -94,7 +94,7 @@ class EditProfile(FormController):
                 "edit profile add successful for %s, activation email sent."
                 % (web_user.party.name))
             self.request.session.flash(
-                _(u"Profile changed for: ${name}"
+                _("Profile changed for: ${name}"
                   " -- activation email for new email address sent."
                   " Please check your (new) email inbox.",
                   mapping={'name': web_user.party.name}),
@@ -109,7 +109,7 @@ class EditProfile(FormController):
 def not_empty(value):
     """Ensure field has at least two characters in it."""
     if not value or len(value) < 2:
-        return _(u"Please enter your name.")
+        return _("Please enter your name.")
     return True
 
 
@@ -123,7 +123,7 @@ def validate_unique_user_email(node, values, **kwargs):  # multifield validator
         # email has been changed: check if it conflicts with other webuser
         found_conflicting_web_user = WebUser.search_by_email(email_value)
         if found_conflicting_web_user:
-            raise colander.Invalid(node, _(u"Email address already taken"))
+            raise colander.Invalid(node, _("Email address already taken"))
 
     # finally, check email format
     if len(email_value) > 7:
@@ -176,11 +176,11 @@ class PasswordField(colander.MappingSchema):
 
 class ProfileSchema(colander.Schema):
     # name = NameField(title=_(u"Name"))
-    firstname = FirstnameField(title=_(u"Firstname"))
-    lastname = LastnameField(title=_(u"Lastname"))
-    email = EmailField(title=_(u"Email"))
+    firstname = FirstnameField(title=_("Firstname"))
+    lastname = LastnameField(title=_("Lastname"))
+    email = EmailField(title=_("Email"))
     password = PasswordField(
-        title=_(u"Password (leave empty if you don't want to change it)")
+        title=_("Password (leave empty if you don't want to change it)")
     )
 
 
@@ -191,7 +191,7 @@ def edit_profile_form(request):
         schema=ProfileSchema(
             validator=validate_unique_user_email).bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )
     return form

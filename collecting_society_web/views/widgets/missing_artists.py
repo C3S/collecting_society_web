@@ -19,10 +19,10 @@ class MissingArtistsWidget():
         return "glyphicon glyphicon-user"
 
     def header(self):
-        return _(u"Missing Artists")
+        return _("Missing Artists")
 
     def description(self):
-        return _(u"You didn't create any artists yet. Please do so using the "
+        return _("You didn't create any artists yet. Please do so using the "
                  "menu on the left side. There are two types of artists: solo "
                  "and group artists. A solo artist can be identical to your "
                  "birth name, a stage name, project name, or any sort of "

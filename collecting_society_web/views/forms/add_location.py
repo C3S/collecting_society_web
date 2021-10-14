@@ -140,7 +140,7 @@ class AddLocation(FormController):
             log.info("location add failed for %s: %s" % (web_user,
                      location))
             self.request.session.flash(
-                _(u"Location could not be added: ${name}",
+                _("Location could not be added: ${name}",
                   mapping={'name': location['name']}),
                 'main-alert-danger'
             )
@@ -150,7 +150,7 @@ class AddLocation(FormController):
         log.info("location add successful for %s: %s" % (web_user,
                  location_record))
         self.request.session.flash(
-            _(u"Location '${name}' added. ",
+            _("Location '${name}' added. ",
               mapping={'name': location_record.name}),
             'main-alert-success'
         )
@@ -304,43 +304,43 @@ class SubdivisionField(colander.SchemaNode):
 
 class GeneralSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    name = NameField(title=_(u"Name"))
-    category = CategoryField(title=_(u"Category"))
-    public = PublicField(title=_(u"Public data (other licensees may reuse "
+    name = NameField(title=_("Name"))
+    category = CategoryField(title=_("Category"))
+    public = PublicField(title=_("Public data (other licensees may reuse "
                                  "this location)"))
-    latitude = LatitudeField(title=_(u"Latitude"))
-    longitude = LongitudeField(title=_(u"Longitude"))
+    latitude = LatitudeField(title=_("Latitude"))
+    longitude = LongitudeField(title=_("Longitude"))
 
 
 class ContactSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    contact_name = ContactNameField(title=_(u"Contact person name"))
+    contact_name = ContactNameField(title=_("Contact person name"))
     contact_first_name = ContactNameField(
-                         title=_(u"Contact person first name"))
-    website = WebsiteField(title=_(u"Website"))
-    email = EmailField(title=_(u"Email"))
-    fax = FaxField(title=_(u"Fax"))
+                         title=_("Contact person first name"))
+    website = WebsiteField(title=_("Website"))
+    email = EmailField(title=_("Email"))
+    fax = FaxField(title=_("Fax"))
 
 
 class AddressSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    address_name = AddressNameField(title=_(u"Name (doorbell)"))
-    street = StreetField(title=_(u"Street"))
-    zip = ZipField(title=_(u"Zip"))
-    city = CityField(title=_(u"City"))
-    country = CountryField(title=_(u"Country"))
+    address_name = AddressNameField(title=_("Name (doorbell)"))
+    street = StreetField(title=_("Street"))
+    zip = ZipField(title=_("Zip"))
+    city = CityField(title=_("City"))
+    country = CountryField(title=_("Country"))
     # TODO: subdivision = SubdivisionField(title=_(u"Subdivision"))
 
 
 class SpacesSchema(colander.Schema):
-    title = _(u"Spaces")
+    title = _("Spaces")
     widget = deform.widget.MappingWidget(template='navs/mapping')
     spaces = LocationSpaceSequence(title=_("Spaces"),
                                    min_len=1,
                                    language_overrides={
-                                       "custom": {"create": _(u"Add Space")}
+                                       "custom": {"create": _("Add Space")}
                                    })
-    description = _(u"Please add at least one space to the location with a "
+    description = _("Please add at least one space to the location with a "
                     "unique name (e.g. as indicated by the floor plan) so we "
                     "know where the music is actually being played. Examples: "
                     "show room #1, main floor, concert hall, meadow east to "
@@ -349,9 +349,9 @@ class SpacesSchema(colander.Schema):
 
 class AddLocationSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
-    general = GeneralSchema(title=_(u"General"))
-    contact = ContactSchema(title=_(u"Contact information"))
-    address = AddressSchema(title=_(u"Business address"))
+    general = GeneralSchema(title=_("General"))
+    contact = ContactSchema(title=_("Contact information"))
+    address = AddressSchema(title=_("Business address"))
     spaces = SpacesSchema()
 
 
@@ -361,6 +361,6 @@ def add_location_form(request):
     return deform.Form(
         schema=AddLocationSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

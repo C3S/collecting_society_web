@@ -88,13 +88,13 @@ class ReleaseField(colander.SchemaNode):
 
 
 class ReleaseGetSchema(colander.Schema):
-    code = CodeField(title=_(u"Native Code"))
+    code = CodeField(title=_("Native Code"))
 
 
 def deferred_idspace_schemas_node(request):
     schema = colander.SchemaNode(
         colander.Mapping(),
-        description=_(u"release name, native code, or "
+        description=_("release name, native code, or "
                       "foreign identifier spaces like isrc")
     )
 

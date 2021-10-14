@@ -77,7 +77,7 @@ def verify_email_helper(the_class):
             web_user.opt_in_uuid = str(uuid.uuid4())  # noqa: F821
             web_user.save()
             the_class.request.session.flash(
-                _(u"Your email verification was successful."),
+                _("Your email verification was successful."),
                 'main-alert-success'
             )
             log.info("web_user login successful: %s" % web_user.email)
@@ -88,16 +88,16 @@ def verify_email_helper(the_class):
         else:
             the_class.request.session.flash(
                 _(
-                    u"Your email verification was not successful "
-                    u"(wrong validation code)."
+                    "Your email verification was not successful "
+                    "(wrong validation code)."
                 ),
                 'main-alert-danger'
             )
     else:
         the_class.request.session.flash(
             _(
-                u"Your email verification was not successful "
-                u"(no validation code)."
+                "Your email verification was not successful "
+                "(no validation code)."
             ),
             'main-alert-danger'
         )

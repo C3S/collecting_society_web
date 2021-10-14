@@ -54,18 +54,18 @@ def location_space_sequence_widget_thomas(node, kw):
     # translation strings
     request.name_translation = get_localizer(
         request).translate(
-            _(u'Name', 'collecting_society_web'))
+            _('Name', 'collecting_society_web'))
     request.category_translation = get_localizer(
         request).translate(
-            _(u'Category', 'collecting_society_web'))
+            _('Category', 'collecting_society_web'))
     locale = get_localizer(request)
     locale_domain = 'collecting_society_web'
     location_space_category = {
-        'Dancing': locale.translate(_(u'Dancing', locale_domain)),
-        'Concert': locale.translate(_(u'Concert', locale_domain)),
-        'Waiting': locale.translate(_(u'Waiting', locale_domain)),
-        'Shopping': locale.translate(_(u'Shopping', locale_domain)),
-        'Eating': locale.translate(_(u'Eating', locale_domain)),
+        'Dancing': locale.translate(_('Dancing', locale_domain)),
+        'Concert': locale.translate(_('Concert', locale_domain)),
+        'Waiting': locale.translate(_('Waiting', locale_domain)),
+        'Shopping': locale.translate(_('Shopping', locale_domain)),
+        'Eating': locale.translate(_('Eating', locale_domain)),
     }
     # get initial source data
     source_data = []
@@ -156,7 +156,7 @@ class LocationSpaceSchema(colander.Schema):
     name = NameField()
     category = CategoryField()
     size = SizeField()
-    size_estimated = SizeEstimatedField(title=_(u'Size only estimated'))
+    size_estimated = SizeEstimatedField(title=_('Size only estimated'))
     preparer = [prepare_required]
     title = ""
 

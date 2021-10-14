@@ -237,7 +237,7 @@ class EditCreation(FormController):
                         a_right['oid'],
                         creation['code']))
                 self.request.session.flash(
-                    _(u"Creation edit failed: ${crct} (${crco})",
+                    _("Creation edit failed: ${crct} (${crco})",
                       mapping={'crct': creation.title,
                                'crco': creation.code}),
                     'main-alert-danger'
@@ -259,7 +259,7 @@ class EditCreation(FormController):
                         else:  # must be the other one that was newly created
                             a_rho_to_remove.append(a_rho_to_match)
                         self.request.session.flash(
-                            _(u"Warning: Only one rightsholder entry allowed "
+                            _("Warning: Only one rightsholder entry allowed "
                               "for '${name}'. Entry has been removed.",
                               mapping={
                                   'name': a_rightsholder['subject'][0]['code']
@@ -384,7 +384,7 @@ class EditCreation(FormController):
                 # sanity checks
                 if a_derivation['code'] == creation.code:  # original of self?
                     self.request.session.flash(
-                        _(u"Warning: A Creation cannot be the original of it "
+                        _("Warning: A Creation cannot be the original of it "
                           "self. If you do an adaption of a creation, you "
                           "need to create a new creation in order to be able "
                           "to refer to it as an original."),
@@ -475,7 +475,7 @@ class EditCreation(FormController):
         # user feedback
         log.info("creation edit successful for %s: %s" % (web_user, creation))
         self.request.session.flash(
-            _(u"Creation edited: ${crct} (${crco})",
+            _("Creation edited: ${crct} (${crco})",
               mapping={'crct': creation.title,
                        'crco': creation.code}),
             'main-alert-success'
@@ -502,6 +502,6 @@ def edit_creation_form(request):
         schema=AddCreationSchema(
             validator=validate_content).bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

@@ -24,10 +24,10 @@ class MissingContentWidget():
         return "glyphicon glyphicon-plus-sign"
 
     def header(self):
-        return _(u"No Files Uploaded Yet")
+        return _("No Files Uploaded Yet")
 
     def description(self):
-        return _(u"You didn't upload any files yet. Please do so using the "
+        return _("You didn't upload any files yet. Please do so using the "
                  "menu on the left side. There are two types of files: audio "
                  "and pdf. PDFs should contain any form of sheet music, for "
                  "example exports from music notation software like MuseScore "

@@ -106,9 +106,9 @@ def post_content(request):
     locale = get_localizer(request)
     locale_domain = 'collecting_society_web'
     content_category = {
-        'audio': locale.translate(_(u'Audio', locale_domain)),
-        'sheet': locale.translate(_(u'Sheet Music', locale_domain)),
-        'lyrics': locale.translate(_(u'Lyrics', locale_domain)),
+        'audio': locale.translate(_('Audio', locale_domain)),
+        'sheet': locale.translate(_('Sheet Music', locale_domain)),
+        'lyrics': locale.translate(_('Lyrics', locale_domain)),
     }
     # records
     records = []

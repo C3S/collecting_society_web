@@ -121,7 +121,7 @@ class AddDevice(FormController):
         if not device:
             log.info("device add failed for %s: %s" % (web_user, _device))
             self.request.session.flash(
-                _(u"Device could not be added: ${reti}",
+                _("Device could not be added: ${reti}",
                   mapping={'reti': _device['title']}),
                 'main-alert-danger'
             )
@@ -130,7 +130,7 @@ class AddDevice(FormController):
         device = device[0]
         log.info("device add successful for %s: %s" % (web_user, device))
         self.request.session.flash(
-            _(u"Device '${reti}' added to your account. "
+            _("Device '${reti}' added to your account. "
               "Your device token is ${reco}.",
               mapping={'reti': device.name,
                        'reco': device.uuid}),
@@ -203,28 +203,28 @@ class SoftwareVendorField(colander.SchemaNode):
 
 class GeneralSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    name = NameField(title=_(u"Name"))
-    uuid = UuidField(title=_(u"Device ID"))
+    name = NameField(title=_("Name"))
+    uuid = UuidField(title=_("Device ID"))
 
 
 class OSSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    os_name = OSNameField(title=_(u"Name"))
-    os_version = OSVersionField(title=_(u"Version"))
+    os_name = OSNameField(title=_("Name"))
+    os_version = OSVersionField(title=_("Version"))
 
 
 class SoftwareSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    software_name = SoftwareNameField(title=_(u"Name"))
-    software_version = SoftwareVersionField(title=_(u"Version"))
-    software_vendor = SoftwareVendorField(title=_(u"Vendor"))
+    software_name = SoftwareNameField(title=_("Name"))
+    software_version = SoftwareVersionField(title=_("Version"))
+    software_vendor = SoftwareVendorField(title=_("Vendor"))
 
 
 class AddDeviceSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
-    general = GeneralSchema(title=_(u"General"))
-    os = OSSchema(title=_(u"Operating System"))
-    software = SoftwareSchema(title=_(u"Software"))
+    general = GeneralSchema(title=_("General"))
+    os = OSSchema(title=_("Operating System"))
+    software = SoftwareSchema(title=_("Software"))
 
 
 # --- Forms -------------------------------------------------------------------
@@ -233,6 +233,6 @@ def add_device_form(request):
     return deform.Form(
         schema=AddDeviceSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _(u"Submit"))
+            deform.Button('submit', _("Submit"))
         ]
     )

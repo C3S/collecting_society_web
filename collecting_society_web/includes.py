@@ -95,20 +95,20 @@ def web_registry(config):
     # Metadata shared by Frontend and Backend
     def meta(request):
         return {
-            'title': _(u'C3S - Portal'),
-            'keywords': _(u'c3s,portal,repertoire,licensing'),
+            'title': _('C3S - Portal'),
+            'keywords': _('c3s,portal,repertoire,licensing'),
             'description':
-                _(u'registration of repertoire and utilisations for C3S'),
+                _('registration of repertoire and utilisations for C3S'),
             'languages': [
                 {
                     'id': 'en',
-                    'name': _(u'english'),
+                    'name': _('english'),
                     'icon': request.static_path(
                                 'portal_web:'
                                 'static/img/en.png')},
                 {
                     'id': 'de',
-                    'name': _(u'deutsch'),
+                    'name': _('deutsch'),
                     'icon': request.static_path(
                                 'portal_web:'
                                 'static/img/de.png')},
@@ -141,16 +141,16 @@ def web_registry(config):
         # top menue
         reg['menues']['top'] = [
             {
-                'name': _(u'register'),
+                'name': _('register'),
                 'page': 'register'},
             {
-                'name': _(u'test'),
+                'name': _('test'),
                 'page': 'test'},
             {
-                'name': _(u'develop'),
+                'name': _('develop'),
                 'page': 'develop'},
             {
-                'name': _(u'terms'),
+                'name': _('terms'),
                 'page': 'terms'}
         ]
         # widgets
@@ -197,34 +197,34 @@ def web_registry(config):
         # top menue
         reg['menues']['top'] = [
             {
-                'name': _(u'Profile'),
+                'name': _('Profile'),
                 'url':  self.request.resource_path(
                             BackendResource(self.request), 'profile')},
             {
-                'name': _(u'Help'),
+                'name': _('Help'),
                 'url':  self.request.resource_path(
                             BackendResource(self.request), 'help')},
             {
-                'name': _(u'Contact'),
+                'name': _('Contact'),
                 'url':  self.request.resource_path(
                             BackendResource(self.request), 'contact')},
             {
-                'name': _(u'Terms'),
+                'name': _('Terms'),
                 'url':  self.request.resource_path(
                             BackendResource(self.request), 'terms')},
             {
-                'name': _(u'Logout'),
+                'name': _('Logout'),
                 'url':  self.request.resource_path(
                             BackendResource(self.request), 'logout')}
         ]
         # main menue
         reg['menues']['roles'] = [
             {
-                'name': _(u'Repertoire'), 'active': RepertoireResource,
+                'name': _('Repertoire'), 'active': RepertoireResource,
                 'url':  self.request.resource_path(
                             RepertoireResource(self.request), '')},
             {
-                'name': _(u'Licensing'), 'active': LicensingResource,
+                'name': _('Licensing'), 'active': LicensingResource,
                 'url':  self.request.resource_path(
                             LicensingResource(self.request), '')}
         ]
@@ -248,35 +248,35 @@ def web_registry(config):
         # main repertoire menue
         reg['menues']['main'] = [
             {
-                'name': _(u'Dashboard'),
+                'name': _('Dashboard'),
                 'url':  self.request.resource_path(
                             RepertoireResource(self.request), 'dashboard'),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/element-icon-dashboard.png')},
             {
-                'name': _(u'Files'),
+                'name': _('Files'),
                 'url':  self.request.resource_path(
                             FilesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/element-icon-upload.png')},
             {
-                'name': _(u'Artists'),
+                'name': _('Artists'),
                 'url':  self.request.resource_path(
                             ArtistsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/element-icon-soloartists.png')},
             {
-                'name': _(u'Creations'),
+                'name': _('Creations'),
                 'url':  self.request.resource_path(
                             CreationsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/element-icon-songs.png')},
             {
-                'name': _(u'Releases'),
+                'name': _('Releases'),
                 'url':  self.request.resource_path(
                             ReleasesResource(self.request)),
                 'icon': self.request.static_path(
@@ -313,39 +313,39 @@ def web_registry(config):
         # role menue
         reg['menues']['roles'] = [
             {
-                'name': _(u'Repertoire'), 'active': RepertoireResource,
+                'name': _('Repertoire'), 'active': RepertoireResource,
                 'url':  self.request.resource_path(
                             RepertoireResource(self.request), '')},
             {
-                'name': _(u'Licensing'), 'active': LicensingResource,
+                'name': _('Licensing'), 'active': LicensingResource,
                 'url':  self.request.resource_path(
                             LicensingResource(self.request), '')}
         ]
         # main licensing menue
         reg['menues']['main'] = [
             {
-                'name': _(u'Dashboard'),
+                'name': _('Dashboard'),
                 'url':  self.request.resource_path(
                             LicensingResource(self.request), 'dashboard'),
                 'icon': self.request.static_path(
                             'collecting_society_web:static/img/'
                             'element-icon-dashboard.png')},
             {
-                'name': _(u'Declarations'),
+                'name': _('Declarations'),
                 'url':  self.request.resource_path(
                             DeclarationsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:static/img/'
                             'element-icon-declarations.svg')},
             {
-                'name': _(u'Locations'),
+                'name': _('Locations'),
                 'url':  self.request.resource_path(
                             LocationsResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:static/img/'
                             'element-icon-locations.svg')},
             {
-                'name': _(u'Devices'),
+                'name': _('Devices'),
                 'url':  self.request.resource_path(
                             DevicesResource(self.request)),
                 'icon': self.request.static_path(

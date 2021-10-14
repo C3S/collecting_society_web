@@ -78,7 +78,7 @@ class CreationViews(ViewBase):
             self.request.web_user, title, artist, self.context.code
         ))
         self.request.session.flash(
-            _(u"Creation deleted: ${crct} (${crco})",
+            _("Creation deleted: ${crct} (${crco})",
               mapping={'crct': title,
                        'crco': self.context.code}),
             'main-alert-success'
