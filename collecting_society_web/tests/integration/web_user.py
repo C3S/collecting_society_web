@@ -34,7 +34,8 @@ class TestWebUser(IntegrationTestBase):
         form.register_email.set('a@webuser.test')
         form.register_password.set('awebuser')
         form.terms_accepted.set(True)
-        form.register_webuser(waitfor="Thank you for your registration")
+        form.register_webuser()
+        self.assertIn("Thank you for your registration", self.cli.page_source)
 
     def test_020_login_before_validation(self):
         """
@@ -44,7 +45,8 @@ class TestWebUser(IntegrationTestBase):
         form = DeformFormObject(self, login_form(), formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('awebuser')
-        form.submit(waitfor="User mail address not verified")
+        form.submit()
+        self.assertIn("User mail address not verified", self.cli.page_source)
 
     @Tdb.transaction()
     def test_030_validate_user_registration(self):
@@ -54,18 +56,14 @@ class TestWebUser(IntegrationTestBase):
         webuser = WebUser.search_by_email('a@webuser.test')
         self.assertEqual(webuser.opt_in_state, "mail-sent")
         self.url("gui", "/verify_email/" + webuser.opt_in_uuid)
-        self.assertTrue(
-            self.cli.find_elements(By.CLASS_NAME, 'cs-backend')
-        )
+        self.assertTrue(self.cli.find_elements(By.CLASS_NAME, 'cs-backend'))
 
     def test_040_logout(self):
         """
         logout logs user out
         """
         self.url("gui", "/logout")
-        self.assertTrue(
-            self.cli.find_elements(By.CLASS_NAME, 'cs-frontend')
-        )
+        self.assertTrue(self.cli.find_elements(By.CLASS_NAME, 'cs-frontend'))
 
     def test_050_login_with_wrong_credentials(self):
         """
@@ -75,7 +73,8 @@ class TestWebUser(IntegrationTestBase):
         form = DeformFormObject(self, login_form(), formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('wrongpassword')
-        form.submit(waitfor="Login failed")
+        form.submit()
+        self.assertIn("Login failed", self.cli.page_source)
 
     def test_060_login_with_right_credentials(self):
         """
@@ -86,9 +85,7 @@ class TestWebUser(IntegrationTestBase):
         form.login_email.set('a@webuser.test')
         form.login_password.set('awebuser')
         form.submit()
-        self.assertTrue(
-            self.cli.find_elements(By.CLASS_NAME, 'cs-backend')
-        )
+        self.assertTrue(self.cli.find_elements(By.CLASS_NAME, 'cs-backend'))
 
     # TODO: move to test class for other general portal functionality
     def _test_070_check_locale(self):
