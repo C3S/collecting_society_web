@@ -56,7 +56,7 @@ class BackendViews(ViewBase):
         self.request.session.invalidate()
         log.info(
             "web_user logout successful: %s" %
-            self.request.unauthenticated_userid
+            self.request.identity
         )
         headers = forget(self.request)
         return HTTPFound(
