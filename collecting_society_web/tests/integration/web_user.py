@@ -24,33 +24,27 @@ class TestWebUser(IntegrationTestBase):
         registration registers user
         """
         self.url("gui", "/")
-        self.screenshot()
         formid = 'RegisterWebuser'
-        form = DeformFormObject(self.cli, claims_membership_form(), formid)
+        form = DeformFormObject(self, claims_membership_form(), formid)
         form.claims_membership()
-        self.screenshot()
-        form = DeformFormObject(self.cli, register_nonmember_form(), formid)
+        form = DeformFormObject(self, register_nonmember_form(), formid)
         form.firstname.set('Firstname')
         form.lastname.set('Lastname')
         form.birthdate.set('1970-01-01')
         form.register_email.set('a@webuser.test')
         form.register_password.set('awebuser')
         form.terms_accepted.set(True)
-        self.screenshot()
         form.register_webuser(waitfor="Thank you for your registration")
-        self.screenshot()
 
     def test_020_login_before_validation(self):
         """
         login before validation fails
         """
         formid = 'LoginWebuser'
-        form = DeformFormObject(self.cli, login_form(), formid)
+        form = DeformFormObject(self, login_form(), formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('awebuser')
-        self.screenshot()
         form.submit(waitfor="User mail address not verified")
-        self.screenshot()
 
     @Tdb.transaction()
     def test_030_validate_user_registration(self):
@@ -60,7 +54,6 @@ class TestWebUser(IntegrationTestBase):
         webuser = WebUser.search_by_email('a@webuser.test')
         self.assertEqual(webuser.opt_in_state, "mail-sent")
         self.url("gui", "/verify_email/" + webuser.opt_in_uuid)
-        self.screenshot()
         self.assertTrue(
             self.cli.find_elements(By.CLASS_NAME, 'cs-backend')
         )
@@ -79,22 +72,20 @@ class TestWebUser(IntegrationTestBase):
         login with wrong credentials fails
         """
         formid = 'LoginWebuser'
-        form = DeformFormObject(self.cli, login_form(), formid)
+        form = DeformFormObject(self, login_form(), formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('wrongpassword')
         form.submit(waitfor="Login failed")
-        self.screenshot()
 
     def test_060_login_with_right_credentials(self):
         """
         login with right credentials logs user in
         """
         formid = 'LoginWebuser'
-        form = DeformFormObject(self.cli, login_form(), formid)
+        form = DeformFormObject(self, login_form(), formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('awebuser')
         form.submit()
-        self.screenshot()
         self.assertTrue(
             self.cli.find_elements(By.CLASS_NAME, 'cs-backend')
         )
@@ -102,8 +93,7 @@ class TestWebUser(IntegrationTestBase):
     # TODO: move to test class for other general portal functionality
     def _test_070_check_locale(self):
         # formid = 'LoginWebuser'
-        # form = DeformFormObject(self.cli, login_form(), formid)
-        # self.screenshot()
+        # form = DeformFormObject(self, login_form(), formid)
         # TODO: fix and move to an own test class for general GUI functionality
         # This throws ElementNotInteractableException: Message: Element
         # <div class="cs-langflags"> could not be scrolled into view
