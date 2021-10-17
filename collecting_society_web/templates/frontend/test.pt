@@ -23,7 +23,7 @@
             <li tal:condition="h.environ['ENVIRONMENT'] == 'staging'">
                 <a href="https://www.c3s.cc/kontakt-2" i18n:translate="">Contact</a>
                 <span i18n:translate="">us for the login credentials</span></li>
-            <li><a href="https://files.c3s.cc/collecting_society/${h.environ['ENVIRONMENT']}/generated/collecting_society_docker_README.html#tryton"
+            <li><a href="http://docs.c3s.cc/collecting_society/${h.environ['ENVIRONMENT']}/generated/collecting_society_docker_README.html#tryton"
                    i18n:translate="">Install</a>
                 <span i18n:translate="">the tryton client</span></li>
             <li><span i18n:translate="">Login and test the administration backend</span>

@@ -10,13 +10,13 @@
             <li><a href="https://www.c3s.cc/kontakt-2"
                    i18n:translate="">Contact</a>
                 <span i18n:translate="">us to find a suitable task</span></li>
-            <li><a href="https://files.c3s.cc/collecting_society/development/generated/collecting_society_docker_README.html#installation"
+            <li><a href="http://docs.c3s.cc/collecting_society/development/generated/collecting_society_docker_README.html#installation"
                    i18n:translate="">Install</a>
                 <span i18n:translate="">the docker development environment</span></li>
-            <li><a href="https://files.c3s.cc/collecting_society/development/generated/collecting_society_docker_README.html#branches"
+            <li><a href="http://docs.c3s.cc/collecting_society/development/generated/collecting_society_docker_README.html#branches"
                    i18n:translate="">Use</a>
                 <span i18n:translate="">the feature branch workflow</span></li>
-            <li><a href="https://files.c3s.cc/collecting_society/development/generated/collecting_society_docker_README.html#id28"
+            <li><a href="http://docs.c3s.cc/collecting_society/development/generated/collecting_society_docker_README.html#id27"
                    i18n:translate="">Start</a>
                 <span i18n:translate="">to develop</span></li>
         </ol>
@@ -25,7 +25,7 @@
     <b i18n:translate="">Resources</b>
     <p>
         <ul>
-            <li><a href="https://files.c3s.cc/collecting_society/development/generated/collecting_society_docker_README.html#overview"
+            <li><a href="http://docs.c3s.cc/collecting_society/development/generated/collecting_society_docker_README.html#overview"
                    i18n:translate="">Documentation</a>
             <li><a href="https://redmine.c3s.cc/projects/collecting_society/issues"
                    i18n:translate="">Issues</a>
