@@ -23,13 +23,18 @@
             <li tal:condition="h.environ['ENVIRONMENT'] == 'staging'">
                 <a href="https://www.c3s.cc/kontakt-2" i18n:translate="">Contact</a>
                 <span i18n:translate="">us for the login credentials</span></li>
-            <li><a href="http://docs.c3s.cc/collecting_society/${h.environ['ENVIRONMENT']}/generated/collecting_society_docker_README.html#tryton"
-                   i18n:translate="">Install</a>
-                <span i18n:translate="">the tryton client</span></li>
+            <li><a href="http://${h.environ.get('VIRTUAL_HOST_ERPSERVER')}"
+                   i18n:translate="">Open</a>
+                <span i18n:translate="">the tryton web client or</span>
+                <a href="http://docs.c3s.cc/collecting_society/${h.environ['ENVIRONMENT']}/generated/collecting_society_docker_README.html#tryton"
+                   i18n:translate="">install</a>
+                <span i18n:translate="">the tryton desktop client</span></li>
             <li><span i18n:translate="">Login and test the administration backend</span>
                 <ul>
                     <li><span i18n:translate="">Host</span> <code>${h.environ['VIRTUAL_HOST_WEBGUI']}:8000</code></li>
                     <li><span i18n:translate="">Database</span> <code>${h.environ['TRYTON_DATABASE']}</code></li>
+                    <li><span i18n:translate="">Username</span> <code>admin</code></li>
+                    <li tal:condition="h.environ['ENVIRONMENT'] == 'development'"><span i18n:translate="">Password</span> <code>admin</code></li>
                 </ul>
             </li>
         </ol>
