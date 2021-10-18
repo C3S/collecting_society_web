@@ -36,7 +36,7 @@
                         <code>${h.environ['VIRTUAL_HOST_ERPSERVER']}:${h.environ['ENVIRONMENT'] == 'development' and '80' or '443'}</code>
                     </li>
                     <li><span i18n:translate="">Database</span> <code>${h.environ['TRYTON_DATABASE']}</code></li>
-                    <li><span i18n:translate="">Username</span> <code>admin</code></li>
+                    <li tal:condition="h.environ['ENVIRONMENT'] == 'development'"><span i18n:translate="">Username</span> <code>admin</code></li>
                     <li tal:condition="h.environ['ENVIRONMENT'] == 'development'"><span i18n:translate="">Password</span> <code>admin</code></li>
                 </ul>
             </li>
