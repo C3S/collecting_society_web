@@ -438,8 +438,8 @@ class Artist(Tdb, MixinWebuser):
             Artist object: the artist that has been created
             None: if no object was created
         """
-        assert(name)
-        assert(email)
+        assert name
+        assert email
         artist_party = Party.create([{
             'name': name,
             'contact_mechanisms': [(
