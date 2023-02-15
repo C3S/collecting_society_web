@@ -1,0 +1,62 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block i18n:domain="collecting_society_web">
+
+    <h1 i18n:translate="">Test</h1>
+
+    <b i18n:translate="">User Frontend</b>
+    <p>
+        <ul tal:condition="h.environ['ENVIRONMENT'] == 'development'">
+            <li><span i18n:translate="">Username</span> <code>allroles1@collecting-society.test</code></li>
+            <li><span i18n:translate="">Password</span> <code>password</code></li>
+        </ul>
+        <ol tal:condition="h.environ['ENVIRONMENT'] == 'staging'">
+            <li><a href="#register" i18n:translate="">Register</a> <span i18n:translate="">an account here</span></li>
+            <li i18n:translate="">Validate your email address via validation link</li>
+            <li i18n:translate="">Login and test the web frontend</li>
+        </ol>
+    </p>
+
+    <b i18n:translate="">Administration Backend</b>
+    <p>
+        <ol>
+            <li tal:condition="h.environ['ENVIRONMENT'] == 'staging'">
+                <a href="https://www.c3s.cc/kontakt-2" i18n:translate="">Contact</a>
+                <span i18n:translate="">us for the login credentials</span></li>
+            <li><a href="http://${h.environ.get('VIRTUAL_HOST_ERPSERVER')}"
+                   i18n:translate="">Open</a>
+                <span i18n:translate="">the tryton web client or</span>
+                <a href="http://docs.c3s.cc/collecting_society/${h.environ['ENVIRONMENT']}/generated/collecting_society_docker_README.html#tryton"
+                   i18n:translate="">install</a>
+                <span i18n:translate="">the tryton desktop client</span></li>
+            <li><span i18n:translate="">Login and test the administration backend</span>
+                <ul>
+                    <li><span i18n:translate="">Host</span> <code>${h.environ['VIRTUAL_HOST_ERPSERVER']}</code></li>
+                    <li><span i18n:translate="">Database</span> <code>${h.environ['TRYTON_DATABASE']}</code></li>
+                    <li tal:condition="h.environ['ENVIRONMENT'] == 'development'"><span i18n:translate="">Username</span> <code>admin</code></li>
+                    <li tal:condition="h.environ['ENVIRONMENT'] == 'development'"><span i18n:translate="">Password</span> <code>admin</code></li>
+                </ul>
+            </li>
+        </ol>
+    </p>
+
+    <b i18n:translate="">Bugtracker</b>
+    <p>
+        <ol>
+            <li><a href="https://www.c3s.cc/kontakt-2" i18n:translate="">Contact</a>
+                <span i18n:translate="">us for an account</span></li>
+            <li><a href="https://redmine.c3s.cc/login" i18n:translate="">Login</a>
+                <span i18n:translate="">into our bugtracker</span></li>
+            <li><a href="https://redmine.c3s.cc/projects/collecting_society/issues/new?issue%5Bassigned_to_id%5D=71&issue%5Bfixed_version_id%5D=9&issue%5Btracker_id%5D=17&issue%5Bwatcher_user_ids%5D%5B%5D=11&issue%5Bwatcher_user_ids%5D%5B%5D=28${h.environ.get('BUILD') and '&issue[description]=build: ' + h.environ['BUILD'] or ''}"
+                   i18n:translate="">Create</a>
+                <span i18n:translate="">a new ticket for your bug, issue or feature request</span>
+                <ul>
+                    <li><span i18n:translate="">Project</span> <code>collecting_society</code></li>
+                    <li><span i18n:translate="">Tracker</span> <code>Userfeedback</code></li>
+                    <li><span i18n:translate="">Asignee</span> <code>Werkeverwaltung</code></li>
+                </ul>
+            </li>
+        </ol>
+    </p>
+
+</tal:block>

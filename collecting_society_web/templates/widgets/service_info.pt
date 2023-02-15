@@ -1,0 +1,10 @@
+<div class="cs-widget">
+    <div class="h1 cs-widget-title">
+        ${title}
+        <small class="cs-widget-subtitle" tal:condition="subtitle|False">
+            ${subtitle}
+            <span class="cs-widget-subtitlenote" tal:condition="subtitle_note|False">${subtitle_note}</span>
+        </small>
+    </div>
+    <div class="cs-widget-body">${description}</div>
+</div>

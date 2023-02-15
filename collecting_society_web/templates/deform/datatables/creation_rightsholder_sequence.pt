@@ -1,0 +1,65 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            columns: [
+                {
+                    name: "subject",
+                    title: "${_('Artist')}",
+                    data: "subject",
+                    className: "always",
+                    orderable: true,
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        if(data.datatableSequence !== true)
+                            return "";
+                        var subdata = data.target.table.rows().data()
+                        return tmpl.encode(subdata[0].name);
+                    },
+                    defaultContent: "",
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'DatatableSequenceWidget',
+                    }
+                },
+                {
+                    name: "rights",
+                    title: "${_('Rights')}",
+                    data: "rights",
+                    className: "always",
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        if(data.datatableSequence !== true)
+                            return "";
+                        var rights = [];
+                        var subdata = data.target.table.rows().data()
+                        $.each(subdata, function(i, v) {
+                            var contribution = v.contribution;
+                            if (contribution == "Instrument") {
+                                if (v.instruments.length > 1)
+                                    contribution = "Instruments";
+                            }
+                            var right = v.type_of_right + ": " + contribution;
+                            if (v.collecting_society != "None") 
+                                right = right + " (" + v.collecting_society + ")";
+                            rights.push(right);
+                        });
+                        return rights.join('<br>');
+                    },
+                    defaultContent: "",
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'DatatableSequenceWidget',
+                    }
+                }
+            ],
+        };
+    </script>
+
+</tal:block>

@@ -1,0 +1,16 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend39"
+           i18n:domain="collecting_society_web">
+
+    <tal:block metal:fill-slot="content-right">
+	    <div class="introtext">
+            <span i18n:translate="">Welcome</span>
+		    <span tal:condition="request.party.firstname">${request.party.firstname}</span>,<br/><br/>
+		    <span i18n:translate="">you can find the latest news and todos for your next steps here on this dashboard.</span><br/><br/>
+	    </div>
+        <br/>           
+        
+    </tal:block>
+
+</tal:block>

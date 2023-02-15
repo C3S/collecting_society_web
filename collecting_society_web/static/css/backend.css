@@ -1,0 +1,297 @@
+/*******************************************************************************
+
+    For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+    Repository: https://github.com/C3S/collecting_society_web
+
+*******************************************************************************/
+
+/*
+
+    COLORS:
+
+    gray dark     #888888
+    gray bright   #f0f3ea
+    green dark    #317a19
+    green bright  #d9f0c8
+    yellow dark   #9e8a00
+    yellow bright #efefb4
+    orange        #dc5900
+    red dark      #a94442
+    red bright    #f2dede
+
+*/
+
+/*******************************************************************************
+
+    Extra small devices (phones, less than 768px)
+
+*******************************************************************************/
+
+/* Main */
+
+body {
+    background: #f0f3ea; /* Old browsers */
+    background: -moz-linear-gradient(left, #f0f3ea 0%, #fff 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, #f0f3ea 0%, #fff 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, #f0f3ea 0%, #fff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f3ea', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
+}
+
+a { outline:none!important; }
+
+h1, .h1 { color:#888; border-bottom:1px solid rgb(221, 221, 221); margin-bottom:15px; padding-left:15px; padding-bottom:5px; font-size:28px; }
+
+.cs-img-smallicon { width:40px; }
+.cs-img-thumb { width:100px; }
+.cs-img-inline { max-width:30px; max-height:30px; display:inline; margin-right:5px; }
+.cs-thin { font-weight:normal; }
+.cs-list-item { margin-bottom:10px; }
+.cs-list-item:last-child { margin-bottom:0; }
+
+.cs-datatables .nowrap { white-space:nowrap; }
+.form-inline .cs-datatables .form-group { display:block; margin-bottom:15px; }
+.form-inline .cs-datatables .form-control { display: inline-block; width: 100%; }
+.cs-datatables .child td { border-top:none; }
+.cs-datatables .child .cs-datatables-edit { margin-left: 15px; border-left: 1px dotted #888; padding-left: 25px; }
+
+.cs-table .btn-primary,
+.btn-primary { background: url('../img/element-menue-bg.png'); opacity:0.9; border-color:#888; color:#fff; }
+.cs-table .btn-primary:hover,
+.cs-table .btn-primary:active,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus { background: url('../img/element-menue-bg.png'); opacity:1; border-color:#888; }
+
+.cs-table .btn-info,
+.btn-info { opacity:0.9; background-color:#d9f0c8; border-color:#ccc; color:#333; }
+.cs-table .btn-info:hover,
+.cs-table .btn-info:active,
+.btn-info:hover,
+.btn-info:active,
+.btn-info:focus { opacity:1; background-color:#f6f9f2; border-color:#ccc; color:#000; }
+
+.dataTables_wrapper .dataTables_processing { background: url('../img/element-menue-bg.png'); opacity:0.9; color:#fff; }
+.cs-modal-header { background: url('../img/element-menue-bg.png'); opacity:0.9; color:#fff; }
+.cs-modal-header .close { color:#fff; margin-left:7px; margin-top:0; opacity:0.7; text-shadow: 0 1px 0 #000; }
+.cs-modal-header .close:hover { color:#fff; opacity:1; }
+.cs-modal .pinned,
+.cs-modal .pinned:hover { color:#faa; opacity:1; }
+.cs-row-controls a.btn { width:80px; }
+
+/* Content Left */
+
+.cs-content-left { background: url('../img/element-menue-bg.png'); padding: 0; }
+.cs-content-left .col-md-12 { padding: 0; }
+
+.cs-menue-main { background:transparent; border:none; border-top-left-radius:0; border-top-right-radius:0; padding: 25px 50px; }
+
+.cs-menue-main .navbar-nav > li > a,
+.cs-menue-main .navbar-nav > li > a:hover,
+.cs-menue-main .navbar-nav > li > a:active,
+.cs-menue-main .navbar-nav > li > a:visited,
+.cs-menue-main .navbar-nav > li > a:focus { color:#fff; }
+.cs-menue-main .cs-menue-item a img { opacity: 0.7; }
+.cs-menue-main .cs-menue-item a:hover img,
+.cs-menue-main .cs-menue-item.active a img { opacity: 1; }
+
+.cs-menue-main .navbar-nav > .active > a,
+.cs-menue-main .navbar-nav > .active > a:hover,
+.cs-menue-main .navbar-nav > .active > a:active,
+.cs-menue-main .navbar-nav > .active > a:focus {
+    outline: none;
+    background-color:transparent; color:#fff; font-weight:bold;
+    background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 33%, rgba(255,255,255,0.2) 66%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,0.2) 33%,rgba(255,255,255,0.2) 66%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,0.2) 33%,rgba(255,255,255,0.2) 66%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 */
+}
+
+.cs-menue-roles .cs-menue-item a { padding: 15px 0; }
+.cs-menue-roles .cs-menue-item { box-shadow: inset 0 -20px 20px -10px #00000033; }
+.cs-menue-roles .cs-menue-item.active,
+.cs-menue-roles .cs-menue-item.active:hover,
+.cs-content-left .cs-menue-roles > .cs-menue-item:hover { box-shadow: none; }
+.cs-menue-roles .cs-menue-item-repertoire { background: url('../img/element-menue-bg-repertoire.png'); }
+.tree-licensing .cs-menue-roles .cs-menue-item-repertoire { box-shadow: inset 0 -20px 20px -10px #ffffff33; }
+.cs-menue-roles .cs-menue-item-licensing { background: url('../img/element-menue-bg-licensing.png'); }
+.tree-repertoire .cs-menue-roles .cs-menue-item-licensing { box-shadow: inset 0 -20px 20px -10px #00000033; }
+
+.cs-content-left .cs-menue-roles > li > a,
+.cs-content-left .cs-menue-roles > li > a:hover,
+.cs-content-left .cs-menue-roles > li > a:visited { color:#fff; background-color:transparent; border:none!important; font-weight:bold; }
+
+/* Content Middle */
+
+.cs-content-middle { background-color:#fff; }
+
+.cs-content-middle .fileupload-progress .progress { margin-bottom:5px; }
+.cs-content-middle .cs-audio-properties > span:after { color:#ddd; content: " | "; }
+
+.cs-form-header { border-bottom:1px solid rgb(221, 221, 221); padding-left:15px; padding-bottom:5px; margin-bottom:15px; }
+.cs-form-controls { padding:0 15px; }
+.deformFormFieldset { border-top:1px solid rgb(221, 221, 221); margin-top:15px; padding-top:20px; }
+
+.cs-form-controls-bottom { margin-top:40px; padding-top:20px; border-top:1px solid rgb(221, 221, 221); }
+.cs-form-controls-bottom-wrap,
+.cs-navform-controls-wrap { float:right; }
+
+.cs-navform { margin-top:10px; }
+.cs-navform .deformFormFieldset  { border:none; margin:0; padding:0; }
+.cs-navform .cs-form-header { padding-bottom:0; margin-bottom:0; }
+.cs-navform .panel-heading { background-color:transparent; }
+.cs-navform .panel-default { border:none; }
+.cs-navform .cs-navform-controls { padding-top:15px; border-top:1px solid #ddd; }
+.cs-navform .cs-navform-item-content { margin-top:20px; }
+.cs-navform .cs-nav-form-tabcontent { margin-bottom:20px; }
+.cs-navform .cs-nav-tabs a { color:#666; }
+.cs-navform .cs-nav-tabs a:hover { color:#333; }
+.cs-navform .cs-nav-tabs .active a,
+.cs-navform .cs-nav-tabs .active a:hover,
+.cs-navform .cs-nav-tabs .active a:focus { color:#888; }
+.cs-navform .cs-nav-pills .cs-navform-item-menu { border: 1px solid transparent; }
+.cs-navform .cs-nav-pills .active .cs-navform-item-menu { border: 1px solid #ccc; }
+.cs-navform .cs-nav-pills a { color:#888; }
+.cs-navform .cs-nav-pills a:hover { background-color:#f6f9f2; color:#222; }
+.cs-navform .cs-nav-pills .active a,
+.cs-navform .cs-nav-pills .active a:hover,
+.cs-navform .cs-nav-pills .active a:focus { background-color:#f6f9f2; color:#222; }
+.cs-navform .cs-nav-pills .cs-error { color: #d9534f; }
+.cs-navform .cs-nav-pills .active .cs-error { color: #fff; }
+
+.table .cs-table-controls { opacity:0.4; margin-top:4px; }
+.table tr:hover .cs-table-controls { opacity:1 }
+.cs-table > tbody > tr > td { vertical-align:middle; }
+.cs-table .cs-table-codecolumn a { color:#aaa; }
+.cs-table a { color:#333; }
+.cs-table-list,
+.cs-table-show { border-top:1px solid rgb(221, 221, 221); margin-top:15px; }
+.cs-table-show td { width:100%; }
+.cs-table-show th { min-width:130px; text-align:right; }
+.cs-list { margin-top:20px; }
+.cs-list h1 { margin-bottom:5px; padding-left:15px; }
+.cs-list .cs-form-controls { margin:2px 0 7px 5px; padding:0; }
+.cs-table-show .cs-defaultpic { max-height:80px; }
+.cs-table > tbody > .cs-table-section > td { padding-top:25px; }
+
+.cs-release-title { display:block; }
+.cs-release-artist,
+.cs-release-artist a { color:#666; }
+
+.cs-artist-img { max-width: 200px; }
+.cs-table-artist-img { max-height: 50px; max-width: 50px; }
+
+.cs-collecting-society { font-style:italic; color:#777; }
+.cs-original { font-style:italic; margin-left:5px; color:#777; }
+.cs-contribution { font-style:italic; color:#777; }
+.cs-original-artist { color:#777; }
+
+.cs-file-icon { color:#f6f9f2; font-size:35px; margin-top:5px; }
+.cs-file-rejected { color:#c9302c; }
+.cs-table-show .cs-file-icon-row td { text-align:center; }
+.cs-table-show .cs-file-icon-row .cs-file-icon { font-size:80px; }
+.cs-table-show .cs-file-preview audio { width:100%; }
+
+.cs-fileupload-content { border-top:1px solid rgb(221, 221, 221); margin-top:15px; padding-top:15px; }
+.cs-allowed-filetypes { margin-top:5px; }
+.cs-allowed-filetypes .label { opacity:0.5; }
+.cs-upload-icon { margin-right:10px; }
+.cs-table-upload > tbody > tr > td { border:0; }
+.cs-table-upload .panel-body .badge { margin-left:3px; margin-right:10px; opacity:0.5; }
+.cs-table-upload tr { height:103px; }
+.cs-table-upload .alert { margin-bottom:0; text-align:center; }
+.fileupload-progress .progress { margin-top:5px; margin-bottom:5px; height:30px; }
+.cs-upload-item .progress { margin-top:2px; margin-bottom:0; height:5px; }
+.cs-download-item .size,
+.cs-upload-item .size { margin-left:10px; color:#fff; opacity:0.5; }
+.cs-download-item .name,
+.cs-upload-item .name { color:#888; margin-bottom:3px; }
+.cs-upload-item .toolbar { margin-bottom:7px; }
+.cs-upload-item-controls { margin-left:3px; }
+.cs-upload-item .preview audio { max-width:none; width:100%; }
+.cs-upload-item .nopreview { text-align:center; border:1px solid rgb(221, 221, 221); border-radius: 5px; padding:10px; background:#eee; color:#888; }
+
+.cs-content-middle .template-upload td { padding:10px 5px; }
+.cs-content-middle .template-upload .progress { margin-bottom:0; }
+.cs-content-middle .template-upload .size { margin-bottom:0; }
+.cs-content-middle .template-upload .name { font-weight:bold; }
+
+/* Content Right */
+
+.cs-content-right { background-color:#fff; }
+.cs-backend-363 .cs-content-right { background-color:transparent; }
+
+.cs-widget-plugins .cs-widget-plugin-img { width:120px; }
+.cs-widget-todo-steps .cs-widget-todo-step-img { float:left; width:60px; margin:0 5px 5px 0; }
+
+/* Widgets */
+
+.dashboard-widget { background-color: #f6f9f2; border-radius: 25px; min-height: 120px; min-width: 120px; text-align: center; padding: 15px; }
+.rejected-table tr td:first-child { padding-right: 5px; text-align: right; }
+.cs-dashboard-tasks .cs-dashboard-task-left { float:left; text-align:center; width:10%; }
+.cs-dashboard-tasks .cs-dashboard-task-icon { width:30px; height:30px; font-size:30px; position:relative; top:7px; left:-8px; }
+.cs-dashboard-tasks .cs-dashboard-task-middle { float:left; width:65%; padding-right:7px; padding-left:5px; }
+.cs-dashboard-tasks .cs-dashboard-task-right { float:left; width:25%; font-size:40px; }
+
+
+/*******************************************************************************
+
+   Small devices (tablets, 768px and up)
+
+*******************************************************************************/
+
+@media (min-width: 768px) {
+
+    /* Main */
+
+    /* Content Left */
+
+    /* Content Middle */
+
+    /* Content Right */
+
+    /* Widgets */
+
+    .cs-dashboard-tasks .cs-dashboard-task-middle { width:80%; }
+    .cs-dashboard-tasks .cs-dashboard-task-right { width:10%; }
+
+}
+
+
+/*******************************************************************************
+
+   Medium devices (desktops, 992px and up)
+
+*******************************************************************************/
+
+@media (min-width: 992px) {
+
+    /* Main */
+
+    /* Content Left */
+
+    /* Content Middle */
+
+    /* Content Right */
+
+    .cs-backend-363 .cs-content-right { background-color:#fff; }
+
+}
+
+
+/*******************************************************************************
+
+   Large devices (large desktops, 1200px and up)
+
+*******************************************************************************/
+
+@media (min-width: 1200px) {
+
+    /* Main */
+
+    /* Content Left */
+
+    /* Content Middle */
+
+    /* Content Right */
+
+}

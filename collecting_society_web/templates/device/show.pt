@@ -1,0 +1,80 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend363"
+           i18n:domain="collecting_society_web"
+           tal:define="device context.device">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <h1>
+            ${device.name}
+            <small tal:condition="device.os_name != ''">
+                ${device.uuid}
+            </small>
+        </h1>
+
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="${request.resource_path(context, '..')}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Devices</a>
+                <a href="${request.resource_path(context, 'edit')}"
+                   class="btn btn-primary" role="button"
+                   i18n:translate="">Edit</a>
+            </div>
+            <div class="btn-group cs-form-controls pull-right" role="group">
+                <a href="${request.resource_path(context, 'delete')}"
+                   class="btn btn-danger" role="button"
+                   i18n:translate="">Delete</a>
+            </div>
+        </div>
+
+        <table class="table cs-table cs-table-show">
+
+            <tr>
+                <th i18n:translate="">Device Name</th>
+                <td>${device.name}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Device ID</th>
+                <td>${device.uuid}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">OS</th>
+                <td>${device.os_name}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">OS Version</th>
+                <td>${device.os_version}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Software</th>
+                <td>${device.software_name}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Software Version</th>
+                <td>${device.software_version}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Software Vendor</th>
+                <td>${device.software_vendor}</td>
+            </tr>
+
+        </table>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right"></tal:block>
+
+</tal:block>

@@ -1,0 +1,46 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            apiPath: "creation",
+            columns: [
+                {
+                    name: "type",
+                    title: "${_('Type')}",
+                    data: "type",
+                    orderable: true,
+                    searchable: true,
+                    render: $.fn.dataTable.render.text(),
+                    defaultContent: "",
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'Select2Widget',
+                    }
+                },
+                {
+                    name: "original",
+                    title: "${_('Original')}",
+                    data: "original",
+                    orderable: true,
+                    searchable: true,
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        if(data.datatableSequence !== true)
+                            return "";
+                        var subdata = data.target.table.rows().data();
+                        return "[" + tmpl.encode(subdata[0].artist) + "]<br>" +
+                               tmpl.encode(subdata[0].titlefield);
+                    },
+                    defaultContent: "",
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'DatatableSequenceWidget',
+                    }
+                },
+            ],
+        };
+    </script>
+
+</tal:block>

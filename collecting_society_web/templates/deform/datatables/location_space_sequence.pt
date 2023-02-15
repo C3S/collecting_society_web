@@ -1,0 +1,71 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            apiPath: "location_space",
+            unique: "name",
+            columns: [
+                {
+                    name: "name",
+                    title: "${_('Name')}",
+                    data: "name",
+                    className: "all",
+                    orderable: true,
+                    searchable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: true,
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "category",
+                    title: "${_('Category')}",
+                    data: "category",
+                    className: "all",
+                    orderable: true,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'Select2Widget'
+                    }
+                },
+                {
+                    name: "size",
+                    title: "${_(u'Size (m²)')}",
+                    data: "size",
+                    className: "all",
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: false,
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "size_estimated",
+                    title: "${_('size only estimated')}",
+                    data: "size_estimated",
+                    className: "all",
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'CheckboxWidget',
+                        footerSearch: false,
+                        createShow: true,
+                    }
+                }            
+            ],
+        };
+    </script>
+
+</tal:block>

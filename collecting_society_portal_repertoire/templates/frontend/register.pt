@@ -1,9 +1,0 @@
-<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
-      Repository: https://github.com/C3S/collecting_society.portal.repertoire -->
-<tal:block i18n:domain="collecting_society_portal_repertoire">
-
-    <h1 i18n:translate="">Register</h1>
-
-    <div tal:content="structure RegisterWebuser"/>
-
-</tal:block>

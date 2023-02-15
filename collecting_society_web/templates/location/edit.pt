@@ -1,0 +1,99 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend39"
+           i18n:domain="collecting_society_web">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right">
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+        <div class="cs-form-container">
+
+            <h1 class="cs-form-header" i18n:translate="">Edit Location</h1>
+
+            <div class="btn-toolbar cs-form-controls" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a href="${request.resource_path(context, '..')}"
+                       class="btn btn-default" role="button"
+                       i18n:translate="">Locations</a>
+                    <a class="btn btn-primary" role="button"
+                       onclick="$('#EditLocationsubmit').click();"
+                       i18n:translate="">Submit</a>
+                </div>
+            </div>
+
+            <div class="cs-formdata-and-map-container">
+
+                <div tal:content="structure EditLocation" style="float: left;"/>
+
+                <div id="map" style="width: 300px; height: 530px;"/>
+
+                <script>
+                    var form = document.getElementById('EditLocation');
+                    var mymap = L.map('map').setView([form.latitude.value, form.longitude.value], 15);
+                    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                        maxZoom: 18,
+                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                            '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                        id: 'mapbox/streets-v11',
+                        tileSize: 512,
+                        zoomOffset: -1
+                    }).addTo(mymap);
+
+                    var theMarker = {};
+                    theMarker = L.marker([form.latitude.value, form.longitude.value]).addTo(mymap);
+                            
+                    function onMapClick(e) {
+                        if (form)
+                        {
+                            form.latitude.value = e.latlng.lat.toFixed(4);
+                            form.longitude.value = e.latlng.lng.toFixed(4);
+                            repositionMarker(e.latlng.lat, e.latlng.lng);
+                        }
+                    
+                    }
+
+                    function repositionMarker(lat, lng) {
+                        if (theMarker != undefined) {
+                            mymap.removeLayer(theMarker);
+                        };
+                        theMarker = L.marker([lat, lng]).addTo(mymap);
+                        mymap.setView([form.latitude.value, form.longitude.value]);
+                    }
+
+                    mymap.on('click', onMapClick);
+
+                    $('.deform').find('input#latitude.form-control').on("change", 
+                        function(e) { repositionMarker(form.latitude.value, form.longitude.value);
+                        console.log(form.latitude.value, form.longitude.value); }
+                    );
+
+                    $('.deform').find('input#latitude.form-control').keyup(
+                        function(e) { repositionMarker(form.latitude.value, form.longitude.value);
+                        console.log(form.latitude.value, form.longitude.value); }
+                    );
+
+                    $('.deform').find('input#longitude.form-control').on("change", 
+                        function(e) { repositionMarker(form.latitude.value, form.longitude.value);
+                        console.log(form.latitude.value, form.longitude.value); }
+                    );
+
+                    $('.deform').find('input#longitude.form-control').keyup(
+                        function(e) { repositionMarker(form.latitude.value, form.longitude.value);
+                        console.log(form.latitude.value, form.longitude.value); }
+                    );
+                </script>
+
+            </div>
+
+        </div>
+
+    </tal:block>
+
+</tal:block>

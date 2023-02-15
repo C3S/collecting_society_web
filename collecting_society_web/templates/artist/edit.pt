@@ -1,0 +1,50 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend39"
+           i18n:domain="collecting_society_web">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right">
+
+        <div class="cs-form-container">
+
+            <h1 class="cs-form-header" i18n:translate="">Edit Artist</h1>
+
+            <div class="btn-toolbar cs-form-controls" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a href="${request.resource_path(context, '..')}"
+                       class="btn btn-default" role="button"
+                       i18n:translate="">Artists</a>
+                    <a class="btn btn-primary" role="button"
+                       onclick="$('#EditArtistsubmit').click();"
+                       i18n:translate="">Submit</a>
+                </div>
+            </div>
+
+            <div tal:content="structure EditArtist"/>
+
+            <script>
+                $("#cs-navform-item-menu-members").hide();
+                function item_group_control(checkbox) {
+                    var members = $(".item-members").first();
+                    members.find("label").addClass("required");
+                    if ($("#item-group input:checked").length > 0)
+                        members.show();
+                    else
+                        members.hide();
+                }
+                $(document).ready(function() {                
+                    $("#item-group input").change(function() {
+                        item_group_control(this);
+                    }).change();
+                });
+            </script>
+
+        </div>
+
+    </tal:block>
+
+</tal:block>

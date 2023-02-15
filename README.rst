@@ -1,7 +1,8 @@
-collecting_society.portal.repertoire
-====================================
+==========================
+Collecting Society Web GUI
+==========================
 
-Plugin for `Web Portal <https://github.com/C3S/collecting_society.portal>`_ 
+Plugin for `portal_web <https://github.com/C3S/portal_web>`_ 
 including:
 
 - Artists
@@ -9,7 +10,7 @@ including:
 - Contents
 - Releases
 
-For a working development setup, see https://github.com/C3S/c3s.ado.repertoire
+For a working development setup, see https://github.com/C3S/collecting_society_docker
 
 Artists
 -------
@@ -54,28 +55,28 @@ Installation
 Updates
 ```````
 
-e.g. for project **collecting_society.portal.imp** and language **de**
+e.g. for project **collecting_society_web** and language **de**
 
 - only once, to start translation of a project, create the **.pot** file for the project
-    - ``$cd c3s.ado.repertoire/ado/src/collecting_society.portal.repertoire``
-    - ``$mkdir collecting_society_portal_repertoire/locale``
-    - ``$pot-create -o collecting_society_portal_repertoire/locale/collecting_society_portal_repertoire.pot collecting_society_portal_repertoire``
+    - ``$cd collecting_society_docker/volumes/shared/src/collecting_society_web``
+    - ``$mkdir collecting_society_web/locale``
+    - ``$pot-create -o collecting_society_web/locale/collecting_society_web.pot collecting_society_web``
 - only once, if you need a new language, create the **.po** file for the language
-    - ``$cd c3s.ado.repertoire/ado/src/collecting_society.portal.repertoire/collecting_society_portal_repertoire/locale``
+    - ``$cd collecting_society_docker/volumes/shared/src/collecting_society_web/collecting_society_web/locale``
     - ``$mkdir -p de/LC_MESSAGES``
-    - ``$msginit -l de -o de/LC_MESSAGES/collecting_society_portal_repertoire.po``
+    - ``$msginit -l de -o de/LC_MESSAGES/collecting_society_web.po``
 - each time, the code or templates changed, recreate the **.pot** file:
-    - ``$cd c3s.ado.repertoire/ado/src/collecting_society.portal.repertoire``
-    - ``$pot-create -o collecting_society_portal_repertoire/locale/collecting_society_portal_repertoire.pot collecting_society_portal_repertoire``
+    - ``$cd collecting_society_docker/volumes/shared/src/collecting_society_web``
+    - ``$pot-create -o collecting_society_web/locale/collecting_society_web.pot collecting_society_web``
 - every time the **.pot** file changed, recreate the **.po** files for all languages
-    - ``$cd c3s.ado.repertoire/ado/src/collecting_society.portal.repertoire``
-    - ``$msgmerge --update collecting_society_portal_repertoire/locale/*/LC_MESSAGES/collecting_society_portal_repertoire.po collecting_society_portal_repertoire/locale/collecting_society_portal_repertoire.pot``
+    - ``$cd collecting_society_docker/volumes/shared/src/collecting_society_web``
+    - ``$msgmerge --update collecting_society_web/locale/*/LC_MESSAGES/collecting_society_web.po collecting_society_web/locale/collecting_society_web.pot``
 - to edit translations, change the **.po** file via poedit
-    - ``$cd c3s.ado.repertoire/ado/src/collecting_society.portal.repertoire``
-    - ``$poedit collecting_society_portal_repertoire/locale/de/LC_MESSAGES/collecting_society_portal_repertoire.po``
+    - ``$cd collecting_society_docker/volumes/shared/src/collecting_society_web``
+    - ``$poedit collecting_society_web/locale/de/LC_MESSAGES/collecting_society_web.po``
 - every time the **.po** file changed, create a **.mo** file
-    - ``$cd c3s.ado.repertoire/ado/src/collecting_society.portal.repertoire``
-    - ``$msgfmt -o collecting_society_portal_repertoire/locale/de/LC_MESSAGES/collecting_society_portal_repertoire.mo collecting_society_portal_repertoire/locale/de/LC_MESSAGES/collecting_society_portal_repertoire.po``
+    - ``$cd collecting_society_docker/volumes/shared/src/collecting_society_web``
+    - ``$msgfmt -o collecting_society_web/locale/de/LC_MESSAGES/collecting_society_web.mo collecting_society_web/locale/de/LC_MESSAGES/collecting_society_web.po``
 
 Further information
 ```````````````````
