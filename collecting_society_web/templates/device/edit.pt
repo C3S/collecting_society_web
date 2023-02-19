@@ -11,20 +11,20 @@
 
         <div class="cs-form-container">
 
-            <h1 class="cs-form-header" i18n:translate="">Edit Location</h1>
+            <h1 class="cs-form-header" i18n:translate="">Edit Device</h1>
 
             <div class="btn-toolbar cs-form-controls" role="toolbar">
                 <div class="btn-group" role="group">
                     <a href="${request.resource_path(context, '..')}"
                        class="btn btn-default" role="button"
-                       i18n:translate="">Locations</a>
+                       i18n:translate="">Devices</a>
                     <a class="btn btn-primary" role="button"
-                       onclick="$('#EditLocationsubmit').click();"
+                       onclick="$('#EditDevicesubmit').click();"
                        i18n:translate="">Submit</a>
                 </div>
             </div>
 
-            <div tal:content="structure EditLocation"/>
+            <div tal:content="structure EditDevice"/>
         </div>
 
     </tal:block>
