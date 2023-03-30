@@ -3,7 +3,7 @@
 
 from selenium.webdriver.common.by import By
 
-from portal_web.tests.base import DeformFormObject
+from portal_web.tests.integration.pageobjects import DeformFormObject
 from portal_web.views.forms.login_web_user import login_form
 from portal_web.models import Tdb, WebUser
 
