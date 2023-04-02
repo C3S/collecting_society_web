@@ -6,11 +6,13 @@ Pytest Fixtures
 """
 
 import pytest
-from portal_web.tests.conftest import *  # noqa: F401,F403
 
 
 @pytest.fixture(scope='class')
 def create_location_category(tryton):
+    """
+    Yields a function to create a location category.
+    """
     records = []
     LocationCategory = tryton.pool.get('location.category')
 
@@ -29,6 +31,9 @@ def create_location_category(tryton):
 
 @pytest.fixture(scope='class')
 def create_location(tryton):
+    """
+    Yields a function to create a location.
+    """
     records = []
     Location = tryton.pool.get('location')
 

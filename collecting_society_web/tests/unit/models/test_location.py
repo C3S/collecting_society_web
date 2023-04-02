@@ -9,6 +9,9 @@ from ....models import Location
 
 @pytest.fixture(scope='class')
 def party(create_party):
+    """
+    Creates a party for location tests.
+    """
     party = create_party(
         name='Tresor Berlin GmbH',
         firstname='Dietmar',
@@ -19,6 +22,9 @@ def party(create_party):
 
 @pytest.fixture(scope='class')
 def location_category(create_location_category):
+    """
+    Creates a location category for location tests.
+    """
     location_category = create_location_category(
         code='N',
         name="Nightclub",

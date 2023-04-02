@@ -9,6 +9,9 @@ from ....models import Event
 
 @pytest.fixture(scope='class')
 def location(create_party, create_location_category, create_location):
+    """
+    Creates a location for event tests.
+    """
     party = create_party(name='Gargoyle Club in Soho, London')
     location_category = create_location_category(
         code='N',
