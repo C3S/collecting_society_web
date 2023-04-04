@@ -53,15 +53,15 @@ class FrontentViews(ViewBase):
         return verify_email_helper(self)
 
 
-def verify_email_helper(the_class):
+def verify_email_helper(view):
     """
     also used by backend.py
     """
 
     # sanity checks
     opt_in_uuid = False
-    if the_class.request.subpath:
-        opt_in_uuid = the_class.request.subpath[-1]
+    if view.request.subpath:
+        opt_in_uuid = view.request.subpath[-1]
 
     # change opt in state
     if opt_in_uuid:
@@ -76,17 +76,28 @@ def verify_email_helper(the_class):
             # invalidate uuid
             web_user.opt_in_uuid = str(uuid.uuid4())  # noqa: F821
             web_user.save()
-            the_class.request.session.flash(
+            view.request.session.flash(
                 _("Your email verification was successful."),
                 'main-alert-success'
             )
             log.info("web_user login successful: %s" % web_user.email)
-            return the_class.redirect(
+            from pyramid.httpexceptions import HTTPFound
+            response = HTTPFound('/')
+            cookie = remember(view.request, web_user.email)
+            cookie.extend([('Cache-control', 'no-cache')])
+            response.headerlist.extend(cookie)
+            return response
+            # return HTTPFound('/', headers=headers)
+            # headers = remember(view.request, web_user.email)
+            # response = view.request.response
+            # response.headerlist.extend(headers)
+            # return response
+            return view.redirect(
                 BackendResource, '',
-                headers=remember(the_class.request, web_user.email)
+                headers=remember(view.request, web_user.email)
             )
         else:
-            the_class.request.session.flash(
+            view.request.session.flash(
                 _(
                     "Your email verification was not successful "
                     "(wrong validation code)."
@@ -94,7 +105,7 @@ def verify_email_helper(the_class):
                 'main-alert-danger'
             )
     else:
-        the_class.request.session.flash(
+        view.request.session.flash(
             _(
                 "Your email verification was not successful "
                 "(no validation code)."
@@ -102,4 +113,4 @@ def verify_email_helper(the_class):
             'main-alert-danger'
         )
 
-    return the_class.redirect()
+    return view.redirect()

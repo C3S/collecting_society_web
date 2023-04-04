@@ -21,6 +21,7 @@ class TestWebUser:
         """
         registration registers user
         """
+        browser.delete_all_cookies()
         browser.get("/")
         formid = 'RegisterWebuser'
         form = DeformFormObject(browser, claims_membership_form(), formid)
