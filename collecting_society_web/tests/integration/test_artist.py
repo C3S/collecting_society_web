@@ -39,7 +39,19 @@ class TestArtist:
         form.login_password.set('password')
         form.submit()
         assert browser.find_elements(By.CLASS_NAME, 'cs-backend')
-        
+
+    def test_012_navigate_to_repertoire(self, browser):
+        browser.find_element(By.CLASS_NAME, "cs-menue-item-repertoire").click()
+        assert browser.find_element(By.CLASS_NAME, "introtext")
+
+    def test_014_navigate_to_artist(self, browser):
+        browser.find_element(By.CLASS_NAME, "cs-menue-item-artists").click()
+        assert browser.current_url[-20:] == "/repertoire/artists/"
+
+    def test_016_click_add_artist(self, browser):
+        browser.find_element(By.CLASS_NAME, "btn-artist-add").click()
+        assert browser.current_url[-23:] == "/repertoire/artists/add"
+
     @Tdb.transaction()
     def test_020_create_artist(self, browser, request_with_registry):
         """
