@@ -12,6 +12,9 @@ from portal_web.models import Tdb
 from ...views.forms.add_artist import (
     add_artist_form
 )
+from ...views.forms.edit_artist import (
+    edit_artist_form
+)
 
 
 @pytest.fixture(autouse=True, scope='class')
@@ -51,24 +54,76 @@ class TestArtist:
     def test_016_click_add_artist(self, browser):
         browser.find_element(By.CLASS_NAME, "btn-artist-add").click()
         assert browser.current_url[-23:] == "/repertoire/artists/add"
+        browser.screenshot("navigated_to_add_artist")
 
     @Tdb.transaction()
     def test_020_create_artist(self, browser, request_with_registry):
         """
         add an artist
         """
-        browser.get("/repertoire/artists/add")
-        browser.screenshot("navigated_to_artist_add")
+        # browser.get("/repertoire/artists/add")
 
         formid = 'AddArtist'
         form = DeformFormObject(
             browser, add_artist_form(request_with_registry), formid)
         form.group.set(False)
-        form.name.set('Testartist #12345')
-        # form.ipn_code.set('1970-01-01')
-        # form.register_email.set('a@webuser.test')
-        # form.register_password.set('awebuser')
-        # form.terms_accepted.set(True)
-        # form.register_webuser()
+        form.name.set("Testartist #12345")
+        form.ipn_code.set("12345678901")
+        form.description.set("This is example of a solo artist.")
+        # TODO: test picture upload
+        # TODO: test group artist
         form.submit()
         assert browser.find_element(By.CLASS_NAME, "alert-success")
+
+        assert "Testartist #12345" in browser.page_source  # check for name,
+        assert "This is example of a solo artist." in browser.page_source
+        assert "12345678901" in browser.page_source  # IPN, and description
+
+    def test_025_click_edit_artist(self, browser):
+        browser.find_element(By.CLASS_NAME, "btn-artist-edit").click()
+        assert browser.current_url[-24:-16] == "artists/"
+        assert browser.current_url[-5:] == "/edit"
+        browser.screenshot("navigated_to_edit_artist")
+
+    @Tdb.transaction(readonly=False)
+    def test_030_edit_artist(self, browser, request_with_registry):
+        """
+        edit an artist
+        """
+
+        formid = 'EditArtist'
+        form = DeformFormObject(
+            browser, edit_artist_form(request_with_registry), formid)
+        form.name.set("Testartist #54321")
+        form.ipn_code.set("98765432101")
+        form.description.set("This is *an* example of a solo artist.")
+        # TODO: test picture upload
+        # TODO: test group artist
+        form.submit()
+        assert browser.find_element(By.CLASS_NAME, "alert-success")
+
+        assert "Testartist #12345" not in browser.page_source  # negative check
+        assert "This is example of a solo artist." not in browser.page_source
+        assert "12345678901" not in browser.page_source  # should not occur
+
+        assert "Testartist #54321" in browser.page_source  # changed name,
+        assert "This is *an* example of a solo artist." in browser.page_source
+        assert "98765432101" in browser.page_source  # IPN, and description?
+
+    @Tdb.transaction()
+    def test_040_delete_artist(self, browser, request_with_registry):
+        """
+        delete an artist
+        """
+        browser.find_element(By.CLASS_NAME, "btn-artist-delete").click()
+        assert browser.find_element(By.CLASS_NAME, "alert-success")
+        # assert browser.current_url[-20:] == "/repertoire/artists/"
+        # assert "Testartist #12345" not in browser.page_source
+        browser.screenshot("clicked_artist_delete")
+
+    def test_050_logout(self, browser):
+        """
+        log user out
+        """
+        browser.get("/logout")
+        assert browser.find_elements(By.CLASS_NAME, 'cs-frontend')
