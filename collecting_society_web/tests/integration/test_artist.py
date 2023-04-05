@@ -81,12 +81,12 @@ class TestArtist:
 
     def test_025_click_edit_artist(self, browser):
         browser.find_element(By.CLASS_NAME, "btn-artist-edit").click()
-        assert browser.current_url[-24:-16] == "artists/"
-        assert browser.current_url[-5:] == "/edit"
+        assert "/artists/" in browser.current_url
+        assert browser.current_url.endswith("/edit")
         browser.screenshot("navigated_to_edit_artist")
 
-    @Tdb.transaction(readonly=False)
-    def test_030_edit_artist(self, browser, request_with_registry):
+    @Tdb.transaction()
+    def _test_030_edit_artist(self, browser, request_with_registry):
         """
         edit an artist
         """

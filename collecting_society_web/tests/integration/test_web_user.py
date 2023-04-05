@@ -1,6 +1,8 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
+import pytest
+
 from selenium.webdriver.common.by import By
 
 from portal_web.tests.integration.pageobjects import DeformFormObject
@@ -17,11 +19,11 @@ class TestWebUser:
     """
     User registration scenario.
     """
+    @pytest.mark.usefixtures('reset')
     def test_010_registration(self, browser):
         """
         registration registers user
         """
-        browser.delete_all_cookies()
         browser.get("/")
         formid = 'RegisterWebuser'
         form = DeformFormObject(browser, claims_membership_form(), formid)
