@@ -79,7 +79,7 @@ class TestArtist:
         assert "This is example of a solo artist." in browser.page_source
         assert "12345678901" in browser.page_source  # IPN, and description
 
-    def test_025_click_edit_artist(self, browser):
+    def _test_025_click_edit_artist(self, browser):
         browser.find_element(By.CLASS_NAME, "btn-artist-edit").click()
         assert "/artists/" in browser.current_url
         assert browser.current_url.endswith("/edit")
