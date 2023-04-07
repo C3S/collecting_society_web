@@ -79,18 +79,21 @@ class TestArtist:
         assert "This is example of a solo artist." in browser.page_source
         assert "12345678901" in browser.page_source  # IPN, and description
 
-    def _test_025_click_edit_artist(self, browser):
+    def test_025_click_edit_artist(self, browser):
         browser.find_element(By.CLASS_NAME, "btn-artist-edit").click()
         assert "/artists/" in browser.current_url
         assert browser.current_url.endswith("/edit")
         browser.screenshot("navigated_to_edit_artist")
 
     @Tdb.transaction()
-    def _test_030_edit_artist(self, browser, request_with_registry):
+    def test_030_edit_artist(self, browser, request_with_registry):
         """
         edit an artist
         """
-
+        # import debugpy
+        # debugpy.listen(("0.0.0.0", 52003))
+        # debugpy.wait_for_client()
+        # breakpoint()
         formid = 'EditArtist'
         form = DeformFormObject(
             browser, edit_artist_form(request_with_registry), formid)
@@ -100,6 +103,7 @@ class TestArtist:
         # TODO: test picture upload
         # TODO: test group artist
         form.submit()
+
         assert browser.find_element(By.CLASS_NAME, "alert-success")
 
         assert "Testartist #12345" not in browser.page_source  # negative check
