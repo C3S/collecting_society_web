@@ -26,9 +26,9 @@ class TestWebUser:
         """
         browser.get("/")
         formid = 'RegisterWebuser'
-        form = DeformFormObject(browser, claims_membership_form(), formid)
+        form = DeformFormObject(browser, claims_membership_form, formid)
         form.claims_membership()
-        form = DeformFormObject(browser, register_nonmember_form(), formid)
+        form = DeformFormObject(browser, register_nonmember_form, formid)
         form.firstname.set('Firstname')
         form.lastname.set('Lastname')
         form.birthdate.set('1970-01-01')
@@ -43,7 +43,7 @@ class TestWebUser:
         login before validation fails
         """
         formid = 'LoginWebuser'
-        form = DeformFormObject(browser, login_form(), formid)
+        form = DeformFormObject(browser, login_form, formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('awebuser')
         form.submit()
@@ -71,7 +71,7 @@ class TestWebUser:
         login with wrong credentials fails
         """
         formid = 'LoginWebuser'
-        form = DeformFormObject(browser, login_form(), formid)
+        form = DeformFormObject(browser, login_form, formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('wrongpassword')
         form.submit()
@@ -82,7 +82,7 @@ class TestWebUser:
         login with right credentials logs user in
         """
         formid = 'LoginWebuser'
-        form = DeformFormObject(browser, login_form(), formid)
+        form = DeformFormObject(browser, login_form, formid)
         form.login_email.set('a@webuser.test')
         form.login_password.set('awebuser')
         form.submit()
@@ -90,7 +90,7 @@ class TestWebUser:
 
     def _test_070_check_locale(self, browser):
         formid = 'LoginWebuser'
-        form = DeformFormObject(browser, login_form(), formid)
+        form = DeformFormObject(browser, login_form, formid)
         en, de = browser.find_elements(By.CLASS_NAME, "cs-langflags")
 
         en.click()

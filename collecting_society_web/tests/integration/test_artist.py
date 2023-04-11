@@ -37,7 +37,7 @@ class TestArtist:
         """
         browser.get("/")
         formid = 'LoginWebuser'
-        form = DeformFormObject(browser, login_form(), formid)
+        form = DeformFormObject(browser, login_form, formid)
         form.login_email.set('licenser@username.test')
         form.login_password.set('password')
         form.submit()
@@ -57,7 +57,7 @@ class TestArtist:
         browser.screenshot("navigated_to_add_artist")
 
     @Tdb.transaction()
-    def test_020_create_artist(self, browser, request_with_registry):
+    def test_020_create_artist(self, browser):
         """
         add an artist
         """
@@ -65,7 +65,7 @@ class TestArtist:
 
         formid = 'AddArtist'
         form = DeformFormObject(
-            browser, add_artist_form(request_with_registry), formid)
+            browser, add_artist_form, formid)
         form.group.set(False)
         form.name.set("Testartist #12345")
         form.ipn_code.set("12345678901")
@@ -86,7 +86,7 @@ class TestArtist:
         browser.screenshot("navigated_to_edit_artist")
 
     @Tdb.transaction()
-    def test_030_edit_artist(self, browser, request_with_registry):
+    def test_030_edit_artist(self, browser):
         """
         edit an artist
         """
@@ -96,7 +96,7 @@ class TestArtist:
         # breakpoint()
         formid = 'EditArtist'
         form = DeformFormObject(
-            browser, edit_artist_form(request_with_registry), formid)
+            browser, edit_artist_form, formid, userid='licenser@username.test')
         form.name.set("Testartist #54321")
         form.ipn_code.set("98765432101")
         form.description.set("This is *an* example of a solo artist.")
@@ -115,7 +115,7 @@ class TestArtist:
         assert "98765432101" in browser.page_source  # IPN, and description?
 
     @Tdb.transaction()
-    def test_040_delete_artist(self, browser, request_with_registry):
+    def test_040_delete_artist(self, browser):
         """
         delete an artist
         """
