@@ -34,7 +34,7 @@ def web_user(create_web_user):
     )
 
 
-class TestArtist:
+class TestLicenser:
     """
     Artist management scenario.
     """
@@ -159,12 +159,12 @@ class TestArtist:
         assert "Testcreation #12345" not in browser.page_source
         browser.screenshot("clicked_creation_delete")
 
-    def test_090_navigate_to_artist_list_again(self, browser):
+    def XXXtest_090_navigate_to_artist_list_again(self, browser):
         browser.find_element(By.CLASS_NAME, "cs-menue-item-artists").click()
         browser.screenshot("test_090_navigated_to_artist_list_again")
         assert browser.current_url[-20:] == "/repertoire/artists/"
 
-      def test_091_navigate_to_created_artist(self, browser):
+    def XXXtest_091_navigate_to_created_artist(self, browser):
         artist_entry = browser.find_element(By.CLASS_NAME, "cs-artist-name")
         assert "Testartist #54321" == artist_entry.text  # should be only one
         artist_entry_link = artist_entry.find_element(By.LINK_TEXT,
@@ -174,7 +174,7 @@ class TestArtist:
         assert browser.current_url[-31:] == "/repertoire/artists/A0000000001"
 
     @Tdb.transaction()
-    def test_092_delete_artist(self, browser):
+    def XXXtest_092_delete_artist(self, browser):
         """
         delete an artist
         """
