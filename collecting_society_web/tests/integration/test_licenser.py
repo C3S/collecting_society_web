@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 
 from portal_web.tests.integration.pageobjects import DeformFormObject
 from portal_web.views.forms.login_web_user import login_form
-from portal_web.models import Tdb, WebUser
+from portal_web.models import WebUser
 
 from ...views.forms.add_artist import (
     add_artist_form
@@ -19,11 +19,12 @@ from ...views.forms.edit_artist import (
 from ...views.forms.add_creation import (
     add_creation_form
 )
-from ...views.forms.edit_creation import (
-    edit_creation_form
-)
+# from ...views.forms.edit_creation import (
+#     edit_creation_form
+# )
 
 wu_email = 'licenser1@artist.test'
+
 
 @pytest.fixture(autouse=True, scope='class')
 def web_user(create_web_user):
@@ -64,7 +65,6 @@ class TestLicenser:
         assert browser.current_url[-23:] == "/repertoire/artists/add"
         browser.screenshot("navigated_to_add_artist")
 
-    @Tdb.transaction()
     def test_020_create_artist(self, browser):
         """
         add an artist
@@ -93,7 +93,6 @@ class TestLicenser:
         assert browser.current_url.endswith("/edit")
         browser.screenshot("navigated_to_edit_artist")
 
-    @Tdb.transaction()
     def test_030_edit_artist(self, browser):
         """
         edit an artist
@@ -127,7 +126,6 @@ class TestLicenser:
         assert browser.current_url[-25:] == "/repertoire/creations/add"
         browser.screenshot("navigated_to_add_creation")
 
-    @Tdb.transaction()
     def XXXtest_050_create_creation(self, browser, request_with_registry):
         """
         add an creation
@@ -144,11 +142,10 @@ class TestLicenser:
         # form.submit()
         assert browser.find_element(By.CLASS_NAME, "alert-success")
 
-        # assert "Testcreation #12345" in browser.page_source  # check for name,
+        # assert "Testcreation #12345" in browser.page_source  # check for name
         # assert "example of a simple creation." in browser.page_source
         # assert "12345678901" in browser.page_source  # IPN, and description
 
-    @Tdb.transaction()
     def XXXtest_060_delete_creation(self, browser, request_with_registry):
         """
         delete an creation
@@ -159,12 +156,12 @@ class TestLicenser:
         assert "Testcreation #12345" not in browser.page_source
         browser.screenshot("clicked_creation_delete")
 
-    def XXXtest_090_navigate_to_artist_list_again(self, browser):
+    def test_090_navigate_to_artist_list_again(self, browser):
         browser.find_element(By.CLASS_NAME, "cs-menue-item-artists").click()
         browser.screenshot("test_090_navigated_to_artist_list_again")
         assert browser.current_url[-20:] == "/repertoire/artists/"
 
-    def XXXtest_091_navigate_to_created_artist(self, browser):
+    def test_091_navigate_to_created_artist(self, browser):
         artist_entry = browser.find_element(By.CLASS_NAME, "cs-artist-name")
         assert "Testartist #54321" == artist_entry.text  # should be only one
         artist_entry_link = artist_entry.find_element(By.LINK_TEXT,
@@ -173,8 +170,7 @@ class TestLicenser:
         browser.screenshot("test_091_navigated_to_created_artist")
         assert browser.current_url[-31:] == "/repertoire/artists/A0000000001"
 
-    @Tdb.transaction()
-    def XXXtest_092_delete_artist(self, browser):
+    def test_092_delete_artist(self, browser):
         """
         delete an artist
         """
