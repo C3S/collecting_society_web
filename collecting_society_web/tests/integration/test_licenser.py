@@ -78,7 +78,6 @@ class TestLicenser:
         form.ipn_code.set("12345678901")
         form.description.set("This is example of a solo artist.")
         # TODO: test picture upload
-        # TODO: test group artist
         form.submit()
         assert browser.find_element(By.CLASS_NAME, "alert-success")
 
@@ -173,10 +172,6 @@ class TestLicenser:
         browser.screenshot("add_artist_to_group_clicked")
         artist_add_buttons = browser.find_elements(
             By.CLASS_NAME, "cs-datatables-btn-source-add")
-        import debugpy
-        debugpy.listen(("0.0.0.0", 52003))
-        debugpy.wait_for_client()
-        breakpoint()
         assert len(artist_add_buttons) == 2  # expect exactly two artists
         artist_add_buttons[0].click()
         browser.screenshot("added_first_artist_to_group")
