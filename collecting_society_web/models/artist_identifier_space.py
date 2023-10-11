@@ -10,10 +10,10 @@ log = logging.getLogger(__name__)
 
 class ArtistIdentifierSpace(Tdb):
     """
-    Model wrapper for Tryton model object 'artist_identifier_space'
+    Model wrapper for Tryton model object 'artist.cs_identifier_space'
     """
 
-    __name__ = 'artist.identifier.space'
+    __name__ = 'artist.cs_identifier.space'
 
     @classmethod
     def search_all(cls):

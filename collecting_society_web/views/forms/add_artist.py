@@ -55,7 +55,7 @@ class AddArtist(FormController):
             'entity_origin': 'direct',
             'claim_state': 'claimed',
             'name': self.appstruct['name'],
-            'identifiers': [(
+            'cs_identifiers': [(
                 'create',
                 [{
                     'space': ArtistIdentifierSpace.search_by_name('IPN'),

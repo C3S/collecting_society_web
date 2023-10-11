@@ -82,7 +82,7 @@ class AddLocation(FormController):
         address = {
             'name': self.appstruct['address']['address_name'],
             'street': self.appstruct['address']['street'],
-            'zip': self.appstruct['address']['zip'],
+            'Postal code': self.appstruct['address']['postal_code'],
             'city': self.appstruct['address']['city'],
             'country': self.appstruct['address']['country']
             # TODO: subsection?
@@ -273,8 +273,8 @@ class StreetField(colander.SchemaNode):
     missing = ""
 
 
-class ZipField(colander.SchemaNode):
-    oid = "zip"
+class PostalCodeField(colander.SchemaNode):
+    oid = "postal_code"
     schema_type = colander.String
     missing = ""
 
@@ -326,7 +326,7 @@ class AddressSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     address_name = AddressNameField(title=_("Name (doorbell)"))
     street = StreetField(title=_("Street"))
-    zip = ZipField(title=_("Zip"))
+    postal_code = PostalCodeField(title=_("Postal code"))
     city = CityField(title=_("City"))
     country = CountryField(title=_("Country"))
     # TODO: subdivision = SubdivisionField(title=_(u"Subdivision"))

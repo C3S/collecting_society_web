@@ -65,7 +65,7 @@ class EditLocation(FormController):
             self.appstruct['address'] = {
                 'address_name': location.party.addresses[0].name or '',
                 'street': location.party.addresses[0].street or '',
-                'zip': location.party.addresses[0].zip or '',
+                'postal_code': location.party.addresses[0].postal_code or '',
                 'city': location.party.addresses[0].city or '',
                 'country': country_id
                 # TODO: subdivision
@@ -183,7 +183,7 @@ class EditLocation(FormController):
             address_vlist = {
                 'name': self.appstruct['address']['address_name'],
                 'street': self.appstruct['address']['street'],
-                'zip': self.appstruct['address']['zip'],
+                'postal_code': self.appstruct['address']['postal_code'],
                 'city': self.appstruct['address']['city'],
                 'country': self.appstruct['address']['country']
                 # 'subsection': self.appstruct['address']['subsection']

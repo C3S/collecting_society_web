@@ -13,7 +13,7 @@
 
         <h1>
             ${location.name}
-            <small tal:condition="location.party.addresses and 
+            <small tal:condition="location.party.addresses and
                 location.party.addresses[0].city != ''">
                     ${location.party.addresses[0].city}
             </small>
@@ -76,7 +76,7 @@
                         ${space.name} (${space.category.name}, ${space.size} m²)
                     </div>
                 </td>
-            </tr>            
+            </tr>
 
             <hr/>
 
@@ -120,8 +120,8 @@
                 </tr>
 
                 <tr>
-                    <th i18n:translate="">Zip</th>
-                    <td>${location.party.addresses[0].zip}</td>
+                    <th i18n:translate="">Postal code</th>
+                    <td>${location.party.addresses[0].postal_code}</td>
                 </tr>
 
                 <tr>
@@ -133,7 +133,7 @@
                     <th i18n:translate="">Country</th>
                     <td>${country}</td>
                 </tr>
-            
+
             </div>
 
         </table>

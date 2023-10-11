@@ -15,7 +15,7 @@
         <div class="btn-toolbar cs-form-controls" role="toolbar">
             <div class="btn-group" role="group">
                 <a href="${request.resource_path(context, 'add')}"
-                   class="btn btn-primary" role="button"
+                   class="btn btn-primary btn-creation-add" role="button"
                    i18n:translate="">Add</a>
             </div>
         </div>

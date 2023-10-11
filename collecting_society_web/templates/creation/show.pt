@@ -21,12 +21,12 @@
                    class="btn btn-default" role="button"
                    i18n:translate="">Creations</a>
                 <a href="${request.resource_path(context, 'edit')}"
-                   class="btn btn-primary" role="button"
+                   class="btn btn-primary btn-creation-edit" role="button"
                    i18n:translate="">Edit</a>
             </div>
             <div class="btn-group cs-form-controls pull-right" role="group">
                 <a href="${request.resource_path(context, 'delete')}"
-                   class="btn btn-danger" role="button"
+                   class="btn btn-danger btn-creation-delete" role="button"
                    i18n:translate="">Delete</a>
             </div>
         </div>
