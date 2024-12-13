@@ -33,8 +33,9 @@ from .resources import (
     FilesResource,
     DebugC3sMembershipApiResource,
     DeclarationsResource,
-    LocationsResource,
-    DevicesResource,
+    InvoicesResource,
+    # LocationsResource,
+    # DevicesResource,
 )
 from .views.widgets import (
     ServiceInfoWidget,
@@ -72,9 +73,9 @@ def web_resources(config):
     RepertoireResource.add_child(CreationsResource)
 
     LicensingResource.add_child(DeclarationsResource)
-    LicensingResource.add_child(LocationsResource)
-    LicensingResource.add_child(DevicesResource)
-    LicensingResource.add_child(DeclarationsResource)
+    LicensingResource.add_child(InvoicesResource)
+    # LicensingResource.add_child(LocationsResource)
+    # LicensingResource.add_child(DevicesResource)
 
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
@@ -338,26 +339,26 @@ def web_registry(config):
                             'collecting_society_web:static/img/'
                             'element-icon-declarations.svg')},
             {
-                'name': _('Locations'),
+                'name': _(u'Invoices'),
                 'url':  self.request.resource_path(
-                            LocationsResource(self.request)),
+                            InvoicesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:static/img/'
-                            'element-icon-locations.svg')},
-            {
-                'name': _('Devices'),
-                'url':  self.request.resource_path(
-                            DevicesResource(self.request)),
-                'icon': self.request.static_path(
-                            'collecting_society_web:static/img/'
-                            'element-icon-devices.svg')},
+                            'element-icon-accounting.svg')},
             # {
-            #     'name': _(u'Accounting'),
+            #     'name': _('Locations'),
+            #     'url':  self.request.resource_path(
+            #                 LocationsResource(self.request)),
+            #     'icon': self.request.static_path(
+            #                 'collecting_society_web:static/img/'
+            #                 'element-icon-locations.svg')},
+            # {
+            #     'name': _('Devices'),
             #     'url':  self.request.resource_path(
             #                 DevicesResource(self.request)),
             #     'icon': self.request.static_path(
             #                 'collecting_society_web:static/img/'
-            #                 'element-icon-accounting.svg')},
+            #                 'element-icon-devices.svg')},
             # {
             #     'name': _(u'Statistics'),
             #     'url':  self.request.resource_path(

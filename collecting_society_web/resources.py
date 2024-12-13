@@ -267,12 +267,12 @@ class LicensingResource(ResourceBase):
         # add basic access for user with the role licensee
         (Allow, 'licensee', (
             'authenticated',
-            'list_devices',
-            'add_device',
             'list_declarations',
             'add_declaration',
-            'list_locations',
-            'add_location',
+            # 'list_devices',
+            # 'add_device',
+            # 'list_locations',
+            # 'add_location',
         )),
         # prevent inheritance from backend resource
         DENY_ALL
@@ -448,20 +448,20 @@ class DeviceResource(ModelResource):
         return []
 
 
-class AccountingResource(ResourceBase):
+class InvoicesResource(ResourceBase):
     """
-    matches the webusers accounting infos after clicking Accounting in
+    matches the webusers accounting infos after clicking Invoices in
     Licensing menu
     """
     __parent__ = LicensingResource
-    __name__ = "devices"
+    __name__ = "invoices"
     _write = ['add']
 
     # traversal
     def __getitem__(self, key):
         # validate code
         if re.match(valid['uuid'], key):
-            return DeviceResource(self.request, key)
+            return InvoiceResource(self.request, key)
         # views needing writable transactions
         if key in self._write:
             self.readonly = False
@@ -496,11 +496,11 @@ class AccountingResource(ResourceBase):
                 self.software_vendor = software_vendor
 
 
-class AccountingItemResource(ModelResource):
+class InvoiceResource(ModelResource):
     """
-    matches a single item after clicking one in Licensing -> Accounting
+    matches a single item after clicking one in Licensing -> Invoices
     """
-    __parent__ = AccountingResource
+    __parent__ = InvoicesResource
     _write = ['edit', 'delete']
 
     # load resources
