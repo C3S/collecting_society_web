@@ -344,7 +344,7 @@ def web_registry(config):
                             InvoicesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:static/img/'
-                            'element-icon-accounting.svg')},
+                            'element-icon-invoices.svg')},
             # {
             #     'name': _('Locations'),
             #     'url':  self.request.resource_path(

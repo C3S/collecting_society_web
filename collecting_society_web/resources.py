@@ -301,8 +301,7 @@ class DeclarationsResource(ResourceBase):
     # load resources
     def context_found(self):
         if self.request.view_name == '':
-            self.declarations = Declaration.belongs_to_current_licensee(
-                                self.request)
+            self.declarations = Declaration.current_viewable(self.request)
 
 
 class DeclarationResource(ModelResource):
@@ -311,22 +310,21 @@ class DeclarationResource(ModelResource):
     """
     __parent__ = DeclarationsResource
     _write = ['edit', 'delete']
+    _permit = ['view_declaration', 'edit_declaration', 'delete_declaration']
 
     # load resources
     def context_found(self):
-        self.declaration = Declaration.search_by_uuid(self.code)
+        self.declaration = Declaration.search_by_code(self.code)
 
     # add instance level permissions
     def __acl__(self):
-        declaration_in_database = Declaration.search_by_uuid(self.code)
-        if (declaration_in_database and
-                self.declaration.web_user == declaration_in_database.web_user):
-            return [
-                (Allow, self.request.authenticated_userid,
-                    ['show_declaration', 'edit_declaration',
-                     'delete_declaration'])
-            ]
-        return []
+        if not hasattr(self.declaration, 'permissions'):
+            return []
+        return [
+            (Allow, self.request.authenticated_userid,
+                self.declaration.permissions(
+                    self.request.web_user, self._permit))
+        ]
 
 
 class LocationsResource(ResourceBase):

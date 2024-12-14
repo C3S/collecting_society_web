@@ -38,7 +38,7 @@
                     <a href="${request.resource_path(
                                context, creation.code)}">
                         ${creation.title}</a>
-                    <div class="cs-release-artist">
+                    <div class="cs-row-subtitle cs-release-artist">
                         <a tal:omit-tag="not creation.artist.permits(
                                          request.web_user, 'view_artist')"
                            tal:attributes="href request.resource_path(

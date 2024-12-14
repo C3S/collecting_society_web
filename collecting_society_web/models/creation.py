@@ -236,7 +236,7 @@ class Creation(Tdb):
     @classmethod
     def search_by_code(cls, creation_code, active=True):
         """
-        Searches a creation by artist code
+        Searches a creation by creation code
 
         Args:
           creation_code (int): creation.code

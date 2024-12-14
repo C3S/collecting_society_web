@@ -17,6 +17,14 @@
                 <a href="${request.resource_path(context, 'add')}"
                    class="btn btn-primary" role="button"
                    i18n:translate="">Add</a>
+                <a tal:condition="request.GET.get('state') != 'finished'"
+                   href="${request.resource_path(context, query={'state': 'finished'})}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Archive</a>
+                <a tal:condition="request.GET.get('state') == 'finished'"
+                   href="${request.resource_path(context)}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Open</a>
             </div>
         </div>
 
@@ -25,8 +33,51 @@
             <tr tal:repeat="declaration declarations">
 
                 <td class="cs-img-smallicon">
-                    <a href="${request.resource_path(
-                               context, declaration.creation_time)}">
+                    <span tal:condition="declaration.next_step == 'utilisation'"
+                          i18n:attributes="title"
+                          i18n:domain="collecting_society_web"
+                          class="glyphicon glyphicon-time cs-state-icon"
+                          data-toggle="tooltip"
+                          title="Waiting for the end of the utilisation"
+                    ></span>
+                    <span tal:condition="declaration.next_step == 'estimation'"
+                          i18n:attributes="title"
+                          i18n:domain="collecting_society_web"
+                          class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
+                          data-toggle="tooltip"
+                          title="Please estimate the utilisation"
+                    ></span>
+                    <span tal:condition="declaration.next_step == 'confirmation'"
+                          i18n:attributes="title"
+                          i18n:domain="collecting_society_web"
+                          class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
+                          data-toggle="tooltip"
+                          title="Please confirm the utilisation"
+                    ></span>
+                    <span tal:condition="declaration.next_step == 'finalization'"
+                          i18n:attributes="title"
+                          i18n:domain="collecting_society_web"
+                          class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
+                          data-toggle="tooltip"
+                          title="Please finalize the utilisation"
+                    ></span>
+                    <span tal:condition="declaration.next_step == 'processing'"
+                          i18n:attributes="title"
+                          i18n:domain="collecting_society_web"
+                          class="glyphicon glyphicon-time cs-state-icon"
+                          data-toggle="tooltip"
+                          title="Please wait until the declaration is processed"
+                    ></span>
+                    <span tal:condition="declaration.next_step == 'payment'"
+                          i18n:attributes="title"
+                          i18n:domain="collecting_society_web"
+                          class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
+                          data-toggle="tooltip"
+                          title="Please pay the bill"
+                    ></span>
+                    <a tal:condition="not declaration.next_step"
+                       href="${request.resource_path(
+                               context, declaration.code)}">
                         <img class="img-responsive center-block"
                              src="${request.static_path(
                                     'collecting_society_web:'
@@ -36,17 +87,56 @@
 
                 <td>
                     <a href="${request.resource_path(
-                               context, declaration.creation_time)}"
+                               context, declaration.code)}"
                        class="cs-declaration-title">
-                        ${declaration.period}
+                        ${declaration.context.name}
                     </a>
+                    <div class="cs-row-subtitle cs-declaration-subtitle">
+                        <a tal:attributes="href request.resource_path(
+                                                context, declaration.code)">
+                            <b><small>${declaration.tariff.category.name}</small></b>
+                            <small tal:condition="declaration.period == 'onetime'">
+                                <tal:block tal:condition="declaration.tariff.category.code == 'L'">
+                                    ${declaration.context.start.date()}
+                                </tal:block>
+                                <tal:block tal:condition="declaration.tariff.category.code != 'L'">
+                                    ${declaration.creation_time.date()}
+                                </tal:block>
+                            </small>
+                            <small tal:condition="declaration.period != 'onetime'">
+                                ${declaration.period.capitalize()}
+                            </small>
+                        </a>
+                    </div>
+                </td>
+
+                <td class="text-right">
+                    <small tal:switch="declaration.next_step"
+                           class="cs-declaration-warning">
+                        <a href="${request.resource_path(context, declaration.code)}"
+                           tal:case="'estimation'" i18n:translate="">
+                            Please estimate your utilisation
+                        </a>
+                        <a href="${request.resource_path(context, declaration.code)}"
+                           tal:case="'confirmation'" i18n:translate="">
+                            Please confirm your utilisation
+                        </a>
+                        <a href="${request.resource_path(context, declaration.code)}"
+                           tal:case="'finalization'" i18n:translate="">
+                            Please finalize your utilisation
+                        </a>
+                        <a href="${request.resource_path(context, declaration.code)}"
+                           tal:case="'payment'" i18n:translate="">
+                            Please pay your invoice
+                        </a>
+                    </small>
                 </td>
 
                 <td colspan='3' class="text-right cs-table-codecolumn">
                     <a href="${request.resource_path(
-                               context, declaration.creation_time)}"
+                               context, declaration.code)}"
                        class="cs-declaration-title">
-                        ${declaration.creation_time}
+                        <div>${declaration.code}</div>
                     </a>
                 </td>
 

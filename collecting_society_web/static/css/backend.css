@@ -37,25 +37,26 @@ body {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f3ea', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
 }
 
-a { outline:none!important; }
+a { outline: none!important; }
 
-h1, .h1 { color:#888; border-bottom:1px solid rgb(221, 221, 221); margin-bottom:15px; padding-left:15px; padding-bottom:5px; font-size:28px; }
+h1, .h1 { color: #888; border-bottom: 1px solid rgb(221, 221, 221); margin-bottom: 15px; padding-left: 15px; padding-bottom: 5px; font-size: 28px; }
 
-.cs-img-smallicon { width:40px; }
-.cs-img-thumb { width:100px; }
-.cs-img-inline { max-width:30px; max-height:30px; display:inline; margin-right:5px; }
-.cs-thin { font-weight:normal; }
-.cs-list-item { margin-bottom:10px; }
-.cs-list-item:last-child { margin-bottom:0; }
+.cs-img-smallicon { width: 45px; text-align: center; }
+.cs-img-smallicon a img { width: 100%; }
+.cs-img-thumb { width: 100px; }
+.cs-img-inline { max-width: 30px; max-height: 30px; display: inline; margin-right: 5px; }
+.cs-thin { font-weight: normal; }
+.cs-list-item { margin-bottom: 10px; }
+.cs-list-item:last-child { margin-bottom: 0; }
 
-.cs-datatables .nowrap { white-space:nowrap; }
-.form-inline .cs-datatables .form-group { display:block; margin-bottom:15px; }
+.cs-datatables .nowrap { white-space: nowrap; }
+.form-inline .cs-datatables .form-group { display: block; margin-bottom: 15px; }
 .form-inline .cs-datatables .form-control { display: inline-block; width: 100%; }
-.cs-datatables .child td { border-top:none; }
+.cs-datatables .child td { border-top: none; }
 .cs-datatables .child .cs-datatables-edit { margin-left: 15px; border-left: 1px dotted #888; padding-left: 25px; }
 
 .cs-table .btn-primary,
-.btn-primary { background: url('../img/element-menue-bg.png'); opacity:0.9; border-color:#888; color:#fff; }
+.btn-primary { background: url('../img/element-menue-bg.png'); opacity: 0.9; border-color: #888; color: #fff; }
 .cs-table .btn-primary:hover,
 .cs-table .btn-primary:active,
 .btn-primary:hover,
@@ -173,9 +174,10 @@ h1, .h1 { color:#888; border-bottom:1px solid rgb(221, 221, 221); margin-bottom:
 .cs-table-show .cs-defaultpic { max-height:80px; }
 .cs-table > tbody > .cs-table-section > td { padding-top:25px; }
 
+.cs-row-subtitle,
+.cs-row-subtitle a { color:#666; }
+
 .cs-release-title { display:block; }
-.cs-release-artist,
-.cs-release-artist a { color:#666; }
 
 .cs-artist-img { max-width: 200px; }
 .cs-table-artist-img { max-height: 50px; max-width: 50px; }
@@ -214,6 +216,11 @@ h1, .h1 { color:#888; border-bottom:1px solid rgb(221, 221, 221); margin-bottom:
 .cs-content-middle .template-upload .progress { margin-bottom:0; }
 .cs-content-middle .template-upload .size { margin-bottom:0; }
 .cs-content-middle .template-upload .name { font-weight:bold; }
+
+.cs-state-icon { color: #ddc; font-size:25px; }
+.cs-state-icon.warning { color: #d9534f; }
+
+.cs-declaration-warning a { color: #d9534f; }
 
 /* Content Right */
 
