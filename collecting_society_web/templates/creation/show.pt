@@ -83,6 +83,7 @@
                 </td>
             </tr>
 
+            <!--!
             <tr tal:condition="creation.contributions">
                 <th i18n:translate="">Contributions</th>
                 <td>
@@ -147,6 +148,7 @@
                     </tal:block>
                 </td>
             </tr>
+            -->
 
             <tr tal:condition="creation.original_relations">
                 <th i18n:translate="">Origins</th>

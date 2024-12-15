@@ -3,6 +3,7 @@
 
 import logging
 
+from pyramid.renderers import get_renderer
 from pyramid.view import (
     view_config,
     view_defaults
@@ -48,9 +49,11 @@ class DeclarationViews(ViewBase):
     @view_config(
         name='',
         renderer='../templates/declaration/show.pt',
-        permission='show_declaration')
+        permission='view_declaration')
     def show(self):
-        return {}
+        template = get_renderer(
+            '../templates/declaration/show-macros.pt').implementation()
+        return {'macros': template.macros}
 
     @view_config(
         name='edit',

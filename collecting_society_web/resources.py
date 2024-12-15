@@ -36,6 +36,7 @@ valid = {
     'release': r'^R\d{10}\Z',
     'creation': r'^C\d{10}\Z',
     'content': r'^D\d{10}\Z',
+    'declaration': r'^DECL\d{10}\Z',
     'uuid': r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z'
 }
 
@@ -291,7 +292,7 @@ class DeclarationsResource(ResourceBase):
     # traversal
     def __getitem__(self, key):
         # validate code
-        if re.match(valid['uuid'], key):
+        if re.match(valid['declaration'], key):
             return DeclarationResource(self.request, key)
         # views needing writable transactions
         if key in self._write:

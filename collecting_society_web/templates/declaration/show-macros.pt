@@ -1,0 +1,109 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+
+<!--! live tariff -->
+<metal:block define-macro="event"
+             tal:define="utilisation declaration.utilisations[0];
+                         event declaration.context">
+    <tr>
+        <th i18n:translate="">Event</th>
+        <td>${declaration.context.name}</td>
+    </tr>
+    <tr tal:condition="utilisation.state not in ['created', 'estimated']
+                       and utilisation.confirmation">
+        <th i18n:translate="">Confirmation</th>
+        <td>${utilisation.confirmation.capitalize()}</td>
+    </tr>
+    <tr tal:condition="utilisation.state not in ['created', 'estimated']">
+        <th i18n:translate="">Confirmed</th>
+        <td class="cs-subtable">
+            <table class="table">
+                <tal:block metal:use-macro="macros['event-indicators']"
+                           tal:define="indicators event.confirmed_indicators"/>
+            </table>
+        </td>
+    </tr>
+    <tr tal:condition="utilisation.state != 'created'">
+        <th i18n:translate="">Estimated</th>
+        <td class="cs-subtable">
+            <table class="table">
+                <tal:block metal:use-macro="macros['event-indicators']"
+                           tal:define="indicators event.estimated_indicators"/>
+            </table>
+        </td>
+    </tr>
+</metal:block>
+
+<metal:block define-macro="event-indicators">
+    <tr>
+        <th i18n:translate="">Start</th>
+        <td>${indicators.start}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">End</th>
+        <td>${indicators.end}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Attendants</th>
+        <td>${indicators.attendants}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Maximum Attendants</th>
+        <td>${indicators.max_attendants}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Maximum Admission</th>
+        <td>${indicators.max_admission}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Turnover Tickets</th>
+        <td>${indicators.turnover_tickets}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Turnover Benefit</th>
+        <td>${indicators.turnover_benefit}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Expenses Musicians</th>
+        <td>${indicators.expenses_musicians}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Expenses Production</th>
+        <td>${indicators.expenses_production}</td>
+    </tr>
+</metal:block>
+
+<!--! play tariff -->
+<metal:block define-macro="location"
+             tal:define="location declaration.context">
+    <th i18n:translate="">Location</th>
+    <td></td>
+</metal:block>
+
+<!--! reproduction tariff -->
+<metal:block define-macro="release"
+             tal:define="release declaration.context">
+    <th i18n:translate="">Release</th>
+    <td></td>
+</metal:block>
+
+<!--! online / webradio tariff -->
+<metal:block define-macro="webradio"
+             tal:define="website declaration.context">
+    <th i18n:translate="">Webradio</th>
+    <td></td>
+</metal:block>
+
+<!--! online / podcast tariff -->
+<metal:block define-macro="podcast"
+             tal:define="website declaration.context">
+    <th i18n:translate="">Podcast</th>
+    <td></td>
+</metal:block>
+
+<!--! online / dsp tariff -->
+<metal:block define-macro="dsp"
+             tal:define="website declaration.context">
+    <th i18n:translate="">DSP</th>
+    <td></td>
+</metal:block>

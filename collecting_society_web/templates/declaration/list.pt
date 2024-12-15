@@ -33,48 +33,6 @@
             <tr tal:repeat="declaration declarations">
 
                 <td class="cs-img-smallicon">
-                    <span tal:condition="declaration.next_step == 'utilisation'"
-                          i18n:attributes="title"
-                          i18n:domain="collecting_society_web"
-                          class="glyphicon glyphicon-time cs-state-icon"
-                          data-toggle="tooltip"
-                          title="Waiting for the end of the utilisation"
-                    ></span>
-                    <span tal:condition="declaration.next_step == 'estimation'"
-                          i18n:attributes="title"
-                          i18n:domain="collecting_society_web"
-                          class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
-                          data-toggle="tooltip"
-                          title="Please estimate the utilisation"
-                    ></span>
-                    <span tal:condition="declaration.next_step == 'confirmation'"
-                          i18n:attributes="title"
-                          i18n:domain="collecting_society_web"
-                          class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
-                          data-toggle="tooltip"
-                          title="Please confirm the utilisation"
-                    ></span>
-                    <span tal:condition="declaration.next_step == 'finalization'"
-                          i18n:attributes="title"
-                          i18n:domain="collecting_society_web"
-                          class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
-                          data-toggle="tooltip"
-                          title="Please finalize the utilisation"
-                    ></span>
-                    <span tal:condition="declaration.next_step == 'processing'"
-                          i18n:attributes="title"
-                          i18n:domain="collecting_society_web"
-                          class="glyphicon glyphicon-time cs-state-icon"
-                          data-toggle="tooltip"
-                          title="Please wait until the declaration is processed"
-                    ></span>
-                    <span tal:condition="declaration.next_step == 'payment'"
-                          i18n:attributes="title"
-                          i18n:domain="collecting_society_web"
-                          class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
-                          data-toggle="tooltip"
-                          title="Please pay the bill"
-                    ></span>
                     <a tal:condition="not declaration.next_step"
                        href="${request.resource_path(
                                context, declaration.code)}">
@@ -82,6 +40,66 @@
                              src="${request.static_path(
                                     'collecting_society_web:'
                                     'static/img/element-icon-declarations-yellow.svg')}" />
+                    </a>
+                    <a tal:condition="declaration.next_step == 'utilisation'"
+                       href="${request.resource_path(
+                               context, declaration.code)}">
+                        <span i18n:attributes="title"
+                              i18n:domain="collecting_society_web"
+                              class="glyphicon glyphicon-time cs-state-icon"
+                              data-toggle="tooltip"
+                              title="Waiting for the end of the utilisation"
+                        ></span>
+                    </a>
+                    <a tal:condition="declaration.next_step == 'estimation'"
+                       href="${request.resource_path(
+                               context, declaration.code)}">
+                        <span i18n:attributes="title"
+                              i18n:domain="collecting_society_web"
+                              class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
+                              data-toggle="tooltip"
+                              title="Please estimate the utilisation"
+                        ></span>
+                    </a>
+                    <a tal:condition="declaration.next_step == 'confirmation'"
+                       href="${request.resource_path(
+                               context, declaration.code)}">
+                        <span i18n:attributes="title"
+                              i18n:domain="collecting_society_web"
+                              class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
+                              data-toggle="tooltip"
+                              title="Please confirm the utilisation"
+                        ></span>
+                    </a>
+                    <a tal:condition="declaration.next_step == 'finalization'"
+                       href="${request.resource_path(
+                               context, declaration.code)}">
+                        <span i18n:attributes="title"
+                              i18n:domain="collecting_society_web"
+                              class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
+                              data-toggle="tooltip"
+                              title="Please finalize the utilisation"
+                        ></span>
+                    </a>
+                    <a tal:condition="declaration.next_step == 'processing'"
+                       href="${request.resource_path(
+                               context, declaration.code)}">
+                        <span i18n:attributes="title"
+                              i18n:domain="collecting_society_web"
+                              class="glyphicon glyphicon-time cs-state-icon"
+                              data-toggle="tooltip"
+                              title="Please wait until the declaration is processed"
+                        ></span>
+                    </a>
+                    <a tal:condition="declaration.next_step == 'payment'"
+                       href="${request.resource_path(
+                               context, declaration.code)}">
+                        <span i18n:attributes="title"
+                              i18n:domain="collecting_society_web"
+                              class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
+                              data-toggle="tooltip"
+                              title="Please pay the bill"
+                        ></span>
                     </a>
                 </td>
 
@@ -112,7 +130,7 @@
 
                 <td class="text-right">
                     <small tal:switch="declaration.next_step"
-                           class="cs-declaration-warning">
+                           class="cs-warning">
                         <a href="${request.resource_path(context, declaration.code)}"
                            tal:case="'estimation'" i18n:translate="">
                             Please estimate your utilisation
@@ -132,7 +150,7 @@
                     </small>
                 </td>
 
-                <td colspan='3' class="text-right cs-table-codecolumn">
+                <td class="text-right cs-table-codecolumn">
                     <a href="${request.resource_path(
                                context, declaration.code)}"
                        class="cs-declaration-title">
