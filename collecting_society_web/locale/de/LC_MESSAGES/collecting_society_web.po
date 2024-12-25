@@ -422,13 +422,13 @@ msgstr "Repräsentanten"
 
 #: collecting_society_web/templates/frontend/contact.pt:16
 #: collecting_society_web/templates/frontend/terms.pt:18
-msgid "Rochusstr. 44"
-msgstr "Rochusstr. 44"
+msgid "Welkerhude 39"
+msgstr "Welkerhude 39"
 
 #: collecting_society_web/templates/frontend/contact.pt:17
 #: collecting_society_web/templates/frontend/terms.pt:19
-msgid "40479 Düsseldorf"
-msgstr "40479 Düsseldorf"
+msgid "45356 Essen"
+msgstr "45356 Essen"
 
 #: collecting_society_web/templates/frontend/contact.pt:18
 #: collecting_society_web/templates/frontend/terms.pt:20

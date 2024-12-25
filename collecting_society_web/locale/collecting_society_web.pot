@@ -412,12 +412,12 @@ msgstr ""
 
 #: ./collecting_society_web/templates/frontend/contact.pt:16
 #: ./collecting_society_web/templates/frontend/terms.pt:18
-msgid "Rochusstr. 44"
+msgid "Welkerhude 39"
 msgstr ""
 
 #: ./collecting_society_web/templates/frontend/contact.pt:17
 #: ./collecting_society_web/templates/frontend/terms.pt:19
-msgid "40479 Düsseldorf"
+msgid "45356 Essen"
 msgstr ""
 
 #: ./collecting_society_web/templates/frontend/contact.pt:18
