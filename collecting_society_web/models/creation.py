@@ -211,7 +211,9 @@ class Creation(Tdb):
             ('id', '=', creation_id),
             ('active', 'in', (True, active))
         ])
-        return result[0] or None
+        if not result:
+            return None
+        return result[0]
 
     @classmethod
     def search_by_oid(cls, oid, active=True):

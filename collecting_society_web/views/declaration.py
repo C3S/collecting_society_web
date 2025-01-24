@@ -15,7 +15,7 @@ from portal_web.views import ViewBase
 from ..services import _
 from ..models import Declaration
 from .forms import (
-    AddDeclaration,
+    AddDeclarationLive,
     EditDeclaration
 )
 
@@ -33,12 +33,23 @@ class DeclarationsViews(ViewBase):
     def list(self):
         return {}
 
+
+@view_defaults(
+    context='..resources.AddDeclarationResource',
+    permission='add_declarations')
+class AddDeclarationViews(ViewBase):
+
     @view_config(
-        name='add',
-        renderer='../templates/declaration/add.pt',
-        permission='add_declaration')
-    def add(self):
-        self.register_form(AddDeclaration)
+        name='',
+        renderer='../templates/declaration/add/choose_tariff_category.pt')
+    def choose_tariff_category(self):
+        return {}
+
+    @view_config(
+        name='L',
+        renderer='../templates/declaration/add/add_declaration_live.pt')
+    def create_tariff__L(self):
+        self.register_form(AddDeclarationLive)
         return self.process_forms()
 
 

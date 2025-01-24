@@ -22,6 +22,7 @@ from .models import (
     Creation,
     Content,
     Declaration,
+    TariffCategory,
     Location,
     Device
 )
@@ -65,9 +66,6 @@ class RepertoireResource(ResourceBase):
 
 
 class ArtistsResource(ResourceBase):
-    """
-    matches the webusers artists after clicking Artists in the Repertoire menu
-    """
     __parent__ = RepertoireResource
     __name__ = "artists"
     _write = ['add']
@@ -89,9 +87,6 @@ class ArtistsResource(ResourceBase):
 
 
 class ArtistResource(ModelResource):
-    """
-    matches a single artist after clicking one in Repertoire -> Artists
-    """
     __parent__ = ArtistsResource
     _write = ['edit', 'delete']
     _permit = ['view_artist', 'edit_artist', 'delete_artist']
@@ -111,9 +106,6 @@ class ArtistResource(ModelResource):
 
 
 class ReleasesResource(ResourceBase):
-    """
-    matches the webusers releases when clicking Releases in the Repertoire menu
-    """
     __parent__ = RepertoireResource
     __name__ = "releases"
     _write = ['add']
@@ -135,9 +127,6 @@ class ReleasesResource(ResourceBase):
 
 
 class ReleaseResource(ModelResource):
-    """
-    matches a single release after clicking one in Repertoire -> Release
-    """
     __parent__ = ReleasesResource
     _write = ['edit', 'delete']
     _permit = ['view_release', 'edit_release', 'delete_release']
@@ -157,9 +146,6 @@ class ReleaseResource(ModelResource):
 
 
 class CreationsResource(ResourceBase):
-    """
-    matches the webusers creations if clicking Creations in the Repertoire menu
-    """
     __parent__ = RepertoireResource
     __name__ = "creations"
     _write = ['add']
@@ -186,9 +172,6 @@ class CreationsResource(ResourceBase):
 
 
 class CreationResource(ModelResource):
-    """
-    matches a single creation after clicking one in Repertoire -> Creations
-    """
     __parent__ = CreationsResource
     _write = ['edit', 'delete']
     _permit = ['view_creation', 'edit_creation', 'delete_creation']
@@ -208,9 +191,6 @@ class CreationResource(ModelResource):
 
 
 class FilesResource(ResourceBase):
-    """
-    matches the webusers files after clicking Files in the Repertoire menu
-    """
     __parent__ = RepertoireResource
     __name__ = "files"
     _write = ['add']
@@ -232,9 +212,6 @@ class FilesResource(ResourceBase):
 
 
 class FileResource(ModelResource):
-    """
-    matches a single file after clicking one in Repertoire -> Files
-    """
     __parent__ = FilesResource
     _write = ['delete']
     _permit = ['view_content', 'delete_content']
@@ -269,7 +246,7 @@ class LicensingResource(ResourceBase):
         (Allow, 'licensee', (
             'authenticated',
             'list_declarations',
-            'add_declaration',
+            'add_declarations',
             # 'list_devices',
             # 'add_device',
             # 'list_locations',
@@ -281,23 +258,15 @@ class LicensingResource(ResourceBase):
 
 
 class DeclarationsResource(ResourceBase):
-    """
-    matches the webusers declarations after clicking Declarations in the
-    Licensing menu
-    """
     __parent__ = LicensingResource
     __name__ = "declarations"
-    _write = ['add']
 
     # traversal
     def __getitem__(self, key):
         # validate code
         if re.match(valid['declaration'], key):
             return DeclarationResource(self.request, key)
-        # views needing writable transactions
-        if key in self._write:
-            self.readonly = False
-        raise KeyError(key)
+        return super().__getitem__(key)
 
     # load resources
     def context_found(self):
@@ -305,10 +274,18 @@ class DeclarationsResource(ResourceBase):
             self.declarations = Declaration.current_viewable(self.request)
 
 
+class AddDeclarationResource(ResourceBase):
+    __parent__ = DeclarationsResource
+    __name__ = "add"
+    readonly = False
+    # _write = ['add']
+
+    # load resources
+    def context_found(self):
+        self.tariff_categories = TariffCategory.search_all()
+
+
 class DeclarationResource(ModelResource):
-    """
-    matches a single declaration after clicking in Licensing -> Declarations
-    """
     __parent__ = DeclarationsResource
     _write = ['edit', 'delete']
     _permit = ['view_declaration', 'edit_declaration', 'delete_declaration']
@@ -329,9 +306,6 @@ class DeclarationResource(ModelResource):
 
 
 class LocationsResource(ResourceBase):
-    """
-    matches the locations the webusers is allowed to see or change
-    """
     __parent__ = LicensingResource
     __name__ = "locations"
     _write = ['add']
@@ -354,9 +328,6 @@ class LocationsResource(ResourceBase):
 
 
 class LocationResource(ModelResource):
-    """
-    matches a single location after clicking one in Licensing -> Location
-    """
     __parent__ = LocationsResource
     _write = ['edit', 'delete']
 
@@ -377,10 +348,6 @@ class LocationResource(ModelResource):
 
 
 class DevicesResource(ResourceBase):
-    """
-    matches the webusers locations after clicking Devices Files in Licensing
-    menu
-    """
     __parent__ = LicensingResource
     __name__ = "devices"
     _write = ['add']
@@ -425,9 +392,6 @@ class DevicesResource(ResourceBase):
 
 
 class DeviceResource(ModelResource):
-    """
-    matches a single device after clicking one in Licensing -> Devices
-    """
     __parent__ = DevicesResource
     _write = ['edit', 'delete']
 
@@ -448,10 +412,6 @@ class DeviceResource(ModelResource):
 
 
 class InvoicesResource(ResourceBase):
-    """
-    matches the webusers accounting infos after clicking Invoices in
-    Licensing menu
-    """
     __parent__ = LicensingResource
     __name__ = "invoices"
     _write = ['add']
@@ -496,9 +456,6 @@ class InvoicesResource(ResourceBase):
 
 
 class InvoiceResource(ModelResource):
-    """
-    matches a single item after clicking one in Licensing -> Invoices
-    """
     __parent__ = InvoicesResource
     _write = ['edit', 'delete']
 
@@ -519,9 +476,6 @@ class InvoiceResource(ModelResource):
 
 
 class StatisticsResource(ResourceBase):
-    """
-    matches the webusers statistics after clicking Statistics in Licensing menu
-    """
     __parent__ = LicensingResource
     __name__ = "devices"
     _write = ['add']
@@ -566,9 +520,6 @@ class StatisticsResource(ResourceBase):
 
 
 class StatisticsItemResource(ModelResource):
-    """
-    matches a single item after clicking one in Licensing -> Statistics
-    """
     __parent__ = StatisticsResource
     _write = ['edit', 'delete']
 

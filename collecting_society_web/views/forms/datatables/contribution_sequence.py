@@ -41,19 +41,18 @@ def prepare_required(value):
 @colander.deferred
 def contribution_sequence_widget(node, kw):
     # get initial source data
-    source_data = []
     domain = []
     creations = Creation.search(
         domain=domain,
         offset=0,
         limit=10,
         order=[('title', 'asc')])
-    for creation in creations:
-        source_data.append({
-            'oid': creation.oid,
-            'titlefield': creation.title,
-            'artist': creation.artist.name,
-            'code': creation.code})
+    source_data = [{
+        'oid': creation.oid,
+        'titlefield': creation.title,
+        'artist': creation.artist.name,
+        'code': creation.code,
+    } for creation in creations]
     # get statistics
     total_domain = []
     total = Creation.search_count(total_domain)

@@ -57,7 +57,7 @@ class AddCreation(FormController):
 
     def init_creation(self):
         """
-        initializes form with arguments passed via url from Content/Uploads
+        initializes form with default values
         """
 
         self.appstruct = {
@@ -252,7 +252,8 @@ class AddCreation(FormController):
                     )
                     if not original:
                         continue
-                else:  # add creation
+                # add creation
+                else:
                     original = Creation.search_by_oid(a_derivation['oid'])
                     if not original:
                         # TODO: Userfeedback
@@ -281,7 +282,6 @@ class AddCreation(FormController):
 def validate_content(node, values, **kwargs):  # multifield validator
     """Check if content is already assigned to another creation"""
 
-    # Content.search_by_id()
     request = node.bindings["request"]
     contents = values["content"]["audio"] + values["content"]["sheet"]
     if contents == [] or None:
@@ -299,53 +299,6 @@ def validate_content(node, values, **kwargs):  # multifield validator
                     node, _("Content file ${coco} is "
                             "already assigned to creation ${crco}.",
                             mapping={'coco': c.code, 'crco': crco}))
-
-    # look for dupes in contributions
-    # contributions = values['contributions']['contributions']
-    # reduced_contributions = []
-    # for contrib in contributions:
-    #     if contrib['mode'] != 'remove':
-    #         reduced_contributions.append(
-    #             (
-    #                 contrib['artist'][0]['code'],
-    #                 contrib['contribution_type'],
-    #                 contrib['role']
-    #             )
-    #         )
-    # unique_contributions = set(reduced_contributions)
-    # if len(reduced_contributions) > len(unique_contributions):
-    #     raise colander.Invalid(node, _(u"Duplicate contribution found."))
-
-    # look for duplicate rightsholders
-    # a_rightsholders = values['rightsholders']['rightsholders']
-    # a_rightsholders.sort(key=lambda x: x['subject'][0]['code'])
-    # i = 0
-    # while i < len(a_rightsholders):
-    #     if (i < len(a_rightsholders)-1 and  # entries with same artist?
-    #             a_rightsholders[i]['subject'][0]['code'] ==
-    #             a_rightsholders[i+1]['subject'][0]['code']):
-    #         raise colander.Invalid(
-    #             node, _(u"Duplicate rightsholder entry ${n} (${c}). Please "
-    #                     "subsume all right of a specific rightsholder under "
-    #                     "a single entry.",
-    #                     mapping={
-    #                         'n': a_rightsholders[i]['subject'][0]['name'],
-    #                         'c': a_rightsholders[i]['subject'][0]['code']}
-    #                     ))
-
-    #     i = i + 1  # move forward if another rightsholder is found
-
-    # check if contributions match rights
-    # a_rightsholders = values['rightsholders']['rightsholders']
-    # for a_rightsholder in a_rightsholders:
-    #     for a_right in a_rightsholder['rights']:
-    #         ctbr = a_right["contribution"]
-    #         tor = a_right["type_of_right"]
-    #         if (ctbr not in CreationRight.get_contributions_by_type_of_right(
-    #                 tor)):
-    #             raise colander.Invalid(
-    #                 node, _(u"Contribution '${c}' does not apply to (${r}).",
-    #                         mapping={'c': ctbr, 'r': tor}))
 
     # check for duplicate rightsholders
     a_rightsholders = values['rightsholders']['rightsholders']

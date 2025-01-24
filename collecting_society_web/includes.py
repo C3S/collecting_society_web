@@ -33,6 +33,7 @@ from .resources import (
     FilesResource,
     DebugC3sMembershipApiResource,
     DeclarationsResource,
+    AddDeclarationResource,
     InvoicesResource,
     # LocationsResource,
     # DevicesResource,
@@ -73,6 +74,7 @@ def web_resources(config):
     RepertoireResource.add_child(CreationsResource)
 
     LicensingResource.add_child(DeclarationsResource)
+    DeclarationsResource.add_child(AddDeclarationResource)
     LicensingResource.add_child(InvoicesResource)
     # LicensingResource.add_child(LocationsResource)
     # LicensingResource.add_child(DevicesResource)
@@ -188,6 +190,10 @@ def web_registry(config):
                 'src':  self.request.static_path(
                             'portal_web:'
                             'static/js/deform.datatables.widget.js')},
+            {
+                'src':  self.request.static_path(
+                            'portal_web:'
+                            'static/lib/jquery-maskMoney.min.js')},
         ]
         # favicon
         reg['static']['favicon'] = self.request.static_path(

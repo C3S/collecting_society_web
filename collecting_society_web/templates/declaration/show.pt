@@ -114,10 +114,10 @@
                 tal:define="adjustments last_indicators.adjustments">
                 <th i18n:translate="">Adjustments</th>
                 <td>
-                    <ul tal:condition="adjustments"
-                        tal:repeat="adjustment adjustments">
-                        <li tal:define="rejected adjustment.status == 'rejected'">
-                            <span class="${rejected and 'cs-strikethrough'}">
+                    <ul tal:condition="adjustments">
+                        <li tal:repeat="adjustment adjustments">
+                            <span tal:define="rejected adjustment.status == 'rejected'"
+                                  class="${rejected and 'cs-strikethrough'}">
                                 ${adjustment.category.name}
                             <span>
                             <small class="cs-row-subtitle">

@@ -4,10 +4,75 @@
 <!--! live tariff -->
 <metal:block define-macro="event"
              tal:define="utilisation declaration.utilisations[0];
-                         event declaration.context">
+                         event declaration.context;
+                         location event.location;
+                         performances event.performances">
     <tr>
         <th i18n:translate="">Event</th>
-        <td>${declaration.context.name}</td>
+        <td class="cs-subtable">
+            <table class="table">
+                <tr>
+                    <th i18n:translate="">Name</th>
+                    <td>${event.name}</td>
+                </tr>
+                <tr tal:condition="event.description">
+                    <th i18n:translate="">Description</th>
+                    <td>${event.description}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Location</th>
+        <td class="cs-subtable">
+            <table class="table">
+                <tr>
+                    <th i18n:translate="">Name</th>
+                    <td>${location.name}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Category</th>
+                    <td>${location.category.name}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Street</th>
+                    <td>${location.street}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Postal Code</th>
+                    <td>${location.postal_code}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">City</th>
+                    <td>${location.city}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Country</th>
+                    <td>${location.country.name}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Performances</th>
+        <td>
+            <ul tal:condition="performances">
+                <li tal:repeat="performance performances">
+                    <a tal:attributes="href request.resource_path(
+                                       context, '..', '..', '..', 'repertoire',
+                                       'artists', performance.artist.code)"
+                       tal:omit-tag="not performance.artist.permits(
+                                     request.web_user, 'view_artist')"
+                       class="cs-artist-title">
+                        ${performance.artist.name}
+                    </a>
+                    <small class="cs-row-subtitle" style="display: block;">
+                        ${performance.start} - ${performance.end}
+                    </small>
+                </li>
+            </ul>
+            <tal:block tal:condition="not performances">-</tal:block>
+        </td>
     </tr>
     <tr tal:condition="utilisation.state not in ['created', 'estimated']
                        and utilisation.confirmation">

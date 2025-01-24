@@ -40,7 +40,6 @@ def prepare_required(value):
 @colander.deferred
 def artist_sequence_widget(node, kw):
     # get initial source data
-    source_data = []
     domain = []
     if getattr(node, 'group', None):
         domain.append(('group', '=', node.group))
@@ -49,12 +48,12 @@ def artist_sequence_widget(node, kw):
         offset=0,
         limit=10,
         order=[('name', 'asc')])
-    for artist in artists:
-        source_data.append({
-            'name': artist.name,
-            'code': artist.code,
-            'oid': artist.oid,
-            'description': artist.description})
+    source_data = [{
+        'name': artist.name,
+        'code': artist.code,
+        'oid': artist.oid,
+        'description': artist.description,
+    } for artist in artists]
     # get statistics
     total_domain = []
     if getattr(node, 'group', None):

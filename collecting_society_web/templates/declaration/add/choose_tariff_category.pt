@@ -1,0 +1,32 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend39"
+           i18n:domain="collecting_society_web"
+           tal:define="tariff_categories context.tariff_categories">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right">
+
+        <div class="cs-form-container">
+
+            <h1 class="cs-form-header" i18n:translate="">Choose Tariff</h1>
+
+            <div class="cs-tiles">
+                <tal:loop tal:repeat="category tariff_categories">
+                    <a href="${request.resource_path(context, category.code)}">
+                        <div class="cs-tile">
+                            <div class="cs-tile-letter">${category.code}</div>
+                            <div class="cs-tile-title">${category.name}</div>
+                        </div>
+                    </a>
+                </tal:loop>
+            </div>
+
+        </div>
+
+    </tal:block>
+
+</tal:block>

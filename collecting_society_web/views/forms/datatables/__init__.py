@@ -7,10 +7,13 @@ from .creation_sequence import CreationSequence
 from .creation_right_sequence import CreationRightSequence
 from .creation_rightsholder_sequence import CreationRightsholderSequence
 from .creation_tariff_category_sequence import CreationTariffCategorySequence
-from .contribution_sequence import ContributionSequence
-from .track_sequence import TrackSequence
-from .original_sequence import OriginalSequence
 from .content_sequence import ContentSequence
+from .contribution_sequence import ContributionSequence
 from .label_sequence import LabelSequence
-from .publisher_sequence import PublisherSequence
+from .location_sequence import LocationSequence
 from .location_space_sequence import LocationSpaceSequence
+from .original_sequence import OriginalSequence
+from .performance_sequence import PerformanceSequence
+from .publisher_sequence import PublisherSequence
+from .tariff_adjustment_sequence import TariffAdjustmentSequence
+from .track_sequence import TrackSequence
