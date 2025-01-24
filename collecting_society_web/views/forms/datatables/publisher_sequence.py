@@ -30,17 +30,16 @@ def prepare_required(value):
 @colander.deferred
 def publisher_sequence_widget(node, kw):
     # get initial source data
-    source_data = []
     domain = []
     publishers = Publisher.search(
         domain=domain,
         offset=0,
         limit=10,
         order=[('name', 'asc')])
-    for publisher in publishers:
-        source_data.append({
-            'oid': publisher.oid,
-            'name': publisher.name})
+    source_data = [{
+        'oid': publisher.oid,
+        'name': publisher.name,
+    } for publisher in publishers]
     # get statistics
     total_domain = []
     total = Publisher.search_count(total_domain)

@@ -3,8 +3,8 @@
 
     <script metal:fill-slot="settings">
         var datatableSequenceSettings = {
-            apiPath: "location_space",
-            unique: "name",
+            apiPath: "location",
+            unique: false,
             columns: [
                 {
                     name: "name",
@@ -12,7 +12,6 @@
                     data: "name",
                     className: "all",
                     orderable: true,
-                    searchable: true,
                     render: $.fn.dataTable.render.text(),
                     datatableSequence: {
                         position: "displayed",
@@ -25,45 +24,70 @@
                     name: "category",
                     title: "${_('Category')}",
                     data: "category",
-                    className: "all",
-                    orderable: true,
+                    visible: false,
+                    orderable: false,
                     searchable: false,
                     render: $.fn.dataTable.render.text(),
                     datatableSequence: {
-                        position: "displayed",
-                        widgetType: 'Select2Widget'
+                        position: "invisible",
+                        widgetType: 'SelectWidget',
+                        createShow: true,
                     }
                 },
                 {
-                    name: "size",
-                    title: "${_(u'Size (m²)')}",
-                    data: "size",
-                    className: "all",
-                    orderable: false,
-                    searchable: false,
+                    name: "street",
+                    title: "${_('Street')}",
+                    data: "street",
+                    orderable: true,
                     render: $.fn.dataTable.render.text(),
                     datatableSequence: {
                         position: "displayed",
                         widgetType: 'TextInputWidget',
-                        footerSearch: false,
+                        footerSearch: true,
                         createShow: true,
                     }
                 },
                 {
-                    name: "size_estimated",
-                    title: "${_('size only estimated')}",
-                    data: "size_estimated",
-                    className: "all",
+                    name: "postal_code",
+                    title: "${_('Postal Code')}",
+                    data: "postal_code",
+                    visible: false,
                     orderable: false,
                     searchable: false,
                     render: $.fn.dataTable.render.text(),
                     datatableSequence: {
-                        position: "displayed",
-                        widgetType: 'CheckboxWidget',
-                        footerSearch: false,
+                        position: "invisible",
+                        widgetType: 'TextInputWidget',
                         createShow: true,
                     }
-                }
+                },
+                {
+                    name: "city",
+                    title: "${_('City')}",
+                    data: "city",
+                    orderable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: true,
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "country",
+                    title: "${_('Country')}",
+                    data: "country",
+                    visible: false,
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "invisible",
+                        widgetType: 'SelectWidget',
+                        createShow: true,
+                    }
+                },
             ],
         };
     </script>

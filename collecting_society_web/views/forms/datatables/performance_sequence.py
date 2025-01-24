@@ -9,7 +9,7 @@ from portal_web.views.forms.datatables import (
     DatatableSequenceWidget
 )
 
-from ....models import Label
+from . import ArtistSequence
 
 
 def prepare_ignored(value):
@@ -25,31 +25,15 @@ def prepare_required(value):
     return value
 
 
+# --- Widgets -----------------------------------------------------------------
+
 # --- Fields ------------------------------------------------------------------
 
 @colander.deferred
-def label_sequence_widget(node, kw):
-    # get initial source data
-    domain = []
-    labels = Label.search(
-        domain=domain,
-        offset=0,
-        limit=10,
-        order=[('name', 'asc')])
-    source_data = [{
-        'oid': label.oid,
-        'gvl_code': label.gvl_code,
-        'name': label.name,
-    } for label in labels]
-    # get statistics
-    total_domain = []
-    total = Label.search_count(total_domain)
-    # return widget
+def performance_sequence_widget(node, kw):
     return DatatableSequenceWidget(
         request=kw.get('request'),
-        template='datatables/label_sequence',
-        source_data=source_data,
-        source_data_total=total
+        template='datatables/performance_sequence',
     )
 
 
@@ -58,7 +42,7 @@ class ModeField(colander.SchemaNode):
     schema_type = colander.String
     widget = deform.widget.HiddenWidget()
     validator = colander.OneOf(
-        ['add', 'create', 'edit'])
+        ['create', 'edit'])
 
 
 class OidField(colander.SchemaNode):
@@ -72,30 +56,29 @@ class OidField(colander.SchemaNode):
     )
 
 
-class GvlCodeField(colander.SchemaNode):
-    oid = "gvl_code"
-    schema_type = colander.String
-    widget = deform.widget.HiddenWidget()
-    missing = ""
+class StartField(colander.SchemaNode):
+    oid = "start"
+    schema_type = colander.DateTime
 
 
-class NameField(colander.SchemaNode):
-    oid = "name"
-    schema_type = colander.String
-    widget = deform.widget.TextInputWidget()
+class EndField(colander.SchemaNode):
+    oid = "end"
+    schema_type = colander.DateTime
 
 
 # --- Schemas -----------------------------------------------------------------
 
-class LabelSchema(colander.Schema):
+class PerformanceSchema(colander.Schema):
     mode = ModeField()
     oid = OidField()
-    name = NameField()
-    gvl_code = GvlCodeField()
+    start = StartField()
+    end = EndField()
+    artist = ArtistSequence(min_len=1, max_len=1)
     preparer = [prepare_required]
     title = ""
 
 
-class LabelSequence(DatatableSequence):
-    label_sequence = LabelSchema()
-    widget = label_sequence_widget
+class PerformanceSequence(DatatableSequence):
+    performance_sequence = PerformanceSchema()
+    widget = performance_sequence_widget
+    actions = ['create', 'edit']

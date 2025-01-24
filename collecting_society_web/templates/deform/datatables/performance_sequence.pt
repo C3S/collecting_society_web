@@ -1,0 +1,66 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            columns: [
+                {
+                    name: "start",
+                    title: "${_('Start')}",
+                    data: "start",
+                    className: "all",
+                    orderable: false,
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        return data.replace("T", " ");
+                    },
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'DateTimeWidget',
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "end",
+                    title: "${_('End')}",
+                    data: "end",
+                    className: "all",
+                    orderable: false,
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        return data.replace("T", " ");
+                    },
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'DateTimeWidget',
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "artist",
+                    title: "${_('Artist')}",
+                    data: "artist",
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        if(data.datatableSequence !== true)
+                            return "";
+                        var artists = data.target.table.rows().data();
+                        var name = tmpl.encode(artists[0].name);
+                        return name;
+                    },
+                    defaultContent: "",
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'DatatableSequenceWidget',
+                    }
+                },
+            ],
+        };
+    </script>
+
+</tal:block>

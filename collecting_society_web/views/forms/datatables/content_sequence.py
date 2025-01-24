@@ -54,7 +54,6 @@ def content_sequence_widget(node, kw):
         'lyrics': locale.translate(_('Lyrics', locale_domain)),
     }
     # get initial source data
-    source_data = []
     domain = [
         ('entity_creator', '=', request.web_user.party.id),  # only own
         ('creation', '=', None)                              # only orphaned
@@ -66,12 +65,12 @@ def content_sequence_widget(node, kw):
         offset=0,
         limit=10,
         order=[('name', 'asc')])
-    for content in contents:
-        source_data.append({
-            'oid': content.oid,
-            'name': content.name,
-            'code': content.code,
-            'category': content_category[content.category]})
+    source_data = [{
+        'oid': content.oid,
+        'name': content.name,
+        'code': content.code,
+        'category': content_category[content.category],
+    } for content in contents]
     # get statistics
     total_domain = [
         ('entity_creator', '=', request.web_user.party.id),  # only own

@@ -1,0 +1,49 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            unique: "category",
+            columns: [
+                {
+                    name: "category",
+                    title: "${_('Category')}",
+                    data: "category",
+                    className: "all",
+                    orderable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'SelectWidget',
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "status",
+                    title: "${_('Status')}",
+                    data: "status",
+                    className: "all",
+                    orderable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'HiddenWidget',
+                    }
+                },
+                {
+                    name: "value",
+                    title: "${_('Value')}",
+                    data: "value",
+                    className: "all",
+                    orderable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'HiddenWidget',
+                    }
+                },
+            ],
+        };
+    </script>
+
+</tal:block>

@@ -63,7 +63,8 @@
                 <td>${declaration.code}</td>
             </tr>
 
-            <tr>
+            <tr class="${declaration.next_step in ['confirmation', 'finalization', 'payment']
+                         and 'cs-warning' or ''}">
                 <th i18n:translate="">State</th>
                 <td>
                     <tal:block tal:switch="declaration.state">
@@ -87,8 +88,7 @@
                 </td>
             </tr>
 
-            <tr tal:condition="last_invoice and last_invoice.state in ['posted', 'paid']"
-                class="${last_invoice.state != 'paid' and 'cs-warning' or ''}">
+            <tr tal:condition="last_invoice and last_invoice.state in ['posted', 'paid']">
                 <th i18n:translate="">Invoice</th>
                 <td>${h.format_currency(last_invoice.amount_to_pay)}</td>
             </tr>
@@ -114,19 +114,21 @@
                 tal:define="adjustments last_indicators.adjustments">
                 <th i18n:translate="">Adjustments</th>
                 <td>
-                    <ul tal:condition="adjustments"
-                        tal:repeat="adjustment adjustments">
-                        <li tal:define="rejected adjustment.status == 'rejected'">
-                            <span class="${rejected and 'cs-strikethrough'}">
+                    <ul tal:condition="adjustments">
+                        <li tal:repeat="adjustment adjustments">
+                            <span tal:define="rejected adjustment.status == 'rejected'"
+                                  class="${rejected and 'cs-strikethrough'}">
                                 ${adjustment.category.name}
                             <span>
                             <small class="cs-row-subtitle">
-                                <tal:block tal:condition="adjustment.status != 'rejected'">
-                                    ${adjustment.value}
+                                <tal:block tal:condition="adjustment.status == 'approved'">
+                                    ${adjustment.value >= 0 and '+' or ''}${
+                                      adjustment.value * 100} %
                                 </tal:block>
-                                <div style="float: right;">
+                                <div style="float: right;"
+                                     tal:condition="adjustment.category.code != 'missing_playlist_fee'">
                                     ${adjustment.status.replace("_", " ")}
-                                <div>
+                                </div>
                             </small>
                         </li>
                     </ul>

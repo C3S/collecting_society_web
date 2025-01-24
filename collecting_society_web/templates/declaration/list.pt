@@ -63,7 +63,7 @@
                     </a>
                     <a tal:condition="declaration.next_step == 'confirmation'"
                        href="${request.resource_path(
-                               context, declaration.code)}">
+                               context, declaration.code, 'confirm')}">
                         <span i18n:attributes="title"
                               i18n:domain="collecting_society_web"
                               class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
@@ -73,7 +73,7 @@
                     </a>
                     <a tal:condition="declaration.next_step == 'finalization'"
                        href="${request.resource_path(
-                               context, declaration.code)}">
+                               context, declaration.code, 'finalize')}">
                         <span i18n:attributes="title"
                               i18n:domain="collecting_society_web"
                               class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
@@ -128,18 +128,18 @@
                     </div>
                 </td>
 
-                <td class="text-right">
+                <td>
                     <small tal:switch="declaration.next_step"
                            class="cs-warning">
                         <a href="${request.resource_path(context, declaration.code)}"
                            tal:case="'estimation'" i18n:translate="">
                             Please estimate your utilisation
                         </a>
-                        <a href="${request.resource_path(context, declaration.code)}"
+                        <a href="${request.resource_path(context, declaration.code, 'confirm')}"
                            tal:case="'confirmation'" i18n:translate="">
                             Please confirm your utilisation
                         </a>
-                        <a href="${request.resource_path(context, declaration.code)}"
+                        <a href="${request.resource_path(context, declaration.code, 'finalize')}"
                            tal:case="'finalization'" i18n:translate="">
                             Please finalize your utilisation
                         </a>

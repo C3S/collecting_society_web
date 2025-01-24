@@ -34,17 +34,13 @@ def prepare_required(value):
     return value
 
 
-# --- Fields ------------------------------------------------------------------
+# --- Widgets -----------------------------------------------------------------
 
 @colander.deferred
 def location_space_sequence_widget(node, kw):
-    request = kw.get('request')
-    # return widget
     return DatatableSequenceWidget(
-        request=request,
+        request=kw.get('request'),
         template='datatables/location_space_sequence',
-        # source_data=source_data,
-        # source_data_total=total
     )
 
 
@@ -102,6 +98,8 @@ def deferred_location_space_category_widget(node, kw):
     values = [(sc.code, sc.name) for sc in LocationSpaceCategory.search_all()]
     return deform.widget.Select2Widget(values=values)
 
+
+# --- Fields ------------------------------------------------------------------
 
 class ModeField(colander.SchemaNode):
     oid = "mode"

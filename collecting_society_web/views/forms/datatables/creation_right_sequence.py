@@ -83,7 +83,6 @@ def validate_multifield(node, values):  # multifield validator
 
 # --- Widgets -----------------------------------------------------------------
 
-
 @colander.deferred
 def deferred_instrument_widget(node, kw):
     instruments = Instrument.search_all()
@@ -103,7 +102,6 @@ def collecting_society_widget(node, kw):
 
 
 # --- Fields ------------------------------------------------------------------
-
 
 @colander.deferred
 def creation_right_sequence_widget(node, kw):
@@ -159,8 +157,8 @@ class CollectingSocietyField(colander.SchemaNode):
     validator = colander.uuid
     missing = ""
 
-# --- Schemas -----------------------------------------------------------------
 
+# --- Schemas -----------------------------------------------------------------
 
 class CreationRightSchema(colander.Schema):
     mode = ModeField()

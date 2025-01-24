@@ -44,6 +44,23 @@ class TariffCategory(Tdb):
         return result[0]
 
     @classmethod
+    def search_by_code(cls, code):
+        """
+        Searches a tariff category by code
+
+        Args:
+          code (str): tariff category code
+
+        Returns:
+          obj: tariff category
+          None: if no match is found
+        """
+        result = cls.get().search([('code', '=', code)])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_oid(cls, oid, active=True):
         """
         Searches a tariff category by oid (public api id)

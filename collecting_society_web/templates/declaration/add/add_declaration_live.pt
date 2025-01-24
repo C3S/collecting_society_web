@@ -17,14 +17,14 @@
                 <div class="btn-group" role="group">
                     <a href="${request.resource_path(context)}"
                        class="btn btn-default" role="button"
-                       i18n:translate="">Declarations</a>
+                       i18n:translate="">Choose Tariff</a>
                     <a href="#" class="btn btn-primary" role="button"
-                       onclick="$('#AddDeclarationsubmit').click();"
+                       onclick="$('#AddDeclarationLivesubmit').click();"
                        i18n:translate="">Submit</a>
                 </div>
             </div>
 
-            <div tal:content="structure AddDeclaration"/>
+            <div tal:content="structure AddDeclarationLive"/>
 
         </div>
 
