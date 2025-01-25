@@ -7,7 +7,7 @@ import colander
 import deform
 from pyramid.httpexceptions import HTTPBadRequest
 
-from portal_web.models import Tdb, Country
+from portal_web.models import Tdb, Country, Party
 from portal_web.views.forms import FormController
 from portal_web.views.forms.deform.money_input import MoneyInputField
 
@@ -56,13 +56,7 @@ class AddDeclarationLive(FormController):
 
     @Tdb.transaction(readonly=False)
     def create_declaration(self):
-        from pprint import pformat
-        log.debug(pformat({
-            'data': self.data,
-            'appstruct': self.appstruct,
-            'post': self.request.POST,
-            'get': self.request.GET,
-        }))
+        web_user = self.request.web_user
 
         # appstruct shortcuts
         _event = self.appstruct['event']
@@ -92,6 +86,8 @@ class AddDeclarationLive(FormController):
         # prepare: adjustments
         adjustments_vlist = []
         for adjustment in _adjustments:
+            if adjustment['mode'] != 'create':
+                continue
             category = TariffAdjustmentCategory.search_by_code(
                 adjustment['category'], tariff.category.code)
             adjustments_vlist.append({
@@ -99,8 +95,49 @@ class AddDeclarationLive(FormController):
                 'value': category.value_default,
             })
 
+        # prepare: performances
+        _performances = []
+        for performance in _event['performances']:
+            if performance['mode'] != 'create':
+                continue
+
+            # artist
+            _artist = performance['artist'][0]
+            if _artist['mode'] == 'add':
+                artist = Artist.search_by_code(_artist['code'])
+            elif _artist['mode'] == 'create':
+                # party
+                artist_party_vlist = {
+                    'name': _artist['name'],
+                    'contact_mechanisms': [(
+                        'create',
+                        [{
+                            'type': 'email',
+                            'value': _artist['email'],
+                        }]
+                    )]
+                }
+                artist_party, = Party.create([artist_party_vlist])
+                # artist
+                artist_vlist = {
+                    'name': _artist['name'],
+                    'description': "",
+                    'group': False,
+                    'party': artist_party,
+                    'entity_creator': web_user.party,
+                    'entity_origin': 'indirect',
+                    'claim_state': 'unclaimed',
+                }
+                artist, = Artist.create([artist_vlist])
+
+            # performance
+            _performances.append({
+                'start': performance['start'],
+                'end': performance['end'],
+                'artist': artist,
+            })
+
         # prepare: others
-        web_user = self.request.web_user
         distribution_plan = DistributionPlan.search_latest()
         location_category = LocationCategory.search_by_code(
             _location['category'])
@@ -109,30 +146,28 @@ class AddDeclarationLive(FormController):
             _utilisation['relevance'])
 
         # create location
-        location_vlist = {
-            'name': _location['name'],
-            'category': location_category,
-            'public': False,
-            'street': _location['street'],
-            'postal_code': _location['postal_code'],
-            'city': _location['city'],
-            'country': country,
-            'entity_origin': 'indirect',
-            'entity_creator': web_user.party,
-        }
-        location, = Location.create([location_vlist])
+        if _location['mode'] == 'add':
+            location = Location.search_by_oid(_location['oid'])
+        elif _location['mode'] == 'create':
+            location_vlist = {
+                'name': _location['name'],
+                'category': location_category,
+                'public': False,
+                'street': _location['street'],
+                'postal_code': _location['postal_code'],
+                'city': _location['city'],
+                'country': country,
+                'entity_origin': 'indirect',
+                'entity_creator': web_user.party,
+            }
+            location, = Location.create([location_vlist])
 
         # create event
         event_vlist = {
             'name': _event['name'],
             'description': _event['description'],
             'location': location,
-            'performances': [('create', [{
-                'start': performance['start'],
-                'end': performance['end'],
-                'artist': Artist.search_by_code(
-                    performance['artist'][0]['code']),
-            } for performance in _event['performances']])],
+            'performances': [('create', _performances)],
             'estimated_start': _estimation['start'],
             'estimated_end': _estimation['end'],
             'estimated_attendants': _estimation['attendants'],
@@ -191,7 +226,7 @@ class AddDeclarationLive(FormController):
         )
 
         # redirect
-        self.redirect(DeclarationsResource)
+        self.redirect(DeclarationsResource, declaration.code)
 
 
 # --- Validators --------------------------------------------------------------

@@ -59,6 +59,26 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
         return result
 
     @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches a location by oid (public api id)
+
+        Args:
+          oid (int): location.oid
+
+        Returns:
+          obj: location
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_entity_creator(cls, party_id, active=True):
         """
         Searches locations, the web_user is allowed to view.
