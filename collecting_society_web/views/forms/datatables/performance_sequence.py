@@ -4,6 +4,7 @@
 import colander
 import deform
 
+from portal_web.views.forms.deform import deferred_timezone_datetime_field
 from portal_web.views.forms.datatables import (
     DatatableSequence,
     DatatableSequenceWidget
@@ -58,12 +59,10 @@ class OidField(colander.SchemaNode):
 
 class StartField(colander.SchemaNode):
     oid = "start"
-    schema_type = colander.DateTime
 
 
 class EndField(colander.SchemaNode):
     oid = "end"
-    schema_type = colander.DateTime
 
 
 # --- Schemas -----------------------------------------------------------------
@@ -71,8 +70,8 @@ class EndField(colander.SchemaNode):
 class PerformanceSchema(colander.Schema):
     mode = ModeField()
     oid = OidField()
-    start = StartField()
-    end = EndField()
+    start = StartField(typ=deferred_timezone_datetime_field())
+    end = EndField(typ=deferred_timezone_datetime_field())
     artist = ArtistSequence(min_len=1, max_len=1)
     preparer = [prepare_required]
     title = ""

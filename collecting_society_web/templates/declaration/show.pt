@@ -26,10 +26,12 @@
                 <a href="${request.resource_path(context, '..')}"
                    class="btn btn-default" role="button"
                    i18n:translate="">Declarations</a>
+                <!--!
                 <a tal:condition="declaration.next_step in ['utilisation', 'estimation']"
                    href="${request.resource_path(context, 'edit')}"
                    class="btn btn-primary btn-declaration-edit" role="button"
                    i18n:translate="">Edit</a>
+                -->
                 <a tal:condition="declaration.next_step == 'confirmation'"
                    href="${request.resource_path(context, 'confirm')}"
                    class="btn btn-danger btn-declaration-confirm" role="button"
@@ -39,12 +41,14 @@
                    class="btn btn-danger btn-declaration-finalize" role="button"
                    i18n:translate="">Finalize</a>
             </div>
+            <!--!
             <div class="btn-group cs-form-controls pull-right" role="group">
                 <a tal:condition="declaration.next_step in ['utilisation', 'estimation']"
                    href="${request.resource_path(context, 'delete')}"
                    class="btn btn-danger btn-declaration-delete" role="button"
                    i18n:translate="">Delete</a>
             </div>
+            -->
         </div>
 
         <table class="table cs-table cs-table-show">
@@ -80,7 +84,7 @@
                                 ${declaration.next_step.capitalize()}
                                 <tal:block condition="declaration.next_step_deadline">
                                     <tal:block i18n:translate="">until</tal:block>
-                                    ${declaration.next_step_deadline}
+                                    ${h.utc_to_timezone(request, declaration.next_step_deadline)}
                                 </tal:block>
                             </tal:block>
                         </tal:block>
@@ -136,7 +140,7 @@
                 </td>
             </tr>
 
-            <!--! tariff dependend macros, see below -->
+            <!--! tariff dependend macros, see show-macros.pt -->
             <tal:block tal:switch="declaration.tariff.category.code">
                 <tal:block tal:case="'L'" metal:use-macro="macros['event']" />
                 <tal:block tal:case="'P'" metal:use-macro="macros['location']" />
@@ -157,7 +161,7 @@
 
             <tr>
                 <th i18n:translate="">Created</th>
-                <td>${declaration.create_date}</td>
+                <td>${h.utc_to_timezone(request, declaration.create_date)}</td>
             </tr>
 
             <tr tal:condition="declaration.period != 'onetime'">

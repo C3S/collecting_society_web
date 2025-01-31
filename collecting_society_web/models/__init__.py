@@ -21,6 +21,8 @@ from .device import Device
 from .declaration import Declaration
 from .distribution_plan import DistributionPlan
 from .event import Event
+from .event_indicators import EventIndicators
+from .event_performance import EventPerformance
 from .genre import Genre
 from .instrument import Instrument
 from .label import Label
@@ -35,10 +37,12 @@ from .release_identifier import ReleaseIdentifier
 from .release_identifier_space import ReleaseIdentifierSpace
 from .style import Style
 from .tariff import Tariff
+from .tariff_adjustment import TariffAdjustment
 from .tariff_adjustment_category import TariffAdjustmentCategory
 from .tariff_category import TariffCategory
 from .tariff_relevance import TariffRelevance
 from .tariff_relevance_category import TariffRelevanceCategory
 from .track import Track
 from .utilisation import Utilisation
+from .utilisation_indicators import UtilisationIndicators
 from .website import Website
