@@ -67,7 +67,8 @@
                         ${performance.artist.name}
                     </a>
                     <small class="cs-row-subtitle" style="display: block;">
-                        ${performance.start} - ${performance.end}
+                        ${h.utc_to_timezone(request, performance.start)}
+                        - ${h.utc_to_timezone(request, performance.end)}
                     </small>
                 </li>
             </ul>
@@ -102,11 +103,11 @@
 <metal:block define-macro="event-indicators">
     <tr>
         <th i18n:translate="">Start</th>
-        <td>${indicators.start}</td>
+        <td>${h.utc_to_timezone(request, indicators.start)}</td>
     </tr>
     <tr>
         <th i18n:translate="">End</th>
-        <td>${indicators.end}</td>
+        <td>${h.utc_to_timezone(request, indicators.end)}</td>
     </tr>
     <tr>
         <th i18n:translate="">Attendants</th>

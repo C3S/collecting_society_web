@@ -16,7 +16,7 @@ from ..services import _
 from ..models import Declaration
 from .forms import (
     AddDeclarationLive,
-    EditDeclaration
+    ConfirmDeclarationLive,
 )
 
 log = logging.getLogger(__name__)
@@ -67,11 +67,32 @@ class DeclarationViews(ViewBase):
         return {'macros': template.macros}
 
     @view_config(
-        name='edit',
-        renderer='../templates/declaration/edit.pt',
-        permission='edit_declaration')
-    def edit(self):
-        self.register_form(EditDeclaration)
+        name='confirm',
+        renderer='../templates/declaration/confirm.pt',
+        permission='confirm_declaration')
+    def confirm(self):
+        declaration = self.context.declaration
+        # check declaration state
+        if declaration.next_step != 'confirmation':
+            log.warning("declaration confirm with wrong state: "
+                        "declaration '%s', next_step '%s', web user '%s'" % (
+                            declaration,
+                            declaration.next_step,
+                            self.request.web_user))
+            self.request.session.flash(
+                _("Declaration could not be confirmed: ${declaration}",
+                  mapping={'declaration': declaration.context.name}),
+                'main-alert-danger'
+            )
+            return self.redirect()
+        # choose tariff form
+        form = False
+        if declaration.tariff.category.code == 'L':
+            form = ConfirmDeclarationLive
+        # TODO: implement other tariffs
+        if not form:
+            return {'ConfirmDeclaration': ''}
+        self.register_form(form, name="ConfirmDeclaration")
         return self.process_forms()
 
     @view_config(

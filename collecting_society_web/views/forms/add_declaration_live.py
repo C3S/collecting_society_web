@@ -7,9 +7,12 @@ import colander
 import deform
 from pyramid.httpexceptions import HTTPBadRequest
 
-from portal_web.models import Tdb, Country, Party
+from portal_web.models import Tdb, Country
 from portal_web.views.forms import FormController
-from portal_web.views.forms.deform.money_input import MoneyInputField
+from portal_web.views.forms.deform import (
+    MoneyInputField,
+    deferred_timezone_datetime_field,
+)
 
 from ...services import _
 from ...resources import DeclarationsResource
@@ -85,55 +88,37 @@ class AddDeclarationLive(FormController):
 
         # prepare: adjustments
         adjustments_vlist = []
-        for adjustment in _adjustments:
-            if adjustment['mode'] != 'create':
+        for _adjustment in _adjustments:
+            if _adjustment['mode'] != 'create':
                 continue
             category = TariffAdjustmentCategory.search_by_code(
-                adjustment['category'], tariff.category.code)
+                _adjustment['category'], tariff.category.code)
             adjustments_vlist.append({
                 'category': category,
                 'value': category.value_default,
             })
 
         # prepare: performances
-        _performances = []
-        for performance in _event['performances']:
-            if performance['mode'] != 'create':
+        performances_vlist = []
+        for _performance in _event['performances']:
+            if _performance['mode'] != 'create':
                 continue
 
             # artist
-            _artist = performance['artist'][0]
+            _artist = _performance['artist'][0]
             if _artist['mode'] == 'add':
                 artist = Artist.search_by_code(_artist['code'])
             elif _artist['mode'] == 'create':
-                # party
-                artist_party_vlist = {
-                    'name': _artist['name'],
-                    'contact_mechanisms': [(
-                        'create',
-                        [{
-                            'type': 'email',
-                            'value': _artist['email'],
-                        }]
-                    )]
-                }
-                artist_party, = Party.create([artist_party_vlist])
-                # artist
-                artist_vlist = {
-                    'name': _artist['name'],
-                    'description': "",
-                    'group': False,
-                    'party': artist_party,
-                    'entity_creator': web_user.party,
-                    'entity_origin': 'indirect',
-                    'claim_state': 'unclaimed',
-                }
-                artist, = Artist.create([artist_vlist])
+                artist = Artist.create_foreign(
+                    party=web_user.party,
+                    name=_artist['name'],
+                    email=_artist['email'],
+                )
 
             # performance
-            _performances.append({
-                'start': performance['start'],
-                'end': performance['end'],
+            performances_vlist.append({
+                'start': _performance['start'],
+                'end': _performance['end'],
                 'artist': artist,
             })
 
@@ -142,7 +127,7 @@ class AddDeclarationLive(FormController):
         location_category = LocationCategory.search_by_code(
             _location['category'])
         country = Country.search_by_code(_location['country'])
-        tariff_relevance_category = TariffRelevanceCategory.search_by_oid(
+        relevance_category = TariffRelevanceCategory.search_by_oid(
             _utilisation['relevance'])
 
         # create location
@@ -167,7 +152,7 @@ class AddDeclarationLive(FormController):
             'name': _event['name'],
             'description': _event['description'],
             'location': location,
-            'performances': [('create', _performances)],
+            'performances': [('create', performances_vlist)],
             'estimated_start': _estimation['start'],
             'estimated_end': _estimation['end'],
             'estimated_attendants': _estimation['attendants'],
@@ -182,11 +167,11 @@ class AddDeclarationLive(FormController):
         event, = Event.create([event_vlist])
 
         # create tariff relevance
-        tariff_relevance_vlist = {
-            'category': tariff_relevance_category,
-            'value': tariff_relevance_category.value_default,
+        relevance_vlist = {
+            'category': relevance_category,
+            'value': relevance_category.value_default,
         }
-        tariff_relevance, = TariffRelevance.create([tariff_relevance_vlist])
+        relevance, = TariffRelevance.create([relevance_vlist])
 
         # create declaration
         declaration_vlist = {
@@ -201,7 +186,7 @@ class AddDeclarationLive(FormController):
                 'tariff': tariff,
                 'distribution_plan': distribution_plan,
                 'context': event,
-                'estimated_relevance': tariff_relevance,
+                'estimated_relevance': relevance,
                 'estimated_adjustments': [('create', adjustments_vlist)]
             }])]
         }
@@ -243,18 +228,12 @@ period_options = (
 # --- Widgets -----------------------------------------------------------------
 
 @colander.deferred
-def current_tariff_relevance_category_select_widget(node, kw):
-    tariff_category = None
-    tariff_categories = TariffCategory.search_all()
-    for category in tariff_categories:
-        if category.code == kw['request'].view_name:
-            tariff_category = category
-            break
-    values = []
-    if tariff_category:
-        values = [(category.oid,
-                   f"{category.name} ({category.value_default})")
-                  for category in tariff_category.relevance_categories]
+def deferred_live_tariff_relevance_category_select_widget(node, kw):
+    tariff_category = TariffCategory.search_by_code('L')
+    values = [(
+        category.oid,
+        f"{category.name} ({category.value_default})"
+    ) for category in tariff_category.relevance_categories]
     widget = deform.widget.SelectWidget(values=values)
     return widget
 
@@ -281,19 +260,17 @@ class PeriodField(colander.SchemaNode):
 class RelevanceField(colander.SchemaNode):
     oid = "relevance"
     schema_type = colander.String
-    widget = current_tariff_relevance_category_select_widget
+    widget = deferred_live_tariff_relevance_category_select_widget
 
 
 # --- EventIndicators
 
 class EventStartField(colander.SchemaNode):
     oid = "start"
-    schema_type = colander.DateTime
 
 
 class EventEndField(colander.SchemaNode):
     oid = "end"
-    schema_type = colander.DateTime
 
 
 class EventAttendantsField(colander.SchemaNode):
@@ -358,10 +335,9 @@ class UtilisationPeriodSchema(colander.Schema):
 
 
 class EventIndicatorsSchema(colander.Schema):
-    title = _("Estimation")
     widget = deform.widget.MappingWidget(template='navs/mapping')
-    start = EventStartField()
-    end = EventEndField()
+    start = EventStartField(typ=deferred_timezone_datetime_field())
+    end = EventEndField(typ=deferred_timezone_datetime_field())
     attendants = EventAttendantsField()
     max_attendants = EventMaxAttendantsField()
     max_admission = EventMaxAdmissionField()
@@ -383,7 +359,7 @@ class EventSchema(colander.Schema):
 class LiveSchema(colander.Schema):
     widget = deform.widget.FormWidget(template='navs/form', navstyle='tabs')
     event = EventSchema()
-    estimation = EventIndicatorsSchema()
+    estimation = EventIndicatorsSchema(title=_("Estimation"))
     utilisation = UtilisationOnetimeSchema()
 
 

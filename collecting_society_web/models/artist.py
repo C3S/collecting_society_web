@@ -20,6 +20,39 @@ class Artist(Tdb, MixinWebuser):
     __name__ = 'artist'
 
     @classmethod
+    def is_foreign_editable(cls, web_user, artist):
+        """
+        Checks if the artist is a foreign object and still editable by the
+        current webuser.
+
+        Checks, if the artist
+            1) is a foreign object
+            2) is still not claimed yet
+            3) is editable by the current web user
+            4) TODO: was not part of a distribution yet
+
+        Args:
+          request (pyramid.request.Request): Current request.
+          artist (obj): Artist to check.
+
+        Returns:
+          true: if artist is foreign and editable.
+          false: otherwise.
+        """
+        # 1) is a foreign object
+        if artist.entity_origin != 'indirect':
+            return False
+        # 2) is still not claimed yet
+        if artist.claim_state != 'unclaimed':
+            return False
+        # 3) is editable by the current web user
+        if not (artist.permits(web_user, 'edit_artist')
+                or artist.entity_creator == web_user.party):
+            return False
+        # 4) TODO: was not part of a distribution yet
+        return True
+
+    @classmethod
     def is_foreign_member(cls, request, group, member):
         """
         Checks if the member is a foreign object and still editable by the
@@ -440,7 +473,7 @@ class Artist(Tdb, MixinWebuser):
         """
         assert name
         assert email
-        artist_party = Party.create([{
+        artist_party, = Party.create([{
             'name': name,
             'contact_mechanisms': [(
                 'create', [{

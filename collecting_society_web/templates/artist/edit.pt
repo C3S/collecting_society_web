@@ -36,7 +36,7 @@
                     else
                         members.hide();
                 }
-                $(document).ready(function() {                
+                $(document).ready(function() {
                     $("#item-group input").change(function() {
                         item_group_control(this);
                     }).change();

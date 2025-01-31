@@ -20,6 +20,36 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
     __name__ = 'location'
 
     @classmethod
+    def is_foreign_editable(cls, web_user, location):
+        """
+        Checks if the location is a foreign object and still editable by the
+        current webuser.
+
+        Checks, if the location
+            1) is a foreign object
+            2) was created by the current web user
+            3) is still not claimed yet
+
+        Args:
+          web_user (obj): web user
+          location (obj): location to check
+
+        Returns:
+          true: if location is editable.
+          false: otherwise.
+        """
+        # 1) is a foreign object
+        if location.entity_origin != 'indirect':
+            return False
+        # 2) was created by the current web user
+        if location.entity_creator != web_user.party:
+            return False
+        # 3) is still not claimed yet
+        if location.claim_state != 'unclaimed':
+            return False
+        return True
+
+    @classmethod
     def search(cls, domain, offset=None, limit=None, order=None,
                escape=False):
         """
