@@ -45,7 +45,7 @@ class Declaration(Tdb, MixinSearchById):
         order = []
         # finished
         if state == 'finished':
-            domain.append(('state', '=', 'finished'))
+            domain.append(('state', 'in', ['finished', 'canceled']))
         # other
         else:
             domain.append(('state', '=', 'submitted'))

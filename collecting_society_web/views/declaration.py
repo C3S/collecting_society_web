@@ -9,9 +9,11 @@ from pyramid.view import (
     view_defaults
 )
 
+from portal_web.models import Tdb
 from portal_web.views import ViewBase
 
 from ..services import _
+from ..models import Declaration
 from .forms import (
     AddDeclarationLive,
     ConfirmDeclarationLive,
@@ -71,6 +73,7 @@ class DeclarationViews(ViewBase):
         permission='confirm_declaration')
     def confirm(self):
         declaration = self.context.declaration
+
         # check declaration state
         if declaration.next_step != 'confirmation':
             log.warning("declaration confirm with wrong state: "
@@ -84,6 +87,7 @@ class DeclarationViews(ViewBase):
                 'main-alert-danger'
             )
             return self.redirect()
+
         # choose tariff form
         form = False
         if declaration.tariff.category.code == 'L':
@@ -91,6 +95,8 @@ class DeclarationViews(ViewBase):
         # TODO: implement other tariffs
         if not form:
             return {'ConfirmDeclaration': ''}
+
+        # process
         self.register_form(form, name="ConfirmDeclaration")
         return self.process_forms()
 
@@ -100,6 +106,7 @@ class DeclarationViews(ViewBase):
         permission='finalize_declaration')
     def finalize(self):
         declaration = self.context.declaration
+
         # check declaration state
         if declaration.next_step != 'finalization':
             log.warning("declaration finalize with wrong state: "
@@ -113,6 +120,7 @@ class DeclarationViews(ViewBase):
                 'main-alert-danger'
             )
             return self.redirect()
+
         # choose tariff form
         form = False
         if declaration.tariff.category.code == 'L':
@@ -120,5 +128,45 @@ class DeclarationViews(ViewBase):
         # TODO: implement other tariffs
         if not form:
             return {'FinalizeDeclaration': ''}
+
+        # process
         self.register_form(form, name="FinalizeDeclaration")
         return self.process_forms()
+
+    @view_config(
+        name='cancel',
+        decorator=Tdb.transaction(readonly=False),
+        permission='cancel_declaration')
+    def cancel(self):
+        web_user = self.request.web_user
+        declaration = self.context.declaration
+
+        # check declaration state
+        cancelable_next_steps = ['utilisation', 'estimation', 'confirmation']
+        if declaration.next_step not in cancelable_next_steps:
+            log.warning("declaration cancel with wrong state: "
+                        "declaration '%s', next_step '%s', web user '%s'" % (
+                            declaration,
+                            declaration.next_step,
+                            self.request.web_user))
+            self.request.session.flash(
+                _("Declaration could not be canceled: ${declaration}",
+                  mapping={'declaration': declaration.context.name}),
+                'main-alert-danger'
+            )
+            return self.redirect()
+
+        # process
+        declaration.state = 'canceled'
+        declaration.save()
+
+        # user feedback
+        log.info("declaration cancel successful for %s: %s" % (
+            web_user, declaration
+        ))
+        self.request.session.flash(
+            _("Declaration canceled: ${declaration}",
+              mapping={'declaration': declaration.context.name}),
+            'main-alert-success'
+        )
+        return self.redirect('..')

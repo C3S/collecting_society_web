@@ -14,17 +14,21 @@
 
         <div class="btn-toolbar cs-form-controls" role="toolbar">
             <div class="btn-group" role="group">
-                <a href="${request.resource_path(context, 'add')}"
-                   class="btn btn-primary" role="button"
-                   i18n:translate="">Add</a>
-                <a tal:condition="request.GET.get('state') != 'finished'"
-                   href="${request.resource_path(context, query={'state': 'finished'})}"
-                   class="btn btn-default" role="button"
-                   i18n:translate="">Archive</a>
-                <a tal:condition="request.GET.get('state') == 'finished'"
-                   href="${request.resource_path(context)}"
-                   class="btn btn-default" role="button"
-                   i18n:translate="">Open</a>
+                <tal:block tal:condition="request.GET.get('state') != 'finished'">
+                    <a href="${request.resource_path(context, 'add')}"
+                       class="btn btn-primary" role="button"
+                       i18n:translate="">Add</a>
+                    <a tal:condition="request.GET.get('state') != 'finished'"
+                       href="${request.resource_path(context, query={'state': 'finished'})}"
+                       class="btn btn-default" role="button"
+                       i18n:translate="">Archive</a>
+                </tal:block>
+                <tal:block tal:condition="request.GET.get('state') == 'finished'">
+                    <a tal:condition="request.GET.get('state') == 'finished'"
+                       href="${request.resource_path(context)}"
+                       class="btn btn-default" role="button"
+                       i18n:translate="">Active</a>
+                </tal:block>
             </div>
         </div>
 
@@ -33,13 +37,25 @@
             <tr tal:repeat="declaration declarations">
 
                 <td class="cs-img-smallicon">
-                    <a tal:condition="not declaration.next_step"
+                    <a tal:condition="not declaration.next_step
+                                      and declaration.state != 'canceled'"
                        href="${request.resource_path(
                                context, declaration.code)}">
                         <img class="img-responsive center-block"
                              src="${request.static_path(
                                     'collecting_society_web:'
                                     'static/img/element-icon-declarations-yellow.svg')}" />
+                    </a>
+                    <a tal:condition="not declaration.next_step
+                                      and declaration.state == 'canceled'"
+                       href="${request.resource_path(
+                               context, declaration.code)}">
+                        <span class="cs-canceled">
+                            <img class="img-responsive center-block"
+                                 src="${request.static_path(
+                                        'collecting_society_web:'
+                                        'static/img/element-icon-declarations-yellow.svg')}" />
+                        </span>
                     </a>
                     <a tal:condition="declaration.next_step == 'utilisation'"
                        href="${request.resource_path(
@@ -107,7 +123,10 @@
                     <a href="${request.resource_path(
                                context, declaration.code)}"
                        class="cs-declaration-title">
-                        ${declaration.context.name}
+                        <span class="cs-strikethrough"
+                              tal:omit-tag="declaration.state != 'canceled'">
+                            ${declaration.context.name}
+                        </span>
                     </a>
                     <div class="cs-row-subtitle cs-declaration-subtitle">
                         <a tal:attributes="href request.resource_path(
