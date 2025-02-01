@@ -32,7 +32,7 @@ class Artist(Tdb, MixinWebuser):
             4) TODO: was not part of a distribution yet
 
         Args:
-          request (pyramid.request.Request): Current request.
+          web_user (obj): Current web user.
           artist (obj): Artist to check.
 
         Returns:

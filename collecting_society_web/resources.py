@@ -287,8 +287,12 @@ class AddDeclarationResource(ResourceBase):
 
 class DeclarationResource(ModelResource):
     __parent__ = DeclarationsResource
-    _write = ['confirm', 'delete']
-    _permit = ['view_declaration', 'confirm_declaration', 'delete_declaration']
+    _write = ['confirm', 'finalize']
+    _permit = [
+        'view_declaration',
+        'confirm_declaration',
+        'finalize_declaration',
+    ]
 
     # load resources
     def context_found(self):

@@ -13,7 +13,7 @@
         <div class="cs-form-container">
 
             <h1 class="cs-form-header" i18n:translate="">
-                Confirm Declaration
+                Finalize Declaration
             </h1>
 
             <div class="btn-toolbar cs-form-controls" role="toolbar">
@@ -21,13 +21,16 @@
                     <a href="${request.resource_path(context)}"
                        class="btn btn-default" role="button"
                        i18n:translate="">Show</a>
+                    <a class="btn btn-default" role="button"
+                       onclick="$('#FinalizeDeclarationsave').click();"
+                       i18n:translate="">Save</a>
                     <a class="btn btn-primary" role="button"
-                       onclick="$('#ConfirmDeclarationsubmit').click();"
-                       i18n:translate="">Confirm</a>
+                       onclick="$('#FinalizeDeclarationfinalize').click();"
+                       i18n:translate="">Finalize</a>
                 </div>
             </div>
 
-            <div tal:content="structure ConfirmDeclaration"/>
+            <div tal:content="structure FinalizeDeclaration"/>
 
         </div>
 

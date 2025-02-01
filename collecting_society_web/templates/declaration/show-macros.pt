@@ -53,28 +53,6 @@
             </table>
         </td>
     </tr>
-    <tr>
-        <th i18n:translate="">Performances</th>
-        <td>
-            <ul tal:condition="performances">
-                <li tal:repeat="performance performances">
-                    <a tal:attributes="href request.resource_path(
-                                       context, '..', '..', '..', 'repertoire',
-                                       'artists', performance.artist.code)"
-                       tal:omit-tag="not performance.artist.permits(
-                                     request.web_user, 'view_artist')"
-                       class="cs-artist-title">
-                        ${performance.artist.name}
-                    </a>
-                    <small class="cs-row-subtitle" style="display: block;">
-                        ${h.utc_to_timezone(request, performance.start)}
-                        - ${h.utc_to_timezone(request, performance.end)}
-                    </small>
-                </li>
-            </ul>
-            <tal:block tal:condition="not performances">-</tal:block>
-        </td>
-    </tr>
     <tr tal:condition="utilisation.state not in ['created', 'estimated']
                        and utilisation.confirmation">
         <th i18n:translate="">Confirmation</th>
@@ -96,6 +74,43 @@
                 <tal:block metal:use-macro="macros['event-indicators']"
                            tal:define="indicators event.estimated_indicators"/>
             </table>
+        </td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Performances</th>
+        <td>
+            <ul tal:condition="performances" class="cs-playlist">
+                <li tal:repeat="performance performances">
+                    <a tal:attributes="href request.resource_path(
+                                       context, '..', '..', '..', 'repertoire',
+                                       'artists', performance.artist.code)"
+                       tal:omit-tag="not performance.artist.permits(
+                                     request.web_user, 'view_artist')"
+                       class="cs-artist-title">
+                        <b>${performance.artist.name}</b>
+                    </a>
+                    <small class="cs-row-subtitle" style="display: block;">
+                        ${h.utc_to_timezone(request, performance.start)}
+                        - ${h.utc_to_timezone(request, performance.end)}
+                    </small>
+                    <ol tal:condition="performance.playlist and performance.playlist.items">
+                        <li tal:repeat="playlist_item performance.playlist.items">
+                            <small class="cs-row-subtitle" style="display: block;">
+                                <a tal:attributes="href request.resource_path(
+                                                   context, '..', '..', '..', 'repertoire',
+                                                   'creations', playlist_item.creation.code)"
+                                   tal:omit-tag="not playlist_item.creation.permits(
+                                                 request.web_user, 'view_creation')"
+                                   class="cs-artist-title">
+                                    <b>${playlist_item.creation.title}</b>
+                                </a>
+                                - ${playlist_item.creation.artist.name}
+                            </small>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
+            <tal:block tal:condition="not performances">-</tal:block>
         </td>
     </tr>
 </metal:block>

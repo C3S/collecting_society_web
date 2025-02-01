@@ -384,7 +384,6 @@ def deferred_areas_schema_node(node, kw):
                 )
             )
         )
-
     return schema
 
 # --- Fields ------------------------------------------------------------------
