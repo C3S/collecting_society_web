@@ -260,6 +260,8 @@ h1, .h1 { color: #888; border-bottom: 1px solid rgb(221, 221, 221); margin-botto
 .cs-tile-letter { font-size: 42px; font-weight: bold; }
 .cs-tile-title { font-size: 14px; font-weight: bold; }
 
+.cs-playlist > li { margin-bottom: 10px; }
+
 /* Content Right */
 
 .cs-content-right { background-color: #fff; }

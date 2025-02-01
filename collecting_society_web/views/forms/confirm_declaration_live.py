@@ -191,6 +191,7 @@ class ConfirmDeclarationLive(FormController):
         # performances: edit, create
         performances = []
         for _performance in _event['performances']:
+            # find corresponding performance db entry
             performance = False
             for item in event.performances:
                 if item.oid == _performance['oid']:
@@ -384,6 +385,6 @@ def live_form(request):
     return deform.Form(
         schema=LiveSchema().bind(request=request),
         buttons=[
-            deform.Button('submit', _("Submit")),
+            deform.Button('submit', _("Confirm")),
         ]
     )

@@ -21,3 +21,4 @@ from .add_declaration_live import AddDeclarationLive
 from .confirm_declaration_live import ConfirmDeclarationLive
 from .add_location import AddLocation
 from .edit_location import EditLocation
+from .finalize_declaration_live import FinalizeDeclarationLive
