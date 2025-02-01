@@ -287,11 +287,12 @@ class AddDeclarationResource(ResourceBase):
 
 class DeclarationResource(ModelResource):
     __parent__ = DeclarationsResource
-    _write = ['confirm', 'finalize']
+    _write = ['confirm', 'finalize', 'cancel']
     _permit = [
         'view_declaration',
         'confirm_declaration',
         'finalize_declaration',
+        'cancel_declaration',
     ]
 
     # load resources

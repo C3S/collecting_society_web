@@ -41,14 +41,13 @@
                    class="btn btn-danger btn-declaration-finalize" role="button"
                    i18n:translate="">Finalize</a>
             </div>
-            <!--!
             <div class="btn-group cs-form-controls pull-right" role="group">
-                <a tal:condition="declaration.next_step in ['utilisation', 'estimation']"
-                   href="${request.resource_path(context, 'delete')}"
-                   class="btn btn-danger btn-declaration-delete" role="button"
-                   i18n:translate="">Delete</a>
+                <a tal:condition="declaration.next_step in
+                                  ['utilisation', 'estimation', 'confirmation']"
+                   href="${request.resource_path(context, 'cancel')}"
+                   class="btn btn-warning btn-declaration-delete" role="button"
+                   i18n:translate="">Cancel</a>
             </div>
-            -->
         </div>
 
         <table class="table cs-table cs-table-show">
@@ -73,8 +72,11 @@
                 <td>
                     <tal:block tal:switch="declaration.state">
 
-                        <tal:block tal:case="'closed'" i18n:translate="">
-                            Closed
+                        <tal:block tal:case="'finished'" i18n:translate="">
+                            Finished
+                        </tal:block>
+                        <tal:block tal:case="'canceled'" i18n:translate="">
+                            Canceled
                         </tal:block>
 
                         <tal:block tal:case="'submitted'">
