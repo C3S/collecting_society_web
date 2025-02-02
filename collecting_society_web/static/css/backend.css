@@ -291,9 +291,9 @@ a .cs-download-icon:hover { opacity: 1; }
 .cs-dashboard-tasks .cs-dashboard-task-buttons { margin: 20px 0; }
 .cs-dashboard-tasks .cs-dashboard-task-description { color: #544; }
 .cs-dashboard-tasks .cs-dashboard-task-badge { font-size: 22px; min-height: 35px; min-width: 35px; border-radius: 35px; padding: 7px 12px; margin-top: 5px; }
-.cs-dashboard-tasks a,
-.cs-dashboard-tasks a:hover,
-.cs-dashboard-tasks a:focus { color: #766; }
+.cs-dashboard-tasks .cs-dashboard-task-links a,
+.cs-dashboard-tasks .cs-dashboard-task-links a:hover,
+.cs-dashboard-tasks .cs-dashboard-task-links a:focus { color: #766; }
 
 
 /*******************************************************************************
