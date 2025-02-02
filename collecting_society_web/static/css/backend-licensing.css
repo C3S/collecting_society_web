@@ -68,8 +68,8 @@ h1, .h1 { color: #9e8a00; }
 .cs-navform .cs-nav-pills .active a:focus { background-color: #efefb4; }
 
 .cs-file-icon { color: #efefb4; }
-
 .cs-upload-item .name { color: #9e8a00; }
+.cs-download-icon { color: #9e8a00; }
 
 /* Widgets */
 

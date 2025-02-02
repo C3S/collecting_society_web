@@ -27,6 +27,7 @@ from .event_indicators import EventIndicators
 from .event_performance import EventPerformance
 from .genre import Genre
 from .instrument import Instrument
+from .invoice import Invoice
 from .label import Label
 from .license import License
 from .location import Location

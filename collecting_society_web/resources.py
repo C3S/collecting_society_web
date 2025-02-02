@@ -18,13 +18,14 @@ from portal_web.resources import (
 
 from .models import (
     Artist,
-    Release,
-    Creation,
     Content,
+    Creation,
     Declaration,
-    TariffCategory,
+    Device,
+    Invoice,
     Location,
-    Device
+    Release,
+    TariffCategory,
 )
 
 log = logging.getLogger(__name__)
@@ -34,10 +35,11 @@ log = logging.getLogger(__name__)
 
 valid = {
     'artist': r'^A\d{10}\Z',
-    'release': r'^R\d{10}\Z',
-    'creation': r'^C\d{10}\Z',
     'content': r'^D\d{10}\Z',
+    'creation': r'^C\d{10}\Z',
     'declaration': r'^DECL\d{10}\Z',
+    'invoice': r'^\d*\Z',
+    'release': r'^R\d{10}\Z',
     'uuid': r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z'
 }
 
@@ -247,6 +249,7 @@ class LicensingResource(ResourceBase):
             'authenticated',
             'list_declarations',
             'add_declarations',
+            'list_invoices',
             # 'list_devices',
             # 'add_device',
             # 'list_locations',
@@ -278,7 +281,6 @@ class AddDeclarationResource(ResourceBase):
     __parent__ = DeclarationsResource
     __name__ = "add"
     readonly = False
-    # _write = ['add']
 
     # load resources
     def context_found(self):
@@ -306,6 +308,48 @@ class DeclarationResource(ModelResource):
         return [
             (Allow, self.request.authenticated_userid,
                 self.declaration.permissions(
+                    self.request.web_user, self._permit))
+        ]
+
+
+class InvoicesResource(ResourceBase):
+    __parent__ = LicensingResource
+    __name__ = "invoices"
+
+    # traversal
+    def __getitem__(self, key):
+        # validate code
+        if re.match(valid['invoice'], key):
+            return InvoiceResource(self.request, key)
+        # views needing writable transactions
+        if key in self._write:
+            self.readonly = False
+        raise KeyError(key)
+
+    # load resources
+    def context_found(self):
+        if self.request.view_name == '':
+            self.invoices = Invoice.current_viewable(self.request, 'out')
+
+
+class InvoiceResource(ModelResource):
+    __parent__ = InvoicesResource
+    _permit = [
+        'view_invoice',
+        'download_invoice',
+    ]
+
+    # load resources
+    def context_found(self):
+        self.invoice = Invoice.search_by_number(self.code)
+
+    # add instance level permissions
+    def __acl__(self):
+        if not hasattr(self.invoice, 'permissions'):
+            return []
+        return [
+            (Allow, self.request.authenticated_userid,
+                self.invoice.permissions(
                     self.request.web_user, self._permit))
         ]
 
@@ -398,134 +442,6 @@ class DevicesResource(ResourceBase):
 
 class DeviceResource(ModelResource):
     __parent__ = DevicesResource
-    _write = ['edit', 'delete']
-
-    # load resources
-    def context_found(self):
-        self.device = Device.search_by_uuid(self.code)
-
-    # add instance level permissions
-    def __acl__(self):
-        device_in_database = Device.search_by_uuid(self.code)
-        if (device_in_database and
-                self.device.web_user == device_in_database.web_user):
-            return [
-                (Allow, self.request.authenticated_userid,
-                    ['show_device', 'edit_device', 'delete_device'])
-            ]
-        return []
-
-
-class InvoicesResource(ResourceBase):
-    __parent__ = LicensingResource
-    __name__ = "invoices"
-    _write = ['add']
-
-    # traversal
-    def __getitem__(self, key):
-        # validate code
-        if re.match(valid['uuid'], key):
-            return InvoiceResource(self.request, key)
-        # views needing writable transactions
-        if key in self._write:
-            self.readonly = False
-        raise KeyError(key)
-
-    # load resources
-    def context_found(self):
-        if self.request.view_name == '':
-            self.devices = Device.current_viewable(self.request)
-        # in add creation, provide content uuid, set by upload form
-        if self.request.view_name == 'add':
-            device_id = self.request.params.get('device_id', '')
-            if re.match(valid['uuid'], device_id):
-                self.device_id = device_id
-            device_name = self.request.params.get('device_name', '')
-            if len(device_name) > 0:
-                self.device_name = device_name
-            os_name = self.request.params.get('os_name', '')
-            if len(os_name) > 0:
-                self.os_name = os_name
-            os_version = self.request.params.get('os_version', '')
-            if len(os_version) > 0:
-                self.os_version = os_version
-            software_name = self.request.params.get('software_name', '')
-            if len(software_name) > 0:
-                self.software_name = software_name
-            software_version = self.request.params.get('software_version', '')
-            if len(software_version) > 0:
-                self.software_version = software_version
-            software_vendor = self.request.params.get('software_vendor', '')
-            if len(software_vendor) > 0:
-                self.software_vendor = software_vendor
-
-
-class InvoiceResource(ModelResource):
-    __parent__ = InvoicesResource
-    _write = ['edit', 'delete']
-
-    # load resources
-    def context_found(self):
-        self.device = Device.search_by_uuid(self.code)
-
-    # add instance level permissions
-    def __acl__(self):
-        device_in_database = Device.search_by_uuid(self.code)
-        if (device_in_database and
-                self.device.web_user == device_in_database.web_user):
-            return [
-                (Allow, self.request.authenticated_userid,
-                    ['show_device', 'edit_device', 'delete_device'])
-            ]
-        return []
-
-
-class StatisticsResource(ResourceBase):
-    __parent__ = LicensingResource
-    __name__ = "devices"
-    _write = ['add']
-
-    # traversal
-    def __getitem__(self, key):
-        # validate code
-        if re.match(valid['uuid'], key):
-            return DeviceResource(self.request, key)
-        # views needing writable transactions
-        if key in self._write:
-            self.readonly = False
-        raise KeyError(key)
-
-    # load resources
-    def context_found(self):
-        if self.request.view_name == '':
-            self.devices = Device.current_viewable(self.request)
-        # in add creation, provide content uuid, set by upload form
-        if self.request.view_name == 'add':
-            device_id = self.request.params.get('device_id', '')
-            if re.match(valid['uuid'], device_id):
-                self.device_id = device_id
-            device_name = self.request.params.get('device_name', '')
-            if len(device_name) > 0:
-                self.device_name = device_name
-            os_name = self.request.params.get('os_name', '')
-            if len(os_name) > 0:
-                self.os_name = os_name
-            os_version = self.request.params.get('os_version', '')
-            if len(os_version) > 0:
-                self.os_version = os_version
-            software_name = self.request.params.get('software_name', '')
-            if len(software_name) > 0:
-                self.software_name = software_name
-            software_version = self.request.params.get('software_version', '')
-            if len(software_version) > 0:
-                self.software_version = software_version
-            software_vendor = self.request.params.get('software_vendor', '')
-            if len(software_vendor) > 0:
-                self.software_vendor = software_vendor
-
-
-class StatisticsItemResource(ModelResource):
-    __parent__ = StatisticsResource
     _write = ['edit', 'delete']
 
     # load resources

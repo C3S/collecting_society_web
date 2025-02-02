@@ -13,7 +13,6 @@ from portal_web.models import Tdb
 from portal_web.views import ViewBase
 
 from ..services import _
-from ..models import Declaration
 from .forms import (
     AddDeclarationLive,
     ConfirmDeclarationLive,
