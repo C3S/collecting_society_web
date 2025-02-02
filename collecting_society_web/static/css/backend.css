@@ -285,9 +285,15 @@ a .cs-download-icon:hover { opacity: 1; }
 .dashboard-widget { background-color: #f6f9f2; border-radius: 25px; min-height: 120px; min-width: 120px; text-align: center; padding: 15px; }
 .rejected-table tr td:first-child { padding-right: 5px; text-align: right; }
 .cs-dashboard-tasks .cs-dashboard-task-left { float: left; text-align: center; width: 10%; }
-.cs-dashboard-tasks .cs-dashboard-task-icon { width: 30px; height: 30px; font-size: 30px; position: relative; top: 7px; left: -8px; }
-.cs-dashboard-tasks .cs-dashboard-task-middle { float: left; width: 65%; padding-right: 7px; padding-left: 5px; }
-.cs-dashboard-tasks .cs-dashboard-task-right { float: left; width: 25%; font-size: 40px; }
+.cs-dashboard-tasks .cs-dashboard-task-icon { width: 40px; height: 40px; font-size: 30px; position: relative; top: 7px; left: -8px; }
+.cs-dashboard-tasks .cs-dashboard-task-middle { float: left; width: 65%; padding-right: 7px; padding-left: 5px; padding-bottom: 10px; }
+.cs-dashboard-tasks .cs-dashboard-task-header { margin: 14px 0 20px 0; }
+.cs-dashboard-tasks .cs-dashboard-task-buttons { margin: 20px 0; }
+.cs-dashboard-tasks .cs-dashboard-task-description { color: #544; }
+.cs-dashboard-tasks .cs-dashboard-task-badge { font-size: 22px; min-height: 35px; min-width: 35px; border-radius: 35px; padding: 7px 12px; margin-top: 5px; }
+.cs-dashboard-tasks a,
+.cs-dashboard-tasks a:hover,
+.cs-dashboard-tasks a:focus { color: #766; }
 
 
 /*******************************************************************************

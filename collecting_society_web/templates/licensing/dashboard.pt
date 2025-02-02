@@ -4,13 +4,85 @@
            i18n:domain="collecting_society_web">
 
     <tal:block metal:fill-slot="content-right">
-	    <div class="introtext">
+        <div class="introtext">
             <span i18n:translate="">Welcome</span>
-		    <span tal:condition="request.party.firstname">${request.party.firstname}</span>,<br/><br/>
-		    <span i18n:translate="">you can find the latest news and todos for your next steps here on this dashboard.</span><br/><br/>
-	    </div>
-        <br/>           
-        
-    </tal:block>
+            <span tal:condition="request.party.firstname">${request.party.firstname}</span>,
+            <br/><br/>
+            <span i18n:translate="">
+                you can find the latest news and todos for your next steps here
+                on this dashboard.
+            </span>
+            <br/><br/>
+        </div>
+        <br/>
 
+        <ul class="cs-dashboard-tasks list-group"
+            tal:define="widgets context.registry['widgets']['dashboard-central-widgets']|None"
+            tal:condition="widgets">
+
+            <tal:block tal:repeat="widget widgets">
+                <li class="cs-dashboard-task list-group-item clear" aria-hidden="true"
+                    tal:condition="widget.condition() == True"
+                    tal:define="icon widget.icon()|False;
+                                header widget.header();
+                                description widget.description();
+                                buttons widget.buttons()|[];
+                                links widget.links()|[];
+                                badge widget.badge()|False">
+
+                    <div class="cs-dashboard-task-left">
+                        <tal:block tal:condition="badge is False and icon">
+                            <div tal:condition="icon.startswith('glyphicon')"
+                                 class="glyphicon ${icon} cs-dashboard-task-icon"></div>
+                            <img tal:condition="icon.startswith('element-icon')"
+                                 class="cs-dashboard-task-icon"
+                                 src="${request.static_path(
+                                        'collecting_society_web:'
+                                        'static/img/'+icon)}" />
+                        </tal:block>
+                        <tal:block tal:condition="badge is not False">
+                            <span class="badge cs-dashboard-task-badge">
+                                ${badge}
+                            </span>
+                        </tal:block>
+                    </div>
+
+                    <div class="cs-dashboard-task-middle">
+
+                        <h4 class="list-group-item-heading cs-dashboard-task-header">
+                            ${header}
+                        </h4>
+
+                        <div class="cs-dashboard-task-description">
+                            ${description}
+                        </div>
+
+                        <div class="btn-group cs-dashboard-task-buttons"
+                             role="group" tal:condition="buttons">
+                            <tal:block tal:repeat="button buttons"
+                                       tal:define="btn_class button['btn_class']|'primary'">
+                                <a href="${request.resource_url(request.root, *button.path)}"
+                                   class="btn btn-${btn_class} cs-dashboard-task-button"
+                                   role="button">
+                                    ${button.name}
+                                </a>
+                            </tal:block>
+                        </div>
+
+                        <ul class="cs-dashboard-task-links" tal:condition="links">
+                            <li tal:repeat="link links">
+                                <a href="${request.resource_url(request.root, *link.path)}"
+                                   class="cs-dashboard-task-link">
+                                    ${link.name}
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="clear"></div>
+                </li>
+            </tal:block>
+        </ul>
+
+    </tal:block>
 </tal:block>

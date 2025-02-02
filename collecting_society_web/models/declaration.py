@@ -15,6 +15,27 @@ class Declaration(Tdb, MixinSearchById):
     __name__ = 'declaration'
 
     @classmethod
+    def search(cls, domain, offset=None, limit=None, order=None,
+               escape=False, active=True):
+        """
+        Searches declarations by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          obj: list of declarations
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape_domain(domain)
+        if active:
+            domain.append(('active', 'in', (True, active)))
+        # search
+        result = cls.get().search(domain, offset, limit, order)
+        return result
+
+    @classmethod
     def current_viewable(cls, request):
         """
         Searches declarations, which the current web_user is allowed to view.

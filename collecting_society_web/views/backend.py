@@ -30,7 +30,14 @@ class BackendViews(ViewBase):
     @view_config(
         name='')
     def dashboard(self):
-        return self.redirect('licensing')
+        role_to_path = {
+            'licenser': ['repertoire'],
+            'licensee': ['licensing'],
+        }
+        path = role_to_path.get(
+            self.request.web_user.default_role,
+            role_to_path['licensee'])
+        return self.redirect(*path)
 
     @view_config(
         name='help',

@@ -13,14 +13,8 @@ from pyramid.view import (
     view_defaults
 )
 
-from portal_web.resources import (
-    FrontendResource,
-    BackendResource
-)
-from portal_web.models import (
-    Tdb,
-    WebUser
-)
+from portal_web.resources import FrontendResource
+from portal_web.models import Tdb, WebUser
 from portal_web.views import ViewBase
 from portal_web.views.forms import LoginWebuser
 
@@ -87,15 +81,6 @@ def verify_email_helper(view):
             cookie.extend([('Cache-control', 'no-cache')])
             response.headerlist.extend(cookie)
             return response
-            # return HTTPFound('/', headers=headers)
-            # headers = remember(view.request, web_user.email)
-            # response = view.request.response
-            # response.headerlist.extend(headers)
-            # return response
-            return view.redirect(
-                BackendResource, '',
-                headers=remember(view.request, web_user.email)
-            )
         else:
             view.request.session.flash(
                 _(

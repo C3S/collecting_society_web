@@ -17,7 +17,7 @@ class OrphanedContentWidget():
         return self.badge() > 0
 
     def icon(self):
-        return "glyphicon glyphicon-leaf"
+        return "glyphicon-leaf"
 
     def header(self):
         return _("Unassigned Files")

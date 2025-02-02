@@ -74,3 +74,6 @@ h1, .h1 { color: #9e8a00; }
 /* Widgets */
 
 .dashboard-widget { background-color: #efefb4; }
+.cs-dashboard-task-icon,
+.cs-dashboard-task-header { color: #9e8a00; }
+.cs-dashboard-task-badge { background-color: #9e8a00; }

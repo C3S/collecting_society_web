@@ -43,6 +43,11 @@ from .views.widgets import (
     MissingArtistsWidget,
     MissingContentWidget,
     MissingReleasesWidget,
+    MissingProfileDataWidget,
+    MissingDeclarationsWidget,
+    UnconfirmedDeclarationsWidget,
+    UnfinalizedDeclarationsWidget,
+    UnpaidInvoicesWidget,
     RejectedContentWidget,
     OrphanedContentWidget,
     UnprocessedContentWidget
@@ -292,6 +297,7 @@ def web_registry(config):
         ]
         # widgets
         reg['widgets']['dashboard-central-widgets'] = [
+            MissingProfileDataWidget(self.request),
             MissingArtistsWidget(self.request),
             MissingContentWidget(self.request),
             MissingReleasesWidget(self.request),
@@ -351,30 +357,15 @@ def web_registry(config):
                 'icon': self.request.static_path(
                             'collecting_society_web:static/img/'
                             'element-icon-invoices.svg')},
-            # {
-            #     'name': _('Locations'),
-            #     'url':  self.request.resource_path(
-            #                 LocationsResource(self.request)),
-            #     'icon': self.request.static_path(
-            #                 'collecting_society_web:static/img/'
-            #                 'element-icon-locations.svg')},
-            # {
-            #     'name': _('Devices'),
-            #     'url':  self.request.resource_path(
-            #                 DevicesResource(self.request)),
-            #     'icon': self.request.static_path(
-            #                 'collecting_society_web:static/img/'
-            #                 'element-icon-devices.svg')},
-            # {
-            #     'name': _(u'Statistics'),
-            #     'url':  self.request.resource_path(
-            #                 DevicesResource(self.request)),
-            #     'icon': self.request.static_path(
-            #                 'collecting_society_web:static/img/'
-            #                 'element-icon-statistics.svg')},
         ]
         # widgets
-        # ToDo
+        reg['widgets']['dashboard-central-widgets'] = [
+            MissingProfileDataWidget(self.request),
+            MissingDeclarationsWidget(self.request),
+            UnpaidInvoicesWidget(self.request),
+            UnfinalizedDeclarationsWidget(self.request),
+            UnconfirmedDeclarationsWidget(self.request),
+        ]
         return reg
 
     @FilesResource.extend_registry

@@ -15,6 +15,25 @@ class Invoice(Tdb):
     __name__ = 'account.invoice'
 
     @classmethod
+    def search(cls, domain, offset=None, limit=None, order=None,
+               escape=False):
+        """
+        Searches invoices by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          obj: list of invoices
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape_domain(domain)
+        # search
+        result = cls.get().search(domain, offset, limit, order)
+        return result
+
+    @classmethod
     def current_viewable(cls, request, type):
         """
         Searches invoices of type 'in', which the current web_user is allowed

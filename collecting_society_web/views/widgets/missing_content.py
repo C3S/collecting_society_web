@@ -21,7 +21,7 @@ class MissingContentWidget():
         return self.artist_count > 0 and self.content_count == 0
 
     def icon(self):
-        return "glyphicon glyphicon-plus-sign"
+        return "glyphicon-plus-sign"
 
     def header(self):
         return _("No Files Uploaded Yet")

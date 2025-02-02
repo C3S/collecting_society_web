@@ -17,7 +17,7 @@ class RejectedContentWidget():
         return self.badge() > 0
 
     def icon(self):
-        return "glyphicon glyphicon-ban-circle"
+        return "glyphicon-ban-circle"
 
     def header(self):
         return _("Rejected Content")

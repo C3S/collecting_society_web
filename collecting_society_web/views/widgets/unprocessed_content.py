@@ -19,7 +19,7 @@ class UnprocessedContentWidget():
         return self.content_count
 
     def icon(self):
-        return "glyphicon glyphicon-plus-sign"
+        return "glyphicon-plus-sign"
 
     def header(self):
         return _("Unprocessed Files")

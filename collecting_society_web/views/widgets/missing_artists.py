@@ -1,22 +1,19 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
-from ...models import Artist
-
 from ...services import _
 
 
 class MissingArtistsWidget():
 
-    def __init__(self, request, category='all'):
-        self.party = request.party.id
-        self.category = category
+    def __init__(self, request):
+        self.has_artists = bool(request.party.artists)
 
     def condition(self):
-        return self.badge() == 0
+        return not self.has_artists
 
     def icon(self):
-        return "glyphicon glyphicon-user"
+        return "glyphicon-user"
 
     def header(self):
         return _("Missing Artists")
@@ -42,11 +39,11 @@ class MissingArtistsWidget():
                  "artist creation form. To create a group artist, go to the "
                  "create artist form and make a check below 'Group'.")
 
-    def get_len(self, content_list):
-        if content_list:
-            return len(content_list)
-        else:
-            return 0
+    def buttons(self):
+        return [{
+            'name': _('Add Artist'),
+            'path': ['repertoire', 'artists', 'add'],
+        }]
 
     def badge(self):
-        return self.get_len(Artist.search_by_party(self.party))
+        return False

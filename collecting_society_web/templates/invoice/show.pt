@@ -56,9 +56,9 @@
                 <th i18n:translate="">State</th>
                 <td>
                     <tal:block tal:switch="invoice.state">
-                        <tal:block tal:case="'posted'" i18n:translate="">
+                        <tal:block tal:case="'posted'">
                             ${h.format_currency(invoice.amount_to_pay)}
-                            outstanding
+                            <span i18n:translate="">outstanding</span>
                         </tal:block>
                         <tal:block tal:case="'paid'" i18n:translate="">
                             Paid

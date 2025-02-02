@@ -4,7 +4,9 @@
            i18n:domain="collecting_society_web">
 
     <!-- content middle -->
-    <tal:block metal:fill-slot="content-middle">
+    <tal:block metal:fill-slot="content-middle"
+               tal:define="web_user request.web_user;
+                           party request.party">
 
         <h1 i18n:translate="">Profile</h1>
 
@@ -21,27 +23,45 @@
 
                 <tr>
                     <th i18n:translate="">Firstname</th>
-                    <td>${request.party.firstname or ""}</td>
+                    <td>${party.firstname or ""}</td>
                 </tr>
 
                 <tr>
                     <th i18n:translate="">Lastname</th>
-                    <td>${request.party.lastname or ""}</td>
+                    <td>${party.lastname or ""}</td>
                 </tr>
 
                 <tr>
                     <th i18n:translate="">Email</th>
-                    <td>${request.web_user.email or ""}</td>
+                    <td>${web_user.email or ""}</td>
                 </tr>
 
                 <tr>
                     <th i18n:translate="">Birthdate</th>
-                    <td>${request.party.birthdate.strftime("%d.%m.%Y") or ""}</td>
+                    <td>${party.birthdate.strftime("%d.%m.%Y") or ""}</td>
+                </tr>
+
+                <tr tal:condition="party.addresses"
+                    tal:define="address party.addresses and party.addresses[0]">
+                    <th i18n:translate="">Address</th>
+                    <td>
+                        <div>${address.street}</div>
+                        <div>${address.postal_code} ${address.city}</div>
+                        <div>${address.country.name}</div>
+                    </td>
                 </tr>
 
                 <tr>
-                    <th i18n:translate="">Create date</th>
-                    <td>${request.web_user.create_date.strftime("%d.%m.%Y") or ""}</td>
+                    <th i18n:translate="">Default Role</th>
+                    <td tal:switch="web_user.default_role">
+                        <span tal:case="'licenser'" i18n:translate="">Licenser</span>
+                        <span tal:case="'licensee'" i18n:translate="">Licensee</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th i18n:translate="">Created</th>
+                    <td>${web_user.create_date.strftime("%d.%m.%Y") or ""}</td>
                 </tr>
 
             </table>

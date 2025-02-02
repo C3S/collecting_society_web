@@ -68,9 +68,12 @@ h1, .h1 { color: #317a19; }
 .cs-navform .cs-nav-pills .active a:focus { background-color: #d9f0c8; }
 
 .cs-file-icon { color: #d9f0c8; }
-
 .cs-upload-item .name { color: #317a19; }
+.cs-download-icon { color: #d9f0c8; }
 
 /* Widgets */
 
 .dashboard-widget { background-color: #d9f0c8; }
+.cs-dashboard-task-icon,
+.cs-dashboard-task-header { color: #317a19; }
+.cs-dashboard-task-badge { background-color: #317a19; }
