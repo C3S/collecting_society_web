@@ -22,11 +22,14 @@ class MissingProfileDataWidget():
         return _("Please add your address in your Profile to be able to "
                  "receive invoices or royalties.")
 
-    def links(self):
+    def buttons(self):
         return [{
             'name': _('Edit Profile'),
             'path': ['profile', 'edit'],
         }]
+
+    def links(self):
+        return False
 
     def badge(self):
         return False
