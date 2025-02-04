@@ -2,19 +2,33 @@
 # Repository: https://github.com/C3S/collecting_society_web
 
 from ...models import Content
-
 from ...services import _
+
+rejection_reasons = {
+    'checksum_collision': _('Duplicate Checksum'),
+    'fingerprint_collision': _('Duplicate Fingerprint'),
+    'format_error': _('Format Error'),
+    'no_fingerprint': _('No Fingerprint'),
+    'lossy_compression': _('Lossy Compression'),
+    'missing_database_record': _('Missing Database Record'),
+}
 
 
 class RejectedContentWidget():
 
     def __init__(self, request, category='all'):
-        self.party = request.party.id
-        self.template = '../../templates/widgets/rejected_content.pt'
+        self.rejected_content = [{
+                'name': content.name,
+                'code': content.code,
+                'reason': rejection_reasons.get(content.rejection_reason, ''),
+            } for content in Content.search_rejects(
+                party_id=request.party,
+            )
+        ]
         self.category = category
 
     def condition(self):
-        return self.badge() > 0
+        return bool(self.rejected_content)
 
     def icon(self):
         return "glyphicon-ban-circle"
@@ -22,43 +36,14 @@ class RejectedContentWidget():
     def header(self):
         return _("Rejected Content")
 
-    def dupl(self):
-        return Content.search_rejects(self.party, 'dupl', self.category)
-
-    def ferrors(self):
-        return Content.search_rejects(self.party, 'ferrors', self.category)
-
-    def lossyc(self):
-        return Content.search_rejects(self.party, 'lossyc', self.category)
-
     def description(self):
         return _("Total number of files you uploaded that where rejected")
 
-    def get_len(self, content_list):
-        if content_list:
-            return len(content_list)
-        else:
-            return 0
-
-    # def output(self):
-    #     dupl = self.get_len(self.dupl())
-    #     ferrors = self.get_len(self.ferrors())
-    #     lossyc = self.get_len(self.lossyc())
-    #     rejects = dupl + ferrors + lossyc
-    #     output = render(
-    #         self.template,
-    #         {
-    #             'dupl': dupl,
-    #             'ferrors': ferrors,
-    #             'lossyc': lossyc,
-    #             'rejects': rejects
-    #         }
-    #     )
-    #     return output
+    def links(self):
+        return [{
+            'name': f"{content['name']} ({content['reason']})",
+            'path': ['repertoire', 'files', content['code']],
+        } for content in self.rejected_content]
 
     def badge(self):
-        dupl = self.get_len(self.dupl())
-        ferrors = self.get_len(self.ferrors())
-        lossyc = self.get_len(self.lossyc())
-        rejects = dupl + ferrors + lossyc
-        return rejects
+        return len(self.rejected_content)
