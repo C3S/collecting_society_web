@@ -179,7 +179,6 @@ class FinalizeDeclarationLive(FormController):
             # playlist items: position
             for index, playlist_item in enumerate(playlist_items):
                 playlist_item.position = index
-                playlist_item.save()
 
             # playlist items: delete
             _request_oids = [_item['oid'] for _item in _playlist]
