@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 
 from portal_web.tests.integration.pageobjects import DeformFormObject
 from portal_web.views.forms.login_web_user import login_form
-from portal_web.models import WebUser
+from portal_web.models import Tdb, WebUser
 
 from ...views.forms.add_artist import (
     add_artist_form
@@ -66,6 +66,7 @@ class TestLicenser:
         assert browser.current_url[-23:] == "/repertoire/artists/add"
         browser.screenshot("navigated_to_add_artist")
 
+    @Tdb.transaction()
     def test_026_create_artist(self, browser):
         """
         add a solo artist
@@ -91,6 +92,7 @@ class TestLicenser:
         assert browser.current_url.endswith("/edit")
         browser.screenshot("navigated_to_edit_artist")
 
+    @Tdb.transaction()
     def test_035_edit_artist(self, browser):
         """
         edit first artist
@@ -125,6 +127,7 @@ class TestLicenser:
         assert browser.current_url[-23:] == "/repertoire/artists/add"
         browser.screenshot("navigated_to_add_artist")
 
+    @Tdb.transaction()
     def test_044_create_artist(self, browser):
         """
         add another solo artist
@@ -154,6 +157,7 @@ class TestLicenser:
         assert browser.current_url[-23:] == "/repertoire/artists/add"
         browser.screenshot("navigated_to_add_artist")
 
+    @Tdb.transaction()
     def test_055_create_group_artist(self, browser):
         """
         add a group artist
@@ -201,6 +205,7 @@ class TestLicenser:
         assert browser.current_url[-25:] == "/repertoire/creations/add"
         browser.screenshot("navigated_to_add_creation")
 
+    @Tdb.transaction()
     def XXXtest_065_create_creation(self, browser, request_with_registry):
         """
         add an creation
