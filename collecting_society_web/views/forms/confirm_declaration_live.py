@@ -118,12 +118,15 @@ class ConfirmDeclarationLive(FormController):
             }
             # artist
             editable = Artist.is_foreign_editable(web_user, performance.artist)
+            email = ''
+            if editable:
+                email = getattr(performance.artist.party, 'email', '')
             _performance['artist'] = [{
                 'mode': editable and 'edit' or 'add',
                 'oid': performance.artist.oid,
                 'code': performance.artist.code,
                 'name': performance.artist.name,
-                'email': editable and performance.artist.party.email or '',
+                'email': email,
             }]
             self.appstruct['event']['performances'].append(_performance)
 
