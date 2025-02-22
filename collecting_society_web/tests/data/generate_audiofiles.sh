@@ -4,7 +4,7 @@ BITRATE=16
 CHANNELS=2
 SAMPLERATE=44100
 CDLENGTH=3600
-SONGLENGTH=300
+SONGLENGTH=360
 
 # make dirs
 mkdir -p ape au flac shn tta wav wv
