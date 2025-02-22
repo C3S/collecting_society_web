@@ -406,7 +406,7 @@ class ArtistField(colander.SchemaNode):
 class LyricsField(colander.SchemaNode):
     oid = "lyrics"
     schema_type = colander.String
-    widget = deform.widget.TextAreaWidget()
+    widget = deform.widget.TextAreaWidget(css_class='cs-mono', rows=15)
     missing = ""
 
 

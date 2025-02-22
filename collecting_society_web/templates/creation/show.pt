@@ -301,9 +301,7 @@
             <tr tal:condition="creation.lyrics">
                 <th i18n:translate="">Lyrics</th>
                 <td>
-                    <tal:block tal:repeat="line python:creation.lyrics.split('\n')">
-                        ${line}<br/>
-                    </tal:block>
+                    <pre style="font-size: 12px;">${creation.lyrics}</pre>
                 </td>
             </tr>
 

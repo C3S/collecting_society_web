@@ -50,6 +50,7 @@ h1, .h1 { color: #888; border-bottom: 1px solid rgb(221, 221, 221); margin-botto
 .cs-table .cs-warning a { color: #d9534f; }
 .cs-table a.btn-danger { color: #fff; }
 .cs-list-plain { list-style: none; padding-left: 0; }
+.cs-mono { font-family: 'mono'; }
 
 .cs-img-smallicon { width: 45px; text-align: center; }
 .cs-img-smallicon a img { width: 100%; }
