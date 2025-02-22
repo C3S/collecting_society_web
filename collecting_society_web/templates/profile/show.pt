@@ -60,6 +60,20 @@
                 </tr>
 
                 <tr>
+                    <th i18n:translate="">Rights</th>
+                    <td>
+                        <div>
+                            <span i18n:translate="">Creations</span>:
+                            ${len(party.creation_rights)}
+                        </div>
+                        <div>
+                            <span i18n:translate="">Releases</span>:
+                            ${len(party.release_rights)}
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
                     <th i18n:translate="">Created</th>
                     <td>${web_user.create_date.strftime("%d.%m.%Y") or ""}</td>
                 </tr>
