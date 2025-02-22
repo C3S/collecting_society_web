@@ -164,6 +164,14 @@ class AddArtist(FormController):
 
 # --- Validators --------------------------------------------------------------
 
+def validate_form(node, values, **kwargs):
+
+    # groups should have at least one member
+    if values['group'] and len(values['members']) < 1:
+        raise colander.Invalid(
+            node, _("Group artists should have at least 1 member."))
+
+
 # --- Options -----------------------------------------------------------------
 
 # --- Fields ------------------------------------------------------------------
@@ -203,7 +211,6 @@ class PictureField(colander.SchemaNode):
 
 class AddArtistSchema(colander.Schema):
     group = GroupField(title=_("Group"))
-    # title = _(u"Add Artist")
     name = NameField(title=_("Name"))
     ipn_code = IpnCodeField(title=_("International Performer Number"))
     description = DescriptionField(title=_("Description"))
@@ -215,7 +222,7 @@ class AddArtistSchema(colander.Schema):
 
 def add_artist_form(request):
     return deform.Form(
-        schema=AddArtistSchema().bind(request=request),
+        schema=AddArtistSchema(validator=validate_form).bind(request=request),
         buttons=[
             deform.Button('submit', _("Submit"))
         ]
