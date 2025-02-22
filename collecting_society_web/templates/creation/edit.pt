@@ -15,9 +15,9 @@
 
             <div class="btn-toolbar cs-form-controls" role="toolbar">
                 <div class="btn-group" role="group">
-                    <a href="${request.resource_path(context, '..')}"
+                    <a href="${request.resource_path(context)}"
                        class="btn btn-default" role="button"
-                       i18n:translate="">Creations</a>
+                       i18n:translate="">Cancel</a>
                     <a class="btn btn-primary" role="button"
                        onclick="$('#EditCreationsubmit').click();"
                        i18n:translate="">Submit</a>
@@ -26,61 +26,39 @@
 
             <div tal:content="structure EditCreation"/>
 
-            <script class="datatable_sequence_item_script">
+            <script>
                 $(document).ready(function() {
-                    $.each($(".deform-sequence-item"), function(_, item) {
-                        var contribution = $(item)
-                            .find('.item-contribution_type').first();
-                        var performance = $(item)
-                            .find('.item-performance').first();
-                        var role = $(item)
-                            .find('.item-role').first();
-                        var cs = $(item)
-                            .find('.item-collecting_society').first();
-                        var nrs = $(item)
-                            .find('.item-neighbouring_rights_society').first();
-                        contribution.change(function() {
-                            var selected = contribution
-                                .find("select")
-                                .children(":selected")
-                                .first();
-                            switch(selected.attr('value')) {
-                                case 'performance':
-                                    performance.show();
-                                    cs.hide();
-                                    nrs.show();
-                                    performance.trigger('change');
-                                    break;
-                                case 'composition':
-                                    performance.hide();
-                                    cs.hide();
-                                    nrs.hide();
-                                    role.show();
-                                    break;
-                                case 'text':
-                                    performance.hide();
-                                    cs.show();
-                                    nrs.hide();
-                                    role.hide();
-                                    break;
-                            }
-                        });
-                        performance.change(function() {
-                            var selected = performance
-                                .find("select")
-                                .children(":selected")
-                                .first();
-                            switch(selected.attr('value')) {
-                                case 'recording':
-                                    role.show();
-                                    break;
-                                default:
-                                    role.hide();
-                            }
-                        });
-                        performance.trigger('change');
-                        contribution.trigger('change');
+                    // form logic for derivation type
+                    var tab = $('#cs-navform-item-content-derivation');
+                    var type = tab.find('select#distribution_type');
+                    var adaption = tab.find('.item-adaption');
+                    var cover = tab.find('.item-cover');
+                    var remix = tab.find('.item-remix');
+                    type.change(function() {
+                        var selected = type.find(":selected").first().val();
+                        switch(selected) {
+                            case 'adaption':
+                                adaption.show();
+                                cover.hide();
+                                remix.hide();
+                                break;
+                            case 'cover':
+                                adaption.hide();
+                                cover.show();
+                                remix.hide();
+                                break;
+                            case 'remix':
+                                adaption.hide();
+                                cover.hide();
+                                remix.show();
+                                break;
+                            default:
+                                adaption.hide();
+                                cover.hide();
+                                remix.hide();
+                        }
                     });
+                    type.trigger('change');
                 });
             </script>
 

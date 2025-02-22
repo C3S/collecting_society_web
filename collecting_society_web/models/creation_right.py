@@ -54,6 +54,26 @@ class CreationRight(Tdb):
         return result
 
     @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches a creation right by oid (public api id)
+
+        Args:
+          oid (int): creation_right.oid
+
+        Returns:
+          obj: creation_right
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def get_contributions_by_type_of_right(cls, t_o_r):
         if t_o_r == 'copyright':
             return [

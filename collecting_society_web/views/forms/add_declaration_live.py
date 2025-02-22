@@ -68,7 +68,7 @@ class AddDeclarationLive(FormController):
         _utilisation = self.appstruct['utilisation']
         _adjustments = _utilisation['adjustments']
 
-        # prepare: tariff
+        # tariff: prepare
         tariff_category_code = self.request.view_name
         tariff_category_codes = [
             tariff_category.code
@@ -80,13 +80,13 @@ class AddDeclarationLive(FormController):
         if not tariff:
             raise HTTPBadRequest()
 
-        # prepare: period
+        # period: prepare
         if tariff.category.code in ['L']:
             period = 'onetime'
         else:
             period = self.appstruct['utilisation']['period']
 
-        # prepare: adjustments
+        # adjustments: prepare
         adjustments_vlist = []
         for _adjustment in _adjustments:
             if _adjustment['mode'] != 'create':
@@ -98,7 +98,7 @@ class AddDeclarationLive(FormController):
                 'value': category.value_default,
             })
 
-        # prepare: performances
+        # performances: prepare
         performances_vlist = []
         for _performance in _event['performances']:
             if _performance['mode'] != 'create':
@@ -122,7 +122,7 @@ class AddDeclarationLive(FormController):
                 'artist': artist,
             })
 
-        # prepare: others
+        # others: prepare
         distribution_plan = DistributionPlan.search_latest()
         location_category = LocationCategory.search_by_code(
             _location['category'])
@@ -130,7 +130,7 @@ class AddDeclarationLive(FormController):
         relevance_category = TariffRelevanceCategory.search_by_oid(
             _utilisation['relevance'])
 
-        # create location
+        # location: create
         if _location['mode'] == 'add':
             location = Location.search_by_oid(_location['oid'])
         elif _location['mode'] == 'create':
@@ -147,7 +147,7 @@ class AddDeclarationLive(FormController):
             }
             location, = Location.create([location_vlist])
 
-        # create event
+        # event: create
         event_vlist = {
             'name': _event['name'],
             'description': _event['description'],
@@ -166,14 +166,14 @@ class AddDeclarationLive(FormController):
         }
         event, = Event.create([event_vlist])
 
-        # create tariff relevance
+        # tariff relevance: create
         relevance_vlist = {
             'category': relevance_category,
             'value': relevance_category.value_default,
         }
         relevance, = TariffRelevance.create([relevance_vlist])
 
-        # create declaration
+        # declaration: create
         declaration_vlist = {
             'licensee': web_user.party,
             'state': 'submitted',

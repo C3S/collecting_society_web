@@ -5,9 +5,9 @@
         var datatableSequenceSettings = {
             columns: [
                 {
-                    name: "subject",
-                    title: "${_('Artist')}",
-                    data: "subject",
+                    name: "rightsholder",
+                    title: "${_('Rightsholder')}",
+                    data: "rightsholder",
                     className: "always",
                     orderable: true,
                     searchable: false,
@@ -23,7 +23,7 @@
                     datatableSequence: {
                         position: "displayed",
                         widgetType: 'DatatableSequenceWidget',
-                    }
+                    },
                 },
                 {
                     name: "rights",
@@ -37,27 +37,32 @@
                             return data;
                         if(data.datatableSequence !== true)
                             return "";
-                        var rights = [];
-                        var subdata = data.target.table.rows().data()
-                        $.each(subdata, function(i, v) {
-                            var contribution = v.contribution;
-                            if (contribution == "Instrument") {
-                                if (v.instruments.length > 1)
-                                    contribution = "Instruments";
-                            }
-                            var right = v.type_of_right + ": " + contribution;
-                            if (v.collecting_society != "None") 
-                                right = right + " (" + v.collecting_society + ")";
-                            rights.push(right);
+                        var subdata = data.target.table.rows().data();
+                        var content = '<ul>';
+                        $.each(subdata, function(index, row) {
+                            content += '<li><b>' + tmpl.encode(row.contribution) + '</b>';
+                            if (!!row.collecting_society)
+                                content += '<small>' +
+                                             ' - ' + tmpl.encode(row.collecting_society) +
+                                           '</small>';
+                            var contribution = $(row.sequence)
+                                .find('.item-contribution option:selected')
+                                .val();
+                            if (contribution === 'ancillary-instrument')
+                                content += '<small style="display: block; font-style: italic;">' +
+                                              tmpl.encode(row.instruments) +
+                                           '</small>';
+                            content += '</li>';
                         });
-                        return rights.join('<br>');
+                        content += '</ul>';
+                        return content;
                     },
                     defaultContent: "",
                     datatableSequence: {
                         position: "displayed",
                         widgetType: 'DatatableSequenceWidget',
-                    }
-                }
+                    },
+                },
             ],
         };
     </script>

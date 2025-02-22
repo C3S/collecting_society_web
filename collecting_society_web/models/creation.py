@@ -437,7 +437,7 @@ class Creation(Tdb):
           list: created creations
           None: if no object was created
         """
-        log.debug('create creation:\n{}'.format(vlist))
+        log.debug(vlist)
         for values in vlist:
             if 'title' not in values:
                 raise KeyError('title is missing')
@@ -451,7 +451,7 @@ class Creation(Tdb):
     @classmethod
     def create_foreign(cls, party, artist_name, title):
         """
-        Creates foreign Artist(!) and Creaion
+        Creates foreign Artist(!) and Creation
 
         Args:
             party: the Party that wants to create the foreign objects
@@ -465,15 +465,15 @@ class Creation(Tdb):
         artist = Artist.create([{
             'name': artist_name,
             'entity_origin': 'indirect',
-            'entity_creator': party.id
+            'entity_creator': party,
             }])
         if not artist:
             return None
         creation = Creation.create([{
             'title': title,
-            'artist': artist[0].id,
+            'artist': artist[0],
             'entity_origin': 'indirect',
-            'entity_creator': party.id
+            'entity_creator': party,
             }])
         if not creation:
             return None

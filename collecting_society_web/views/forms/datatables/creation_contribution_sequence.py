@@ -11,7 +11,7 @@ from portal_web.views.forms.datatables import (
     DatatableSequenceWidget
 )
 
-from . import ArtistIndividual, CreationRightSequence
+from . import RightsholderIndividual, CreationRightSequence
 from ....services import _
 
 log = logging.getLogger(__name__)
@@ -23,14 +23,12 @@ log = logging.getLogger(__name__)
 # --- Fields ------------------------------------------------------------------
 
 @colander.deferred
-def creation_rightsholder_sequence_widget(node, kw):
+def creation_contribution_sequence_widget(node, kw):
     request = kw.get('request')
     # return widget
     return DatatableSequenceWidget(
         request=request,
-        template='datatables/creation_rightsholder_sequence',
-        # source_data=source_data,
-        # source_data_total=total
+        template='datatables/creation_contribution_sequence',
     )
 
 
@@ -45,14 +43,14 @@ class ModeField(colander.SchemaNode):
 # --- Schemas -----------------------------------------------------------------
 
 
-class CreationRightsholderSchema(colander.Schema):
+class CreationContributionSchema(colander.Schema):
     mode = ModeField()
-    subject = ArtistIndividual(title=_("Rightsholder"))
+    rightsholder = RightsholderIndividual(title=_("Rightsholder"))
     rights = CreationRightSequence(min_len=1)
     title = ""
 
 
-class CreationRightsholderSequence(DatatableSequence):
-    creation_rightsholder_sequence = CreationRightsholderSchema()
-    widget = creation_rightsholder_sequence_widget
+class CreationContributionSequence(DatatableSequence):
+    creation_contribution_sequence = CreationContributionSchema()
+    widget = creation_contribution_sequence_widget
     actions = ['create', 'edit']

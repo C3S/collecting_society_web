@@ -83,72 +83,67 @@
                 </td>
             </tr>
 
-            <!--!
-            <tr tal:condition="creation.contributions">
-                <th i18n:translate="">Contributions</th>
-                <td>
-                    <tal:block tal:repeat="contribution creation.contributions">
-                        <div tal:define="artist contribution.artist"
-                             class="cs-list-item">
-                            <div class="pull-left">
-                                <a tal:attributes="href request.resource_path(
-                                                        context, '..', '..', 'artists',
-                                                        artist.code)"
-                                   tal:omit-tag="not artist.permits(
-                                                 request.web_user, 'view_artist')">
-                                    <img tal:condition="artist.picture_data"
-                                         tal:define="pic h.b64encode(artist.picture_data) | None"
-                                         class="img-responsive cs-img-inline"
-                                         src="data:${artist.picture_data_mime_type};base64,${pic}"/>
-                                    <img tal:condition="not artist.picture_data"
-                                         class="img-responsive cs-img-inline"
-                                         src="${request.static_path(
-                                                'collecting_society_web:'
-                                                'static/img/element-icon-soloartists-green.png')}"/></a>
-                            </div>
-                            <div>
-                                <a tal:attributes="href request.resource_path(
-                                                        context, '..', '..', 'artists',
-                                                        artist.code)"
-                                   tal:omit-tag="not artist.permits(
-                                                 request.web_user, 'view_artist')">
-                                    ${artist.name}
-                                </a>
-                                <div>
-                                    <small tal:condition="contribution.type == 'text'"
-                                           class="cs-contribution"
-                                           i18n:translate="">Text</small>
-                                    <small tal:condition="contribution.type == 'performance'"
-                                           class="cs-contribution">
-                                        <span i18n:translate="">Performance</span>:
-                                        <tal:block tal:condition="contribution.performance == 'recording'"
-                                                   i18n:translate="">Recording
-                                            <tal:block tal:condition="contribution.roles">
-                                                (${contribution.roles[0].name})
-                                            </tal:block>
-                                        </tal:block>
-                                        <tal:block tal:condition="contribution.performance == 'producing'"
-                                                   i18n:translate="">Producing</tal:block>
-                                        <tal:block tal:condition="contribution.performance == 'mastering'"
-                                                   i18n:translate="">Mastering</tal:block>
-                                        <tal:block tal:condition="contribution.performance == 'mixing'"
-                                                   i18n:translate="">Mixing</tal:block>
-                                    </small>
-                                    <small tal:condition="contribution.type == 'composition'"
-                                           class="cs-contribution"
-                                           i18n:translate="">
-                                        Composition
-                                        <tal:block tal:condition="contribution.roles">
-                                            (${contribution.roles[0].name})
-                                        </tal:block>
-                                    </small>
+            <tr tal:condition="creation.rights">
+                <th i18n:translate="">Copyright</th>
+                <td tal:define="rights creation.get_rights('copyright')">
+                    <ul tal:condition="rights">
+                        <li tal:repeat="right rights">
+                            <div>${right.rightsholder.name}</div>
+                            <small class="cs-row-subtitle">
+                                <div style="float: right;"
+                                     tal:condition="right.collecting_society">
+                                    ${right.collecting_society.name}
                                 </div>
-                            </div>
-                        </div>
-                    </tal:block>
+                                <div tal:switch="right.contribution">
+                                    <tal:block tal:case="'lyrics'" i18n:translate="">
+                                        Lyrics
+                                    </tal:block>
+                                    <tal:block tal:case="'composition'" i18n:translate="">
+                                        Composition
+                                    </tal:block>
+                                </div>
+                            </small>
+                        </li>
+                    </ul>
                 </td>
             </tr>
-            -->
+
+            <tr tal:condition="creation.rights">
+                <th i18n:translate="">Ancillary Copyright</th>
+                <td tal:define="rights creation.get_rights('ancillary')">
+                    <ul tal:condition="rights">
+                        <li tal:repeat="right rights">
+                            <div>${right.rightsholder.name}</div>
+                            <small class="cs-row-subtitle">
+                                <div style="float: right;"
+                                     tal:condition="right.collecting_society">
+                                    ${right.collecting_society.name}
+                                </div>
+                                <div tal:switch="right.contribution">
+                                    <tal:block tal:case="'instrument'" i18n:translate="">
+                                        Instrument:
+                                        <span tal:condition="right.instruments">
+                                            ${", ".join([
+                                                instrument.name
+                                                for instrument in right.instruments
+                                               ])}
+                                        </span>
+                                    </tal:block>
+                                    <tal:block tal:case="'production'" i18n:translate="">
+                                        Production
+                                    </tal:block>
+                                    <tal:block tal:case="'mixing'" i18n:translate="">
+                                        Mixing
+                                    </tal:block>
+                                    <tal:block tal:case="'mastering'" i18n:translate="">
+                                        Mastering
+                                    </tal:block>
+                                </div>
+                            </small>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
 
             <tr tal:condition="creation.original_relations">
                 <th i18n:translate="">Origins</th>

@@ -3,12 +3,12 @@
 # flake8: noqa
 
 from .artist_sequence import ArtistSequence, ArtistIndividual
+from .rightsholder_sequence import RightsholderSequence, RightsholderIndividual
 from .creation_sequence import CreationSequence
 from .creation_right_sequence import CreationRightSequence
-from .creation_rightsholder_sequence import CreationRightsholderSequence
+from .creation_contribution_sequence import CreationContributionSequence
 from .creation_tariff_category_sequence import CreationTariffCategorySequence
 from .content_sequence import ContentSequence
-from .contribution_sequence import ContributionSequence
 from .label_sequence import LabelSequence
 from .location_sequence import LocationSequence
 from .location_space_sequence import LocationSpaceSequence

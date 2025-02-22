@@ -163,7 +163,7 @@ def web_registry(config):
         ]
         # widgets
         reg['widgets']['content-left'] = [
-            ServiceInfoWidget(self.request),
+            ServiceInfoWidget,
         ]
         return reg
 
@@ -297,14 +297,14 @@ def web_registry(config):
         ]
         # widgets
         reg['widgets']['dashboard-central-widgets'] = [
-            MissingProfileDataWidget(self.request),
-            MissingArtistsWidget(self.request),
-            MissingContentWidget(self.request),
-            MissingReleasesWidget(self.request),
-            RejectedContentWidget(self.request),
-            OrphanedContentWidget(self.request),
-            # UncommitedContentWidget(self.request),
-            UnprocessedContentWidget(self.request),
+            MissingProfileDataWidget,
+            MissingArtistsWidget,
+            MissingContentWidget,
+            MissingReleasesWidget,
+            RejectedContentWidget,
+            OrphanedContentWidget,
+            # UncommitedContentWidget,
+            UnprocessedContentWidget,
         ]
         return reg
 
@@ -360,11 +360,11 @@ def web_registry(config):
         ]
         # widgets
         reg['widgets']['dashboard-central-widgets'] = [
-            MissingProfileDataWidget(self.request),
-            MissingDeclarationsWidget(self.request),
-            UnpaidInvoicesWidget(self.request),
-            UnfinalizedDeclarationsWidget(self.request),
-            UnconfirmedDeclarationsWidget(self.request),
+            MissingProfileDataWidget,
+            MissingDeclarationsWidget,
+            UnpaidInvoicesWidget,
+            UnfinalizedDeclarationsWidget,
+            UnconfirmedDeclarationsWidget,
         ]
         return reg
 
