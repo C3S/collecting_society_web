@@ -100,11 +100,14 @@ def post_creation(request):
             offset=data['start'],
             limit=data['length'],
             order=order):
+        othertitles = {release.title for release in creation.releases}
+        othertitles.discard(creation.title)
         records.append({
             'oid': creation.oid,
             'titlefield': creation.title,
             'artist': creation.artist.name,
             'code': creation.code,
+            'othertitles': "\n".join(othertitles),
         })
     # response
     return {

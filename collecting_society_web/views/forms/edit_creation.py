@@ -123,11 +123,15 @@ class EditCreation(FormController):
             original_creation = original.original_creation
             original_creation_editable = Creation.is_foreign_editable(
                 web_user, original_creation)
+            othertitles = {release.title
+                           for release in original_creation.releases}
+            othertitles.discard(original_creation.title)
             self.appstruct['derivation'][creation.distribution_type].append({
                 'mode': original_creation_editable and 'edit' or 'add',
                 'oid': original_creation.oid,
                 'code': original_creation.code,
                 'titlefield': original_creation.title,
+                'othertitles': "\n".join(othertitles),
                 'artist': original_creation.artist.name,
             })
 
