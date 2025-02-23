@@ -26,7 +26,7 @@ sox -m noise.wav numbers.wav wav/upload-cd-full.wav trim 0 $CDLENGTH
 echo "converting full cd ..."
 ffmpeg -y -i wav/upload-cd-full.wav au/upload-cd-full.au
 ffmpeg -y -i wav/upload-cd-full.wav flac/upload-cd-full.flac
-#ffmpeg -y -i wav/upload-cd-full.wav wv/upload-cd-full.wv
+ffmpeg -y -i wav/upload-cd-full.wav wv/upload-cd-full.wv
 mac wav/upload-cd-full.wav ape/upload-cd-full.ape -c2000
 #shorten wav/upload-cd-full.wav shn/upload-cd-full.shn
 #ttaenc -e wav/upload-cd-full.wav -o tta/upload-cd-full.tta
@@ -42,7 +42,7 @@ for song in wav/upload-cd-song*.wav; do
   songname="${filename%.*}"
   ffmpeg -y -i $song au/$songname.au
   ffmpeg -y -i $song flac/$songname.flac
-  #ffmpeg -y -i $song wv/$songname.wv
+  ffmpeg -y -i $song wv/$songname.wv
   mac $song ape/$songname.ape -c2000
   #shorten $song shn/$songname.shn
   #ttaenc -e $song -o tta/$songname.tta

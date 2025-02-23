@@ -149,18 +149,31 @@
         {% } %}
         </script>
 
-        <!-- prevent user from accidentally leaving the page while upload is in progress -->
         <script>
-        window.onbeforeunload = function() {
-            if ($('#fileupload').fileupload('progress').loaded < $('#fileupload').fileupload('progress').total)
-                return 'There is an ongoing file upload, are you sure that you want to leave this page?';}
         </script>
 
-        <!-- show start/cancel buttongroup -->
+        <!-- additional scripts -->
         <script>
-        $('#fileupload').bind('fileuploadadd', function (e, data) {
-            $('.fileupload-buttonbar').show();
-        })
+
+            // prevent user from accidentally leaving the page while upload is in progress
+            window.onbeforeunload = function() {
+                var progress = $('#fileupload').fileupload('progress')
+                if (progress.loaded < progress.total)
+                    return 'There is an ongoing file upload, ' +
+                           'are you sure that you want to leave this page?';
+            }
+
+            // show start/cancel buttongroup
+            $('#fileupload').bind('fileuploadadd', function (e, data) {
+                $('.fileupload-buttonbar').show();
+            })
+
+            // redirect on successfull upload
+            $('#fileupload').on('fileuploadstop', function (e, data) {
+                var errors = $('#fileupload .cs-download-item .alert-danger').length > 0;
+                if (!errors)
+                    window.location.href = './';
+            })
         </script>
 
     </tal:block>
