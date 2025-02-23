@@ -2,21 +2,19 @@
 # Repository: https://github.com/C3S/collecting_society_web
 
 from ...models import Content
-from portal_web.models import WebUser
-
 from ...services import _
 
 
 class UnprocessedContentWidget():
 
     def __init__(self, request, category='all'):
-        party = WebUser.current_web_user(request).party
+        party = request.party
         content_count = Content.search_unprocessed(party, category)
         self.content_count = content_count and len(content_count) or 0
         self.category = category
 
     def condition(self):
-        return self.content_count
+        return self.badge() > 0
 
     def icon(self):
         return "glyphicon-plus-sign"

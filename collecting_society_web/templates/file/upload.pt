@@ -172,7 +172,7 @@
             $('#fileupload').on('fileuploadstop', function (e, data) {
                 var errors = $('#fileupload .cs-download-item .alert-danger').length > 0;
                 if (!errors)
-                    window.location.href = './';
+                    window.location.href = '../';
             })
         </script>
 

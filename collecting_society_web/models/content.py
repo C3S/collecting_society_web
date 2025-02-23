@@ -458,11 +458,7 @@ class Content(Tdb):
             ('active', '=', True),
             ('entity_creator', '=', party_id),
             ('creation', '=', None),
-            [
-                'OR',
-                ('processing_state', '=', 'archived'),
-                ('processing_state', '=', 'dropped')
-            ]
+            ('processing_state', 'in', ['archived', 'dropped']),
         ]
         if category != 'all':
             search_clause.append(
