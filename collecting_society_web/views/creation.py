@@ -30,6 +30,9 @@ class CreationsViews(ViewBase):
         renderer='../templates/creation/list.pt',
         permission='list_creations')
     def list(self):
+        context = self.request.context
+        if not context.creations:
+            return self.redirect(context, 'add')
         return {}
 
     @view_config(

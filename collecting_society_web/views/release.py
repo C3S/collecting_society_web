@@ -30,6 +30,9 @@ class ReleasesViews(ViewBase):
         renderer='../templates/release/list.pt',
         permission='list_releases')
     def list(self):
+        context = self.request.context
+        if not context.releases:
+            return self.redirect(context, 'add')
         return {}
 
     @view_config(

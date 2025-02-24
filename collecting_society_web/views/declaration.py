@@ -31,6 +31,9 @@ class DeclarationsViews(ViewBase):
         renderer='../templates/declaration/list.pt',
         permission='list_declarations')
     def list(self):
+        context = self.request.context
+        if not context.declarations:
+            return self.redirect(context, 'add')
         return {}
 
 

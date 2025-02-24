@@ -31,6 +31,9 @@ class FilesViews(ViewBase):
         renderer='../templates/file/list.pt',
         permission='list_content')
     def list(self):
+        context = self.request.context
+        if not context.files:
+            return self.redirect(context, 'upload')
         settings = self.request.registry.settings
         return {
             'url': ''.join([

@@ -30,6 +30,9 @@ class ArtistsViews(ViewBase):
         renderer='../templates/artist/list.pt',
         permission='list_artists')
     def list(self):
+        context = self.request.context
+        if not context.artists:
+            return self.redirect(context, 'add')
         return {}
 
     @view_config(
