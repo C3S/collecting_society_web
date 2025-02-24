@@ -300,7 +300,8 @@
             <tr tal:condition="creation.lyrics">
                 <th i18n:translate="">Lyrics</th>
                 <td>
-                    <pre style="font-size: 12px;">${creation.lyrics}</pre>
+                    <pre style="font-size: 12px; white-space: break-spaces;"
+                        >${creation.lyrics}</pre>
                 </td>
             </tr>
 
