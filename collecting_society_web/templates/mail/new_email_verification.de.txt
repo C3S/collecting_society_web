@@ -1,9 +1,12 @@
 [C3S Repertoire] Deine neue Email-Adresse
-Du möchtest im Profil des Web-Portals Deine Email-Adresse ändern.
+Du möchtest im Profil des Web-Portals Deine E-Mail-Adresse ändern.
 Um sicher zu gehen, dass Du Dich nicht vertippt hast, bekommst Du
 diese E-Mail.
 
-Bitte besuche folgenden Link, um die Aktivierung Deiner neuen 
-Email abzuschließen:
+Alte E-Mail-Adresse: {old_email}
+Neue E-Mail-Adresse: {new_email}
+
+Bitte besuche folgenden Link, um die Aktivierung Deiner neuen
+E-Mail abzuschließen:
 
 {link}

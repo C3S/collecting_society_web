@@ -113,6 +113,8 @@ class EditProfile(FormController):
 
             # email verification
             template_variables = {
+                'old_email': email,
+                'new_email': _email,
                 'link': self.request.resource_url(
                     self.request.root, 'verify_email',
                     WebUser.get_opt_in_uuid_by_id(web_user.id)
