@@ -35,7 +35,6 @@ class RegisterWebuser(LoginWebuser):
     __stage__ = 'claims_membership'  # initial stage
 
     def controller(self):
-
         if self.stage == 'claims_membership':
             self.claims_membership()
 
@@ -335,6 +334,7 @@ class CheckboxWithLabel(colander.SchemaNode):
     oid = "terms_accepted"
     schema_type = colander.Boolean
     validator = colander.Function(terms_accepted)
+    widget = deform.widget.CheckboxWidget(template='checkbox_with_link')
 
 
 # --- Schemas -----------------------------------------------------------------
@@ -349,7 +349,12 @@ class RegisterMemberSchema(colander.MappingSchema):
     password = CheckedPasswordField(title=_("Password"))
     terms_accepted = CheckboxWithLabel(
         title=_("Terms of Service"),
-        label=_("I accept the terms of service.")
+        label="".join([
+            _("I accept the "),
+            "<a href='/register#terms' target='_blank'>",
+            _("terms of service"),
+            "</a>.",
+        ]),
     )
 
 
@@ -362,7 +367,12 @@ class RegisterNonmemberSchema(colander.MappingSchema):
     default_role = DefaultRoleField(title=_("Default Role"))
     terms_accepted = CheckboxWithLabel(
         title=_("Terms of Service"),
-        label=_("I accept the terms of service.")
+        label="".join([
+            _("I accept the "),
+            "<a href='/register#terms' target='_blank'>",
+            _("terms of service"),
+            "</a>.",
+        ]),
     )
 
 
