@@ -72,11 +72,12 @@ class AddCreation(FormController):
             if meta_artist:
                 self.appstruct['metadata']['artist'] = meta_artist[0].id
             self.appstruct['content']['audio'] = [{
-                'code': content.code,
-                'category': content.category,
                 'mode': "add",
+                'oid': content.oid,
+                'category': content.category,
+                'code': content.code,
                 'name': content.name,
-                'oid': content.oid
+                'preview': bool(content.preview_path),
             }]
 
         # render form with data

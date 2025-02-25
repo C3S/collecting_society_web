@@ -142,6 +142,8 @@ class EditCreation(FormController):
                 'oid': content.oid,
                 'code': content.code,
                 'name': content.name,
+                'category': content.category,
+                'preview': bool(content.preview_path),
             })
 
         # areas

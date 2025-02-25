@@ -46,13 +46,13 @@ def content_sequence_widget(node, kw):
     request.code_translation = get_localizer(
         request).translate(
             _('Code', 'collecting_society_web'))
-    locale = get_localizer(request)
-    locale_domain = 'collecting_society_web'
-    content_category = {
-        'audio': locale.translate(_('Audio', locale_domain)),
-        'sheet': locale.translate(_('Sheet Music', locale_domain)),
-        'lyrics': locale.translate(_('Lyrics', locale_domain)),
-    }
+    # locale = get_localizer(request)
+    # locale_domain = 'collecting_society_web'
+    # content_category = {
+    #     'audio': locale.translate(_('Audio', locale_domain)),
+    #     'sheet': locale.translate(_('Sheet Music', locale_domain)),
+    #     'lyrics': locale.translate(_('Lyrics', locale_domain)),
+    # }
     # get initial source data
     domain = [
         ('entity_creator', '=', request.web_user.party.id),  # only own
@@ -69,7 +69,8 @@ def content_sequence_widget(node, kw):
         'oid': content.oid,
         'name': content.name,
         'code': content.code,
-        'category': content_category[content.category],
+        'category': content.category,
+        'preview': bool(content.preview_path),
     } for content in contents]
     # get statistics
     total_domain = [
@@ -130,6 +131,12 @@ class CategoryField(colander.SchemaNode):
     widget = deform.widget.HiddenWidget()
 
 
+class PreviewField(colander.SchemaNode):
+    oid = "preview"
+    schema_type = colander.Boolean
+    widget = deform.widget.HiddenWidget()
+
+
 # --- Schemas -----------------------------------------------------------------
 
 
@@ -138,6 +145,8 @@ class ContentSchema(colander.Schema):
     oid = OidField()
     name = NameField()
     code = CodeField()
+    preview = PreviewField()
+    category = CategoryField()
     preparer = [prepare_required]
     title = ""
 

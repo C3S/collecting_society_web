@@ -22,7 +22,7 @@
                         widgetType: 'TextInputWidget',
                         footerSearch: true,
                         createShow: true,
-                    }
+                    },
                 },
                 {
                     name: "code",
@@ -35,7 +35,30 @@
                         position: "displayed",
                         widgetType: 'HiddenWidget',
                         footerSearch: true,
-                    }
+                    },
+                },
+                {
+                    name: "preview",
+                    title: "${_('Preview')}",
+                    data: "preview",
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        if (!JSON.parse(data))
+                            return "";
+                        var src = "/repertoire/files/" + row['code'] + "/preview"
+                        if (row['category'] === 'audio')
+                            return "<audio controls>" +
+                                "<source type='audio/ogg' src='" + src + "'>" +
+                            "</audio>";
+                        return "";
+                    },
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'HiddenWidget',
+                    },
                 },
             ],
         };

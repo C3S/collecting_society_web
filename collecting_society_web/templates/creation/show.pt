@@ -280,6 +280,13 @@
                                     'collecting_society_web:'
                                     'static/img/element-icon-upload-green.png')}"/>
                         ${content.name}
+                        <audio controls tal:condition="content.category == 'audio'"
+                               style="margin-top: 5px;">
+                            <source type="audio/ogg"
+                                    tal:attributes="src request.resource_path(
+                                                        request.root, 'repertoire', 'files',
+                                                        content.code, 'preview')">
+                        </audio>
                     </div>
                 </td>
             </tr>
