@@ -183,9 +183,11 @@ class AddRelease(FormController):
                 self.request.session.flash(err, 'main-alert-warning')
 
         # remove empty fields
-        for index, value in _release.items():
-            if not value:
-                del _release[index]
+        _release = {
+            key: value
+            for key, value in _release.items()
+            if value
+        }
 
         # create release
         release = Release.create([_release])
