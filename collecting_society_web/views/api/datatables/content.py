@@ -11,8 +11,8 @@ import colander
 from portal_web.models import Tdb
 
 from ....models import Content
-from ....services import _
-from pyramid.i18n import get_localizer
+# from ....services import _                  <-- see line 105
+# from pyramid.i18n import get_localizer        <--
 from . import (
     _prefix,
     get_cors_policy,

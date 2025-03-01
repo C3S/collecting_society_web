@@ -4,6 +4,7 @@
 import pytest
 
 from selenium.webdriver.common.by import By
+from urllib.parse import urlparse
 
 from portal_web.tests.integration.pageobjects import DeformFormObject
 from portal_web.views.forms.login_web_user import login_form
@@ -56,15 +57,11 @@ class TestLicenser:
         browser.find_element(By.CLASS_NAME, "cs-menue-item-repertoire").click()
         assert browser.find_element(By.CLASS_NAME, "introtext")
 
+    # case where no artist exists, forwarding to add artist
     def test_022_navigate_to_artist_list(self, browser):
         browser.find_element(By.CLASS_NAME, "cs-menue-item-artists").click()
-        assert browser.current_url[-20:] == "/repertoire/artists/"
-
-    def test_024_click_add_artist(self, browser):
-        browser.find_element(By.CLASS_NAME, "btn-artist-add").click()
-        # browser.get("/repertoire/artists/add")
-        assert browser.current_url[-23:] == "/repertoire/artists/add"
-        browser.screenshot("navigated_to_add_artist")
+        url = urlparse(browser.current_url)
+        assert url.path == "/repertoire/artists/add"
 
     @Tdb.transaction()
     def test_026_create_artist(self, browser):
@@ -197,13 +194,8 @@ class TestLicenser:
 
     def test_060_navigate_to_creations(self, browser):
         browser.find_element(By.CLASS_NAME, "cs-menue-item-creations").click()
-        assert browser.current_url[-22:] == "/repertoire/creations/"
-
-    def test_062_click_add_creation(self, browser):
-        browser.find_element(By.CLASS_NAME, "btn-creation-add").click()
-        # browser.get("/repertoire/creations/add")
-        assert browser.current_url[-25:] == "/repertoire/creations/add"
-        browser.screenshot("navigated_to_add_creation")
+        url = urlparse(browser.current_url)
+        assert url.path == "/repertoire/creations/add"
 
     @Tdb.transaction()
     def XXXtest_065_create_creation(self, browser, request_with_registry):
