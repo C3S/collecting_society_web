@@ -140,7 +140,7 @@
                                         ${declaration.context.start.date()}
                                     </tal:block>
                                     <tal:block tal:condition="declaration.tariff.category.code != 'L'">
-                                        ${declaration.creation_time.date()}
+                                        ${declaration.create_date.date()}
                                     </tal:block>
                                 </small>
                                 <small tal:condition="declaration.period != 'onetime'">
