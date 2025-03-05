@@ -96,6 +96,7 @@ class TitleField(colander.SchemaNode):
 class OtherTitlesField(colander.SchemaNode):
     oid = "othertitles"
     schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
     missing = ""
 
 

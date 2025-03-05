@@ -46,6 +46,7 @@ class AddArtist(FormController):
     def create_artist(self):
         email = self.request.unauthenticated_userid
         party = WebUser.current_party(self.request)
+        web_user = self.request.web_user
 
         # generate vlist
         _artist = {
@@ -92,8 +93,39 @@ class AddArtist(FormController):
                     # append artist id
                     members_add.append(member_artist.id)
 
+                # edit foreign artists
+                elif member['mode'] == "edit":
+                    member_artist = Artist.search_by_oid(member['oid'])
+                    if not Artist.is_foreign_editable(web_user, member_artist):
+                        continue
+                    member_artist.name = member['name']
+
+                    # party: create
+                    if not member_artist.party:
+                        member_artist.party, = Party.create([{
+                            'name': member['name'],
+                            'contact_mechanisms': [(
+                                'create', [{
+                                    'type': 'email',
+                                    'value': member['email']
+                                    }]
+                                )]
+                            }])
+
+                    # party: edit
+                    else:
+                        member_artist.party.name = member['name']
+                        for contact in member_artist.party.contact_mechanisms:
+                            if contact.type == 'email':
+                                contact.value = member['email']
+                                contact.save()
+                        member_artist.party.save()
+
+                    member_artist.save()
+                    members_add.append(member_artist.id)
+
                 # create new artists
-                if member['mode'] == "create":
+                elif member['mode'] == "create":
                     # create new party
                     member_party = Party.create([{
                         'name': member['name'],
@@ -164,12 +196,28 @@ class AddArtist(FormController):
 
 # --- Validators --------------------------------------------------------------
 
-def validate_form(node, values, **kwargs):
+@colander.deferred
+def deferred_validate_form(node, kw):
+    request = kw['request']
 
-    # groups should have at least one member
-    if values['group'] and len(values['members']) < 1:
-        raise colander.Invalid(
-            node, _("Group artists should have at least 1 member."))
+    def validate_form(node, values, **kwargs):
+
+        # groups should have at least one member
+        if values['group'] and len(values['members']) < 1:
+            raise colander.Invalid(
+                node, _("Group artists should have at least 1 member."))
+
+        # check for email in foreign editable members
+        for _member in values['members']:
+            if _member['mode'] != 'add':
+                continue
+            member = Artist.search_by_oid(_member['oid'])
+            if Artist.is_foreign_editable(request.web_user, member):
+                raise colander.Invalid(
+                    node, _("Please add an email address to member ${name}.",
+                            mapping={'name': _member['name']}))
+
+    return validate_form
 
 
 # --- Options -----------------------------------------------------------------
@@ -222,7 +270,8 @@ class AddArtistSchema(colander.Schema):
 
 def add_artist_form(request):
     return deform.Form(
-        schema=AddArtistSchema(validator=validate_form).bind(request=request),
+        schema=AddArtistSchema(validator=deferred_validate_form).bind(
+            request=request),
         buttons=[
             deform.Button('submit', _("Submit"))
         ]

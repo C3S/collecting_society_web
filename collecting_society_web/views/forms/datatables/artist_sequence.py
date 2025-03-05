@@ -39,6 +39,7 @@ def prepare_required(value):
 
 @colander.deferred
 def artist_sequence_widget(node, kw):
+    request = kw['request']
     # get initial source data
     domain = []
     if getattr(node, 'group', None):
@@ -53,6 +54,9 @@ def artist_sequence_widget(node, kw):
         'code': artist.code,
         'oid': artist.oid,
         'description': artist.description,
+        'mode':
+            Artist.is_foreign_editable(request.web_user, artist)
+            and 'edit' or 'add',
     } for artist in artists]
     # get statistics
     total_domain = []

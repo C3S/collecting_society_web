@@ -56,7 +56,7 @@ class EditArtist(FormController):
             for member in artist.solo_artists:
                 mode = "add"
                 email = ""
-                if Artist.is_foreign_member(self.request, artist, member):
+                if Artist.is_foreign_editable(self.request.web_user, member):
                     mode = "edit"
                     email = member.party.email
                 _members.append({
