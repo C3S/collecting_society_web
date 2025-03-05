@@ -1,10 +1,10 @@
 # For copyright and license terms, see COPYRIGHT.rst (top level of repository)
 # Repository: https://github.com/C3S/collecting_society_web
 
-import pytest
-
-from selenium.webdriver.common.by import By
 from urllib.parse import urlparse
+
+import pytest
+from selenium.webdriver.common.by import By
 
 from portal_web.tests.integration.pageobjects import DeformFormObject
 from portal_web.views.forms.login_web_user import login_form
@@ -48,7 +48,7 @@ class TestLicenser:
         browser.get("/")
         formid = 'LoginWebuser'
         form = DeformFormObject(browser, login_form, formid)
-        form.login_email.set('licenser1@artist.test')
+        form.login_email.set(wu_email)
         form.login_password.set('password')
         form.submit()
         assert browser.find_elements(By.CLASS_NAME, 'cs-backend')
@@ -70,7 +70,7 @@ class TestLicenser:
         """
         formid = 'AddArtist'
         form = DeformFormObject(
-            browser, add_artist_form, formid)
+            browser, add_artist_form, formid, userid=wu_email)
         form.group.set(False)
         form.name.set("Testartist #12345")
         form.ipn_code.set("12345678901")
@@ -96,7 +96,7 @@ class TestLicenser:
         """
         formid = 'EditArtist'
         form = DeformFormObject(
-            browser, edit_artist_form, formid, userid='licenser1@artist.test')
+            browser, edit_artist_form, formid, userid=wu_email)
         form.name.set("Testartist #54321")
         form.ipn_code.set("98765432101")
         form.description.set("This is *an* example of a solo artist.")
@@ -115,13 +115,14 @@ class TestLicenser:
 
     def test_040_navigate_to_artist_list(self, browser):
         browser.find_element(By.CLASS_NAME, "cs-menue-item-artists").click()
-        assert browser.current_url[-20:] == "/repertoire/artists/"
+        url = urlparse(browser.current_url)
+        assert url.path == "/repertoire/artists/"
         browser.screenshot("navigated_to_artist_list")
 
     def test_042_click_add_artist(self, browser):
         browser.find_element(By.CLASS_NAME, "btn-artist-add").click()
-        # browser.get("/repertoire/artists/add")
-        assert browser.current_url[-23:] == "/repertoire/artists/add"
+        url = urlparse(browser.current_url)
+        assert url.path == "/repertoire/artists/add"
         browser.screenshot("navigated_to_add_artist")
 
     @Tdb.transaction()
@@ -131,7 +132,7 @@ class TestLicenser:
         """
         formid = 'AddArtist'
         form = DeformFormObject(
-            browser, add_artist_form, formid)
+            browser, add_artist_form, formid, userid=wu_email)
         form.group.set(False)
         form.name.set("Testartist #67890")
         form.ipn_code.set("67890123451")
@@ -146,12 +147,13 @@ class TestLicenser:
 
     def test_050_navigate_to_artist_list_again(self, browser):
         browser.find_element(By.CLASS_NAME, "cs-menue-item-artists").click()
-        assert browser.current_url[-20:] == "/repertoire/artists/"
+        url = urlparse(browser.current_url)
+        assert url.path == "/repertoire/artists/"
 
     def test_052_click_add_artist_again(self, browser):
         browser.find_element(By.CLASS_NAME, "btn-artist-add").click()
-        # browser.get("/repertoire/artists/add")
-        assert browser.current_url[-23:] == "/repertoire/artists/add"
+        url = urlparse(browser.current_url)
+        assert url.path == "/repertoire/artists/add"
         browser.screenshot("navigated_to_add_artist")
 
     @Tdb.transaction()
@@ -161,7 +163,7 @@ class TestLicenser:
         """
         formid = 'AddArtist'
         form = DeformFormObject(
-            browser, add_artist_form, formid)
+            browser, add_artist_form, formid, userid=wu_email)
         form.group.set(True)
         form.name.set("Testartist #34567")
         form.ipn_code.set("34567678901")
@@ -221,15 +223,18 @@ class TestLicenser:
         delete an creation
         """
         browser.find_element(By.CLASS_NAME, "btn-creation-delete").click()
+        url = urlparse(browser.current_url)
+        assert url.path == "/repertoire/artists/add"
         assert browser.find_element(By.CLASS_NAME, "alert-success")
-        assert browser.current_url[-22:] == "/repertoire/creations/"
+        assert url.path == "/repertoire/creations/"
         assert "Testcreation #12345" not in browser.page_source
         browser.screenshot("clicked_creation_delete")
 
     def test_090_navigate_to_artist_list_again(self, browser):
         browser.find_element(By.CLASS_NAME, "cs-menue-item-artists").click()
         browser.screenshot("test_090_navigated_to_artist_list_again")
-        assert browser.current_url[-20:] == "/repertoire/artists/"
+        url = urlparse(browser.current_url)
+        assert url.path == "/repertoire/artists/"
 
     def test_091_navigate_to_created_artist(self, browser):
         artist_entry = browser.find_element(By.CLASS_NAME, "cs-artist-name")
@@ -238,20 +243,18 @@ class TestLicenser:
                                                       "Testartist #54321")
         artist_entry_link.click()
         browser.screenshot("test_091_navigated_to_created_artist")
-        assert browser.current_url[-31:] == "/repertoire/artists/A0000000001"
+        url = urlparse(browser.current_url)
+        assert url.path == "/repertoire/artists/A0000000001"
 
     def test_092_delete_artist(self, browser):
         """
         delete an artist
         """
-        # import debugpy
-        # debugpy.listen(("0.0.0.0", 52003))
-        # debugpy.wait_for_client()
-        # breakpoint()
         browser.find_element(By.CLASS_NAME, "btn-artist-delete").click()
         browser.screenshot("clicked_artist_delete")
+        url = urlparse(browser.current_url)
         assert browser.find_element(By.CLASS_NAME, "alert-success")
-        assert browser.current_url[-20:] == "/repertoire/artists/"
+        assert url.path == "/repertoire/artists/"
         assert "Testartist #12345" not in browser.page_source
 
     def test_095_logout(self, browser):
