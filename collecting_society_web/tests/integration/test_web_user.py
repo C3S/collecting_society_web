@@ -33,7 +33,7 @@ class TestWebUser:
         form.lastname.set('Lastname')
         form.birthdate.set('1970-01-01')
         form.register_email.set('a@webuser.test')
-        form.register_password.set('awebuser')
+        form.register_password.set('awebuserpassword')
         form.terms_accepted.set(True)
         form.register_webuser()
         assert "Thank you for your registration" in browser.page_source
@@ -45,7 +45,7 @@ class TestWebUser:
         formid = 'LoginWebuser'
         form = DeformFormObject(browser, login_form, formid)
         form.login_email.set('a@webuser.test')
-        form.login_password.set('awebuser')
+        form.login_password.set('awebuserpassword')
         form.submit()
         assert "User mail address not verified" in browser.page_source
 
@@ -84,7 +84,7 @@ class TestWebUser:
         formid = 'LoginWebuser'
         form = DeformFormObject(browser, login_form, formid)
         form.login_email.set('a@webuser.test')
-        form.login_password.set('awebuser')
+        form.login_password.set('awebuserpassword')
         form.submit()
         assert browser.find_elements(By.CLASS_NAME, 'cs-backend')
 

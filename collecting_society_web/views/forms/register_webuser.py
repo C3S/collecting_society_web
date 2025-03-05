@@ -319,7 +319,7 @@ class EmailField(colander.SchemaNode):
 class CheckedPasswordField(colander.SchemaNode):
     oid = "register_password"
     schema_type = colander.String
-    validator = colander.Length(min=8)
+    validator = colander.Length(min=10)
     widget = deform.widget.CheckedPasswordWidget()
 
 

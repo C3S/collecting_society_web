@@ -31,7 +31,7 @@ wu_email = 'licenser1@artist.test'
 def web_user(create_web_user):
     create_web_user(
         email=wu_email,
-        password='password',
+        password='securepassword',
         opt_in_state='opted-in',
     )
 
@@ -49,7 +49,7 @@ class TestLicenser:
         formid = 'LoginWebuser'
         form = DeformFormObject(browser, login_form, formid)
         form.login_email.set(wu_email)
-        form.login_password.set('password')
+        form.login_password.set('securepassword')
         form.submit()
         assert browser.find_elements(By.CLASS_NAME, 'cs-backend')
 
