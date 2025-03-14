@@ -340,7 +340,10 @@ def current_artists_select_widget(node, kw):
     request = kw.get('request')
     web_user = WebUser.current_web_user(request)
     artists = Artist.search_by_party(web_user.party.id)
-    artist_options = [(artist.oid, artist.name) for artist in artists]
+    artist_options = [
+        (artist.oid, f"{artist.code}: {artist.name}")
+        for artist in artists
+    ]
     widget = deform.widget.Select2Widget(values=artist_options)
     return widget
 
