@@ -5,11 +5,7 @@ import logging
 import colander
 import deform
 
-from portal_web.models import (
-    Tdb,
-    Party,
-    WebUser
-)
+from portal_web.models import Tdb
 from portal_web.views.forms import (
     FormController,
     deferred_file_upload_widget
@@ -44,133 +40,115 @@ class AddArtist(FormController):
 
     @Tdb.transaction(readonly=False)
     def create_artist(self):
-        email = self.request.unauthenticated_userid
-        party = WebUser.current_party(self.request)
-        web_user = self.request.web_user
 
-        # generate vlist
-        _artist = {
-            'group': self.appstruct['group'],
+        # --- shortcuts -------------------------------------------------------
+
+        # shortcuts: objects
+        email = self.request.unauthenticated_userid
+        web_user = self.request.web_user
+        party = web_user.party
+
+        # shortcuts: appstruct
+        _group = self.appstruct['group']
+        _name = self.appstruct['name']
+        _ipn_code = self.appstruct['ipn_code']
+        _description = self.appstruct['description'] or ''
+        _picture = self.appstruct['picture']
+        _members = self.appstruct['members']
+
+        # --- ids -------------------------------------------------------------
+
+        # ipn code
+        cs_identifiers = {'create': []}
+        if _ipn_code:
+            cs_identifiers['create'].append({
+                'space': ArtistIdentifierSpace.search_by_name('IPN'),
+                'id_code': _ipn_code,
+            })
+
+        # --- picture ---------------------------------------------------------
+
+        # picture
+        if _picture:
+            picture = {}
+            error, picture, thumb, mime = picture_processing(_picture['fp'])
+            if not error:
+                picture = {
+                    'picture_data': picture,
+                    'picture_thumbnail_data': thumb,
+                    'picture_data_mime_type': mime,
+                }
+            else:
+                self.request.session.flash(error, 'main-alert-warning')
+
+        # --- members ---------------------------------------------------------
+
+        # members
+        members_vlist = {'add': []}
+        if _group:
+            for _member in _members:
+
+                # member: add
+                if _member['mode'] == "add":
+                    member = Artist.search_by_oid(_member['oid'])
+                    if not member or member.group:
+                        continue
+                    members_vlist['add'].append(member)
+
+                # member: create
+                elif _member['mode'] == "create":
+                    member = Artist.create_foreign(
+                        party, _member['name'], _member['email'])
+                    members_vlist['add'].append(member)
+
+                # member: edit
+                elif _member['mode'] == "edit":
+                    member = Artist.search_by_oid(member['oid'])
+                    if not Artist.is_foreign_editable(web_user, member):
+                        continue
+                    member.name = _member['name']
+                    member.party.name = _member['name']
+                    for contact in member.party.contact_mechanisms:
+                        if contact.type == 'email':
+                            contact.value = _member['email']
+                            contact.save()
+                    member.party.save()
+                    member.save()
+                    members_vlist['add'].append(member)
+
+        # --- artist ----------------------------------------------------------
+
+        # artist
+        artist_vlist = {
+            'group': _group,
             'party': party,
             'entity_creator': party,
             'entity_origin': 'direct',
             'claim_state': 'claimed',
-            'name': self.appstruct['name'],
-            'cs_identifiers': [(
-                'create',
-                [{
-                    'space': ArtistIdentifierSpace.search_by_name('IPN'),
-                    'id_code': self.appstruct['ipn_code']
-                }]
-            )],
-            'description': self.appstruct['description'] or '',
+            'name': _name,
+            'description': _description,
+            'cs_identifiers': list(cs_identifiers.items()),
+            'solo_artists': list(members_vlist.items()),
+            **picture,
         }
+        artists = Artist.create([artist_vlist])
 
-        # picture
-        if self.appstruct['picture']:
-            err, p, t, m = picture_processing(self.appstruct['picture']['fp'])
-            if not err:
-                _artist['picture_data'] = p
-                _artist['picture_thumbnail_data'] = t
-                _artist['picture_data_mime_type'] = m
-            else:
-                self.request.session.flash(err, 'main-alert-warning')
+        # --- feedback --------------------------------------------------------
 
-        # members
-        if self.appstruct['group']:
-            members_add = []
-            members_create = []
-            for member in self.appstruct['members']:
-
-                # add existing artists
-                if member['mode'] == "add":
-                    member_artist = Artist.search_by_oid(member['oid'])
-                    # sanity checks
-                    if not member_artist:
-                        continue
-                    if member_artist.group:
-                        continue
-                    # append artist id
-                    members_add.append(member_artist.id)
-
-                # edit foreign artists
-                elif member['mode'] == "edit":
-                    member_artist = Artist.search_by_oid(member['oid'])
-                    if not Artist.is_foreign_editable(web_user, member_artist):
-                        continue
-                    member_artist.name = member['name']
-
-                    # party: create
-                    if not member_artist.party:
-                        member_artist.party, = Party.create([{
-                            'name': member['name'],
-                            'contact_mechanisms': [(
-                                'create', [{
-                                    'type': 'email',
-                                    'value': member['email']
-                                    }]
-                                )]
-                            }])
-
-                    # party: edit
-                    else:
-                        member_artist.party.name = member['name']
-                        for contact in member_artist.party.contact_mechanisms:
-                            if contact.type == 'email':
-                                contact.value = member['email']
-                                contact.save()
-                        member_artist.party.save()
-
-                    member_artist.save()
-                    members_add.append(member_artist.id)
-
-                # create new artists
-                elif member['mode'] == "create":
-                    # create new party
-                    member_party = Party.create([{
-                        'name': member['name'],
-                        'contact_mechanisms': [(
-                            'create',
-                            [{
-                                'type': 'email',
-                                'value': member['email']
-                            }]
-                        )]
-                    }])
-                    member_party = member_party[0]
-                    # append member data
-                    members_create.append({
-                        'group': False,
-                        'description': "",
-                        'party': member_party.id,
-                        'entity_creator': party.id,
-                        'entity_origin': 'indirect',
-                        'claim_state': 'unclaimed',
-                        'name': member['name']
-                    })
-
-            # append actions
-            _artist['solo_artists'] = []
-            if members_create:
-                _artist['solo_artists'].append(('create', members_create))
-            if members_add:
-                _artist['solo_artists'].append(('add', members_add))
-
-        # create artist
-        artists = Artist.create([_artist])
-
-        # user feedback
+        # user feedback: error
         if not artists:
-            log.info("artist add failed for %s: %s" % (email, _artist))
+            log.info("artist add failed for %s: %s" % (email, artist_vlist))
             self.request.session.flash(
-                _("Artist could not be added: ${arna}",
-                  mapping={'arna':  _artist['name']}),
+                _("Artist could not be added: ${artist}",
+                  mapping={'artist':  artist_vlist['name']}),
                 'main-alert-danger'
             )
             self.redirect()
             return
         artist = artists[0]
-        log.info("artist add successful for %s: %s" % (email, artist))
+
+        # user feedback: success
+        log.info("artist add successful for %s: %s" % (email, artist_vlist))
         artists = Artist.search_by_party(party)
         is_first_artist = False
         if artists and len(artists) == 1:
@@ -178,15 +156,15 @@ class AddArtist(FormController):
         if is_first_artist:
             self.request.session.flash(
                 _("Congratulations! You created your first artist "
-                  "'${arna}' (${arco}). Now go back to the dashboard and "
+                  "'${name}' (${code}). Now go back to the dashboard and "
                   "see what's next.",
-                  mapping={'arna': artist.name, 'arco': artist.code}),
+                  mapping={'name': artist.name, 'code': artist.code}),
                 'main-alert-success'
             )
         else:
             self.request.session.flash(
-                _("Artist added:  ${arna} (${arco})",
-                  mapping={'arna': artist.name, 'arco': artist.code}),
+                _("Artist added:  ${name} (${code})",
+                  mapping={'name': artist.name, 'code': artist.code}),
                 'main-alert-success'
             )
 
