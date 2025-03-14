@@ -27,8 +27,8 @@ def picture_processing(fp):
         fp.flush()  # last bytes would be truncated without this
         image = Image.open(fp.name)
         thumb = image.copy()
-        thumb.thumbnail((84, 84), Image.ANTIALIAS)
-        image.thumbnail((509, 509), Image.ANTIALIAS)
+        thumb.thumbnail((84, 84), Image.LANCZOS)
+        image.thumbnail((509, 509), Image.LANCZOS)
         with io.BytesIO() as picture_thumbnail_data:
             thumb.save(picture_thumbnail_data, "JPEG")
             picture_thumbnail_data.seek(0)
