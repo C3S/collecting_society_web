@@ -72,14 +72,14 @@ class AddArtist(FormController):
         if _picture:
             picture = {}
             error, picture, thumb, mime = picture_processing(_picture['fp'])
-            if not error:
+            if error:
+                self.request.session.flash(error, 'main-alert-warning')
+            else:
                 picture = {
                     'picture_data': picture,
                     'picture_thumbnail_data': thumb,
                     'picture_data_mime_type': mime,
                 }
-            else:
-                self.request.session.flash(error, 'main-alert-warning')
 
         # --- members ---------------------------------------------------------
 
