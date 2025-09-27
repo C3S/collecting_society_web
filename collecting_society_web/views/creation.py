@@ -30,6 +30,9 @@ class CreationsViews(ViewBase):
         renderer='../templates/creation/list.pt',
         permission='list_creations')
     def list(self):
+        context = self.request.context
+        if not context.creations:
+            return self.redirect(context, 'add')
         return {}
 
     @view_config(
@@ -50,13 +53,26 @@ class CreationViews(ViewBase):
         renderer='../templates/creation/show.pt',
         permission='view_creation')
     def show(self):
-        # artist_id = self.request.subpath[-1]
-        # _creation = Creation.search_by_id(artist_id)
-        # _contributions = sorted(
-        #     _creation.contributions,
-        #     key=lambda contribution: contribution.type
-        # )
-        return {}
+        creation = self.request.context.creation
+
+        # copyright
+        copyright = {}
+        for right in creation.get_rights('copyright'):
+            if right.rightsholder not in copyright:
+                copyright[right.rightsholder] = []
+            copyright[right.rightsholder].append(right)
+
+        # ancillary
+        ancillary = {}
+        for right in creation.get_rights('ancillary'):
+            if right.rightsholder not in ancillary:
+                ancillary[right.rightsholder] = []
+            ancillary[right.rightsholder].append(right)
+
+        return {
+            'copyright': copyright,
+            'ancillary': ancillary,
+        }
 
     @view_config(
         name='edit',

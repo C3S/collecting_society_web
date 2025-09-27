@@ -359,7 +359,7 @@ def save_upload_to_fs(descriptor, absolute_path, contentrange=None):
 
     # save
     try:
-        with open(absolute_path, 'a') as f:
+        with open(absolute_path, 'ab') as f:
             shutil.copyfileobj(descriptor, f)
     except IOError:
         raise HTTPInternalServerError
@@ -370,7 +370,6 @@ def save_upload_to_fs(descriptor, absolute_path, contentrange=None):
     )
 
 
-@Tdb.transaction(readonly=False)
 def save_upload_to_db(content):
     contents = Content.create([content])
     if not len(contents) == 1:
@@ -381,6 +380,7 @@ def save_upload_to_db(content):
 def validate_upload(filename, absolute_path):
 
     # check filetype
+    filename = str(filename)
     extension = os.path.splitext(filename)[1]
     if extension:
         extension = extension[1:]
@@ -435,7 +435,7 @@ def save_checksums_to_db(content, path):
     rows = csv_import(path)
     for row in rows:
         checksums.append({
-            'origin': 'content,%s' % (content.id),
+            'origin': content,
             'code': str(row['checksum']),
             'timestamp': timestamp,
             'algorithm': str(row['algorithm']),
@@ -617,8 +617,9 @@ def post_repertoire_upload(request):
         rank_max = int(request.registry.settings['abuse_rank.max'])
         hostname = get_hostname()
         descriptor = fieldStorage.file
-        filename = os.path.basename(fieldStorage.filename).encode('utf-8')
-        filename_hash = _hash_algorithm(filename).hexdigest()
+        filename = os.path.basename(fieldStorage.filename)
+        filename_encoded = filename.encode('utf-8')
+        filename_hash = _hash_algorithm(filename_encoded).hexdigest()
         temporary_path = get_path(request, _path_temporary, filename_hash)
         contentrange = ContentRange.parse(
             request.headers.get('Content-Range', None)
@@ -645,7 +646,7 @@ def post_repertoire_upload(request):
                 # TODO: number wont be replaced, also see
                 # BirthdateField line 300+ in register_webuser.py
                 files.append({
-                    'name': fieldStorage.filename,
+                    'name': filename,
                     'error': _(
                         "Abuse detected. Wait for {number}"
                         " seconds before trying another"
@@ -670,7 +671,7 @@ def post_repertoire_upload(request):
         if not complete:
             # client feedback
             files.append({
-                'name': fieldStorage.filename,
+                'name': filename,
                 'size': os.path.getsize(temporary_path)
             })
             continue
@@ -707,7 +708,7 @@ def post_repertoire_upload(request):
                 'rejection_reason': "format_error",
                 'entity_origin': "direct",
                 'entity_creator': WebUser.current_web_user(request).party,
-                'name': str(name),
+                'name': filename,
                 'category': file_category,
                 'mime_type': mime_type,
                 'size': file_size,
@@ -726,13 +727,15 @@ def post_repertoire_upload(request):
             log.info(
                 (
                     "Content rejected (format error): %s\n"
+                    "Reason: %s\n"
                 ) % (
-                    rejected_path
+                    rejected_path,
+                    error
                 )
             )
             # client feedback
             files.append({
-                'name': fieldStorage.filename,
+                'name': filename,
                 'error': error
             })
             continue
@@ -761,7 +764,7 @@ def post_repertoire_upload(request):
             'processing_state': "uploaded",
             'entity_origin': "direct",
             'entity_creator': WebUser.current_web_user(request).party,
-            'name': str(filename),
+            'name': filename,
             'category': file_category,
             'mime_type': str(mime.from_file(uploaded_path)),
             'size': os.path.getsize(uploaded_path),

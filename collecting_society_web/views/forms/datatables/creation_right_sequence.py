@@ -32,25 +32,36 @@ def prepare_required(value):
 
 # --- Options -----------------------------------------------------------------
 
-right_options = [
-    ('copyright', _('Copyright')),
-    ('ancillary', _('Ancillary Copyright'))
+contribution_options = [
+    deform.widget.OptGroup(
+        _('Copyright'),
+        ('copyright-lyrics', _('Lyrics')),
+        ('copyright-composition', _('Composition')),
+    ),
+    deform.widget.OptGroup(
+        _('Ancillary Copyright'),
+        ('ancillary-instrument', _('Instrument')),
+        ('ancillary-production', _('Production')),
+        ('ancillary-mixing', _('Mixing')),
+        ('ancillary-mastering', _('Mastering')),
+    ),
 ]
 
-contribution_options = [
-    ('lyrics', 'Lyrics'),
-    ('composition', 'Composition'),
-    ('instrument', 'Instrument'),
-    ('production', 'Production'),
-    ('mixing', 'Mixing'),
-    ('mastering', 'Mastering'),
-]
+
+def get_contribution_label(value):
+    for group in contribution_options:
+        for option in group.options:
+            if option[0] == value:
+                return option[1]
 
 
 # --- Validators --------------------------------------------------------------
 
 def validate_multifield(node, values):  # multifield validator
     """Check plausibility between fields"""
+
+    # TODO: fix valdation checks
+    return
 
     # check if contributions match rights
     ctbr = values["contribution"]
@@ -83,7 +94,6 @@ def validate_multifield(node, values):  # multifield validator
 
 # --- Widgets -----------------------------------------------------------------
 
-
 @colander.deferred
 def deferred_instrument_widget(node, kw):
     instruments = Instrument.search_all()
@@ -99,10 +109,7 @@ def collecting_society_widget(node, kw):
     # type_of_right
     collecting_societies = CollectingSociety.search([])
     values = [('', '')] + [(tc.oid, tc.name) for tc in collecting_societies]
-    return deform.widget.Select2Widget(values=values, placeholder=_("None"))
-
-
-# --- Fields ------------------------------------------------------------------
+    return deform.widget.SelectWidget(values=values, placeholder=_("None"))
 
 
 @colander.deferred
@@ -110,9 +117,10 @@ def creation_right_sequence_widget(node, kw):
     return DatatableSequenceWidget(
         request=kw.get('request'),
         template='datatables/creation_right_sequence',
-        item_template='datatables/creation_right_sequence_item'
     )
 
+
+# --- Fields ------------------------------------------------------------------
 
 class ModeField(colander.SchemaNode):
     oid = "mode"
@@ -133,17 +141,10 @@ class OidField(colander.SchemaNode):
     )
 
 
-class TypeOfRightField(colander.SchemaNode):
-    oid = "type_of_right"
-    schema_type = colander.String
-    widget = deform.widget.Select2Widget(values=right_options, multiple=False)
-
-
 class ContributionField(colander.SchemaNode):
     oid = "contribution"
     schema_type = colander.String
-    widget = deform.widget.Select2Widget(
-        values=contribution_options, multiple=False)
+    widget = deform.widget.SelectWidget(values=contribution_options)
 
 
 class InstrumentsField(colander.SchemaNode):
@@ -159,16 +160,16 @@ class CollectingSocietyField(colander.SchemaNode):
     validator = colander.uuid
     missing = ""
 
-# --- Schemas -----------------------------------------------------------------
 
+# --- Schemas -----------------------------------------------------------------
 
 class CreationRightSchema(colander.Schema):
     mode = ModeField()
     oid = OidField()
-    type_of_right = TypeOfRightField()
     contribution = ContributionField()
     instruments = InstrumentsField()
     collecting_society = CollectingSocietyField()
+    preparer = [prepare_required]
     title = ""
 
 

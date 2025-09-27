@@ -13,7 +13,16 @@
                     className: "all",
                     orderable: true,
                     searchable: true,
-                    render: $.fn.dataTable.render.text(),
+                    render: function(data, type, row, meta) {
+                        if(type !== 'display' && type !== 'sort')
+                            return data;
+                        if (row.othertitles == "")
+                            return tmpl.encode(data);
+                        var title = tmpl.encode(row.othertitles);
+                        return "<span data-toggle='tooltip' title='" + title + "'>" +
+                            tmpl.encode(data) +
+                        "</span>";
+                    },
                     datatableSequence: {
                         position: "displayed",
                         widgetType: 'TextInputWidget',
@@ -47,6 +56,19 @@
                         position: "displayed",
                         widgetType: 'HiddenWidget',
                         footerSearch: true,
+                    }
+                },
+                {
+                    name: "othertitles",
+                    title: "${_('Other Titles')}",
+                    data: "othertitles",
+                    visible: false,
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "invisible",
+                        widgetType: 'HiddenWidget',
                     }
                 },
             ],

@@ -18,6 +18,39 @@ class Creation(Tdb):
     __name__ = 'creation'
 
     @classmethod
+    def is_foreign_editable(cls, web_user, creation):
+        """
+        Checks if the creation is a foreign object and still editable by the
+        current webuser.
+
+        Checks, if the original
+            1) is a foreign object
+            2) is still not claimed yet
+            3) is editable by the current web user
+            4) TODO: was not part of a distribution yet
+
+        Args:
+          web_user (obj): Current web user.
+          artist (obj): Artist to check.
+
+        Returns:
+          true: if creation is foreign and editable.
+          false: otherwise.
+        """
+        # 1) is a foreign object
+        if creation.entity_origin != 'indirect':
+            return False
+        # 2) is still not claimed yet
+        if creation.claim_state != 'unclaimed':
+            return False
+        # 3) is editable by the current web user
+        if not (creation.permits(web_user, 'edit_artist')
+                or creation.entity_creator == web_user.party):
+            return False
+        # 4) TODO: was not part of a distribution yet
+        return True
+
+    @classmethod
     def is_foreign_original(cls, request, derivative, original):
         """
         Checks if the original is a foreign object and still editable by the
@@ -39,7 +72,6 @@ class Creation(Tdb):
           false: otherwise.
         """
         # sanity checks
-        log.debug(derivative.original_relations)
         if original.id not in [r.id for r in derivative.original_relations]:
             return False
         # 1) is a foreign object
@@ -211,7 +243,9 @@ class Creation(Tdb):
             ('id', '=', creation_id),
             ('active', 'in', (True, active))
         ])
-        return result[0] or None
+        if not result:
+            return None
+        return result[0]
 
     @classmethod
     def search_by_oid(cls, oid, active=True):
@@ -236,7 +270,7 @@ class Creation(Tdb):
     @classmethod
     def search_by_code(cls, creation_code, active=True):
         """
-        Searches a creation by artist code
+        Searches a creation by creation code
 
         Args:
           creation_code (int): creation.code
@@ -403,7 +437,7 @@ class Creation(Tdb):
           list: created creations
           None: if no object was created
         """
-        log.debug('create creation:\n{}'.format(vlist))
+        log.debug(vlist)
         for values in vlist:
             if 'title' not in values:
                 raise KeyError('title is missing')
@@ -417,7 +451,7 @@ class Creation(Tdb):
     @classmethod
     def create_foreign(cls, party, artist_name, title):
         """
-        Creates foreign Artist(!) and Creaion
+        Creates foreign Artist(!) and Creation
 
         Args:
             party: the Party that wants to create the foreign objects
@@ -431,15 +465,15 @@ class Creation(Tdb):
         artist = Artist.create([{
             'name': artist_name,
             'entity_origin': 'indirect',
-            'entity_creator': party.id
+            'entity_creator': party,
             }])
         if not artist:
             return None
         creation = Creation.create([{
             'title': title,
-            'artist': artist[0].id,
+            'artist': artist[0],
             'entity_origin': 'indirect',
-            'entity_creator': party.id
+            'entity_creator': party,
             }])
         if not creation:
             return None

@@ -17,7 +17,7 @@ class UncommitedContentWidget():
         return self.badge() > 0
 
     def icon(self):
-        return "glyphicon glyphicon-send"
+        return "glyphicon-send"
 
     def header(self):
         return _("Uncommitted Content")

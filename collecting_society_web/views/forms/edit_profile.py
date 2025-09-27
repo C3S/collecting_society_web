@@ -7,10 +7,7 @@ import colander
 import deform
 import uuid
 
-from portal_web.models import (
-    Tdb,
-    WebUser
-)
+from portal_web.models import Tdb, WebUser, Address, Country
 from portal_web.views.forms import FormController
 from portal_web.services import send_mail
 from ...services import _
@@ -28,20 +25,10 @@ class EditProfile(FormController):
     def controller(self):
         self.form = edit_profile_form(self.request)
         if self.submitted():
-            # submit validated data from form
             if self.validate():
-                self.change_profile()
+                self.edit_profile()
         else:
-            # initialize form
-            web_user = WebUser.current_web_user(self.request)
-            self.appstruct = {
-                'name': web_user.party.name or "",
-                'firstname': web_user.party.firstname or "",
-                'lastname': web_user.party.lastname or "",
-                'email': web_user['email'] or ""
-            }
-            self.render(self.appstruct)
-
+            self.load_declaration()
         return self.response
 
     # --- Stages --------------------------------------------------------------
@@ -50,22 +37,84 @@ class EditProfile(FormController):
 
     # --- Actions -------------------------------------------------------------
 
-    @Tdb.transaction(readonly=False)
-    def change_profile(self):
+    def load_declaration(self):
+        # shortcuts
         web_user = self.request.web_user
-        web_user.party.firstname = self.appstruct['firstname']  # save separate
-        web_user.party.lastname = self.appstruct['lastname']  # for clarity
-        web_user.party.name = (web_user.party.firstname + ' '
-                               + web_user.party.lastname)
-        web_user.party.save()
-        # self.appstruct['name'] TODO: generate name using a tryton trigger
-        if self.appstruct['email'].lower() != web_user.email.lower():
-            # always save email lowercase, so tryton uniqueness is ensured
-            web_user.new_email = self.appstruct['email'].lower()
+        party = web_user.party
+        address = party.addresses and party.addresses[0] or False
+
+        # set appstruct
+        self.appstruct = {
+            'name': web_user.party.name or "",
+            'firstname': web_user.party.firstname or "",
+            'lastname': web_user.party.lastname or "",
+            'email': web_user.email or "",
+            'default_role': web_user.default_role,
+        }
+        if address:
+            self.appstruct.update({
+                'street': address.street,
+                'postal_code': address.postal_code,
+                'city': address.city,
+                'country': address.country.code,
+            })
+
+        # render form with data
+        self.render(self.appstruct)
+
+    @Tdb.transaction(readonly=False)
+    def edit_profile(self):
+        # shortcuts: objects
+        web_user = self.request.web_user
+        email = web_user.email.lower()
+        party = web_user.party
+        address = party.addresses and party.addresses[0]
+        country = Country.search_by_code(self.appstruct['country'])
+
+        # shortcuts: appstruct
+        _email = self.appstruct['email'].lower()
+        _password = self.appstruct['password']
+
+        # party
+        party.firstname = self.appstruct['firstname']
+        party.lastname = self.appstruct['lastname']
+        party.name = f"{party.firstname} {party.lastname}"
+        party.save()
+
+        # address: edit
+        if address:
+            address.street = self.appstruct['street']
+            address.postal_code = self.appstruct['postal_code']
+            address.city = self.appstruct['city']
+            address.country = country
+            address.save()
+
+        # address: create
+        else:
+            address_vlist = {
+                'party': party,
+                'street': self.appstruct['street'],
+                'postal_code': self.appstruct['postal_code'],
+                'city': self.appstruct['city'],
+                'country': country,
+            }
+            Address.create([address_vlist])
+
+        # web user
+        web_user.default_role = self.appstruct['default_role']
+        web_user.save()
+
+        # web user: email
+        email_has_changed = (_email != email)
+        if email_has_changed:
+            web_user.new_email = _email
             web_user.opt_in_uuid = str(uuid.uuid4())
             web_user.save()
+
             # email verification
             template_variables = {
+                'old_email': email,
+                'new_email': _email,
                 'link': self.request.resource_url(
                     self.request.root, 'verify_email',
                     WebUser.get_opt_in_uuid_by_id(web_user.id)
@@ -77,27 +126,31 @@ class EditProfile(FormController):
                 variables=template_variables,
                 recipients=[web_user.new_email]
             )
-        if self.appstruct['password']:
-            web_user.password = self.appstruct['password']
+
+        # web user: password
+        if _password:
+            web_user.password = _password
             web_user.save()
 
-        if self.appstruct['email'].lower() == web_user.email.lower():
-            log.info(
-                "edit profile add successful for %s" % (web_user.party.name))
-            self.request.session.flash(
-                _("Profile changed for: ${name}",
-                  mapping={'name': web_user.party.name}),
-                'main-alert-success'
-            )
-        else:
+        # user feedback
+        if email_has_changed:
             log.info(
                 "edit profile add successful for %s, activation email sent."
-                % (web_user.party.name))
+                % (party.name))
             self.request.session.flash(
                 _("Profile changed for: ${name}"
                   " -- activation email for new email address sent."
                   " Please check your (new) email inbox.",
-                  mapping={'name': web_user.party.name}),
+                  mapping={'name': party.name}),
+                'main-alert-success'
+            )
+        else:
+            log.info(
+                "edit profile add successful for %s"
+                % (party.name))
+            self.request.session.flash(
+                _("Profile changed for: ${name}",
+                  mapping={'name': party.name}),
                 'main-alert-success'
             )
 
@@ -133,17 +186,27 @@ def validate_unique_user_email(node, values, **kwargs):  # multifield validator
             return
     raise colander.Invalid(node, "Invalid email address")
 
+
 # --- Options -----------------------------------------------------------------
+
+default_role_options = [
+    ('licenser', _('Licenser')),
+    ('licensee', _('Licensee')),
+]
+
 
 # --- Widgets -----------------------------------------------------------------
 
+@colander.deferred
+def deferred_country_select_widget(node, kw):
+    countries = Country.search_all()
+    country_options = [(None, "")]
+    country_options += [(country.code, country.name) for country in countries]
+    widget = deform.widget.SelectWidget(values=country_options)
+    return widget
+
+
 # --- Fields ------------------------------------------------------------------
-
-# class NameField(colander.SchemaNode):
-#     oid = "name"
-#     schema_type = colander.String
-#     validator = colander.Function(not_empty)
-
 
 class FirstnameField(colander.SchemaNode):
     oid = "firstname"
@@ -160,8 +223,6 @@ class LastnameField(colander.SchemaNode):
 class EmailField(colander.SchemaNode):
     oid = "email"
     schema_type = colander.String
-    # validator = colander.Function(validate_unique_user_email)
-    # ^ validate_unique_user_email is a multi-field validator now
 
 
 class PasswordField(colander.MappingSchema):
@@ -172,16 +233,49 @@ class PasswordField(colander.MappingSchema):
     missing = ''
 
 
+class StreetField(colander.SchemaNode):
+    oid = "street"
+    schema_type = colander.String
+
+
+class PostalCodeField(colander.SchemaNode):
+    oid = "postal_code"
+    schema_type = colander.String
+
+
+class CityField(colander.SchemaNode):
+    oid = "city"
+    schema_type = colander.String
+
+
+class CountryField(colander.SchemaNode):
+    oid = "country"
+    schema_type = colander.String
+    widget = deferred_country_select_widget
+
+
+class DefaultRoleField(colander.SchemaNode):
+    oid = "default_role"
+    schema_type = colander.String
+    widget = deform.widget.SelectWidget(values=default_role_options)
+    default = "licenser"
+
+
 # --- Schemas -----------------------------------------------------------------
 
 class ProfileSchema(colander.Schema):
-    # name = NameField(title=_(u"Name"))
     firstname = FirstnameField(title=_("Firstname"))
     lastname = LastnameField(title=_("Lastname"))
+    street = StreetField(title=_("Street"))
+    postal_code = PostalCodeField(title=_("Postal Code"))
+    city = CityField(title=_("City"))
+    country = CountryField(title=_("Country"))
     email = EmailField(title=_("Email"))
     password = PasswordField(
-        title=_("Password (leave empty if you don't want to change it)")
+        title=_("Password"),
+        description=_("Leave password empty if you don't want to change it")
     )
+    default_role = DefaultRoleField(title=_("Default Role"))
 
 
 # --- Forms -------------------------------------------------------------------

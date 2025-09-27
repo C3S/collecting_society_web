@@ -11,8 +11,8 @@ import colander
 from portal_web.models import Tdb
 
 from ....models import Content
-from ....services import _
-from pyramid.i18n import get_localizer
+# from ....services import _                  <-- see line 105
+# from pyramid.i18n import get_localizer        <--
 from . import (
     _prefix,
     get_cors_policy,
@@ -103,13 +103,13 @@ def post_content(request):
     total = Content.search_count(total_domain)
     filtered = Content.search_count(domain)
     # localization
-    locale = get_localizer(request)
-    locale_domain = 'collecting_society_web'
-    content_category = {
-        'audio': locale.translate(_('Audio', locale_domain)),
-        'sheet': locale.translate(_('Sheet Music', locale_domain)),
-        'lyrics': locale.translate(_('Lyrics', locale_domain)),
-    }
+    # locale = get_localizer(request)
+    # locale_domain = 'collecting_society_web'
+    # content_category = {
+    #     'audio': locale.translate(_('Audio', locale_domain)),
+    #     'sheet': locale.translate(_('Sheet Music', locale_domain)),
+    #     'lyrics': locale.translate(_('Lyrics', locale_domain)),
+    # }
     # records
     records = []
     for content in Content.search(
@@ -119,9 +119,10 @@ def post_content(request):
             order=order):
         records.append({
             'oid': content.oid,
-            'name': content.name,
             'code': content.code,
-            'category': content_category[content.category],
+            'name': content.name,
+            'category': content.category,
+            'preview': bool(content.preview_path),
         })
     # response
     return {

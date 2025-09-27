@@ -35,7 +35,6 @@ class RegisterWebuser(LoginWebuser):
     __stage__ = 'claims_membership'  # initial stage
 
     def controller(self):
-
         if self.stage == 'claims_membership':
             self.claims_membership()
 
@@ -130,7 +129,8 @@ class RegisterWebuser(LoginWebuser):
             'email': self.data['email'].lower(),
             'password': self.data['password'],
             'roles': [('add', [WebUserRole.search_by_code('licenser').id,
-                               WebUserRole.search_by_code('licensee').id])]
+                               WebUserRole.search_by_code('licensee').id])],
+            'default_role': self.data['default_role'],
         }
         template_variables = {}
 
@@ -275,6 +275,11 @@ def right_age(value):
 
 # --- Options -----------------------------------------------------------------
 
+default_role_options = [
+    ('licenser', _('Licenser')),
+    ('licensee', _('Licensee')),
+]
+
 # --- Widgets -----------------------------------------------------------------
 
 # --- Fields ------------------------------------------------------------------
@@ -314,14 +319,22 @@ class EmailField(colander.SchemaNode):
 class CheckedPasswordField(colander.SchemaNode):
     oid = "register_password"
     schema_type = colander.String
-    validator = colander.Length(min=8)
+    validator = colander.Length(min=10)
     widget = deform.widget.CheckedPasswordWidget()
+
+
+class DefaultRoleField(colander.SchemaNode):
+    oid = "default_role"
+    schema_type = colander.String
+    widget = deform.widget.SelectWidget(values=default_role_options)
+    default = "licenser"
 
 
 class CheckboxWithLabel(colander.SchemaNode):
     oid = "terms_accepted"
     schema_type = colander.Boolean
     validator = colander.Function(terms_accepted)
+    widget = deform.widget.CheckboxWidget(template='checkbox_with_link')
 
 
 # --- Schemas -----------------------------------------------------------------
@@ -336,7 +349,12 @@ class RegisterMemberSchema(colander.MappingSchema):
     password = CheckedPasswordField(title=_("Password"))
     terms_accepted = CheckboxWithLabel(
         title=_("Terms of Service"),
-        label=_("I accept the terms of service.")
+        label="".join([
+            _("I accept the "),
+            "<a href='/register#terms' target='_blank'>",
+            _("terms of service"),
+            "</a>.",
+        ]),
     )
 
 
@@ -346,9 +364,15 @@ class RegisterNonmemberSchema(colander.MappingSchema):
     birthdate = BirthdateField(title=_("Birthdate"))
     email = EmailField(title=_("Email"))
     password = CheckedPasswordField(title=_("Password"))
+    default_role = DefaultRoleField(title=_("Default Role"))
     terms_accepted = CheckboxWithLabel(
         title=_("Terms of Service"),
-        label=_("I accept the terms of service.")
+        label="".join([
+            _("I accept the "),
+            "<a href='/register#terms' target='_blank'>",
+            _("terms of service"),
+            "</a>.",
+        ]),
     )
 
 

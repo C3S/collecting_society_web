@@ -4,11 +4,7 @@
 import logging
 import deform
 
-from portal_web.models import (
-    Tdb,
-    Party,
-    WebUser
-)
+from portal_web.models import Tdb
 from portal_web.views.forms import FormController
 from ...services import (_, picture_processing)
 from ...models import Artist
@@ -40,6 +36,7 @@ class EditArtist(FormController):
     # --- Actions -------------------------------------------------------------
 
     def edit_artist(self):
+        # shortcuts
         artist = self.context.artist
 
         # set appstruct
@@ -56,7 +53,7 @@ class EditArtist(FormController):
             for member in artist.solo_artists:
                 mode = "add"
                 email = ""
-                if Artist.is_foreign_member(self.request, artist, member):
+                if Artist.is_foreign_editable(self.request.web_user, member):
                     mode = "edit"
                     email = member.party.email
                 _members.append({
@@ -74,13 +71,31 @@ class EditArtist(FormController):
 
     @Tdb.transaction(readonly=False)
     def update_artist(self):
-        appstruct = self.appstruct
+
+        # --- shortcuts -------------------------------------------------------
+
+        # shortcuts: objects
+        web_user = self.request.web_user
+        party = web_user.party
         artist = self.context.artist
-        email = self.request.unauthenticated_userid
-        party = WebUser.current_party(self.request)
+
+        # shortcuts: appstruct
+        _group = self.appstruct['group']
+        _name = self.appstruct['name']
+        _ipn_code = self.appstruct['ipn_code']
+        _description = self.appstruct['description'] or ''
+        _picture = self.appstruct['picture']
+        _members = self.appstruct['members']
+
+        # --- ids -------------------------------------------------------------
+
+        # ipn code
+        artist.set_id_code('IPN', _ipn_code)
+
+        # --- group -----------------------------------------------------------
 
         # group
-        if artist.group != appstruct['group']:
+        if artist.group != _group:
             # if group status has changed
             if artist.group:
                 # remove solo artists from current group artist
@@ -88,120 +103,68 @@ class EditArtist(FormController):
             else:
                 # remove current solo artist from group artists
                 artist.group_artists = []
-            artist.group = appstruct['group']
 
-        # name
-        if artist.name != appstruct['name']:
-            artist.name = appstruct['name']
-
-        # description
-        if artist.description != appstruct['description']:
-            artist.description = appstruct['description']
+        # --- picture ---------------------------------------------------------
 
         # picture
-        if self.appstruct['picture']:
-            err, p, t, m = picture_processing(self.appstruct['picture']['fp'])
-            if not err:
-                artist.picture_data = p
-                artist.picture_thumbnail_data = t
-                artist.picture_data_mime_type = m
+        if _picture:
+            error, picture, thumb, mime = picture_processing(_picture['fp'])
+            if error:
+                self.request.session.flash(error, 'main-alert-warning')
             else:
-                self.request.session.flash(err, 'main-alert-warning')
+                artist.picture_data = picture
+                artist.picture_thumbnail_data = thumb
+                artist.picture_data_mime_type = mime
+
+        # --- members ---------------------------------------------------------
 
         # members
-        if artist.group:
-            members_current = list(artist.solo_artists)
-            members_future = []
-            members_remove = members_current
-            members_add = []
-            members_create = []
-            for member in appstruct['members']:
+        members = []
+        if _group:
+            for _member in _members:
 
-                # add existing artists
-                if member['mode'] == "add":
-                    member_artist = Artist.search_by_oid(member['oid'])
-                    # sanity checks
-                    if not member_artist:
+                # member: add
+                if _member['mode'] == "add":
+                    member = Artist.search_by_oid(_member['oid'])
+                    if not member or member.group:
                         continue
-                    if member_artist.group:
+                    members.append(member)
+
+                # member: create
+                elif _member['mode'] == "create":
+                    member = Artist.create_foreign(
+                        party, _member['name'], _member['email'])
+                    members.append(member)
+
+                # member: edit
+                elif _member['mode'] == "edit":
+                    member = Artist.search_by_oid(member['oid'])
+                    if not Artist.is_foreign_editable(web_user, member):
                         continue
-                    members_future.append(member_artist)
-                    if member_artist in members_current:
-                        members_remove.remove(member_artist)
-                        continue
-                    # append artist id
-                    members_add.append(member_artist)
+                    member.name = _member['name']
+                    member.party.name = _member['name']
+                    for contact in member.party.contact_mechanisms:
+                        if contact.type == 'email':
+                            contact.value = _member['email']
+                            contact.save()
+                    member.party.save()
+                    member.save()
+                    members.append(member)
 
-                # create new artists
-                if member['mode'] == "create":
-                    # create new party
-                    member_party = Party.create([{
-                        'name': member['name'],
-                        'contact_mechanisms': [(
-                            'create',
-                            [{
-                                'type': 'email',
-                                'value': member['email']
-                            }]
-                        )]
-                    }])
-                    member_party = member_party[0]
-                    # create vlist
-                    members_create.append({
-                        'group': False,
-                        'description': "",
-                        'party': member_party.id,
-                        'entity_creator': party.id,
-                        'entity_origin': 'indirect',
-                        'claim_state': 'unclaimed',
-                        'name': member['name']
-                    })
+        # --- artist ----------------------------------------------------------
 
-                # edit created artists
-                if member['mode'] == "edit":
-                    member_artist = Artist.search_by_code(member['code'])
-                    member_party = member_artist.party
-                    # sanity checks
-                    if not member_artist:
-                        continue
-                    # security checks
-                    if not Artist.is_foreign_member(
-                            self.request, artist, member_artist):
-                        continue
-                    # edit artist
-                    member_artist.name = member['name']
-                    has_email = False
-                    if member_party.contact_mechanisms:
-                        for contact in member_party.contact_mechanisms:
-                            if contact.type == 'email':
-                                has_email = True
-                                contact.email = member['email']
-                                contact.save()
-                    if not has_email:
-                        # TODO: find out, how to create a new contact mechanism
-                        # without triggering a user validation error on email
-                        log.debug("warning: member email not created (TODO)")
-                    member_artist.save()
-                    members_future.append(member_artist)
-
-            # create new artists
-            if members_create:
-                members_created = Artist.create(members_create)
-                members_future += members_created
-
-            # add new member list
-            artist.solo_artists = members_future
-
-        artist.set_id_code('IPN', appstruct['ipn_code'])
-
-        # update artist
+        # artist
+        artist.group = _group
+        artist.name = _name
+        artist.description = _description
+        artist.solo_artists = members
         artist.save()
 
         # user feedback
-        log.info("edit artist successful for %s: %s" % (email, artist))
+        log.info("edit artist successful for %s: %s" % (web_user, artist))
         self.request.session.flash(
-            _("Artist edited: ${arna} (${arco})",
-              mapping={'arna': artist.name, 'arco': artist.code}),
+            _("Artist edited: ${name} (${code})",
+              mapping={'name': artist.name, 'code': artist.code}),
             'main-alert-success'
         )
 

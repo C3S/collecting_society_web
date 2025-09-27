@@ -21,10 +21,46 @@
                     <a class="btn btn-primary" role="button"
                        onclick="$('#AddCreationsubmit').click();"
                        i18n:translate="">Submit</a>
-                </div>                
+                </div>
             </div>
 
             <div tal:content="structure AddCreation"/>
+
+            <script>
+                $(document).ready(function() {
+                    // form logic for derivation type
+                    var tab = $('#cs-navform-item-content-derivation');
+                    var type = tab.find('select#distribution_type');
+                    var adaption = tab.find('.item-adaption');
+                    var cover = tab.find('.item-cover');
+                    var remix = tab.find('.item-remix');
+                    type.change(function() {
+                        var selected = type.find(":selected").first().val();
+                        switch(selected) {
+                            case 'adaption':
+                                adaption.show();
+                                cover.hide();
+                                remix.hide();
+                                break;
+                            case 'cover':
+                                adaption.hide();
+                                cover.show();
+                                remix.hide();
+                                break;
+                            case 'remix':
+                                adaption.hide();
+                                cover.hide();
+                                remix.show();
+                                break;
+                            default:
+                                adaption.hide();
+                                cover.hide();
+                                remix.hide();
+                        }
+                    });
+                    type.trigger('change');
+                });
+            </script>
 
         </div>
 

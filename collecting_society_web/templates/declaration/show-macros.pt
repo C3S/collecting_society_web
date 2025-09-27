@@ -1,0 +1,190 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+
+<!--! live tariff -->
+<metal:block define-macro="event"
+             tal:define="utilisation declaration.utilisations[0];
+                         event declaration.context;
+                         location event.location;
+                         performances event.performances">
+    <tr>
+        <th i18n:translate="">Event</th>
+        <td class="cs-subtable">
+            <table class="table">
+                <tr>
+                    <th i18n:translate="">Name</th>
+                    <td>${event.name}</td>
+                </tr>
+                <tr tal:condition="event.description">
+                    <th i18n:translate="">Description</th>
+                    <td>${event.description}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Location</th>
+        <td class="cs-subtable">
+            <table class="table">
+                <tr>
+                    <th i18n:translate="">Name</th>
+                    <td>${location.name}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Category</th>
+                    <td>${location.category.name}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Street</th>
+                    <td>${location.street}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Postal Code</th>
+                    <td>${location.postal_code}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">City</th>
+                    <td>${location.city}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Country</th>
+                    <td>${location.country.name}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr tal:condition="utilisation.state not in ['created', 'estimated']
+                       and utilisation.confirmation">
+        <th i18n:translate="">Confirmation</th>
+        <td>${utilisation.confirmation.capitalize()}</td>
+    </tr>
+    <tr tal:condition="utilisation.state not in ['created', 'estimated']">
+        <th i18n:translate="">Confirmed</th>
+        <td class="cs-subtable">
+            <table class="table">
+                <tal:block metal:use-macro="macros['event-indicators']"
+                           tal:define="indicators event.confirmed_indicators"/>
+            </table>
+        </td>
+    </tr>
+    <tr tal:condition="utilisation.state != 'created'">
+        <th i18n:translate="">Estimated</th>
+        <td class="cs-subtable">
+            <table class="table">
+                <tal:block metal:use-macro="macros['event-indicators']"
+                           tal:define="indicators event.estimated_indicators"/>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Performances</th>
+        <td>
+            <ul tal:condition="performances" class="cs-playlist">
+                <li tal:repeat="performance performances">
+                    <a tal:attributes="href request.resource_path(
+                                       context, '..', '..', '..', 'repertoire',
+                                       'artists', performance.artist.code)"
+                       tal:omit-tag="not performance.artist.permits(
+                                     request.web_user, 'view_artist')"
+                       class="cs-artist-title">
+                        <b>${performance.artist.name}</b>
+                    </a>
+                    <small class="cs-row-subtitle" style="display: block;">
+                        ${h.utc_to_timezone(request, performance.start)}
+                        - ${h.utc_to_timezone(request, performance.end)}
+                    </small>
+                    <ol tal:condition="performance.playlist and performance.playlist.items">
+                        <li tal:repeat="playlist_item performance.playlist.items">
+                            <small class="cs-row-subtitle" style="display: block;">
+                                <a tal:attributes="href request.resource_path(
+                                                   context, '..', '..', '..', 'repertoire',
+                                                   'creations', playlist_item.creation.code)"
+                                   tal:omit-tag="not playlist_item.creation.permits(
+                                                 request.web_user, 'view_creation')"
+                                   class="cs-artist-title">
+                                    <b>${playlist_item.creation.title}</b>
+                                </a>
+                                - ${playlist_item.creation.artist.name}
+                            </small>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
+            <tal:block tal:condition="not performances">-</tal:block>
+        </td>
+    </tr>
+</metal:block>
+
+<metal:block define-macro="event-indicators">
+    <tr>
+        <th i18n:translate="">Start</th>
+        <td>${h.utc_to_timezone(request, indicators.start)}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">End</th>
+        <td>${h.utc_to_timezone(request, indicators.end)}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Attendants</th>
+        <td>${indicators.attendants}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Maximum Attendants</th>
+        <td>${indicators.max_attendants}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Maximum Admission</th>
+        <td>${indicators.max_admission}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Turnover Tickets</th>
+        <td>${indicators.turnover_tickets}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Turnover Benefit</th>
+        <td>${indicators.turnover_benefit}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Expenses Musicians</th>
+        <td>${indicators.expenses_musicians}</td>
+    </tr>
+    <tr>
+        <th i18n:translate="">Expenses Production</th>
+        <td>${indicators.expenses_production}</td>
+    </tr>
+</metal:block>
+
+<!--! play tariff -->
+<metal:block define-macro="location"
+             tal:define="location declaration.context">
+    <th i18n:translate="">Location</th>
+    <td></td>
+</metal:block>
+
+<!--! reproduction tariff -->
+<metal:block define-macro="release"
+             tal:define="release declaration.context">
+    <th i18n:translate="">Release</th>
+    <td></td>
+</metal:block>
+
+<!--! online / webradio tariff -->
+<metal:block define-macro="webradio"
+             tal:define="website declaration.context">
+    <th i18n:translate="">Webradio</th>
+    <td></td>
+</metal:block>
+
+<!--! online / podcast tariff -->
+<metal:block define-macro="podcast"
+             tal:define="website declaration.context">
+    <th i18n:translate="">Podcast</th>
+    <td></td>
+</metal:block>
+
+<!--! online / dsp tariff -->
+<metal:block define-macro="dsp"
+             tal:define="website declaration.context">
+    <th i18n:translate="">DSP</th>
+    <td></td>
+</metal:block>

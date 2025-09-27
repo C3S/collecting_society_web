@@ -54,8 +54,8 @@
                         </a>
                     </div>
                         <div class="cs-file-creation"
-                         tal:condition="not file.creation 
-                                    and file.processing_state != 'uploaded' 
+                         tal:condition="not file.creation
+                                    and file.processing_state != 'uploaded'
                                     and file.processing_state != 'rejected'
                                     and file.processing_state != 'deleted'
                                     and file.processing_state != 'unknown'
@@ -70,11 +70,34 @@
                         </div>
                 </td>
 
-                <td class="text-right cs-table-preview">
-                    <div class="cs-file-rejected"
-                         tal:condition="file.processing_state == 'rejected'">
-                        <span i18n:translate="">Rejected</span>
-                    </div>
+                <td class="text-right cs-table-preview" tal:switch="file.processing_state">
+                    <small tal:case="'uploaded'" i18n:translate="">
+                        Uploaded
+                    </small>
+                    <small tal:case="'previewed'" i18n:translate="">
+                        Preview created
+                    </small>
+                    <small tal:case="'checksummed'" i18n:translate="">
+                        Checksums created
+                    </small>
+                    <small tal:case="'fingerprinted'" i18n:translate="">
+                        Fingerprint created
+                    </small>
+                    <small tal:case="'dropped'" i18n:translate="">
+                        Archiving
+                    </small>
+                    <small tal:case="'archived'" i18n:translate="">
+                        Archived
+                    </small>
+                    <small tal:case="'deleted'" i18n:translate="">
+                        Deleted
+                    </small>
+                    <small tal:case="'rejected'" class="cs-file-rejected" i18n:translate="">
+                        Rejected
+                    </small>
+                    <small tal:case="'unknown'" i18n:translate="">
+                        Error
+                    </small>
                 </td>
 
                 <td class="text-right">

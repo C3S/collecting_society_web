@@ -1,0 +1,191 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+
+<tal:block metal:use-macro="backend363"
+           i18n:domain="collecting_society_web"
+           tal:define="declaration context.declaration;
+                       last_utilisation declaration.utilisations[-1];
+                       last_indicators last_utilisation.confirmed_indicators
+                                       and last_utilisation.confirmed_indicators
+                                       or last_utilisation.estimated_indicators | None;
+                       last_invoice last_utilisation.allocation.invoice | None">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <h1>
+            ${declaration.context.name}
+            <small>${declaration.tariff.category.name}</small>
+        </h1>
+
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="${request.resource_path(context, '..')}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Declarations</a>
+                <a tal:condition="declaration.next_step == 'confirmation'"
+                   href="${request.resource_path(context, 'confirm')}"
+                   class="btn btn-danger btn-declaration-confirm" role="button"
+                   i18n:translate="">Confirm</a>
+                <a tal:condition="declaration.next_step == 'finalization'"
+                   href="${request.resource_path(context, 'finalize')}"
+                   class="btn btn-danger btn-declaration-finalize" role="button"
+                   i18n:translate="">Finalize</a>
+            </div>
+            <div class="btn-group cs-form-controls pull-right" role="group">
+                <a tal:condition="declaration.next_step in
+                                  ['utilisation', 'estimation', 'confirmation']"
+                   href="${request.resource_path(context, 'cancel')}"
+                   class="btn btn-warning btn-declaration-delete" role="button"
+                   i18n:translate="">Cancel</a>
+            </div>
+        </div>
+
+        <table class="table cs-table cs-table-show">
+
+            <tr>
+                <td colspan="2">
+                    <img class="img-responsive center-block cs-defaultpic"
+                         src="${request.static_path(
+                                'collecting_society_web:'
+                                'static/img/element-icon-declarations-yellow.svg')}" />
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">C3S ID</th>
+                <td>${declaration.code}</td>
+            </tr>
+
+            <tr class="${declaration.next_step in ['confirmation', 'finalization', 'payment']
+                         and 'cs-warning' or ''}">
+                <th i18n:translate="">State</th>
+                <td>
+                    <tal:block tal:switch="declaration.state">
+
+                        <tal:block tal:case="'finished'" i18n:translate="">
+                            Finished
+                        </tal:block>
+                        <tal:block tal:case="'canceled'" i18n:translate="">
+                            Canceled
+                        </tal:block>
+
+                        <tal:block tal:case="'submitted'">
+                            <tal:block tal:condition="not declaration.next_step">-</tal:block>
+                            <tal:block tal:condition="declaration.next_step">
+                                <tal:block i18n:translate="">Awaiting</tal:block>
+                                ${declaration.next_step.capitalize()}
+                                <tal:block condition="declaration.next_step_deadline">
+                                    <tal:block i18n:translate="">until</tal:block>
+                                    ${h.utc_to_timezone(request, declaration.next_step_deadline)}
+                                </tal:block>
+                            </tal:block>
+                        </tal:block>
+                    </tal:block>
+                </td>
+            </tr>
+
+            <tr tal:condition="last_invoice and last_invoice.state in ['posted', 'paid']">
+                <th i18n:translate="" style="vertical-align: middle;">Invoice</th>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a href="${request.resource_path(context, '..', '..', 'invoices',
+                                                         last_invoice.number)}"
+                           class="btn ${last_invoice.state == 'posted'
+                                        and 'btn-danger' or 'btn-default'}"
+                           role="button" i18n:translate="">Show</a>
+                        <a href="${request.resource_path(context, '..', '..', 'invoices',
+                                                         last_invoice.number, 'download')}"
+                           class="btn btn-default" role="button"
+                           i18n:translate="">Download</a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Tariff</th>
+                <td>
+                    ${declaration.tariff.category.name}
+                    <small class="cs-row-subtitle">${declaration.tariff.code}</small>
+                </td>
+            </tr>
+
+            <tr tal:condition="declaration.period == 'onetime' and last_indicators"
+                tal:define="relevance last_indicators.relevance">
+                <th i18n:translate="">Relevance</th>
+                <td>
+                    ${relevance.category.name}
+                    <small class="cs-row-subtitle">${relevance.value}</small>
+                </td>
+            </tr>
+
+            <tr tal:condition="declaration.period == 'onetime' and last_indicators"
+                tal:define="adjustments last_indicators.adjustments">
+                <th i18n:translate="">Adjustments</th>
+                <td>
+                    <ul tal:condition="adjustments">
+                        <li tal:repeat="adjustment adjustments">
+                            <span tal:define="rejected adjustment.status == 'rejected'"
+                                  class="${rejected and 'cs-strikethrough'}">
+                                ${adjustment.category.name}
+                            <span>
+                            <small class="cs-row-subtitle">
+                                <tal:block tal:condition="adjustment.status == 'approved'">
+                                    ${adjustment.value >= 0 and '+' or ''}${
+                                      adjustment.value * 100} %
+                                </tal:block>
+                                <div style="float: right;"
+                                     tal:condition="adjustment.category.code != 'missing_playlist_fee'">
+                                    ${adjustment.status.replace("_", " ")}
+                                </div>
+                            </small>
+                        </li>
+                    </ul>
+                    <tal:block tal:condition="not adjustments">-</tal:block>
+                </td>
+            </tr>
+
+            <!--! tariff dependend macros, see show-macros.pt -->
+            <tal:block tal:switch="declaration.tariff.category.code">
+                <tal:block tal:case="'L'" metal:use-macro="macros['event']" />
+                <tal:block tal:case="'P'" metal:use-macro="macros['location']" />
+                <tal:block tal:case="'C'" metal:use-macro="macros['release']" />
+                <tal:block tal:case="'O'">
+                    <tal:block tal:switch="declaration.context.category.code">
+                        <tal:block tal:case="'R'" metal:use-macro="macros['webradio']" />
+                        <tal:block tal:case="'P'" metal:use-macro="macros['podcast']" />
+                        <tal:block tal:case="'D'" metal:use-macro="macros['dsp']" />
+                    </tal:block>
+                </tal:block>
+            </tal:block>
+
+            <tr tal:condition="declaration.period != 'onetime'">
+                <th i18n:translate="">Settlement</th>
+                <td>${declaration.period.capitalize()}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Created</th>
+                <td>${h.utc_to_timezone(request, declaration.create_date)}</td>
+            </tr>
+
+            <tr tal:condition="declaration.period != 'onetime'">
+                <th i18n:translate="">Utilisations</th>
+                <td>
+                    <div tal:repeat="utilisation declaration.utilisations">
+                        ${utilisation.code}
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right"></tal:block>
+
+</tal:block>

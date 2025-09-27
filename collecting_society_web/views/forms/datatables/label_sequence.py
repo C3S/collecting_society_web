@@ -30,18 +30,17 @@ def prepare_required(value):
 @colander.deferred
 def label_sequence_widget(node, kw):
     # get initial source data
-    source_data = []
     domain = []
     labels = Label.search(
         domain=domain,
         offset=0,
         limit=10,
         order=[('name', 'asc')])
-    for label in labels:
-        source_data.append({
-            'oid': label.oid,
-            'gvl_code': label.gvl_code,
-            'name': label.name})
+    source_data = [{
+        'oid': label.oid,
+        'gvl_code': label.gvl_code,
+        'name': label.name,
+    } for label in labels]
     # get statistics
     total_domain = []
     total = Label.search_count(total_domain)

@@ -63,7 +63,7 @@
                         footerSearch: false,
                         createShow: true,
                     }
-                }            
+                }
             ],
         };
     </script>

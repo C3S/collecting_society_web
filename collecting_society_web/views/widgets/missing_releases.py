@@ -26,7 +26,7 @@ class MissingReleasesWidget():
                 self.creation_count > 0 and self.release_count == 0)
 
     def icon(self):
-        return "glyphicon glyphicon-cd"
+        return "glyphicon-cd"
 
     def header(self):
         return _("Missing Releases")

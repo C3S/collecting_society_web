@@ -458,11 +458,7 @@ class Content(Tdb):
             ('active', '=', True),
             ('entity_creator', '=', party_id),
             ('creation', '=', None),
-            [
-                'OR',
-                ('processing_state', '=', 'archived'),
-                ('processing_state', '=', 'dropped')
-            ]
+            ('processing_state', 'in', ['archived', 'dropped']),
         ]
         if category != 'all':
             search_clause.append(
@@ -472,7 +468,7 @@ class Content(Tdb):
         return result or None
 
     @classmethod
-    def search_rejects(cls, party_id, reason, category):
+    def search_rejects(cls, party_id, reason='', category='all'):
         """
         Searches duplicate content of current user.
 
@@ -508,7 +504,7 @@ class Content(Tdb):
                 ('category', '=', category)
             )
         result = cls.get().search(search_clause)
-        return result or None
+        return result
 
     @classmethod
     def search_uncommits(cls, party_id, category):

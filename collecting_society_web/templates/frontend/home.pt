@@ -21,7 +21,7 @@
         <!-- registry: sidebar widgets -->
         <tal:block tal:condition="context.registry['widgets']['content-left']|None"
                    tal:repeat="widget context.registry['widgets']['content-left']">
-            ${structure: widget.render()}
+            ${structure: widget(context.request).render()}
         </tal:block>
 
     </tal:block>

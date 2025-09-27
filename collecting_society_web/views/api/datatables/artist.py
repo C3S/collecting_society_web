@@ -95,7 +95,10 @@ def post_artist(request):
             'oid': artist.oid,
             'name': artist.name,
             'code': artist.code,
-            'description': artist.description
+            'description': artist.description,
+            'mode':
+                Artist.is_foreign_editable(request.web_user, artist)
+                and 'edit' or 'add',
         })
     # response
     return {

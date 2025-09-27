@@ -37,17 +37,17 @@ body {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#efefb4', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
 }
 
-h1, .h1 { color:#9e8a00; }
+h1, .h1 { color: #9e8a00; }
 
-.btn-primary { background: url('../img/element-menue-bg-licensing.png'); border-color:#9e8a00; }
+.btn-primary { background: url('../img/element-menue-bg-licensing.png'); border-color: #9e8a00; }
 .cs-table .btn-primary:hover,
 .cs-table .btn-primary:active,
 .btn-primary:hover,
 .btn-primary:active,
-.btn-primary:focus { background: url('../img/element-menue-bg-licensing.png'); border-color:#9e8a00; }
+.btn-primary:focus { background: url('../img/element-menue-bg-licensing.png'); border-color: #9e8a00; }
 
 .cs-table .btn-info,
-.btn-info { background-color:#efefb4; }
+.btn-info { background-color: #efefb4; }
 
 .dataTables_wrapper .dataTables_processing { background: url('../img/element-menue-bg-licensing.png'); }
 .cs-modal-header { background: url('../img/element-menue-bg-licensing.png'); }
@@ -60,17 +60,20 @@ h1, .h1 { color:#9e8a00; }
 
 .cs-navform .cs-nav-tabs .active a,
 .cs-navform .cs-nav-tabs .active a:hover,
-.cs-navform .cs-nav-tabs .active a:focus { color:#9e8a00; }
-.cs-navform .cs-nav-pills a { color:#9e8a00; }
-.cs-navform .cs-nav-pills a:hover { background-color:#efefb4; }
+.cs-navform .cs-nav-tabs .active a:focus { color: #9e8a00; }
+.cs-navform .cs-nav-pills a { color: #9e8a00; }
+.cs-navform .cs-nav-pills a:hover { background-color: #efefb4; }
 .cs-navform .cs-nav-pills .active a,
 .cs-navform .cs-nav-pills .active a:hover,
-.cs-navform .cs-nav-pills .active a:focus { background-color:#efefb4; }
+.cs-navform .cs-nav-pills .active a:focus { background-color: #efefb4; }
 
-.cs-file-icon { color:#efefb4; }
-
-.cs-upload-item .name { color:#9e8a00; }
+.cs-file-icon { color: #efefb4; }
+.cs-upload-item .name { color: #9e8a00; }
+.cs-download-icon { color: #9e8a00; }
 
 /* Widgets */
 
 .dashboard-widget { background-color: #efefb4; }
+.cs-dashboard-task-icon,
+.cs-dashboard-task-header { color: #9e8a00; }
+.cs-dashboard-task-badge { background-color: #9e8a00; }

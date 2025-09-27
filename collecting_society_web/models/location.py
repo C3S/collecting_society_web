@@ -20,6 +20,95 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
     __name__ = 'location'
 
     @classmethod
+    def is_foreign_editable(cls, web_user, location):
+        """
+        Checks if the location is a foreign object and still editable by the
+        current webuser.
+
+        Checks, if the location
+            1) is a foreign object
+            2) was created by the current web user
+            3) is still not claimed yet
+
+        Args:
+          web_user (obj): web user
+          location (obj): location to check
+
+        Returns:
+          true: if location is editable.
+          false: otherwise.
+        """
+        # 1) is a foreign object
+        if location.entity_origin != 'indirect':
+            return False
+        # 2) was created by the current web user
+        if location.entity_creator != web_user.party:
+            return False
+        # 3) is still not claimed yet
+        if location.claim_state != 'unclaimed':
+            return False
+        return True
+
+    @classmethod
+    def search(cls, domain, offset=None, limit=None, order=None,
+               escape=False):
+        """
+        Searches location by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          obj: list of locations
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape_domain(domain)
+        # search
+        result = cls.get().search(domain, offset, limit, order)
+        return result
+
+    @classmethod
+    def search_count(cls, domain, escape=False, active=True):
+        """
+        Counts location by domain
+
+        Args:
+          domain (list): domain passed to tryton
+
+        Returns:
+          int: number of locations
+        """
+        # prepare query
+        if escape:
+            domain = cls.escape(domain)
+        if active:
+            domain.append(('active', 'in', (True, active)))
+        # search
+        result = cls.get().search_count(domain)
+        return result
+
+    @classmethod
+    def search_by_oid(cls, oid, active=True):
+        """
+        Searches a location by oid (public api id)
+
+        Args:
+          oid (int): location.oid
+
+        Returns:
+          obj: location
+          None: if no match is found
+        """
+        result = cls.get().search([
+            ('oid', '=', oid),
+            ('active', 'in', (True, active))
+        ])
+        if not result:
+            return None
+        return result[0]
+
+    @classmethod
     def search_by_entity_creator(cls, party_id, active=True):
         """
         Searches locations, the web_user is allowed to view.
@@ -41,12 +130,13 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
         Creates location
 
         Args:
-          vlist (list): list of dicts with attributes to create publisher::
+          vlist (list): list of dicts with attributes to create location::
 
             [
                 {
                     'name': str (required)
                     'entity_creator': int (required)
+                    'entity_origin': 'direct' | 'indirect'
                 },
                 {
                     ...
@@ -67,7 +157,7 @@ class Location(Tdb, MixinSearchById, MixinSearchByOid, MixinSearchAll):
             if 'entity_creator' not in values:
                 raise KeyError('entity_creator is missing')
             if ('longitude' in values) != ('latitude' in values):
-                raise KeyError('Missing value in latitude/longitude geoinfo ' +
+                raise KeyError('Missing value in latitude/longitude geoinfo '
                                'pair')
         result = cls.get().create(vlist)
         return result or None

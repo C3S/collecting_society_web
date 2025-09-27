@@ -38,19 +38,24 @@ def prepare_required(value):
 @colander.deferred
 def creation_sequence_widget(node, kw):
     # get initial source data
-    source_data = []
     domain = []
     creations = Creation.search(
         domain=domain,
         offset=0,
         limit=10,
         order=[('title', 'asc')])
+
+    source_data = []
     for creation in creations:
+        othertitles = {release.title for release in creation.releases}
+        othertitles.discard(creation.title)
         source_data.append({
             'oid': creation.oid,
             'titlefield': creation.title,
             'artist': creation.artist.name,
-            'code': creation.code})
+            'code': creation.code,
+            'othertitles': "\n".join(othertitles),
+        })
     # get statistics
     total_domain = []
     total = Creation.search_count(total_domain)
@@ -88,6 +93,13 @@ class TitleField(colander.SchemaNode):
     widget = deform.widget.TextInputWidget()
 
 
+class OtherTitlesField(colander.SchemaNode):
+    oid = "othertitles"
+    schema_type = colander.String
+    widget = deform.widget.HiddenWidget()
+    missing = ""
+
+
 class CodeField(colander.SchemaNode):
     oid = "code"
     schema_type = colander.String
@@ -111,6 +123,7 @@ class CreationSchema(colander.Schema):
     mode = ModeField()
     oid = OidField()
     titlefield = TitleField(title=_("Title"))
+    othertitles = OtherTitlesField()
     artist = ArtistField()
     code = CodeField()
     preparer = [prepare_required]

@@ -44,7 +44,7 @@ nosetests.xml
 coverage.xml
 
 # Translations
-#*.mo   unless we integrate the translation tools into the build process, 
+#*.mo   unless we integrate the translation tools into the build process,
 #*.pot  we need to version these files
 
 # Django stuff:
@@ -56,5 +56,9 @@ docs/_build/
 # PyBuilder
 target/
 
-# temp files
+# Temp files
 *~
+
+# Test data files
+collecting_society_web/tests/data
+!collecting_society_web/tests/data/generate_audiofiles.sh

@@ -2,48 +2,115 @@
            i18n:domain="collecting_society_web">
 
     <script metal:fill-slot="settings">
+        // disable selected contribution option on edit
+        var disableSelectedContributionOptionsOnEdit = function(ds, modal) {
+            var contribution = modal.find('.item-contribution');
+            var current = contribution.find(':selected').first().val();
+            ds.target.table.rows().data().each(function(row) {
+                var selected = $(row.sequence).find('.item-contribution :selected').first().val();
+                if (current === selected)
+                    return
+                contribution.find('option[value="' + selected + '"]').prop('disabled', 'disabled');
+            });
+        }
+        // disable selected contribution option on create
+        var disableSelectedContributionOptionsOnCreate = function(ds, modal) {
+            var contribution = modal.find('.item-contribution');
+            ds.target.table.rows().data().each(function(row) {
+                var selected = $(row.sequence).find('.item-contribution :selected').first().val();
+                contribution.find('option[value="' + selected + '"]').prop('disabled', 'disabled');
+                contribution.find('option:not(:disabled)').first().prop('selected', 'selected');
+            });
+        }
+        // form field logic
+        var applyFormFieldLogic = function(ds, modal) {
+            var instruments = modal.find('.item-instruments');
+            var contribution = modal.find('.item-contribution');
+            contribution.change(function() {
+                var selected = contribution.find(":selected").first().val();
+                switch(selected) {
+                    case 'ancillary-instrument':
+                        instruments.find('label').addClass('required');
+                        instruments.show();
+                        break;
+                    default:
+                        instruments.find('label').removeClass('required');
+                        instruments.hide();
+                }
+            });
+            contribution.trigger('change');
+        }
+
+        // datatable sequence settings
         var datatableSequenceSettings = {
-            columns: [
-                {
-                    name: "type_of_right",
-                    title: "${_('Type')}",
-                    data: "type_of_right",
-                    className: "all",
-                    orderable: false,
-                    searchable: false,
-                    render: $.fn.dataTable.render.text(),
-                    datatableSequence: {
-                        position: "displayed",
-                        widgetType: 'Select2Widget'
-                    }
+            callbacks: {
+                onOpenCreate: function(ds, modal) {
+                    disableSelectedContributionOptionsOnCreate(ds, modal);
+                    applyFormFieldLogic(ds, modal);
                 },
+                onOpenEdit: function(ds, modal) {
+                    disableSelectedContributionOptionsOnEdit(ds, modal);
+                    applyFormFieldLogic(ds, modal);
+                },
+            },
+            columns: [
                 {
                     name: "contribution",
                     title: "${_('Contribution')}",
                     data: "contribution",
                     className: "all",
-                    orderable: false,
+                    orderable: true,
                     searchable: false,
-                    render: $.fn.dataTable.render.text(),
+                    render: function(data, type, row, meta) {
+                        if (type !== 'display' && type !== 'sort')
+                            return data;
+                        var content = '<b>' + data + '</b> ';
+                        if (!!row.collecting_society)
+                            content += '<small>' +
+                                         ' - ' + tmpl.encode(row.collecting_society) +
+                                       '</small>';
+                        var contribution = $(row.sequence)
+                            .find('.item-contribution option:selected')
+                            .val();
+                        if (contribution === 'ancillary-instrument')
+                            content += '<small style="display: block; font-style: italic;">' +
+                                          tmpl.encode(row.instruments) +
+                                       '</small>';
+                        return content;
+                    },
                     datatableSequence: {
                         position: "displayed",
-                        widgetType: 'Select2Widget'
-                    }
+                        widgetType: 'SelectWidget'
+                    },
                 },
                 {
                     name: "collecting_society",
                     title: "${_('Collecting Society')}",
                     data: "collecting_society",
-                    className: "all",
+                    visible: false,
                     orderable: false,
                     searchable: false,
                     render: $.fn.dataTable.render.text(),
                     defaultContent: "",
                     datatableSequence: {
-                        position: "displayed",
+                        position: "invisible",
+                        widgetType: 'SelectWidget',
+                    },
+                },
+                {
+                    name: "instruments",
+                    title: "${_('Instruments')}",
+                    data: "instruments",
+                    visible: false,
+                    orderable: false,
+                    searchable: false,
+                    defaultContent: "",
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "invisible",
                         widgetType: 'Select2Widget',
-                    }
-                }
+                    },
+                },
             ],
         };
     </script>

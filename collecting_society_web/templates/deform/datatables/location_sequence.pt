@@ -1,0 +1,95 @@
+<tal:block metal:extend-macro="sequence"
+           i18n:domain="collecting_society_web">
+
+    <script metal:fill-slot="settings">
+        var datatableSequenceSettings = {
+            apiPath: "location",
+            unique: false,
+            columns: [
+                {
+                    name: "name",
+                    title: "${_('Name')}",
+                    data: "name",
+                    className: "all",
+                    orderable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: true,
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "category",
+                    title: "${_('Category')}",
+                    data: "category",
+                    visible: false,
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "invisible",
+                        widgetType: 'SelectWidget',
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "street",
+                    title: "${_('Street')}",
+                    data: "street",
+                    orderable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: true,
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "postal_code",
+                    title: "${_('Postal Code')}",
+                    data: "postal_code",
+                    visible: false,
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "invisible",
+                        widgetType: 'TextInputWidget',
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "city",
+                    title: "${_('City')}",
+                    data: "city",
+                    orderable: true,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "displayed",
+                        widgetType: 'TextInputWidget',
+                        footerSearch: true,
+                        createShow: true,
+                    }
+                },
+                {
+                    name: "country",
+                    title: "${_('Country')}",
+                    data: "country",
+                    visible: false,
+                    orderable: false,
+                    searchable: false,
+                    render: $.fn.dataTable.render.text(),
+                    datatableSequence: {
+                        position: "invisible",
+                        widgetType: 'SelectWidget',
+                        createShow: true,
+                    }
+                },
+            ],
+        };
+    </script>
+
+</tal:block>

@@ -1,0 +1,144 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+<tal:block metal:use-macro="backend39"
+           i18n:domain="collecting_society_web"
+           tal:define="invoices context.invoices">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right">
+
+        <h1 class="cs-form-header" i18n:translate="">Invoices</h1>
+
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <tal:block tal:condition="request.GET.get('state') != 'finished'">
+                    <a tal:condition="request.GET.get('state') != 'finished'"
+                       href="${request.resource_path(context, query={'state': 'finished'})}"
+                       class="btn btn-default" role="button"
+                       i18n:translate="">Archive</a>
+                </tal:block>
+                <tal:block tal:condition="request.GET.get('state') == 'finished'">
+                    <a tal:condition="request.GET.get('state') == 'finished'"
+                       href="${request.resource_path(context)}"
+                       class="btn btn-default" role="button"
+                       i18n:translate="">Open</a>
+                </tal:block>
+            </div>
+        </div>
+
+        <table class="table cs-table cs-table-list">
+
+            <tr tal:condition="not invoices">
+                <td class="cs-center">
+                    <small i18n:translate=""
+                           tal:condition="request.GET.get('state') != 'finished'">
+                        No open invoices.
+                    </small>
+                    <small i18n:translate=""
+                           tal:condition="request.GET.get('state') == 'finished'">
+                        No archived invoices.
+                    </small>
+                </td>
+            </tr>
+
+            <tr tal:repeat="invoice invoices">
+
+                <td class="cs-img-smallicon">
+                    <a tal:condition="invoice.state == 'posted'"
+                       href="${request.resource_path(
+                               context, invoice.number)}">
+                        <span i18n:attributes="title"
+                              i18n:domain="collecting_society_web"
+                              class="glyphicon glyphicon-exclamation-sign cs-state-icon warning"
+                              data-toggle="tooltip"
+                              title="Please pay your invoice"
+                        ></span>
+                    </a>
+                    <a tal:condition="invoice.state == 'paid'"
+                       href="${request.resource_path(
+                               context, invoice.number)}">
+                        <img class="img-responsive center-block"
+                             src="${request.static_path(
+                                    'collecting_society_web:'
+                                    'static/img/element-icon-invoices-yellow.svg')}" />
+                    </a>
+                    <a tal:condition="invoice.state == 'cancelled'"
+                       href="${request.resource_path(
+                               context, invoice.number)}">
+                        <span class="cs-canceled">
+                            <img class="img-responsive center-block"
+                                 src="${request.static_path(
+                                        'collecting_society_web:'
+                                        'static/img/element-icon-invoices-yellow.svg')}" />
+                        </span>
+                    </a>
+                </td>
+
+                <td>
+                    <a href="${request.resource_path(context, invoice.number)}">
+                        ${invoice.description}
+                    </a>
+                    <div class="cs-row-subtitle cs-declaration-subtitle">
+                        <a href="${request.resource_path(context, invoice.number)}">
+                            <b>${invoice.number}</b> -
+                            <small>${invoice.invoice_date}</small>
+                        </a>
+                    </div>
+                </td>
+
+                <td>
+                    <small tal:switch="invoice.state"
+                           class="cs-warning">
+                        <a href="${request.resource_path(context, invoice.number)}"
+                           tal:case="'posted'" i18n:translate="">
+                            Please pay your invoice
+                        </a>
+                    </small>
+                </td>
+
+                <td>
+                    <small>
+                        <ul class="cs-list-plain"
+                            tal:define="declarations set([
+                                            utilisation.declaration
+                                            for utilisation in invoice.allocation.utilisations])">
+                            <li tal:repeat="declaration declarations">
+                                <a href="${request.resource_path(
+                                           context, '..', 'declarations', declaration.code)}"
+                                   class="cs-declaration-title">
+                                    <span class="cs-strikethrough"
+                                          tal:omit-tag="declaration.state != 'canceled'">
+                                        ${declaration.context.name}
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </small>
+                </td>
+
+                <td class="text-right">
+                    <a href="${request.resource_path(context, invoice.number)}">
+                        ${h.format_currency(invoice.total_amount)}
+                    </a>
+                </td>
+
+                <td class="text-right cs-action-icon-column">
+                    <a href="${request.resource_path(context, invoice.number, 'download')}">
+                        <span i18n:attributes="title"
+                              i18n:domain="collecting_society_web"
+                              class="glyphicon glyphicon-circle-arrow-down cs-download-icon"
+                              data-toggle="tooltip"
+                              title="Download"
+                        ></span>
+                    </a>
+                </td>
+
+            </tr>
+        </table>
+
+    </tal:block>
+
+</tal:block>

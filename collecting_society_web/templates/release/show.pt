@@ -136,13 +136,14 @@
                 <td>
                     <div tal:repeat="track release.tracks"
                          class="cs-list-item">
-                            ${track.medium_number} - 
+                            ${track.medium_number} -
                             ${track.track_number}
                             <small>${track.title}</small>
                     </div>
                 </td>
             </tr>
 
+            <!--!
             <tr tal:condition="release.producers">
                 <th i18n:translate="">Producers</th>
                 <td>
@@ -152,7 +153,9 @@
                     </div>
                 </td>
             </tr>
+            -->
 
+            <!--!
             <tr tal:condition="release.neighbouring_rights_societies">
                 <th i18n:translate="">Neighbouring Rights Societies</th>
                 <td>
@@ -163,6 +166,7 @@
                     </div>
                 </td>
             </tr>
+            -->
 
             <tr tal:condition="release.publisher">
                 <th i18n:translate="">Publisher</th>

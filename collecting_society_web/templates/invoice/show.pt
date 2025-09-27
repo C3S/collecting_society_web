@@ -1,0 +1,209 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+
+<tal:block metal:use-macro="backend363"
+           i18n:domain="collecting_society_web"
+           tal:define="invoice context.invoice">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <h1>
+            <span i18n:translate="">Invoice</span> ${invoice.number}
+        </h1>
+
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="${request.resource_path(context, '..')}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Invoices</a>
+                <a href="${request.resource_path(context, 'download')}"
+                   class="btn btn-primary btn-declaration-confirm" role="button"
+                   i18n:translate="">Download</a>
+            </div>
+        </div>
+
+        <table class="table cs-table cs-table-show">
+
+            <tr>
+                <td colspan="2">
+                    <img class="img-responsive center-block cs-defaultpic"
+                         src="${request.static_path(
+                                'collecting_society_web:'
+                                'static/img/element-icon-invoices-yellow.svg')}" />
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Number</th>
+                <td>${invoice.number}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Date</th>
+                <td>${invoice.invoice_date}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Amount</th>
+                <td>${h.format_currency(invoice.total_amount)}</td>
+            </tr>
+
+            <tr class="${invoice.state == 'posted' and 'cs-warning' or ''}">
+                <th i18n:translate="">State</th>
+                <td>
+                    <tal:block tal:switch="invoice.state">
+                        <tal:block tal:case="'posted'">
+                            ${h.format_currency(invoice.amount_to_pay)}
+                            <span i18n:translate="">outstanding</span>
+                        </tal:block>
+                        <tal:block tal:case="'paid'" i18n:translate="">
+                            Paid
+                        </tal:block>
+                        <tal:block tal:case="'cancelled'" i18n:translate="">
+                            Cancelled
+                        </tal:block>
+                    </tal:block>
+                </td>
+            </tr>
+
+            <tr tal:condition="invoice.state == 'posted'">
+                <th i18n:translate="">Transfer</th>
+                <td>
+                    <div i18n:translate="">
+                        Please send the money to the following bank account:
+                    </div>
+                    <pre>${"\n".join([
+                        f'Amount: {h.format_currency(invoice.amount_to_pay)}',
+                        f'Purpose:  invoice {invoice.number}',
+                        'IBAN:     DE12 3456 7890 1234 56 78',
+                        'BIC:      EXAMPLEBANK',
+                        'Bank:     ExampleBank',
+                    ])}</pre>
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Description</th>
+                <td>${invoice.description}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Reference</th>
+                <td>${invoice.origins}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Utilisations</th>
+                <td>
+                    <small>
+                        <ul class="cs-list-plain"
+                            tal:define="declarations set([
+                                            utilisation.declaration
+                                            for utilisation in invoice.allocation.utilisations])">
+                            <li tal:repeat="declaration declarations">
+                                <a href="${request.resource_path(
+                                           context, '..', '..', 'declarations', declaration.code)}"
+                                   class="cs-declaration-title">
+                                    <span class="cs-strikethrough"
+                                          tal:omit-tag="declaration.state != 'canceled'">
+                                        ${declaration.context.name}
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </small>
+                </td>
+            </tr>
+            <!--!
+            <tr tal:condition="last_invoice and last_invoice.state in ['posted', 'paid']">
+                <th i18n:translate="" style="vertical-align: middle;">Invoice</th>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a href="${request.resource_path(context, '..', '..', 'invoices',
+                                                         last_invoice.number)}"
+                           class="btn ${last_invoice.state == 'posted'
+                                        and 'btn-danger' or 'btn-default'}"
+                           role="button" i18n:translate="">Show</a>
+                        <a href="${request.resource_path(context, '..', '..', 'invoices',
+                                                         last_invoice.number, 'download')}"
+                           class="btn btn-default" role="button"
+                           i18n:translate="">Download</a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Tariff</th>
+                <td>
+                    ${declaration.tariff.category.name}
+                    <small class="cs-row-subtitle">${declaration.tariff.code}</small>
+                </td>
+            </tr>
+
+            <tr tal:condition="declaration.period == 'onetime' and last_indicators"
+                tal:define="relevance last_indicators.relevance">
+                <th i18n:translate="">Relevance</th>
+                <td>
+                    ${relevance.category.name}
+                    <small class="cs-row-subtitle">${relevance.value}</small>
+                </td>
+            </tr>
+
+            <tr tal:condition="declaration.period == 'onetime' and last_indicators"
+                tal:define="adjustments last_indicators.adjustments">
+                <th i18n:translate="">Adjustments</th>
+                <td>
+                    <ul tal:condition="adjustments">
+                        <li tal:repeat="adjustment adjustments">
+                            <span tal:define="rejected adjustment.status == 'rejected'"
+                                  class="${rejected and 'cs-strikethrough'}">
+                                ${adjustment.category.name}
+                            <span>
+                            <small class="cs-row-subtitle">
+                                <tal:block tal:condition="adjustment.status == 'approved'">
+                                    ${adjustment.value >= 0 and '+' or ''}${
+                                      adjustment.value * 100} %
+                                </tal:block>
+                                <div style="float: right;"
+                                     tal:condition="adjustment.category.code != 'missing_playlist_fee'">
+                                    ${adjustment.status.replace("_", " ")}
+                                </div>
+                            </small>
+                        </li>
+                    </ul>
+                    <tal:block tal:condition="not adjustments">-</tal:block>
+                </td>
+            </tr>
+
+            <tr tal:condition="declaration.period != 'onetime'">
+                <th i18n:translate="">Settlement</th>
+                <td>${declaration.period.capitalize()}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Created</th>
+                <td>${h.utc_to_timezone(request, declaration.create_date)}</td>
+            </tr>
+
+            <tr tal:condition="declaration.period != 'onetime'">
+                <th i18n:translate="">Utilisations</th>
+                <td>
+                    <div tal:repeat="utilisation declaration.utilisations">
+                        ${utilisation.code}
+                    </div>
+                </td>
+            </tr>
+            -->
+
+        </table>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right"></tal:block>
+
+</tal:block>

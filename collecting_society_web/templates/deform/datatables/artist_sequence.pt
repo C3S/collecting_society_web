@@ -29,7 +29,7 @@
                         widgetType: 'TextInputWidget',
                         footerSearch: true,
                         createShow: true,
-                    }
+                    },
                 },
                 {
                     name: "code",
@@ -42,7 +42,7 @@
                         position: "displayed",
                         widgetType: 'HiddenWidget',
                         footerSearch: true,
-                    }
+                    },
                 },
                 {
                     name: "description",
@@ -55,7 +55,7 @@
                     datatableSequence: {
                         position: "collapsed",
                         widgetType: 'HiddenWidget',
-                    }
+                    },
                 },
                 {
                     name: "email",
@@ -70,7 +70,7 @@
                         position: "invisible",
                         widgetType: 'TextInputWidget',
                         createShow: true,
-                    }
+                    },
                 },
             ],
         };

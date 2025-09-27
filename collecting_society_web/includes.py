@@ -33,14 +33,21 @@ from .resources import (
     FilesResource,
     DebugC3sMembershipApiResource,
     DeclarationsResource,
-    LocationsResource,
-    DevicesResource,
+    AddDeclarationResource,
+    InvoicesResource,
+    # LocationsResource,
+    # DevicesResource,
 )
 from .views.widgets import (
     ServiceInfoWidget,
     MissingArtistsWidget,
     MissingContentWidget,
     MissingReleasesWidget,
+    MissingProfileDataWidget,
+    MissingDeclarationsWidget,
+    UnconfirmedDeclarationsWidget,
+    UnfinalizedDeclarationsWidget,
+    UnpaidInvoicesWidget,
     RejectedContentWidget,
     OrphanedContentWidget,
     UnprocessedContentWidget
@@ -72,9 +79,10 @@ def web_resources(config):
     RepertoireResource.add_child(CreationsResource)
 
     LicensingResource.add_child(DeclarationsResource)
-    LicensingResource.add_child(LocationsResource)
-    LicensingResource.add_child(DevicesResource)
-    LicensingResource.add_child(DeclarationsResource)
+    DeclarationsResource.add_child(AddDeclarationResource)
+    LicensingResource.add_child(InvoicesResource)
+    # LicensingResource.add_child(LocationsResource)
+    # LicensingResource.add_child(DevicesResource)
 
     DebugResource.add_child(DebugC3sMembershipApiResource)
 
@@ -155,7 +163,7 @@ def web_registry(config):
         ]
         # widgets
         reg['widgets']['content-left'] = [
-            ServiceInfoWidget(self.request),
+            ServiceInfoWidget,
         ]
         return reg
 
@@ -187,6 +195,10 @@ def web_registry(config):
                 'src':  self.request.static_path(
                             'portal_web:'
                             'static/js/deform.datatables.widget.js')},
+            {
+                'src':  self.request.static_path(
+                            'portal_web:'
+                            'static/lib/jquery-maskMoney.min.js')},
         ]
         # favicon
         reg['static']['favicon'] = self.request.static_path(
@@ -285,13 +297,14 @@ def web_registry(config):
         ]
         # widgets
         reg['widgets']['dashboard-central-widgets'] = [
-            MissingArtistsWidget(self.request),
-            MissingContentWidget(self.request),
-            MissingReleasesWidget(self.request),
-            RejectedContentWidget(self.request),
-            OrphanedContentWidget(self.request),
-            # UncommitedContentWidget(self.request),
-            UnprocessedContentWidget(self.request),
+            MissingProfileDataWidget,
+            MissingArtistsWidget,
+            MissingContentWidget,
+            MissingReleasesWidget,
+            RejectedContentWidget,
+            OrphanedContentWidget,
+            # UncommitedContentWidget,
+            UnprocessedContentWidget,
         ]
         return reg
 
@@ -338,36 +351,21 @@ def web_registry(config):
                             'collecting_society_web:static/img/'
                             'element-icon-declarations.svg')},
             {
-                'name': _('Locations'),
+                'name': _(u'Invoices'),
                 'url':  self.request.resource_path(
-                            LocationsResource(self.request)),
+                            InvoicesResource(self.request)),
                 'icon': self.request.static_path(
                             'collecting_society_web:static/img/'
-                            'element-icon-locations.svg')},
-            {
-                'name': _('Devices'),
-                'url':  self.request.resource_path(
-                            DevicesResource(self.request)),
-                'icon': self.request.static_path(
-                            'collecting_society_web:static/img/'
-                            'element-icon-devices.svg')},
-            # {
-            #     'name': _(u'Accounting'),
-            #     'url':  self.request.resource_path(
-            #                 DevicesResource(self.request)),
-            #     'icon': self.request.static_path(
-            #                 'collecting_society_web:static/img/'
-            #                 'element-icon-accounting.svg')},
-            # {
-            #     'name': _(u'Statistics'),
-            #     'url':  self.request.resource_path(
-            #                 DevicesResource(self.request)),
-            #     'icon': self.request.static_path(
-            #                 'collecting_society_web:static/img/'
-            #                 'element-icon-statistics.svg')},
+                            'element-icon-invoices.svg')},
         ]
         # widgets
-        # ToDo
+        reg['widgets']['dashboard-central-widgets'] = [
+            MissingProfileDataWidget,
+            MissingDeclarationsWidget,
+            UnpaidInvoicesWidget,
+            UnfinalizedDeclarationsWidget,
+            UnconfirmedDeclarationsWidget,
+        ]
         return reg
 
     @FilesResource.extend_registry

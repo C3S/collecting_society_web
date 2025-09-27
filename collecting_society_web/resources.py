@@ -18,12 +18,14 @@ from portal_web.resources import (
 
 from .models import (
     Artist,
-    Release,
-    Creation,
     Content,
+    Creation,
     Declaration,
+    Device,
+    Invoice,
     Location,
-    Device
+    Release,
+    TariffCategory,
 )
 
 log = logging.getLogger(__name__)
@@ -33,9 +35,11 @@ log = logging.getLogger(__name__)
 
 valid = {
     'artist': r'^A\d{10}\Z',
-    'release': r'^R\d{10}\Z',
-    'creation': r'^C\d{10}\Z',
     'content': r'^D\d{10}\Z',
+    'creation': r'^C\d{10}\Z',
+    'declaration': r'^DECL\d{10}\Z',
+    'invoice': r'^\d*\Z',
+    'release': r'^R\d{10}\Z',
     'uuid': r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z'
 }
 
@@ -64,9 +68,6 @@ class RepertoireResource(ResourceBase):
 
 
 class ArtistsResource(ResourceBase):
-    """
-    matches the webusers artists after clicking Artists in the Repertoire menu
-    """
     __parent__ = RepertoireResource
     __name__ = "artists"
     _write = ['add']
@@ -88,9 +89,6 @@ class ArtistsResource(ResourceBase):
 
 
 class ArtistResource(ModelResource):
-    """
-    matches a single artist after clicking one in Repertoire -> Artists
-    """
     __parent__ = ArtistsResource
     _write = ['edit', 'delete']
     _permit = ['view_artist', 'edit_artist', 'delete_artist']
@@ -110,9 +108,6 @@ class ArtistResource(ModelResource):
 
 
 class ReleasesResource(ResourceBase):
-    """
-    matches the webusers releases when clicking Releases in the Repertoire menu
-    """
     __parent__ = RepertoireResource
     __name__ = "releases"
     _write = ['add']
@@ -134,9 +129,6 @@ class ReleasesResource(ResourceBase):
 
 
 class ReleaseResource(ModelResource):
-    """
-    matches a single release after clicking one in Repertoire -> Release
-    """
     __parent__ = ReleasesResource
     _write = ['edit', 'delete']
     _permit = ['view_release', 'edit_release', 'delete_release']
@@ -156,9 +148,6 @@ class ReleaseResource(ModelResource):
 
 
 class CreationsResource(ResourceBase):
-    """
-    matches the webusers creations if clicking Creations in the Repertoire menu
-    """
     __parent__ = RepertoireResource
     __name__ = "creations"
     _write = ['add']
@@ -185,9 +174,6 @@ class CreationsResource(ResourceBase):
 
 
 class CreationResource(ModelResource):
-    """
-    matches a single creation after clicking one in Repertoire -> Creations
-    """
     __parent__ = CreationsResource
     _write = ['edit', 'delete']
     _permit = ['view_creation', 'edit_creation', 'delete_creation']
@@ -207,9 +193,6 @@ class CreationResource(ModelResource):
 
 
 class FilesResource(ResourceBase):
-    """
-    matches the webusers files after clicking Files in the Repertoire menu
-    """
     __parent__ = RepertoireResource
     __name__ = "files"
     _write = ['add']
@@ -231,9 +214,6 @@ class FilesResource(ResourceBase):
 
 
 class FileResource(ModelResource):
-    """
-    matches a single file after clicking one in Repertoire -> Files
-    """
     __parent__ = FilesResource
     _write = ['delete']
     _permit = ['view_content', 'delete_content']
@@ -267,12 +247,13 @@ class LicensingResource(ResourceBase):
         # add basic access for user with the role licensee
         (Allow, 'licensee', (
             'authenticated',
-            'list_devices',
-            'add_device',
             'list_declarations',
-            'add_declaration',
-            'list_locations',
-            'add_location',
+            'add_declarations',
+            'list_invoices',
+            # 'list_devices',
+            # 'add_device',
+            # 'list_locations',
+            # 'add_location',
         )),
         # prevent inheritance from backend resource
         DENY_ALL
@@ -280,19 +261,66 @@ class LicensingResource(ResourceBase):
 
 
 class DeclarationsResource(ResourceBase):
-    """
-    matches the webusers declarations after clicking Declarations in the
-    Licensing menu
-    """
     __parent__ = LicensingResource
     __name__ = "declarations"
-    _write = ['add']
 
     # traversal
     def __getitem__(self, key):
         # validate code
-        if re.match(valid['uuid'], key):
+        if re.match(valid['declaration'], key):
             return DeclarationResource(self.request, key)
+        return super().__getitem__(key)
+
+    # load resources
+    def context_found(self):
+        if self.request.view_name == '':
+            self.declarations = Declaration.current_viewable(self.request)
+
+
+class AddDeclarationResource(ResourceBase):
+    __parent__ = DeclarationsResource
+    __name__ = "add"
+    readonly = False
+
+    # load resources
+    def context_found(self):
+        self.tariff_categories = TariffCategory.search_all()
+
+
+class DeclarationResource(ModelResource):
+    __parent__ = DeclarationsResource
+    _write = ['confirm', 'finalize', 'cancel']
+    _permit = [
+        'view_declaration',
+        'confirm_declaration',
+        'finalize_declaration',
+        'cancel_declaration',
+    ]
+
+    # load resources
+    def context_found(self):
+        self.declaration = Declaration.search_by_code(self.code)
+
+    # add instance level permissions
+    def __acl__(self):
+        if not hasattr(self.declaration, 'permissions'):
+            return []
+        return [
+            (Allow, self.request.authenticated_userid,
+                self.declaration.permissions(
+                    self.request.web_user, self._permit))
+        ]
+
+
+class InvoicesResource(ResourceBase):
+    __parent__ = LicensingResource
+    __name__ = "invoices"
+
+    # traversal
+    def __getitem__(self, key):
+        # validate code
+        if re.match(valid['invoice'], key):
+            return InvoiceResource(self.request, key)
         # views needing writable transactions
         if key in self._write:
             self.readonly = False
@@ -301,38 +329,32 @@ class DeclarationsResource(ResourceBase):
     # load resources
     def context_found(self):
         if self.request.view_name == '':
-            self.declarations = Declaration.belongs_to_current_licensee(
-                                self.request)
+            self.invoices = Invoice.current_viewable(self.request, 'out')
 
 
-class DeclarationResource(ModelResource):
-    """
-    matches a single declaration after clicking in Licensing -> Declarations
-    """
-    __parent__ = DeclarationsResource
-    _write = ['edit', 'delete']
+class InvoiceResource(ModelResource):
+    __parent__ = InvoicesResource
+    _permit = [
+        'view_invoice',
+        'download_invoice',
+    ]
 
     # load resources
     def context_found(self):
-        self.declaration = Declaration.search_by_uuid(self.code)
+        self.invoice = Invoice.search_by_number(self.code)
 
     # add instance level permissions
     def __acl__(self):
-        declaration_in_database = Declaration.search_by_uuid(self.code)
-        if (declaration_in_database and
-                self.declaration.web_user == declaration_in_database.web_user):
-            return [
-                (Allow, self.request.authenticated_userid,
-                    ['show_declaration', 'edit_declaration',
-                     'delete_declaration'])
-            ]
-        return []
+        if not hasattr(self.invoice, 'permissions'):
+            return []
+        return [
+            (Allow, self.request.authenticated_userid,
+                self.invoice.permissions(
+                    self.request.web_user, self._permit))
+        ]
 
 
 class LocationsResource(ResourceBase):
-    """
-    matches the locations the webusers is allowed to see or change
-    """
     __parent__ = LicensingResource
     __name__ = "locations"
     _write = ['add']
@@ -355,9 +377,6 @@ class LocationsResource(ResourceBase):
 
 
 class LocationResource(ModelResource):
-    """
-    matches a single location after clicking one in Licensing -> Location
-    """
     __parent__ = LocationsResource
     _write = ['edit', 'delete']
 
@@ -378,10 +397,6 @@ class LocationResource(ModelResource):
 
 
 class DevicesResource(ResourceBase):
-    """
-    matches the webusers locations after clicking Devices Files in Licensing
-    menu
-    """
     __parent__ = LicensingResource
     __name__ = "devices"
     _write = ['add']
@@ -426,151 +441,7 @@ class DevicesResource(ResourceBase):
 
 
 class DeviceResource(ModelResource):
-    """
-    matches a single device after clicking one in Licensing -> Devices
-    """
     __parent__ = DevicesResource
-    _write = ['edit', 'delete']
-
-    # load resources
-    def context_found(self):
-        self.device = Device.search_by_uuid(self.code)
-
-    # add instance level permissions
-    def __acl__(self):
-        device_in_database = Device.search_by_uuid(self.code)
-        if (device_in_database and
-                self.device.web_user == device_in_database.web_user):
-            return [
-                (Allow, self.request.authenticated_userid,
-                    ['show_device', 'edit_device', 'delete_device'])
-            ]
-        return []
-
-
-class AccountingResource(ResourceBase):
-    """
-    matches the webusers accounting infos after clicking Accounting in
-    Licensing menu
-    """
-    __parent__ = LicensingResource
-    __name__ = "devices"
-    _write = ['add']
-
-    # traversal
-    def __getitem__(self, key):
-        # validate code
-        if re.match(valid['uuid'], key):
-            return DeviceResource(self.request, key)
-        # views needing writable transactions
-        if key in self._write:
-            self.readonly = False
-        raise KeyError(key)
-
-    # load resources
-    def context_found(self):
-        if self.request.view_name == '':
-            self.devices = Device.current_viewable(self.request)
-        # in add creation, provide content uuid, set by upload form
-        if self.request.view_name == 'add':
-            device_id = self.request.params.get('device_id', '')
-            if re.match(valid['uuid'], device_id):
-                self.device_id = device_id
-            device_name = self.request.params.get('device_name', '')
-            if len(device_name) > 0:
-                self.device_name = device_name
-            os_name = self.request.params.get('os_name', '')
-            if len(os_name) > 0:
-                self.os_name = os_name
-            os_version = self.request.params.get('os_version', '')
-            if len(os_version) > 0:
-                self.os_version = os_version
-            software_name = self.request.params.get('software_name', '')
-            if len(software_name) > 0:
-                self.software_name = software_name
-            software_version = self.request.params.get('software_version', '')
-            if len(software_version) > 0:
-                self.software_version = software_version
-            software_vendor = self.request.params.get('software_vendor', '')
-            if len(software_vendor) > 0:
-                self.software_vendor = software_vendor
-
-
-class AccountingItemResource(ModelResource):
-    """
-    matches a single item after clicking one in Licensing -> Accounting
-    """
-    __parent__ = AccountingResource
-    _write = ['edit', 'delete']
-
-    # load resources
-    def context_found(self):
-        self.device = Device.search_by_uuid(self.code)
-
-    # add instance level permissions
-    def __acl__(self):
-        device_in_database = Device.search_by_uuid(self.code)
-        if (device_in_database and
-                self.device.web_user == device_in_database.web_user):
-            return [
-                (Allow, self.request.authenticated_userid,
-                    ['show_device', 'edit_device', 'delete_device'])
-            ]
-        return []
-
-
-class StatisticsResource(ResourceBase):
-    """
-    matches the webusers statistics after clicking Statistics in Licensing menu
-    """
-    __parent__ = LicensingResource
-    __name__ = "devices"
-    _write = ['add']
-
-    # traversal
-    def __getitem__(self, key):
-        # validate code
-        if re.match(valid['uuid'], key):
-            return DeviceResource(self.request, key)
-        # views needing writable transactions
-        if key in self._write:
-            self.readonly = False
-        raise KeyError(key)
-
-    # load resources
-    def context_found(self):
-        if self.request.view_name == '':
-            self.devices = Device.current_viewable(self.request)
-        # in add creation, provide content uuid, set by upload form
-        if self.request.view_name == 'add':
-            device_id = self.request.params.get('device_id', '')
-            if re.match(valid['uuid'], device_id):
-                self.device_id = device_id
-            device_name = self.request.params.get('device_name', '')
-            if len(device_name) > 0:
-                self.device_name = device_name
-            os_name = self.request.params.get('os_name', '')
-            if len(os_name) > 0:
-                self.os_name = os_name
-            os_version = self.request.params.get('os_version', '')
-            if len(os_version) > 0:
-                self.os_version = os_version
-            software_name = self.request.params.get('software_name', '')
-            if len(software_name) > 0:
-                self.software_name = software_name
-            software_version = self.request.params.get('software_version', '')
-            if len(software_version) > 0:
-                self.software_version = software_version
-            software_vendor = self.request.params.get('software_vendor', '')
-            if len(software_vendor) > 0:
-                self.software_vendor = software_vendor
-
-
-class StatisticsItemResource(ModelResource):
-    """
-    matches a single item after clicking one in Licensing -> Statistics
-    """
-    __parent__ = StatisticsResource
     _write = ['edit', 'delete']
 
     # load resources
