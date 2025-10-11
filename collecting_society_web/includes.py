@@ -31,6 +31,7 @@ from .resources import (
     RepertoireResource,
     LicensingResource,
     FilesResource,
+    RoyaltiesResource,
     DebugC3sMembershipApiResource,
     DeclarationsResource,
     AddDeclarationResource,
@@ -77,6 +78,7 @@ def web_resources(config):
     RepertoireResource.add_child(ArtistsResource)
     RepertoireResource.add_child(ReleasesResource)
     RepertoireResource.add_child(CreationsResource)
+    RepertoireResource.add_child(RoyaltiesResource)
 
     LicensingResource.add_child(DeclarationsResource)
     DeclarationsResource.add_child(AddDeclarationResource)
@@ -294,6 +296,13 @@ def web_registry(config):
                 'icon': self.request.static_path(
                             'collecting_society_web:'
                             'static/img/element-icon-releases.png')},
+            {
+                'name': _('Royalties'),
+                'url':  self.request.resource_path(
+                            RoyaltiesResource(self.request)),
+                'icon': self.request.static_path(
+                            'collecting_society_web:'
+                            'static/img/element-icon-royalties.svg')},
         ]
         # widgets
         reg['widgets']['dashboard-central-widgets'] = [

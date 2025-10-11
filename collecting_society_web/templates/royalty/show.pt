@@ -1,0 +1,106 @@
+<!--! For copyright / license terms, see COPYRIGHT.rst (top level of repository)
+      Repository: https://github.com/C3S/collecting_society_web -->
+
+<tal:block metal:use-macro="backend363"
+           i18n:domain="collecting_society_web"
+           tal:define="royalty context.royalty">
+
+    <!-- content left -->
+    <tal:block metal:fill-slot="content-left"></tal:block>
+
+    <!-- content middle -->
+    <tal:block metal:fill-slot="content-middle">
+
+        <h1>
+            <span i18n:translate="">Royalty</span> ${royalty.number}
+        </h1>
+
+        <div class="btn-toolbar cs-form-controls" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="${request.resource_path(context, '..')}"
+                   class="btn btn-default" role="button"
+                   i18n:translate="">Royalties</a>
+                <a href="${request.resource_path(context, 'download')}"
+                   class="btn btn-primary btn-declaration-confirm" role="button"
+                   i18n:translate="">Download</a>
+            </div>
+        </div>
+
+        <table class="table cs-table cs-table-show">
+
+            <tr>
+                <td colspan="2">
+                    <img class="img-responsive center-block cs-defaultpic"
+                         src="${request.static_path(
+                                'collecting_society_web:'
+                                'static/img/element-icon-royalties-green.svg')}" />
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Number</th>
+                <td>${royalty.number}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Date</th>
+                <td>${royalty.invoice_date}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Amount</th>
+                <td>${h.format_currency(royalty.total_amount)}</td>
+            </tr>
+
+            <tr class="${royalty.state == 'posted' and royalty.total_amount < 0 and 'cs-warning' or ''}">
+                <th i18n:translate="">State</th>
+                <td>
+                    <tal:block tal:switch="royalty.state">
+                        <tal:block tal:case="'posted'">
+                            ${h.format_currency(royalty.amount_to_pay)}
+                            <span i18n:translate="">outstanding</span>
+                        </tal:block>
+                        <tal:block tal:case="'paid'" i18n:translate="">
+                            Paid
+                        </tal:block>
+                        <tal:block tal:case="'cancelled'" i18n:translate="">
+                            Cancelled
+                        </tal:block>
+                    </tal:block>
+                </td>
+            </tr>
+
+            <tr tal:condition="royalty.state == 'posted' and royalty.total_amount < 0">
+                <th i18n:translate="">Transfer</th>
+                <td>
+                    <div i18n:translate="">
+                        Please send the money to the following bank account:
+                    </div>
+                    <pre>${"\n".join([
+                        f'Amount: {h.format_currency(royalty.amount_to_pay)}',
+                        f'Purpose:  royalty {royalty.number}',
+                        'IBAN:     DE12 3456 7890 1234 56 78',
+                        'BIC:      EXAMPLEBANK',
+                        'Bank:     ExampleBank',
+                    ])}</pre>
+                </td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Description</th>
+                <td>${royalty.description}</td>
+            </tr>
+
+            <tr>
+                <th i18n:translate="">Reference</th>
+                <td>${royalty.origins}</td>
+            </tr>
+
+        </table>
+
+    </tal:block>
+
+    <!-- content right -->
+    <tal:block metal:fill-slot="content-right"></tal:block>
+
+</tal:block>

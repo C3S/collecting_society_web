@@ -39,6 +39,7 @@ valid = {
     'creation': r'^C\d{10}\Z',
     'declaration': r'^DECL\d{10}\Z',
     'invoice': r'^\d*\Z',
+    'royalty': r'^\d*\Z',
     'release': r'^R\d{10}\Z',
     'uuid': r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z'
 }
@@ -57,6 +58,7 @@ class RepertoireResource(ResourceBase):
             'list_creations',
             'list_releases',
             'list_content',
+            'list_royalties',
             'add_artist',
             'add_creation',
             'add_release',
@@ -229,6 +231,48 @@ class FileResource(ModelResource):
         return [
             (Allow, self.request.authenticated_userid,
                 self.file.permissions(self.request.web_user, self._permit))
+        ]
+
+
+class RoyaltiesResource(ResourceBase):
+    __parent__ = RepertoireResource
+    __name__ = "royalties"
+
+    # traversal
+    def __getitem__(self, key):
+        # validate code
+        if re.match(valid['royalty'], key):
+            return RoyaltyResource(self.request, key)
+        # views needing writable transactions
+        if key in self._write:
+            self.readonly = False
+        raise KeyError(key)
+
+    # load resources
+    def context_found(self):
+        if self.request.view_name == '':
+            self.royalties = Invoice.current_viewable(self.request, 'in')
+
+
+class RoyaltyResource(ModelResource):
+    __parent__ = RoyaltiesResource
+    _permit = [
+        'view_royalty',
+        'download_royalty',
+    ]
+
+    # load resources
+    def context_found(self):
+        self.royalty = Invoice.search_by_number(self.code)
+
+    # add instance level permissions
+    def __acl__(self):
+        if not hasattr(self.royalty, 'permissions'):
+            return []
+        return [
+            (Allow, self.request.authenticated_userid,
+                self.royalty.permissions(
+                    self.request.web_user, self._permit))
         ]
 
 
