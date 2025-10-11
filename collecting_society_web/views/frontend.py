@@ -37,6 +37,7 @@ class FrontentViews(ViewBase):
         renderer='../templates/frontend/home.pt')
     def home(self):
         self.register_form(LoginWebuser)
+        self.register_form(LoginWebuser, name="LoginWebuserXs")
         self.register_form(RegisterWebuser)
         return self.process_forms()
 
