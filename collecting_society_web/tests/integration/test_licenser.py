@@ -172,7 +172,7 @@ class TestLicenser:
 
         # add first artist to group artist
         browser.find_element(By.CLASS_NAME, "btn-sequence-add").click()
-        browser.screenshot("add_artist_to_group_clicked")
+        browser.screenshot("add_first_artist_to_group_clicked")
         artist_add_buttons = browser.find_elements(
             By.CLASS_NAME, "cs-datatables-btn-source-add")
         assert len(artist_add_buttons) == 2  # expect exactly two artists
@@ -181,6 +181,7 @@ class TestLicenser:
 
         # add second artist to group artist
         browser.find_element(By.CLASS_NAME, "btn-sequence-add").click()
+        browser.screenshot("add_second_artist_to_group_clicked")
         artist_add_buttons = browser.find_elements(
             By.CLASS_NAME, "cs-datatables-btn-source-add")
         assert len(artist_add_buttons) == 1  # one remove and one add button

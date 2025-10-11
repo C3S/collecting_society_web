@@ -32,7 +32,7 @@
         <div class="visible-xs">
             <h1 i18n:translate="">Login</h1>
             <div class="cs-widget cs-widget-login">
-                <div tal:content="structure LoginWebuser"/>
+                <div tal:content="structure LoginWebuserXs"/>
             </div>
         </div>
 
