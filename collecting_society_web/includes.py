@@ -231,17 +231,22 @@ def web_registry(config):
                 'url':  self.request.resource_path(
                             BackendResource(self.request), 'logout')}
         ]
-        # main menue
-        reg['menues']['roles'] = [
-            {
-                'name': _('Repertoire'), 'active': RepertoireResource,
-                'url':  self.request.resource_path(
-                            RepertoireResource(self.request), '')},
-            {
-                'name': _('Licensing'), 'active': LicensingResource,
-                'url':  self.request.resource_path(
-                            LicensingResource(self.request), '')}
-        ]
+        # role menue
+        reg['menues']['roles'] = []
+        for role in self.request.web_user.roles:
+            if role.code == 'licenser':
+                reg['menues']['roles'].append({
+                    'name': _('Repertoire'), 'active': RepertoireResource,
+                    'url':  self.request.resource_path(
+                                RepertoireResource(self.request), '')
+                })
+        for role in self.request.web_user.roles:
+            if role.code == 'licensee':
+                reg['menues']['roles'].append({
+                    'name': _('Licensing'), 'active': LicensingResource,
+                    'url':  self.request.resource_path(
+                                LicensingResource(self.request), '')
+                })
         return reg
 
     @RepertoireResource.extend_registry
@@ -333,16 +338,21 @@ def web_registry(config):
                 'static/css/backend-licensing.css'),
         ]
         # role menue
-        reg['menues']['roles'] = [
-            {
-                'name': _('Repertoire'), 'active': RepertoireResource,
-                'url':  self.request.resource_path(
-                            RepertoireResource(self.request), '')},
-            {
-                'name': _('Licensing'), 'active': LicensingResource,
-                'url':  self.request.resource_path(
-                            LicensingResource(self.request), '')}
-        ]
+        reg['menues']['roles'] = []
+        for role in self.request.web_user.roles:
+            if role.code == 'licenser':
+                reg['menues']['roles'].append({
+                    'name': _('Repertoire'), 'active': RepertoireResource,
+                    'url':  self.request.resource_path(
+                                RepertoireResource(self.request), '')
+                })
+        for role in self.request.web_user.roles:
+            if role.code == 'licensee':
+                reg['menues']['roles'].append({
+                    'name': _('Licensing'), 'active': LicensingResource,
+                    'url':  self.request.resource_path(
+                                LicensingResource(self.request), '')
+                })
         # main licensing menue
         reg['menues']['main'] = [
             {
