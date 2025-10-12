@@ -17,6 +17,7 @@ from ...models import (
     TariffCategory,
     Artist,
     Creation,
+    CreationIdentifierSpace,
     Content,
     Instrument,
     CollectingSociety,
@@ -94,6 +95,12 @@ class AddCreation(FormController):
 
         # shortcuts: appstruct
         _metadata = self.appstruct['metadata']
+        _cs_identifiers = {
+            'HFA Song Code': _metadata.get('hfa_code'),
+            'ISRC': _metadata.get('isrc_code'),
+            'ISWC': _metadata.get('iswc_code'),
+            'CWR': _metadata.get('cwr_code'),
+        }
         _contributions = self.appstruct['rights']['contributions']
         _derivation = self.appstruct['derivation']
         _contents = [
@@ -110,6 +117,16 @@ class AddCreation(FormController):
         if not artist or artist not in Artist.search_by_party(party):
             # TODO: add proper validator
             raise Exception()
+
+        # cd identifiers
+        cs_identifiers = {'create': []}
+        for _code, _value in _cs_identifiers.items():
+            if not _value:
+                continue
+            cs_identifiers['create'].append({
+                'space': CreationIdentifierSpace.search_by_name(_code),
+                'id_code': _value,
+            })
 
         # --- rights ----------------------------------------------------------
 
@@ -237,6 +254,7 @@ class AddCreation(FormController):
             'original_relations': list(original_relations_vlist.items()),
             'content': list(content_vlist.items()),
             'tariff_categories': list(tariff_categories_vlist.items()),
+            'cs_identifiers': list(cs_identifiers.items()),
         }
         creations = Creation.create([creation_vlist])
 
@@ -407,6 +425,30 @@ class ArtistField(colander.SchemaNode):
     validator = colander.uuid
 
 
+class HfaCodeField(colander.SchemaNode):
+    oid = "hfa_code"
+    schema_type = colander.String
+    missing = ""
+
+
+class IsrcCodeField(colander.SchemaNode):
+    oid = "isrc_code"
+    schema_type = colander.String
+    missing = ""
+
+
+class IswcCodeField(colander.SchemaNode):
+    oid = "iswc_code"
+    schema_type = colander.String
+    missing = ""
+
+
+class CwrCodeField(colander.SchemaNode):
+    oid = "cwr_code"
+    schema_type = colander.String
+    missing = ""
+
+
 class LyricsField(colander.SchemaNode):
     oid = "lyrics"
     schema_type = colander.String
@@ -427,6 +469,10 @@ class MetadataSchema(colander.Schema):
     widget = deform.widget.MappingWidget(template='navs/mapping')
     working_title = TitleField(name='title', title=_("Title"))
     artist = ArtistField(title=_("Artist"))
+    hfa_code = HfaCodeField(title=_("HFA Song Code"))
+    isrc_code = IsrcCodeField(title=_("ISRC"))
+    iswc_code = IswcCodeField(title=_("ISWC"))
+    cwr_code = CwrCodeField(title=_("CWR"))
 
 
 class RightsSchema(colander.Schema):

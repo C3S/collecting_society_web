@@ -13,7 +13,7 @@ class CreationIdentifierSpace(Tdb):
     Model wrapper for Tryton model object 'creation_identifier_space'
     """
 
-    __name__ = 'creation.identifier.space'
+    __name__ = 'creation.cs_identifier.space'
 
     @classmethod
     def search_all(cls):

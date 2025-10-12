@@ -15,6 +15,7 @@ from ...models import (
     CreationDerivative,
     CreationTariffCategory,
     CreationRight,
+    CreationIdentifierSpace,
     Content,
     Instrument,
     CollectingSociety,
@@ -58,7 +59,11 @@ class EditCreation(FormController):
         self.appstruct = {
             'metadata': {
                 'title':  creation.title or '',
-                'artist': creation.artist.oid
+                'artist': creation.artist.oid,
+                'hfa_code': creation.get_id_code('HFA Song Code') or '',
+                'isrc_code': creation.get_id_code('ISRC') or '',
+                'iswc_code': creation.get_id_code('ISWC') or '',
+                'cwr_code': creation.get_id_code('CWR') or '',
             },
             'rights': {
                 'contributions': [],
@@ -166,6 +171,12 @@ class EditCreation(FormController):
 
         # shortcuts: appstruct
         _metadata = self.appstruct['metadata']
+        _cs_identifiers = {
+            'HFA Song Code': _metadata.get('hfa_code'),
+            'ISRC': _metadata.get('isrc_code'),
+            'ISWC': _metadata.get('iswc_code'),
+            'CWR': _metadata.get('cwr_code'),
+        }
         _contributions = self.appstruct['rights']['contributions']
         _derivation = self.appstruct['derivation']
         _contents = [
@@ -187,6 +198,10 @@ class EditCreation(FormController):
 
         # title
         title = _metadata['title']
+
+        # cd identifiers
+        for _code, _value in _cs_identifiers.items():
+            creation.set_id_code(_code, _value)
 
         # --- rights ----------------------------------------------------------
 

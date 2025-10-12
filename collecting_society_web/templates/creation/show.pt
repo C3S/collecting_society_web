@@ -52,6 +52,26 @@
                 <td>${creation.code}</td>
             </tr>
 
+            <tr tal:condition="creation.get_id_code('HFA Song Code')">
+                <th i18n:translate="">HFA Song Code</th>
+                <td>${creation.get_id_code('HFA Song Code')}</td>
+            </tr>
+
+            <tr tal:condition="creation.get_id_code('ISRC')">
+                <th i18n:translate="">ISRC</th>
+                <td>${creation.get_id_code('ISRC')}</td>
+            </tr>
+
+            <tr tal:condition="creation.get_id_code('ISWC')">
+                <th i18n:translate="">ISWC</th>
+                <td>${creation.get_id_code('ISWC')}</td>
+            </tr>
+
+            <tr tal:condition="creation.get_id_code('CWR')">
+                <th i18n:translate="">CWR</th>
+                <td>${creation.get_id_code('CWR')}</td>
+            </tr>
+
             <tr>
                 <th i18n:translate="">Featured Artist</th>
                 <td>
