@@ -15,7 +15,6 @@ from ...models import (
     CreationDerivative,
     CreationTariffCategory,
     CreationRight,
-    CreationIdentifierSpace,
     Content,
     Instrument,
     CollectingSociety,
