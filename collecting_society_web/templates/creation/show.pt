@@ -165,7 +165,7 @@
                 </td>
             </tr>
 
-            <tr tal:condition="creation.original_relations">
+            <tr tal:condition="creation.originals">
                 <th i18n:translate="">Origins</th>
                 <td>
                     <div tal:switch="creation.distribution_type" style="margin-bottom: 5px;">
@@ -174,7 +174,7 @@
                         <span tal:case="'cover'" i18n:translate="">Cover of</span>
                         <span tal:case="'remix'" i18n:translate="">Remix of</span>
                     </div>
-                    <tal:block tal:repeat="original_relation creation.original_relations">
+                    <tal:block tal:repeat="original_relation creation.originals">
                         <div tal:define="original_creation original_relation.original_creation;
                                          original_artist original_creation.artist"
                              class="cs-list-item">
@@ -206,10 +206,10 @@
                 </td>
             </tr>
 
-            <tr tal:condition="creation.derivative_relations">
+            <tr tal:condition="creation.derivatives">
                 <th i18n:translate="">Derivatives</th>
                 <td>
-                    <tal:block tal:repeat="derivative_relation creation.derivative_relations">
+                    <tal:block tal:repeat="derivative_relation creation.derivatives">
                         <div tal:define="derivative_creation derivative_relation.derivative_creation;
                                          derivative_artist derivative_creation.artist"
                              class="cs-list-item">

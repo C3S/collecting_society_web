@@ -123,7 +123,7 @@ class EditCreation(FormController):
             _contributions.values())
 
         # derivation
-        for original in creation.original_relations:
+        for original in creation.originals:
             original_creation = original.original_creation
             original_creation_editable = Creation.is_foreign_editable(
                 web_user, original_creation)
@@ -298,7 +298,7 @@ class EditCreation(FormController):
         # --- derivation ------------------------------------------------------
 
         # original relations
-        original_relations = []
+        originals = []
         distribution_type = _derivation['distribution_type']
         for _original in _derivation.get(distribution_type, []):
             if _original['oid'] == creation.oid:
@@ -332,7 +332,7 @@ class EditCreation(FormController):
 
             # find corresponding right db entry
             original_relation = False
-            for item in creation.original_relations:
+            for item in creation.originals:
                 if item.original_creation.oid == _original['oid']:
                     original_relation = item
                     break
@@ -348,12 +348,12 @@ class EditCreation(FormController):
             else:
                 original_relation.original_creation = original
 
-            original_relations.append(original_relation)
+            originals.append(original_relation)
 
         # original relations: delete
-        new_oids = {relation.oid for relation in original_relations}
+        new_oids = {relation.oid for relation in originals}
         CreationDerivative.delete([
-            relation for relation in creation.original_relations
+            relation for relation in creation.originals
             if relation.oid not in new_oids
         ])
 
@@ -424,7 +424,7 @@ class EditCreation(FormController):
         creation.lyrics = lyrics
         creation.rights = rights
         creation.distribution_type = distribution_type
-        creation.original_relations = original_relations
+        creation.originals = originals
         creation.content = contents
         creation.tariff_categories = tariff_categories
         creation.save()

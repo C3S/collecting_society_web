@@ -72,7 +72,7 @@ class Creation(Tdb):
           false: otherwise.
         """
         # sanity checks
-        if original.id not in [r.id for r in derivative.original_relations]:
+        if original.id not in [r.id for r in derivative.originals]:
             return False
         # 1) is a foreign object
         if original.entity_origin != 'indirect':
