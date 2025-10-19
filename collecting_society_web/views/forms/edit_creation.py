@@ -12,7 +12,6 @@ from ...models import (
     TariffCategory,
     Artist,
     Creation,
-    CreationDerivative,
     CreationTariffCategory,
     CreationRight,
     Content,
