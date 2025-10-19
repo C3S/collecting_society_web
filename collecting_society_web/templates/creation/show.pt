@@ -174,9 +174,8 @@
                         <span tal:case="'cover'" i18n:translate="">Cover of</span>
                         <span tal:case="'remix'" i18n:translate="">Remix of</span>
                     </div>
-                    <tal:block tal:repeat="original_relation creation.originals">
-                        <div tal:define="original_creation original_relation.original_creation;
-                                         original_artist original_creation.artist"
+                    <tal:block tal:repeat="original_creation creation.originals">
+                        <div tal:define="original_artist original_creation.artist"
                              class="cs-list-item">
                             <img class="img-responsive cs-img-inline pull-left"
                                  src="${request.static_path(

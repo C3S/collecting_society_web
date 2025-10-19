@@ -300,9 +300,9 @@ class Creation(ResourceBase):
                     'country': creation.license.country,
                     'link':    creation.license.link
                 },
-                'derivatives': [d.derivative_creation.code for d in
+                'derivatives': [d.code for d in
                                 creation.derivatives],
-                'originals':   [o.original_creation.code for o in
+                'originals':   [o.code for o in
                                 creation.originals],
                 'releases':    [r.release.code for r in creation.releases],
                 'genres':      [g.name for g in creation.genres],

@@ -124,19 +124,18 @@ class EditCreation(FormController):
 
         # derivation
         for original in creation.originals:
-            original_creation = original.original_creation
-            original_creation_editable = Creation.is_foreign_editable(
-                web_user, original_creation)
+            original_editable = Creation.is_foreign_editable(
+                web_user, original)
             othertitles = {release.title
-                           for release in original_creation.releases}
-            othertitles.discard(original_creation.title)
+                           for release in original.releases}
+            othertitles.discard(original.title)
             self.appstruct['derivation'][creation.distribution_type].append({
-                'mode': original_creation_editable and 'edit' or 'add',
-                'oid': original_creation.oid,
-                'code': original_creation.code,
-                'titlefield': original_creation.title,
+                'mode': original_editable and 'edit' or 'add',
+                'oid': original.oid,
+                'code': original.code,
+                'titlefield': original.title,
                 'othertitles': "\n".join(othertitles),
-                'artist': original_creation.artist.name,
+                'artist': original.artist.name,
             })
 
         # content
@@ -330,32 +329,7 @@ class EditCreation(FormController):
                 original.artist.save()
                 original.save()
 
-            # find corresponding right db entry
-            original_relation = False
-            for item in creation.originals:
-                if item.original_creation.oid == _original['oid']:
-                    original_relation = item
-                    break
-
-            # original relation: create
-            if not original_relation:
-                original_relation, = CreationDerivative.create([{
-                    'original_creation': original,
-                    'derivative_creation': creation,
-                }])
-
-            # original relation: edit
-            else:
-                original_relation.original_creation = original
-
-            originals.append(original_relation)
-
-        # original relations: delete
-        new_oids = {relation.oid for relation in originals}
-        CreationDerivative.delete([
-            relation for relation in creation.originals
-            if relation.oid not in new_oids
-        ])
+            originals.append(original)
 
         # --- content ---------------------------------------------------------
 

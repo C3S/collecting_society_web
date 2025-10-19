@@ -177,7 +177,7 @@ class AddCreation(FormController):
         # --- derivation ------------------------------------------------------
 
         # original relations
-        originals_vlist = {'create': []}
+        originals = []
         distribution_type = _derivation['distribution_type']
         for _original in _derivation.get(distribution_type, []):
 
@@ -201,9 +201,7 @@ class AddCreation(FormController):
                 continue
 
             # original relations: prepare
-            originals_vlist['create'].append({
-                'original_creation': original,
-            })
+            originals.append(original)
 
         # --- content ---------------------------------------------------------
 
@@ -251,7 +249,7 @@ class AddCreation(FormController):
             'entity_creator': party,
             'rights': list(rights_vlist.items()),
             'distribution_type': distribution_type,
-            'originals': list(originals_vlist.items()),
+            'originals': originals,
             'content': list(content_vlist.items()),
             'tariff_categories': list(tariff_categories_vlist.items()),
             'cs_identifiers': list(cs_identifiers.items()),
