@@ -123,7 +123,6 @@ class AddDeclarationLive(FormController):
             })
 
         # others: prepare
-        distribution_plan = DistributionPlan.search_latest()
         location_category = LocationCategory.search_by_code(
             _location['category'])
         country = Country.search_by_code(_location['country'])
@@ -184,7 +183,6 @@ class AddDeclarationLive(FormController):
                 'licensee': web_user.party,
                 'state': 'estimated',
                 'tariff': tariff,
-                'distribution_plan': distribution_plan,
                 'context': event,
                 'estimated_relevance': relevance,
                 'estimated_adjustments': [('create', adjustments_vlist)]
