@@ -20,7 +20,6 @@ from ...models import (
     Artist,
     Event,
     Declaration,
-    DistributionPlan,
     Location,
     LocationCategory,
     Tariff,
